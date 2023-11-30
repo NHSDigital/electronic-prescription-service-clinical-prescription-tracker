@@ -1,0 +1,13 @@
+{
+  "extends": "../../../tsconfig.defaults.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "lib",
+    "esModuleInterop": true,
+    "paths": {
+      "@electronic-prescription-service-clinical-prescription-tracker_common/testing": ["./src"]
+    }
+  },
+  "include": ["src/**/*", "src/**/*.json"],
+  "exclude": ["node_modules"]
+}

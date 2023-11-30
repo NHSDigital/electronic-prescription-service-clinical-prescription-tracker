@@ -1,0 +1,24 @@
+{
+  "name": "statusLambda",
+  "version": "1.0.0",
+  "description": "Lambda of the _status endpoint",
+  "main": "statusLambda.js",
+  "author": "NHS Digital",
+  "license": "MIT",
+  "scripts": {
+    "unit": "POWERTOOLS_DEV=true NODE_OPTIONS=--experimental-vm-modules jest --no-cache --coverage",
+    "lint": "eslint . --ext .ts --max-warnings 0 --fix",
+    "compile": "tsc",
+    "test": "npm run compile && npm run unit",
+    "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
+  },
+  "dependencies": {
+    "@aws-lambda-powertools/commons": "^1.15.0",
+    "@aws-lambda-powertools/logger": "^1.17.0",
+    "@aws-lambda-powertools/parameters": "^1.17.0",
+    "@middy/core": "^5.0.3",
+    "@middy/input-output-logger": "^5.0.3",
+    "@electronic-prescription-service-clinical-prescription-tracker/middleware": "^1.0.0",
+    "@electronic-prescription-service-clinical-prescription-tracker/spineClient": "^1.0.0"
+  }
+}

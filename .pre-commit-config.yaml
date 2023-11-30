@@ -1,0 +1,123 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-merge-conflict
+        name: Check for merge conflict strings
+
+      - id: end-of-file-fixer
+        name: Fix missing newline at the end of files
+
+      - id: check-shebang-scripts-are-executable
+        name: Check shell scripts are executable
+        files: \.(sh)$
+
+      - id: check-yaml
+        name: Check pipelines configuration
+        files: ^(.github)
+
+  - repo: https://github.com/pycqa/flake8
+    rev: "7ef0350a439c93166bc8ba89fcc3de6a9a664e6c" # release 6.1.0
+    hooks:
+      - id: flake8
+
+  - repo: local
+    hooks:
+      - id: lint-getMyPrescriptions
+        name: Lint getMyPrescriptions
+        entry: npm
+        args: ["run", "--prefix=packages/getMyPrescriptions", "lint"]
+        language: system
+        files: ^packages\/getMyPrescriptions
+        types_or: [ts, tsx, javascript, jsx, json]
+        pass_filenames: false
+
+      - id: lint-splunkProcessor
+        name: Lint Splunk Processor
+        entry: npm
+        args: ["run", "--prefix=packages/splunkProcessor", "lint"]
+        language: system
+        files: ^packages\/splunkProcessor
+        types_or: [ts, tsx, javascript, jsx, json]
+        pass_filenames: false
+
+      - id: lint-middleware
+        name: Lint Middleware
+        entry: npm
+        args: ["run", "--prefix=packages/middleware", "lint"]
+        language: system
+        files: ^packages\/middleware
+        types_or: [ts, tsx, javascript, jsx, json]
+        pass_filenames: false
+
+      - id: lint-statusLambda
+        name: Lint statusLambda
+        entry: npm
+        args: ["run", "--prefix=packages/statusLambda", "lint"]
+        language: system
+        files: ^packages\/statusLambda
+        types_or: [ts, tsx, javascript, jsx, json]
+        pass_filenames: false
+
+      - id: lint-capabilityStatement
+        name: Lint capabilityStatement
+        entry: npm
+        args: ["run", "--prefix=packages/capabilityStatement", "lint"]
+        language: system
+        files: ^packages\/capabilityStatement
+        types_or: [ts, tsx, javascript, jsx, json]
+        pass_filenames: false
+
+      - id: lint-sandbox
+        name: Lint sandbox
+        entry: npm
+        args: ["run", "--prefix=packages/sandbox", "lint"]
+        language: system
+        files: ^packages\/sandbox
+        types_or: [ts, tsx, javascript, jsx, json]
+        pass_filenames: false
+
+      - id: lint-spineClient
+        name: Lint spineClient
+        entry: npm
+        args: ["run", "--prefix=packages/spineClient", "lint"]
+        language: system
+        files: ^packages\/spineClient
+        types_or: [ts, tsx, javascript, jsx, json]
+        pass_filenames: false
+
+      - id: lint-common-testing
+        name: Lint common testing
+        entry: npm
+        args: ["run", "--prefix=packages/common/testing", "lint"]
+        language: system
+        files: ^packages\/common\/testing
+        types_or: [ts, tsx, javascript, jsx, json]
+        pass_filenames: false
+
+      - id: lint-getSecretLayer
+        name: Lint getSecretLayer
+        entry: make
+        args: ["lint-go"]
+        language: system
+        files: ^packages\/getSecretLayer
+        pass_filenames: false
+
+      - id: lint-cloudformation
+        name: Lint cloudformation
+        entry: make
+        args: ["lint-cloudformation"]
+        language: system
+        files: ^cloudformation
+        pass_filenames: false
+
+      - id: lint-samtemplatess
+        name: Lint sam templates
+        entry: make
+        args: ["lint-samtemplates"]
+        language: system
+        files: ^SAMtemplates
+        pass_filenames: false
+
+fail_fast: true
+default_stages: [commit]
