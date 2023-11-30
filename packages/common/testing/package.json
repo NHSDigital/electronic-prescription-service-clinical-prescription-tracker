@@ -1,0 +1,17 @@
+{
+    "name": "@electronic-prescription-service-clinical-prescription-tracker_common/testing",
+    "version": "1.0.0",
+    "description": "Common resources for testing electronic-prescription-service-clinical-prescription-tracker",
+    "author": "NHS Digital",
+    "license": "MIT",
+    "main": "lib/src/index.js",
+    "type": "module",
+    "scripts": {
+        "unit": "jest",
+        "lint": "eslint . --ext .ts --max-warnings 0 --fix",
+        "compile": "tsc",
+        "test": "npm run compile && npm run unit",
+        "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
+    },
+    "dependencies": {}
+}

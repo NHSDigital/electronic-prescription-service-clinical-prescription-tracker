@@ -1,0 +1,119 @@
+{
+	"folders": [
+		{
+			"name": "electronic-prescription-service-clinical-prescription-tracker-monorepo",
+			"path": ".."
+		},
+		{
+			"name": "packages/common",
+			"path": "../packages/common"
+		},
+		{
+			"name": "packages/middleware",
+			"path": "../packages/middleware"
+		},
+		{
+			"name": "packages/statusLambda",
+			"path": "../packages/statusLambda"
+		}
+	],
+	"settings": {
+		"jest.disabledWorkspaceFolders": [
+			"electronic-prescription-service-clinical-prescription-tracker-monorepo",
+			"packages/getSecretLayer",
+			"packages/common"
+		],
+		"files.exclude": {
+			"packages/": true,
+		},
+        "cSpell.words": [
+			"apigw",
+			"ASID",
+			"AWSKMS",
+			"Caldicott",
+			"canonicalise",
+			"Canonicaliser",
+			"canonicalization",
+			"Canonicalized",
+			"Codeable",
+			"codeinline",
+			"codesystem",
+			"devcontainer",
+			"electronic-prescription-service-clinical-prescription-tracker",
+			"esbuild",
+			"fhir",
+			"Formik",
+			"Fulfillment",
+			"Hashable",
+			"healthcheck",
+			"Helpdesk",
+			"homecare",
+			"HSCN",
+			"liter",
+			"milliliter",
+			"NHSD",
+			"nhsdlogin",
+			"nhslogin",
+			"NOSONAR",
+			"OIDC",
+			"Orthoptist",
+			"Payor",
+			"pino",
+			"pollable",
+			"powertools",
+			"prescriptionsforpatients",
+			"Prosthetist",
+			"querystring",
+			"reingest",
+			"reingested",
+			"Reingestion",
+			"serialisation",
+			"smartcard",
+			"smartcards",
+			"Snomed",
+			"sourcetype",
+			"Truststore",
+			"URID",
+			"URPID",
+			"vars",
+			"versionable",
+			"whens"
+		],
+		"cSpell.dictionaries": [
+			"en-GB"
+		],
+		"cSpell.ignorePaths": [
+			"package-lock.json",
+			"node_modules",
+			".vscode"
+		],
+		"jest.jestCommandLine": "NODE_OPTIONS=--experimental-vm-modules node_modules/.bin/jest --no-cache",
+		"jest.nodeEnv": {
+			"POWERTOOLS_DEV": true
+		}
+	},
+	"extensions": {
+		"recommendations": [
+			"AmazonWebServices.aws-toolkit-vscode",
+			"redhat.vscode-yaml",
+			"ms-python.python",
+			"ms-python.flake8",
+			"eamodio.gitlens",
+			"github.vscode-pull-request-github",
+			"orta.vscode-jest",
+			"42crunch.vscode-openapi",
+			"mermade.openapi-lint",
+			"rvest.vs-code-prettier-eslint",
+			"redhat.vscode-yaml",
+			"christian-kohler.npm-intellisense",
+			"dbaeumer.vscode-eslint",
+			"lfm.vscode-makefile-term",
+			"GrapeCity.gc-excelviewer",
+			"redhat.vscode-xml",
+			"streetsidesoftware.code-spell-checker",
+			"timonwong.shellcheck",
+			"mkhl.direnv",
+			"tamasfe.even-better-toml"
+		]
+	}
+}
