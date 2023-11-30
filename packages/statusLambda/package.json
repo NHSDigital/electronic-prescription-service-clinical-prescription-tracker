@@ -19,6 +19,7 @@
     "@middy/core": "^5.0.3",
     "@middy/input-output-logger": "^5.0.3",
     "@electronic-prescription-service-clinical-prescription-tracker/middleware": "^1.0.0",
-    "@electronic-prescription-service-clinical-prescription-tracker/spineClient": "^1.0.0"
+    "@electronic-prescription-service-clinical-prescription-tracker/spineClient": "^1.0.0",
+    "@electronic-prescription-service-clinical-prescription-tracker_common/testing": "^1.0.0"
   }
 }
