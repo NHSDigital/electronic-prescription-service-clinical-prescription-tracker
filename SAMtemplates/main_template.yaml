@@ -56,10 +56,6 @@ Parameters:
     Type: String
     Description: Most recent commit hash
     Default: "xxx"
-  LogLevel:
-    Type: String
-    Description: The log level to set in the lambda
-    Default: "INFO"
   LogRetentionDays:
     Type: Number
     Description: How long to keep logs for
@@ -105,94 +101,7 @@ Resources:
         EnableSplunk: !Ref EnableSplunk
         LogRetentionDays: !Ref LogRetentionDays
 
-  GetSecretsLayer:
-    Type: AWS::Serverless::LayerVersion
-    Properties:
-      LayerName: get-secrets-layer
-      Description: get secrets layer
-      ContentUri: ../packages/getSecretLayer/lib/get-secrets-layer.zip
-      RetentionPolicy: Retain
-
-  # getMyPrescription lambda
-  GetMyPrescriptionsResources:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location: lambda_resources.yaml
-      Parameters:
-        CloudWatchKMSKey: !GetAtt SplunkFirehose.Outputs.CloudWatchKMSKey
-        SplunkSubscriptionFilterRole: !GetAtt SplunkFirehose.Outputs.SplunkSubscriptionFilterRole
-        SplunkDeliveryStream: !GetAtt SplunkFirehose.Outputs.SplunkDeliveryStream
-        EnableSplunk: !Ref EnableSplunk
-        LambdaName: !Sub "${AWS::StackName}-GetMyPrescriptions"
-        AccessToSpine: "true"
-        LogRetentionDays: !Ref LogRetentionDays
-  GetMyPrescriptions:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: !Sub "${AWS::StackName}-GetMyPrescriptions"
-      CodeUri: ../packages
-      Handler: getMyPrescriptions.handler
-      Role: !GetAtt GetMyPrescriptionsResources.Outputs.LambdaRoleArn
-      Environment:
-        Variables:
-          AWS_LAMBDA_EXEC_WRAPPER: /opt/get-secrets-layer
-          LOG_LEVEL: !Ref LogLevel
-      Layers:
-        - !Ref GetSecretsLayer
-      Events:
-        getMyPrescriptions:
-          Type: HttpApi
-          Properties:
-            ApiId: !Ref HttpApiGateway
-            Path: /Bundle
-            Method: get
-    Metadata: # Manage esbuild properties
-      BuildMethod: esbuild
-      BuildProperties:
-        Minify: true
-        Target: "es2020"
-        Sourcemap: true
-        tsconfig: getMyPrescriptions/tsconfig.json
-        EntryPoints:
-          - getMyPrescriptions/src/getMyPrescriptions.ts
-
-  # capabilityStatement lambda
-  CapabilityStatementResources:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location: lambda_resources.yaml
-      Parameters:
-        CloudWatchKMSKey: !GetAtt SplunkFirehose.Outputs.CloudWatchKMSKey
-        SplunkSubscriptionFilterRole: !GetAtt SplunkFirehose.Outputs.SplunkSubscriptionFilterRole
-        SplunkDeliveryStream: !GetAtt SplunkFirehose.Outputs.SplunkDeliveryStream
-        EnableSplunk: !Ref EnableSplunk
-        LambdaName: !Sub "${AWS::StackName}-CapabilityStatement"
-        LogRetentionDays: !Ref LogRetentionDays
-  CapabilityStatement:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: !Sub "${AWS::StackName}-CapabilityStatement"
-      CodeUri: ../packages
-      Handler: capabilityStatement.handler
-      Role: !GetAtt CapabilityStatementResources.Outputs.LambdaRoleArn
-      Events:
-        capabilityStatement:
-          Type: HttpApi
-          Properties:
-            ApiId: !Ref HttpApiGateway
-            Path: /metadata
-            Method: get
-    Metadata: # Manage esbuild properties
-      BuildMethod: esbuild
-      BuildProperties:
-        Minify: true
-        Target: "es2020"
-        Sourcemap: true
-        tsconfig: capabilityStatement/tsconfig.json
-        EntryPoints:
-          - capabilityStatement/src/capabilityStatement.ts
-
-  # _status endpoint lambda
+  # Status Lambda
   StatusLambdaResources:
     Type: AWS::Serverless::Application
     Properties:
@@ -217,8 +126,6 @@ Resources:
           VERSION_NUMBER: !Ref VersionNumber
           COMMIT_ID: !Ref CommitId
           AWS_LAMBDA_EXEC_WRAPPER: /opt/get-secrets-layer
-      Layers:
-        - !Ref GetSecretsLayer
       Events:
         status:
           Type: HttpApi
@@ -300,40 +207,6 @@ Resources:
           - ShouldUseMutualTLS
           - true
           - !Ref "AWS::NoValue"
-      AccessLogSettings:
-        DestinationArn: !GetAtt ApiGwAccessLogs.Arn
-        Format: "{ \
-          \"requestTime\": \"$context.requestTime\", \
-          \"apiId\": \"$context.apiId\", \
-          \"accountId\": \"$context.accountId\", \
-          \"resourcePath\": \"$context.resourcePath\", \
-          \"stage\": \"$context.stage\", \
-          \"requestId\": \"$context.requestId\", \
-          \"extendedRequestId\": \"$context.extendedRequestId\", \
-          \"status\": \"$context.status\", \
-          \"httpMethod\": \"$context.httpMethod\", \
-          \"protocol\": \"$context.protocol\", \
-          \"path\": \"$context.path\", \
-          \"responseLatency\": \"$context.responseLatency\", \
-          \"responseLength\": \"$context.responseLength\",
-          \"domainName\": \"$context.domainName\", \
-          \"identity\": { \
-          \"sourceIp\": \"$context.identity.sourceIp\", \
-          \"userAgent\": \"$context.identity.userAgent\", \
-          \"clientCert\":{ \
-          \"subjectDN\": \"$context.identity.clientCert.subjectDN\", \
-          \"issuerDN\": \"$context.identity.clientCert.issuerDN\", \
-          \"serialNumber\": \"$context.identity.clientCert.serialNumber\", \
-          \"validityNotBefore\": \"$context.identity.clientCert.validity.notBefore\", \
-          \"validityNotAfter\": \"$context.identity.clientCert.validity.notAfter\" \
-          }}, \
-          \"integration\":{ \
-          \"error\": \"$context.integration.error\", \
-          \"integrationStatus\": \"$context.integration.integrationStatus\", \
-          \"latency\": \"$context.integration.latency\", \
-          \"requestId\": \"$context.integration.requestId\", \
-          \"status\": \"$context.integration.status\" \
-          }}"
 
   ApiGwAccessLogs:
     Type: AWS::Logs::LogGroup
