@@ -52,9 +52,9 @@ on:
       CLOUD_FORMATION_DEPLOY_ROLE:
         required: true
       TARGET_SPINE_SERVER:
-        required: true
+        required: false
       TARGET_SERVICE_SEARCH_SERVER:
-        required: true
+        required: false
       DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE:
         required: false
       INT_CLOUD_FORMATION_CHECK_VERSION_ROLE:
