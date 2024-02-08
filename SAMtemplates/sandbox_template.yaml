@@ -15,19 +15,18 @@ Globals:
       Variables:
         NODE_OPTIONS: --enable-source-maps
         TargetSpineServer: !Ref TargetSpineServer
+        TargetServiceSearchServer: !Ref TargetServiceSearchServer
+    Layers:
+      - !Sub "arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:38"
 
 Parameters:
   TargetSpineServer:
     Type: String
     Description: TargetSpineServer
     Default: none
-  SplunkHECToken:
+  TargetServiceSearchServer:
     Type: String
-    Description: HEC Token for Cloudformation to Splunk Firehose
-    Default: none
-  SplunkHECEndpoint:
-    Type: String
-    Description: HEC Endpoint for Cloudformation to Splunk Firehose
+    Description: TargetServiceSearchServer
     Default: none
   TruststoreVersion:
     Type: String
@@ -85,15 +84,6 @@ Conditions:
   ShouldUseSplunk: !Equals [true, !Ref EnableSplunk]
 
 Resources:
-  SplunkFirehose:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location: splunk_firehose_resources.yaml
-      Parameters:
-        SplunkHECToken: !Ref SplunkHECToken
-        SplunkHECEndpoint: !Ref SplunkHECEndpoint
-        EnableSplunk: !Ref EnableSplunk
-        LogRetentionDays: !Ref LogRetentionDays
 
   # sandbox lambda
   SandboxResources:
@@ -101,9 +91,9 @@ Resources:
     Properties:
       Location: lambda_resources.yaml
       Parameters:
-        CloudWatchKMSKey: !GetAtt SplunkFirehose.Outputs.CloudWatchKMSKey
-        SplunkSubscriptionFilterRole: !GetAtt SplunkFirehose.Outputs.SplunkSubscriptionFilterRole
-        SplunkDeliveryStream: !GetAtt SplunkFirehose.Outputs.SplunkDeliveryStream
+        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        SplunkSubscriptionFilterRole: !ImportValue lambda-resources:SplunkSubscriptionFilterRole
+        SplunkDeliveryStream: !ImportValue lambda-resources:SplunkDeliveryStream
         EnableSplunk: !Ref EnableSplunk
         LambdaName: !Sub "${AWS::StackName}-Sandbox"
         LogRetentionDays: !Ref LogRetentionDays
@@ -131,51 +121,15 @@ Resources:
         EntryPoints:
           - sandbox/src/sandbox.ts
 
-  # capabilityStatement lambda
-  CapabilityStatementResources:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location: lambda_resources.yaml
-      Parameters:
-        CloudWatchKMSKey: !GetAtt SplunkFirehose.Outputs.CloudWatchKMSKey
-        SplunkSubscriptionFilterRole: !GetAtt SplunkFirehose.Outputs.SplunkSubscriptionFilterRole
-        SplunkDeliveryStream: !GetAtt SplunkFirehose.Outputs.SplunkDeliveryStream
-        EnableSplunk: !Ref EnableSplunk
-        LambdaName: !Sub "${AWS::StackName}-CapabilityStatement"
-        LogRetentionDays: !Ref LogRetentionDays
-  CapabilityStatement:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: !Sub "${AWS::StackName}-CapabilityStatement"
-      CodeUri: ../packages
-      Handler: capabilityStatement.handler
-      Role: !GetAtt CapabilityStatementResources.Outputs.LambdaRoleArn
-      Events:
-        capabilityStatement:
-          Type: HttpApi
-          Properties:
-            ApiId: !Ref HttpApiGateway
-            Path: /metadata
-            Method: get
-    Metadata: # Manage esbuild properties
-      BuildMethod: esbuild
-      BuildProperties:
-        Minify: true
-        Target: "es2020"
-        Sourcemap: true
-        tsconfig: capabilityStatement/tsconfig.json
-        EntryPoints:
-          - capabilityStatement/src/capabilityStatement.ts
-
   # _status endpoint lambda
   StatusLambdaResources:
     Type: AWS::Serverless::Application
     Properties:
       Location: lambda_resources.yaml
       Parameters:
-        CloudWatchKMSKey: !GetAtt SplunkFirehose.Outputs.CloudWatchKMSKey
-        SplunkSubscriptionFilterRole: !GetAtt SplunkFirehose.Outputs.SplunkSubscriptionFilterRole
-        SplunkDeliveryStream: !GetAtt SplunkFirehose.Outputs.SplunkDeliveryStream
+        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        SplunkSubscriptionFilterRole: !ImportValue lambda-resources:SplunkSubscriptionFilterRole
+        SplunkDeliveryStream: !ImportValue lambda-resources:SplunkDeliveryStream
         EnableSplunk: !Ref EnableSplunk
         LambdaName: !Sub "${AWS::StackName}-statusLambda"
         LogRetentionDays: !Ref LogRetentionDays
@@ -319,7 +273,7 @@ Resources:
     Condition: ShouldUseSplunk
     Type: AWS::Logs::SubscriptionFilter
     Properties:
-      RoleArn: !GetAtt SplunkFirehose.Outputs.SplunkSubscriptionFilterRole
+      RoleArn: !ImportValue lambda-resources:SplunkSubscriptionFilterRole
       LogGroupName: !Ref ApiGwAccessLogs
       FilterPattern: "" # All logs
-      DestinationArn: !GetAtt SplunkFirehose.Outputs.SplunkDeliveryStream
+      DestinationArn: !ImportValue lambda-resources:SplunkDeliveryStream

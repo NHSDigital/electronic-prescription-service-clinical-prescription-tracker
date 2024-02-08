@@ -4,8 +4,7 @@
   "files": [],
   // Building this project will build all of the following:
   "references": [
-    { "path": "packages/spineClient" },
-    { "path": "packages/middleware" },
+    { "path": "packages/sandbox" },
     { "path": "packages/statusLambda" },
     { "path": "packages/common/testing" }
   ]

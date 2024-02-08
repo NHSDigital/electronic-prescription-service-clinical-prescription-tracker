@@ -1,18 +1,22 @@
 {
   "root": true,
   "env": {
-    "node": true,
-    "es6": true,
-    "jest": true,
+    "node": true
   },
   "ignorePatterns": ["**/lib/*"],
-  "parserOptions": {
-    "ecmaVersion": "latest",
-    "sourceType": "module"
-  },
-  "plugins": ["import-newlines"],
-  "extends": ["eslint:recommended"],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint", "import-newlines"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
   "rules": {
+    "@typescript-eslint/array-type": ["error", {"default": "generic"}],
+    "@typescript-eslint/consistent-type-assertions": [
+      "error",
+      {"assertionStyle": "as", "objectLiteralTypeAssertions": "never"}
+    ],
     "block-spacing": "error",
     "brace-style": ["error", "1tbs"],
     "comma-dangle": ["error", "never"],

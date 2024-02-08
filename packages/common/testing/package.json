@@ -1,7 +1,7 @@
 {
-    "name": "@electronic-prescription-service-clinical-prescription-tracker_common/testing",
+    "name": "@prescriptionsforpatients_common/testing",
     "version": "1.0.0",
-    "description": "Common resources for testing electronic-prescription-service-clinical-prescription-tracker",
+    "description": "Common resources for testing prescriptionsforpatients",
     "author": "NHS Digital",
     "license": "MIT",
     "main": "lib/src/index.js",

@@ -4,6 +4,7 @@
     "rootDir": ".",
     "outDir": "lib"
   },
-  "include": ["src/**/*", "tests/**/*"],
+  "references": [{"path": "../common/testing"}],
+  "include": ["src/**/*", "tests/**/*", "examples/GetMyPrescriptions/Bundle/success.json"],
   "exclude": ["node_modules"]
 }

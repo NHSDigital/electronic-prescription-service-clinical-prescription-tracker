@@ -3,23 +3,22 @@ import {Logger, injectLambdaContext} from "@aws-lambda-powertools/logger"
 import middy from "@middy/core"
 import inputOutputLogger from "@middy/input-output-logger"
 import errorHandler from "@nhs/fhir-middy-error-handler"
-import {createSpineClient} from "@nhsdigital/eps-spine-client"
+import successData from "../examples/GetMyPrescriptions/Bundle/success.json"
 
-const logger = new Logger({serviceName: "status"})
+const logger = new Logger({serviceName: "sandbox"})
 
 /* eslint-disable  max-len */
 
 /**
  *
  * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
- * @param {Object} _event - API Gateway Lambda Proxy Input Format
+ * @param {Object} event - API Gateway Lambda Proxy Input Format
  *
  * Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
  * @returns {Object} object - API Gateway Lambda Proxy Output Format
  *
  */
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   logger.appendKeys({
     "nhsd-correlation-id": event.headers["nhsd-correlation-id"],
@@ -28,20 +27,11 @@ const lambdaHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPro
     "x-correlation-id": event.headers["x-correlation-id"],
     "apigw-request-id": event.requestContext.requestId
   })
-
-  const commitId = process.env.COMMIT_ID
-  const versionNumber = process.env.VERSION_NUMBER
-
-  const spineClient = createSpineClient(logger)
-  const spineStatus = await spineClient.getStatus()
-
-  const statusBody = {...spineStatus, commitId: commitId, versionNumber: versionNumber}
-
   return {
     statusCode: 200,
-    body: JSON.stringify(statusBody),
+    body: JSON.stringify(successData),
     headers: {
-      "Content-Type": "application/health+json",
+      "Content-Type": "application/fhir+json",
       "Cache-Control": "no-cache"
     }
   }

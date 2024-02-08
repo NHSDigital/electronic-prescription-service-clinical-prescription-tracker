@@ -3,10 +3,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "outDir": "lib",
-    "esModuleInterop": true,
-    "paths": {
-      "@electronic-prescription-service-clinical-prescription-tracker_common/testing": ["./src"]
-    }
+    "esModuleInterop": true
   },
   "include": ["src/**/*", "src/**/*.json"],
   "exclude": ["node_modules"]

@@ -108,6 +108,7 @@ download-get-secrets-layer:
 	curl -LJ https://github.com/NHSDigital/electronic-prescription-service-get-secrets/releases/download/v1.0.40-alpha/get-secrets-layer.zip -o packages/getSecretLayer/lib/get-secrets-layer.zip
 
 lint-node: compile-node
+	npm run lint --workspace packages/sandbox
 	npm run lint --workspace packages/statusLambda
 	npm run lint --workspace packages/common/testing
 
@@ -126,12 +127,15 @@ lint-githubaction-scripts:
 lint: lint-node lint-samtemplates lint-python lint-githubactions lint-githubaction-scripts
 
 test: compile
+	npm run test --workspace packages/sandbox
 	npm run test --workspace packages/statusLambda
 	npm run test --workspace packages/spineClient
 
 clean:
+	rm -rf packages/sandbox/coverage
 	rm -rf packages/statusLambda/coverage
 	rm -rf packages/common/testing/coverage
+	rm -rf packages/sandbox/lib
 	rm -rf packages/statusLambda/lib
 	rm -rf packages/common/testing/lib
 	rm -rf .aws-sam
@@ -144,6 +148,7 @@ check-licenses: check-licenses-node check-licenses-python
 
 check-licenses-node:
 	npm run check-licenses
+	npm run check-licenses --workspace packages/sandbox
 	npm run check-licenses --workspace packages/statusLambda
 
 check-licenses-python:

@@ -10,7 +10,7 @@ import {ContextExamples} from "@aws-lambda-powertools/commons"
 import {Logger} from "@aws-lambda-powertools/logger"
 import MockAdapter from "axios-mock-adapter"
 import axios from "axios"
-import {mockAPIGatewayProxyEvent} from "@electronic-prescription-service-clinical-prescription-tracker_common/testing"
+import {mockAPIGatewayProxyEvent} from "@prescriptionsforpatients_common/testing"
 
 const mock = new MockAdapter(axios)
 
@@ -83,7 +83,7 @@ describe("Unit test for status check", function () {
     })
   })
 
-  it("checks if the certificate is always configured for the sandbox", async () => {
+  it("checks if the certificate is always configured for the Spine sandbox", async () => {
     process.env.TargetSpineServer = "sandbox"
     process.env.SpinePublicCertificate = "ChangeMe"
     process.env.SpinePrivateKey = "ChangeMe"

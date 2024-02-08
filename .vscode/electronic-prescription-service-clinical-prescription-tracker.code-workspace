@@ -9,8 +9,8 @@
 			"path": "../packages/common"
 		},
 		{
-			"name": "packages/middleware",
-			"path": "../packages/middleware"
+			"name": "packages/sandbox",
+			"path": "../packages/sandbox"
 		},
 		{
 			"name": "packages/statusLambda",
