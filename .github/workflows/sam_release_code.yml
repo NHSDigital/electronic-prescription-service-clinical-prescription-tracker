@@ -119,7 +119,6 @@ jobs:
           stack_name: ${{ inputs.STACK_NAME }}
           TARGET_ENVIRONMENT: ${{ inputs.TARGET_ENVIRONMENT }}
           target_service_search_server: ${{ secrets.TARGET_SERVICE_SEARCH_SERVER }}
-          target_spine_server: ${{ secrets.TARGET_SPINE_SERVER }}
           template_file: template.yaml
           TRUSTSTORE_FILE: ${{ inputs.TRUSTSTORE_FILE }}
           VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}
