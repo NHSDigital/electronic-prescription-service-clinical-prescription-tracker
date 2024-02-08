@@ -123,7 +123,10 @@ jobs:
           template_file: template.yaml
           TRUSTSTORE_FILE: ${{ inputs.TRUSTSTORE_FILE }}
           VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}
-        run: ./release_code.sh
+        run: |
+          echo "Target Service Search Server: $target_service_search_server"
+          echo "Target Spine Server: $target_spine_server"
+          ./release_code.sh
 
       - name: create_int_release_notes
         uses: ./.github/actions/update_confluence_jira
