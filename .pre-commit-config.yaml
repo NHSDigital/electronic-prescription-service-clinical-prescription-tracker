@@ -23,33 +23,6 @@ repos:
 
   - repo: local
     hooks:
-      - id: lint-getMyPrescriptions
-        name: Lint getMyPrescriptions
-        entry: npm
-        args: ["run", "--prefix=packages/getMyPrescriptions", "lint"]
-        language: system
-        files: ^packages\/getMyPrescriptions
-        types_or: [ts, tsx, javascript, jsx, json]
-        pass_filenames: false
-
-      - id: lint-splunkProcessor
-        name: Lint Splunk Processor
-        entry: npm
-        args: ["run", "--prefix=packages/splunkProcessor", "lint"]
-        language: system
-        files: ^packages\/splunkProcessor
-        types_or: [ts, tsx, javascript, jsx, json]
-        pass_filenames: false
-
-      - id: lint-middleware
-        name: Lint Middleware
-        entry: npm
-        args: ["run", "--prefix=packages/middleware", "lint"]
-        language: system
-        files: ^packages\/middleware
-        types_or: [ts, tsx, javascript, jsx, json]
-        pass_filenames: false
-
       - id: lint-statusLambda
         name: Lint statusLambda
         entry: npm
@@ -59,30 +32,12 @@ repos:
         types_or: [ts, tsx, javascript, jsx, json]
         pass_filenames: false
 
-      - id: lint-capabilityStatement
-        name: Lint capabilityStatement
-        entry: npm
-        args: ["run", "--prefix=packages/capabilityStatement", "lint"]
-        language: system
-        files: ^packages\/capabilityStatement
-        types_or: [ts, tsx, javascript, jsx, json]
-        pass_filenames: false
-
       - id: lint-sandbox
         name: Lint sandbox
         entry: npm
         args: ["run", "--prefix=packages/sandbox", "lint"]
         language: system
         files: ^packages\/sandbox
-        types_or: [ts, tsx, javascript, jsx, json]
-        pass_filenames: false
-
-      - id: lint-spineClient
-        name: Lint spineClient
-        entry: npm
-        args: ["run", "--prefix=packages/spineClient", "lint"]
-        language: system
-        files: ^packages\/spineClient
         types_or: [ts, tsx, javascript, jsx, json]
         pass_filenames: false
 
@@ -111,12 +66,30 @@ repos:
         files: ^cloudformation
         pass_filenames: false
 
-      - id: lint-samtemplatess
+      - id: lint-samtemplates
         name: Lint sam templates
         entry: make
         args: ["lint-samtemplates"]
         language: system
         files: ^SAMtemplates
+        pass_filenames: false
+
+      - id: lint-githubactions
+        name: Lint github actions
+        entry: make
+        args: ["lint-githubactions"]
+        language: system
+        files: ^.github
+        types_or: [yaml]
+        pass_filenames: false
+
+      - id: lint-githubaction-scripts
+        name: Lint github action scripts
+        entry: make
+        args: ["lint-githubaction-scripts"]
+        language: system
+        files: ^.github/scripts
+        types_or: [sh, shell]
         pass_filenames: false
 
 fail_fast: true

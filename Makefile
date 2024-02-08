@@ -17,32 +17,40 @@ install-python:
 install-hooks: install-python
 	poetry run pre-commit install --install-hooks --overwrite
 
-sam-build: sam-validate compile
+sam-build: sam-validate compile download-get-secrets-layer
 	sam build --template-file SAMtemplates/main_template.yaml --region eu-west-2
 
-sam-build-sandbox: sam-validate-sandbox compile
+sam-build-sandbox: sam-validate-sandbox compile download-get-secrets-layer
 	sam build --template-file SAMtemplates/sandbox_template.yaml --region eu-west-2
 
 sam-run-local: sam-build
 	sam local start-api
 
-sam-sync: guard-AWS_DEFAULT_PROFILE guard-stack_name compile
+sam-sync: guard-AWS_DEFAULT_PROFILE guard-stack_name compile download-get-secrets-layer
 	sam sync \
 		--stack-name $$stack_name \
 		--watch \
 		--template-file SAMtemplates/main_template.yaml \
-		--parameter-overrides
+		--parameter-overrides \
+			  EnableSplunk=false\
+			  TargetSpineServer=$$TARGET_SPINE_SERVER \
+			  TargetServiceSearchServer=$$TARGET_SERVICE_SEARCH_SERVER
 
-sam-sync-sandbox: guard-stack_name compile
+sam-sync-sandbox: guard-stack_name compile download-get-secrets-layer
 	sam sync \
 		--stack-name $$stack_name-sandbox \
 		--watch \
 		--template-file SAMtemplates/sandbox_template.yaml \
-		--parameter-overrides
+		--parameter-overrides \
+			  EnableSplunk=false
 
 sam-deploy: guard-AWS_DEFAULT_PROFILE guard-stack_name
 	sam deploy \
-		--stack-name $$stack_name
+		--stack-name $$stack_name \
+		--parameter-overrides \
+			  EnableSplunk=false \
+			  TargetSpineServer=$$TARGET_SPINE_SERVER \
+			  TargetServiceSearchServer=$$TARGET_SERVICE_SEARCH_SERVER
 
 sam-delete: guard-AWS_DEFAULT_PROFILE guard-stack_name
 	sam delete --stack-name $$stack_name
@@ -64,7 +72,7 @@ sam-validate-sandbox:
 	sam validate --template-file SAMtemplates/sandbox_template.yaml --region eu-west-2
 	sam validate --template-file SAMtemplates/lambda_resources.yaml --region eu-west-2
 
-sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-stack_name guard-template_file guard-cloud_formation_execution_role guard-LATEST_TRUSTSTORE_VERSION guard-enable_mutual_tls guard-SPLUNK_HEC_TOKEN guard-SPLUNK_HEC_ENDPOINT guard-VERSION_NUMBER guard-COMMIT_ID guard-LOG_LEVEL guard-LOG_RETENTION_DAYS guard-TARGET_ENVIRONMENT
+sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-stack_name guard-template_file guard-cloud_formation_execution_role guard-LATEST_TRUSTSTORE_VERSION guard-enable_mutual_tls guard-VERSION_NUMBER guard-COMMIT_ID guard-LOG_LEVEL guard-LOG_RETENTION_DAYS guard-TARGET_ENVIRONMENT guard-target_spine_server guard-target_service_search_server
 	sam deploy \
 		--template-file $$template_file \
 		--stack-name $$stack_name \
@@ -79,11 +87,10 @@ sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-sta
 		--force-upload \
 		--tags "version=$$VERSION_NUMBER" \
 		--parameter-overrides \
-			  SplunkHECToken=$$SPLUNK_HEC_TOKEN \
-			  SplunkHECEndpoint=$$SPLUNK_HEC_ENDPOINT \
 			  TruststoreVersion=$$LATEST_TRUSTSTORE_VERSION \
 			  EnableMutualTLS=$$enable_mutual_tls \
 			  TargetSpineServer=$$target_spine_server \
+			  TargetServiceSearchServer=$$target_service_search_server \
 			  EnableSplunk=true \
 			  VersionNumber=$$VERSION_NUMBER \
 			  CommitId=$$COMMIT_ID \
@@ -96,14 +103,13 @@ compile-node:
 
 compile: compile-node
 
-lint-node: compile-node
-	npm run lint --workspace packages/middleware
-	npm run lint --workspace packages/statusLambda
-	npm run lint --workspace packages/spineClient
-	npm run lint --workspace packages/common/testing
+download-get-secrets-layer:
+	mkdir -p packages/getSecretLayer/lib
+	curl -LJ https://github.com/NHSDigital/electronic-prescription-service-get-secrets/releases/download/v1.0.40-alpha/get-secrets-layer.zip -o packages/getSecretLayer/lib/get-secrets-layer.zip
 
-lint-cloudformation:
-	poetry run cfn-lint -t cloudformation/*.yml
+lint-node: compile-node
+	npm run lint --workspace packages/statusLambda
+	npm run lint --workspace packages/common/testing
 
 lint-samtemplates:
 	poetry run cfn-lint -t SAMtemplates/*.yaml
@@ -114,20 +120,19 @@ lint-python:
 lint-githubactions:
 	actionlint
 
-lint: lint-node lint-cloudformation lint-samtemplates lint-python
+lint-githubaction-scripts:
+	shellcheck .github/scripts/*.sh
+
+lint: lint-node lint-samtemplates lint-python lint-githubactions lint-githubaction-scripts
 
 test: compile
-	npm run test --workspace packages/middleware
 	npm run test --workspace packages/statusLambda
 	npm run test --workspace packages/spineClient
 
 clean:
-	rm -rf packages/middleware/coverage
-	rm -rf packages/spineClient/coverage
 	rm -rf packages/statusLambda/coverage
 	rm -rf packages/common/testing/coverage
-	rm -rf packages/middleware/lib
-	rm -rf packages/spineClient/lib
+	rm -rf packages/statusLambda/lib
 	rm -rf packages/common/testing/lib
 	rm -rf .aws-sam
 
@@ -139,9 +144,7 @@ check-licenses: check-licenses-node check-licenses-python
 
 check-licenses-node:
 	npm run check-licenses
-	npm run check-licenses --workspace packages/middleware
 	npm run check-licenses --workspace packages/statusLambda
-	npm run check-licenses --workspace packages/spineClient
 
 check-licenses-python:
 	scripts/check_python_licenses.sh
