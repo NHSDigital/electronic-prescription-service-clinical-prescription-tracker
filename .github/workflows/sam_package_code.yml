@@ -9,6 +9,7 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      packages: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -22,7 +23,7 @@ jobs:
           asdf_branch: v0.11.3
   
       - name: Cache asdf
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.asdf
@@ -35,8 +36,16 @@ jobs:
         with:
           asdf_branch: v0.11.3
         env:
-          PYTHON_CONFIGURE_OPTS: --enable-shared 
-  
+          PYTHON_CONFIGURE_OPTS: --enable-shared
+
+      - name: Install eps-spine-client package
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> ~/.npmrc
+          echo "@nhsdigital:registry=https://npm.pkg.github.com" >> ~/.npmrc
+          npm install @nhsdigital/eps-spine-client
+
       - name: make install
         run: |
           make install
@@ -48,11 +57,10 @@ jobs:
           rm -rf .aws-sam
           export PATH=$PATH:$PWD/node_modules/.bin
           make sam-build
-          make compile-go
           cp Makefile .aws-sam/build/
           cp samconfig_package_and_deploy.toml .aws-sam/build/
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         name: upload build artifact
         with:
           name: packaged_code
@@ -67,11 +75,10 @@ jobs:
           rm -rf .aws-sam
           export PATH=$PATH:$PWD/node_modules/.bin
           make sam-build-sandbox
-          make compile-go
           cp Makefile .aws-sam/build/
           cp samconfig_package_and_deploy.toml .aws-sam/build/
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         name: upload sandbox build artifact
         with:
           name: packaged_sandbox_code
