@@ -99,42 +99,6 @@ Resources:
       ContentUri: ../packages/getSecretLayer/lib/get-secrets-layer.zip
       RetentionPolicy: Retain
 
-  # capabilityStatement lambda
-  CapabilityStatementResources:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location: lambda_resources.yaml
-      Parameters:
-        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
-        SplunkSubscriptionFilterRole: !ImportValue lambda-resources:SplunkSubscriptionFilterRole
-        SplunkDeliveryStream: !ImportValue lambda-resources:SplunkDeliveryStream
-        EnableSplunk: !Ref EnableSplunk
-        LambdaName: !Sub "${AWS::StackName}-CapabilityStatement"
-        LogRetentionDays: !Ref LogRetentionDays
-  CapabilityStatement:
-    Type: AWS::Serverless::Function
-    Properties:
-      FunctionName: !Sub "${AWS::StackName}-CapabilityStatement"
-      CodeUri: ../packages
-      Handler: capabilityStatement.handler
-      Role: !GetAtt CapabilityStatementResources.Outputs.LambdaRoleArn
-      Events:
-        capabilityStatement:
-          Type: HttpApi
-          Properties:
-            ApiId: !Ref HttpApiGateway
-            Path: /metadata
-            Method: get
-    Metadata: # Manage esbuild properties
-      BuildMethod: esbuild
-      BuildProperties:
-        Minify: true
-        Target: "es2020"
-        Sourcemap: true
-        tsconfig: capabilityStatement/tsconfig.json
-        EntryPoints:
-          - capabilityStatement/src/capabilityStatement.ts
-
   # _status endpoint lambda
   StatusLambdaResources:
     Type: AWS::Serverless::Application
