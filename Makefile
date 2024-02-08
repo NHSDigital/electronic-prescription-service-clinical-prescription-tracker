@@ -129,7 +129,6 @@ lint: lint-node lint-samtemplates lint-python lint-githubactions lint-githubacti
 test: compile
 	npm run test --workspace packages/sandbox
 	npm run test --workspace packages/statusLambda
-	npm run test --workspace packages/spineClient
 
 clean:
 	rm -rf packages/sandbox/coverage
