@@ -4,11 +4,11 @@ cat <<EOF > payload.json
 { 
   "currentTag": "$CURRENT_DEPLOYED_TAG",
   "targetTag": "$DEV_TAG",
-  "repoName": "prescriptionsforpatients",
+  "repoName": "electronic-prescription-service-clinical-prescription-tracker",
   "targetEnvironment": "$ENV",
-  "productName": "Prescriptions for Patients AWS layer",
+  "productName": "Clinical Tracker",
   "releaseNotesPageId": "$PAGE_ID",
-  "releaseNotesPageTitle": "Current PfP AWS layer release notes - $ENV"
+  "releaseNotesPageTitle": "Current Clinical Tracker release notes - $ENV"
 }
 EOF
 cat payload.json

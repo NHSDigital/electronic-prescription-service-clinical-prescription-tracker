@@ -4,13 +4,13 @@ cat <<EOF > payload.json
 { 
   "currentTag": "$CURRENT_DEPLOYED_TAG",
   "targetTag": "$RELEASE_TAG",
-  "repoName": "prescriptionsforpatients",
+  "repoName": "electronic-prescription-service-clinical-prescription-tracker",
   "targetEnvironment": "INT",
-  "productName": "Prescriptions for Patients AWS layer",
+  "productName": "Clinical Tracker",
   "releaseNotesPageId": "$PAGE_ID",
-  "releaseNotesPageTitle": "PfP-AWS-$RELEASE_TAG - Deployed to [INT] on $(date +'%d-%m-%y')",
+  "releaseNotesPageTitle": "Clinical-Tracker-$RELEASE_TAG - Deployed to [INT] on $(date +'%d-%m-%y')",
   "createReleaseCandidate": "true",
-  "releasePrefix": "PfP-AWS-"
+  "releasePrefix": "Clinical-Tracker-"
 }
 EOF
 cat payload.json

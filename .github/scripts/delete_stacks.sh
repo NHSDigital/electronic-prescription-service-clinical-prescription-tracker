@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ACTIVE_STACKS=$(aws cloudformation list-stacks | jq -r '.StackSummaries[] | select ( .StackStatus != "DELETE_COMPLETE" ) | select( .StackName | capture("^pr-(sandbox-)?(\\d+)$") ) | .StackName ')
+ACTIVE_STACKS=$(aws cloudformation list-stacks | jq -r '.StackSummaries[] | select ( .StackStatus != "DELETE_COMPLETE" ) | select( .StackName | capture("^clinical-tracker-pr-(sandbox-)?(\\d+)$") ) | .StackName ')
 
 mapfile -t ACTIVE_STACKS_ARRAY <<< "$ACTIVE_STACKS"
 
@@ -10,7 +10,7 @@ do
   PULL_REQUEST=${i//pr-/}
   PULL_REQUEST=${PULL_REQUEST//sandbox-/}
   echo "Checking pull request id ${PULL_REQUEST}"
-  URL="https://api.github.com/repos/NHSDigital/prescriptionsforpatients/pulls/${PULL_REQUEST}"
+  URL="https://api.github.com/repos/NHSDigital/electronic-prescription-service-clinical-prescription-tracker/pulls/${PULL_REQUEST}"
   RESPONSE=$(curl "${URL}" 2>/dev/null)
   STATE=$(echo "${RESPONSE}" | jq -r .state)
   if [ "$STATE" == "closed" ]; then
