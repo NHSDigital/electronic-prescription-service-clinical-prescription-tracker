@@ -165,15 +165,15 @@ Resources:
         Fn::Join:
           - "."
           - - !Ref "AWS::StackName"
-            - Fn::ImportValue: route53-resources:domain
+            - Fn::ImportValue: eps-route53-resources:EPS-domain
       DomainValidationOptions:
         - DomainName:
             Fn::Join:
               - "."
               - - !Ref "AWS::StackName"
-                - Fn::ImportValue: route53-resources:domain
+                - Fn::ImportValue: eps-route53-resources:EPS-domain
           HostedZoneId:
-            Fn::ImportValue: route53-resources:ZoneID
+            Fn::ImportValue: eps-route53-resources:EPS-ZoneID
 
   # Http api
   HttpApiGateway:
@@ -185,11 +185,11 @@ Resources:
           Fn::Join:
             - "."
             - - !Ref "AWS::StackName"
-              - Fn::ImportValue: route53-resources:domain
+              - Fn::ImportValue: eps-route53-resources:EPS-domain
         CertificateArn: !Ref GenerateCertificate
         Route53:
           HostedZoneId:
-            Fn::ImportValue: route53-resources:ZoneID
+            Fn::ImportValue: eps-route53-resources:EPS-ZoneID
         EndpointConfiguration: REGIONAL
         SecurityPolicy: TLS_1_2
         MutualTlsAuthentication:
