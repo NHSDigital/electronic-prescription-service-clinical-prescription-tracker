@@ -20,6 +20,6 @@
     "@nhs/fhir-middy-error-handler": "^1.0.2"
   },
   "devDependencies": {
-    "@prescriptionsforpatients_common/testing": "^1.0.0"
+    "@clinicaltracker_common/testing": "^1.0.0"
   }
 }

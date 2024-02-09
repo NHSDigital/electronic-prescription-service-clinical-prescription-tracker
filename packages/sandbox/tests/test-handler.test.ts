@@ -3,7 +3,7 @@ import {handler} from "../src/sandbox"
 import {expect, describe, it} from "@jest/globals"
 import {ContextExamples} from "@aws-lambda-powertools/commons"
 import successData from "../examples/GetMyPrescriptions/Bundle/success.json"
-import {mockAPIGatewayProxyEvent, test_append_trace_ids, test_mime_type} from "@prescriptionsforpatients_common/testing"
+import {mockAPIGatewayProxyEvent, test_append_trace_ids, test_mime_type} from "@clinicaltracker_common/testing"
 
 const dummyContext = ContextExamples.helloworldContext
 const mockEvent: APIGatewayProxyEvent = mockAPIGatewayProxyEvent

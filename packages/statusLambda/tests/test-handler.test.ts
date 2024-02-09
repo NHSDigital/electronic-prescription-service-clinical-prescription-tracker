@@ -10,7 +10,7 @@ import {ContextExamples} from "@aws-lambda-powertools/commons"
 import {Logger} from "@aws-lambda-powertools/logger"
 import MockAdapter from "axios-mock-adapter"
 import axios from "axios"
-import {mockAPIGatewayProxyEvent} from "@prescriptionsforpatients_common/testing"
+import {mockAPIGatewayProxyEvent} from "@clinicaltracker_common/testing"
 
 const mock = new MockAdapter(axios)
 

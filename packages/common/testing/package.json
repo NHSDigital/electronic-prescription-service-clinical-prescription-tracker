@@ -1,7 +1,7 @@
 {
-    "name": "@prescriptionsforpatients_common/testing",
+    "name": "@clinicaltracker_common/testing",
     "version": "1.0.0",
-    "description": "Common resources for testing prescriptionsforpatients",
+    "description": "Common resources for testing clinical tracker",
     "author": "NHS Digital",
     "license": "MIT",
     "main": "lib/src/index.js",
