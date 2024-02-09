@@ -110,7 +110,7 @@ jobs:
         shell: bash
         working-directory: .github/scripts
         env:
-          artifact_bucket_prefix: prescriptions_for_patients/${{ inputs.ARTIFACT_BUCKET_PREFIX }}
+          artifact_bucket_prefix: clinical-tracker/${{ inputs.ARTIFACT_BUCKET_PREFIX }}
           COMMIT_ID: ${{ inputs.COMMIT_ID }}
           deploy_sandbox: ${{ inputs.DEPLOY_SANDBOX }}
           enable_mutual_tls: ${{ inputs.ENABLE_MUTUAL_TLS }}
@@ -124,8 +124,6 @@ jobs:
           TRUSTSTORE_FILE: ${{ inputs.TRUSTSTORE_FILE }}
           VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}
         run: |
-          echo "Target Service Search Server: $target_service_search_server"
-          echo "Target Spine Server: $target_spine_server"
           ./release_code.sh
 
       - name: create_int_release_notes
