@@ -36,13 +36,13 @@ readonly CERT_VALIDITY_DAYS="365"
 
 # CA config
 readonly CA_NAME="ca"
-readonly CA_CERTIFICATE_SUBJECT="/C=GB/ST=Leeds/L=Leeds/O=nhs/OU=prescriptions for patients private CA/CN=prescriptions for patients Private CA $(date +%Y%m%d_%H%M%S)"
+readonly CA_CERTIFICATE_SUBJECT="/C=GB/ST=Leeds/L=Leeds/O=nhs/OU=clinical tracker private CA/CN=clinical tracker private CA $(date +%Y%m%d_%H%M%S)"
 
 readonly CERT_PREFIX="${environment}-"
 readonly CERT_PREFIX_CI="ci"
 readonly CERT_PREFIX_SANDBOX="sandbox"
 
-readonly CLIENT_CERT_SUBJECT_PREFIX="/C=GB/ST=Leeds/L=Leeds/O=nhs/OU=prescriptions for patients private CA/CN=client-cert-"
+readonly CLIENT_CERT_SUBJECT_PREFIX="/C=GB/ST=Leeds/L=Leeds/O=nhs/OU=clinical tracker private CA/CN=client-cert-"
 
 # v3 extensions
 readonly V3_EXT="$BASE_DIR/v3.ext"
