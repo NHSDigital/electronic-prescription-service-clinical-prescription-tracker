@@ -155,7 +155,7 @@ Resources:
               - - !Ref "AWS::StackName"
                 - Fn::ImportValue: eps-route53-resources:domain
           HostedZoneId:
-            Fn::ImportValue: route53-resources:ZoneID
+            Fn::ImportValue: eps-route53-resources:ZoneID
 
   # Http api
   HttpApiGateway:
