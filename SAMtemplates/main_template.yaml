@@ -14,7 +14,6 @@ Globals:
     Environment:
       Variables:
         TargetSpineServer: !Ref TargetSpineServer
-        TargetServiceSearchServer: !Ref TargetServiceSearchServer
         NODE_OPTIONS: --enable-source-maps
         SpinePrivateKeyARN: !ImportValue account-resources:SpinePrivateKey
         SpinePublicCertificateARN: !ImportValue account-resources:SpinePublicCertificate
@@ -29,10 +28,6 @@ Parameters:
   TargetSpineServer:
     Type: String
     Description: TargetSpineServer
-    Default: none
-  TargetServiceSearchServer:
-    Type: String
-    Description: TargetServiceSearchServer
     Default: none
   TruststoreVersion:
     Type: String

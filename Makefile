@@ -34,7 +34,6 @@ sam-sync: guard-AWS_DEFAULT_PROFILE guard-stack_name compile download-get-secret
 		--parameter-overrides \
 			  EnableSplunk=false\
 			  TargetSpineServer=$$TARGET_SPINE_SERVER \
-			  TargetServiceSearchServer=$$TARGET_SERVICE_SEARCH_SERVER
 
 sam-sync-sandbox: guard-stack_name compile download-get-secrets-layer
 	sam sync \
@@ -50,7 +49,6 @@ sam-deploy: guard-AWS_DEFAULT_PROFILE guard-stack_name
 		--parameter-overrides \
 			  EnableSplunk=false \
 			  TargetSpineServer=$$TARGET_SPINE_SERVER \
-			  TargetServiceSearchServer=$$TARGET_SERVICE_SEARCH_SERVER
 
 sam-delete: guard-AWS_DEFAULT_PROFILE guard-stack_name
 	sam delete --stack-name $$stack_name
@@ -72,7 +70,7 @@ sam-validate-sandbox:
 	sam validate --template-file SAMtemplates/sandbox_template.yaml --region eu-west-2
 	sam validate --template-file SAMtemplates/lambda_resources.yaml --region eu-west-2
 
-sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-stack_name guard-template_file guard-cloud_formation_execution_role guard-LATEST_TRUSTSTORE_VERSION guard-enable_mutual_tls guard-VERSION_NUMBER guard-COMMIT_ID guard-LOG_LEVEL guard-LOG_RETENTION_DAYS guard-TARGET_ENVIRONMENT guard-target_spine_server guard-target_service_search_server
+sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-stack_name guard-template_file guard-cloud_formation_execution_role guard-LATEST_TRUSTSTORE_VERSION guard-enable_mutual_tls guard-VERSION_NUMBER guard-COMMIT_ID guard-LOG_LEVEL guard-LOG_RETENTION_DAYS guard-TARGET_ENVIRONMENT guard-target_spine_server
 	sam deploy \
 		--template-file $$template_file \
 		--stack-name $$stack_name \
@@ -90,7 +88,6 @@ sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-sta
 			  TruststoreVersion=$$LATEST_TRUSTSTORE_VERSION \
 			  EnableMutualTLS=$$enable_mutual_tls \
 			  TargetSpineServer=$$target_spine_server \
-			  TargetServiceSearchServer=$$target_service_search_server \
 			  EnableSplunk=true \
 			  VersionNumber=$$VERSION_NUMBER \
 			  CommitId=$$COMMIT_ID \
