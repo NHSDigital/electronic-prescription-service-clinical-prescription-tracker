@@ -104,7 +104,7 @@ jobs:
     uses: ./.github/workflows/sam_release_code.yml
     with:
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.spec_version}}
-      STACK_NAME: dev-ci
+      STACK_NAME: clinical-tracker
       TARGET_ENVIRONMENT: dev
       ENABLE_MUTUAL_TLS: true
       DEPLOY_SANDBOX: false
@@ -129,7 +129,7 @@ jobs:
     uses: ./.github/workflows/sam_release_code.yml
     with:
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.spec_version}}
-      STACK_NAME: dev-sandbox
+      STACK_NAME: sandbox-clinical-tracker
       TARGET_ENVIRONMENT: dev
       ENABLE_MUTUAL_TLS: true
       DEPLOY_SANDBOX: true
@@ -148,7 +148,7 @@ jobs:
     uses: ./.github/workflows/sam_release_code.yml
     with:
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.spec_version}}
-      STACK_NAME: ref-ci
+      STACK_NAME: clinical-tracker
       TARGET_ENVIRONMENT: ref
       ENABLE_MUTUAL_TLS: true
       DEPLOY_SANDBOX: false
@@ -167,7 +167,7 @@ jobs:
     uses: ./.github/workflows/sam_release_code.yml
     with:
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.spec_version}}
-      STACK_NAME: qa-ci
+      STACK_NAME: clinical-tracker
       TARGET_ENVIRONMENT: qa
       ENABLE_MUTUAL_TLS: true
       DEPLOY_SANDBOX: false
@@ -186,7 +186,7 @@ jobs:
     uses: ./.github/workflows/sam_release_code.yml
     with:
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.spec_version}}
-      STACK_NAME: int-ci
+      STACK_NAME: clinical-tracker
       TARGET_ENVIRONMENT: int
       ENABLE_MUTUAL_TLS: true
       DEPLOY_SANDBOX: false
@@ -211,7 +211,7 @@ jobs:
     uses: ./.github/workflows/sam_release_code.yml
     with:
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.spec_version}}
-      STACK_NAME: int-sandox
+      STACK_NAME: sandbox-clinical-tracker
       TARGET_ENVIRONMENT: int
       ENABLE_MUTUAL_TLS: true
       DEPLOY_SANDBOX: true
@@ -230,7 +230,7 @@ jobs:
     uses: ./.github/workflows/sam_release_code.yml
     with:
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.spec_version}}
-      STACK_NAME: prod-ci
+      STACK_NAME: clinical-tracker
       TARGET_ENVIRONMENT: prod
       ENABLE_MUTUAL_TLS: true
       DEPLOY_SANDBOX: false
