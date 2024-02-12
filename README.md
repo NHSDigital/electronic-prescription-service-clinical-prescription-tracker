@@ -7,7 +7,6 @@ This is the AWS layer that provides an API for Clinical Prescription Tracker.
 - `packages/common/testing` Module that contains some test data used for tests in other modules.
 - `packages/sandbox/` Returns [static data](./packages/sandbox/examples/GetMyPrescriptions/Bundle/success.json) from the Sandbox.
 - `packages/statusLambda/` Returns the status of the getMyPrescriptions endpoint.
-- `privateCA/` Contains script to create self signed CA certificate and a client certificate used for mutual TLS.
 - `SAMtemplates/` Contains the SAM templates used to define the stacks.
 - `scripts/` Utilities helpful to developers of this specification.
 - `.devcontainer` Contains a dockerfile and vscode devcontainer definition.
