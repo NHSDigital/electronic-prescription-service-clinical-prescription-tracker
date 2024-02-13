@@ -109,7 +109,7 @@ jobs:
       ENABLE_MUTUAL_TLS: true
       DEPLOY_SANDBOX: false
       BUILD_ARTIFACT: packaged_code
-      TRUSTSTORE_FILE: truststore.pem
+      TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       VERSION_NUMBER: ${{needs.tag_release.outputs.spec_version}}
       COMMIT_ID: ${{needs.get_commit_id.outputs.commit_id}}
       LOG_LEVEL: DEBUG
@@ -134,7 +134,7 @@ jobs:
       ENABLE_MUTUAL_TLS: true
       DEPLOY_SANDBOX: true
       BUILD_ARTIFACT: packaged_sandbox_code
-      TRUSTSTORE_FILE: sandbox-truststore.pem
+      TRUSTSTORE_FILE: clinical-tracker-sandbox-truststore.pem
       VERSION_NUMBER: ${{needs.tag_release.outputs.spec_version}}
       COMMIT_ID: ${{needs.get_commit_id.outputs.commit_id}}
       LOG_LEVEL: DEBUG
@@ -153,7 +153,7 @@ jobs:
       ENABLE_MUTUAL_TLS: true
       DEPLOY_SANDBOX: false
       BUILD_ARTIFACT: packaged_code
-      TRUSTSTORE_FILE: truststore.pem
+      TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       VERSION_NUMBER: ${{needs.tag_release.outputs.spec_version}}
       COMMIT_ID: ${{needs.get_commit_id.outputs.commit_id}}
       LOG_LEVEL: DEBUG
@@ -172,7 +172,7 @@ jobs:
       ENABLE_MUTUAL_TLS: true
       DEPLOY_SANDBOX: false
       BUILD_ARTIFACT: packaged_code
-      TRUSTSTORE_FILE: truststore.pem
+      TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       VERSION_NUMBER: ${{needs.tag_release.outputs.spec_version}}
       COMMIT_ID: ${{needs.get_commit_id.outputs.commit_id}}
       LOG_LEVEL: DEBUG
@@ -191,7 +191,7 @@ jobs:
       ENABLE_MUTUAL_TLS: true
       DEPLOY_SANDBOX: false
       BUILD_ARTIFACT: packaged_code
-      TRUSTSTORE_FILE: truststore.pem
+      TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       VERSION_NUMBER: ${{needs.tag_release.outputs.spec_version}}
       COMMIT_ID: ${{needs.get_commit_id.outputs.commit_id}}
       LOG_LEVEL: DEBUG
@@ -216,7 +216,7 @@ jobs:
       ENABLE_MUTUAL_TLS: true
       DEPLOY_SANDBOX: true
       BUILD_ARTIFACT: packaged_sandbox_code
-      TRUSTSTORE_FILE: sandbox-truststore.pem
+      TRUSTSTORE_FILE: clinical-tracker-sandbox-truststore.pem
       VERSION_NUMBER: ${{needs.tag_release.outputs.spec_version}}
       COMMIT_ID: ${{needs.get_commit_id.outputs.commit_id}}
       LOG_LEVEL: DEBUG
@@ -235,7 +235,7 @@ jobs:
       ENABLE_MUTUAL_TLS: true
       DEPLOY_SANDBOX: false
       BUILD_ARTIFACT: packaged_code
-      TRUSTSTORE_FILE: truststore.pem
+      TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       VERSION_NUMBER: ${{needs.tag_release.outputs.spec_version}}
       COMMIT_ID: ${{needs.get_commit_id.outputs.commit_id}}
       LOG_LEVEL: INFO
