@@ -190,7 +190,7 @@ Resources:
                           Fn::ImportValue: account-resources:TrustStoreBucket,
                         ],
                       ]
-                    - "truststore.pem"
+                    - "clinical-tracker-truststore.pem"
               - !Ref "AWS::NoValue"
           TruststoreVersion:
             "Fn::If":
