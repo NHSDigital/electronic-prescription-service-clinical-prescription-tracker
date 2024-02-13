@@ -129,7 +129,7 @@ jobs:
     uses: ./.github/workflows/sam_release_code.yml
     with:
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.spec_version}}
-      STACK_NAME: sandbox-clinical-tracker
+      STACK_NAME: clinical-tracker-sandbox
       TARGET_ENVIRONMENT: dev
       ENABLE_MUTUAL_TLS: true
       DEPLOY_SANDBOX: true
@@ -211,7 +211,7 @@ jobs:
     uses: ./.github/workflows/sam_release_code.yml
     with:
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.spec_version}}
-      STACK_NAME: sandbox-clinical-tracker
+      STACK_NAME: clinical-tracker-sandbox
       TARGET_ENVIRONMENT: int
       ENABLE_MUTUAL_TLS: true
       DEPLOY_SANDBOX: true
