@@ -222,7 +222,7 @@ These are used to do common commands
 
 #### Check licenses
 
-- `check-licenses` Checks licenses for all packages used - calls check-licenses-node, check-licenses-python, check-licenses-golang
+- `check-licenses` Checks licenses for all packages used - calls check-licenses-node, check-licenses-python
 - `check-licenses-node` Checks licenses for all node code
 - `check-licenses-python` Checks licenses for all python code
 
