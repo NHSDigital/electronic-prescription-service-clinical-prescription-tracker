@@ -22,6 +22,7 @@
     "@nhsdigital/eps-spine-client": "^1.0.1"
   },
   "devDependencies": {
-    "axios-mock-adapter": "^1.22.0"
+    "axios-mock-adapter": "^1.22.0",
+    "esbuild": "^0.20.0"
   }
 }
