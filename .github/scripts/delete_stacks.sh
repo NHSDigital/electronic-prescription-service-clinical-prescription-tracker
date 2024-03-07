@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ACTIVE_STACKS=$(aws cloudformation list-stacks | jq -r '.StackSummaries[] | select ( .StackStatus != "DELETE_COMPLETE" ) | select( .StackName | capture("^clinical-tracker-pr-(sandbox-)?(\\d+)$") ) | .StackName ')
+ACTIVE_STACKS=$(aws cloudformation list-stacks | jq -r '.StackSummaries[] | select ( .StackStatus != "DELETE_COMPLETE" ) | select( .StackName | capture("^clinical-tracker-(sandbox-)?pr-(\\d+)$") ) | .StackName ')
 
 mapfile -t ACTIVE_STACKS_ARRAY <<< "$ACTIVE_STACKS"
 
