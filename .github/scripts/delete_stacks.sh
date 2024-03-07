@@ -12,10 +12,6 @@ do
   echo "Checking pull request id ${PULL_REQUEST}"
   URL="https://api.github.com/repos/NHSDigital/electronic-prescription-service-clinical-prescription-tracker/pulls/${PULL_REQUEST}"
 
-
-  https://github.com/NHSDigital/electronic-prescription-service-clinical-prescription-tracker
-
-  
   RESPONSE=$(curl "${URL}" 2>/dev/null)
   STATE=$(echo "${RESPONSE}" | jq -r .state)
   if [ "$STATE" == "closed" ]; then
