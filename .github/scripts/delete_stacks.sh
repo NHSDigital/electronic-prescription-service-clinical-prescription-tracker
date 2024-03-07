@@ -8,7 +8,7 @@ for i in "${ACTIVE_STACKS_ARRAY[@]}"
 do 
   echo "Checking if stack $i has open pull request"
   PULL_REQUEST=${i//clinical-tracker-pr-/}
-  PULL_REQUEST=${PULL_REQUEST//sandbox-/}
+  PULL_REQUEST=${PULL_REQUEST//clinical-tracker-sandbox-pr-/}
   echo "Checking pull request id ${PULL_REQUEST}"
   URL="https://api.github.com/repos/NHSDigital/electronic-prescription-service-clinical-prescription-tracker/pulls/${PULL_REQUEST}"
 
