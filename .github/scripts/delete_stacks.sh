@@ -17,6 +17,8 @@ do
   if [ "$STATE" == "closed" ]; then
     echo "** going to delete stack $i as state is ${STATE} **"
     aws cloudformation delete-stack --stack-name "${i}"
+    echo "** Sleeping for 60 seconds to avoid 429 on delete stack **"
+    sleep 60
   else
     echo "not going to delete stack $i as state is ${STATE}"
   fi
