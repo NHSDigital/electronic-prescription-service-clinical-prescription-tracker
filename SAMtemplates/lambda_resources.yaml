@@ -8,7 +8,7 @@ Parameters:
   CloudWatchKMSKey:
     Type: String
     Description: Cloudwatch KMS key
-    Default: none
+    AllowedPattern: "^arn:[a-z0-9-]+:kms:[a-z0-9-]+:\\d{12}:(key|alias)/.+\\Z"
   SplunkSubscriptionFilterRole:
     Type: String
     Description: Subscription filter role for sending logs to splunk
@@ -74,7 +74,7 @@ Resources:
             Principal:
               Service: lambda.amazonaws.com
             Action:
-            - sts:AssumeRole
+              - sts:AssumeRole
       ManagedPolicyArns:
         - !ImportValue lambda-resources:LambdaInsightsLogGroupPolicy
         - !ImportValue account-resources:LambdaEncryptCloudwatchKMSPolicy
