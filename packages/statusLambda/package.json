@@ -23,6 +23,6 @@
   },
   "devDependencies": {
     "axios-mock-adapter": "^1.22.0",
-    "esbuild": "^0.21.5"
+    "esbuild": "^0.22.0"
   }
 }
