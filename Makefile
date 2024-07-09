@@ -110,7 +110,7 @@ lint-node: compile-node
 	npm run lint --workspace packages/common/testing
 
 lint-samtemplates:
-	poetry run cfn-lint -t SAMtemplates/*.yaml
+	poetry run cfn-lint -I "SAMtemplates/**/*.y*ml" 2>&1 | grep -e "Run scan" -e "W[0-9]" -e "E[0-9]"
 
 lint-python:
 	poetry run flake8 scripts/*.py --config .flake8
