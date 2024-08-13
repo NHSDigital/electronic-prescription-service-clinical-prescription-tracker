@@ -26,7 +26,7 @@
         "orta.vscode-jest",
         "42crunch.vscode-openapi",
         "mermade.openapi-lint",
-        "rvest.vs-code-prettier-eslint",
+        "dbaeumer.vscode-eslint",
         "christian-kohler.npm-intellisense",
         "dbaeumer.vscode-eslint",
         "lfm.vscode-makefile-term",
@@ -46,13 +46,15 @@
         "python.linting.pylintEnabled": false,
         "python.linting.flake8Enabled": true,
         "python.linting.enabled": true, // required to format on save
-        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
         "editor.formatOnPaste": false, // required
         "editor.formatOnType": false, // required
         "editor.formatOnSave": true, // optional
         "editor.formatOnSaveMode": "file",
-        "cSpell.words": ["fhir", "Formik", "pino", "serialisation"]
-      }
+        "cSpell.words": ["fhir", "Formik", "pino", "serialisation"],
+        "eslint.useFlatConfig": true,
+        "eslint.format.enable": true
+          }
     }
   },
   "postCreateCommand": "rm -f ~/.docker/config.json; git config --global --add safe.directory /workspaces/electronic-prescription-service-clinical-prescription-tracker; make install; direnv allow ."
