@@ -214,6 +214,7 @@ These are used to do common commands
 - `lint-cloudformation` Runs lint for cloudformation templates
 - `lint-samtemplates` Runs lint for SAM templates
 - `test` Runs unit tests for all code
+- `cfn-guard` runs cfn-guard for sam and cloudformation templates
 
 #### Compiling
 

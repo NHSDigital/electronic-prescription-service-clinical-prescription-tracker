@@ -107,6 +107,11 @@ Resources:
             Method: get
     Metadata: # Manage esbuild properties
       BuildMethod: esbuild
+      guard:
+        SuppressedRules:
+          - LAMBDA_DLQ_CHECK
+          - LAMBDA_INSIDE_VPC
+          - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -148,6 +153,11 @@ Resources:
             Method: get
     Metadata: # Manage esbuild properties
       BuildMethod: esbuild
+      guard:
+        SuppressedRules:
+          - LAMBDA_DLQ_CHECK
+          - LAMBDA_INSIDE_VPC
+          - LAMBDA_CONCURRENCY_CHECK
       BuildProperties:
         Minify: true
         Target: "es2020"
@@ -264,6 +274,10 @@ Resources:
         ]
       RetentionInDays: !Ref LogRetentionDays
       KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+    Metadata:
+      guard:
+        SuppressedRules:
+          - CW_LOGGROUP_RETENTION_PERIOD_CHECK
 
   ApiGwAccessLogsSplunkSubscriptionFilter:
     Condition: ShouldUseSplunk
