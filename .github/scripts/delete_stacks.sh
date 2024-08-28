@@ -13,12 +13,12 @@ CAPTURE_REGEX="^clinical-tracker-(sandbox-)?pr-(\\d+)$"
 PULL_REQUEST_STACK_REGEX=clinical-tracker-pr-
 SANDBOX_PULL_REQUEST_STACK_REGEX=clinical-tracker-sandbox-pr-
 
-CNAME_QUERY=clinical-tracker-pr-7
-CNAME_SANDBOX_QUERY=clinical-tracker-sandbox-pr-7
+CNAME_QUERY=clinical-tracker-pr
+CNAME_SANDBOX_QUERY=clinical-tracker-sandbox-pr
 
 # this should be customised to delete cloudformation stacks and proxygen deployments if they are used
 main() {
-  #delete_cloudformation_stacks
+  delete_cloudformation_stacks
   delete_cname_records
 }
 
