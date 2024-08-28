@@ -13,9 +13,13 @@ CAPTURE_REGEX="^clinical-tracker-(sandbox-)?pr-(\\d+)$"
 PULL_REQUEST_STACK_REGEX=clinical-tracker-pr-
 SANDBOX_PULL_REQUEST_STACK_REGEX=clinical-tracker-sandbox-pr-
 
+CNAME_QUERY=clinical-tracker-pr-3
+CNAME_SANDBOX_QUERY=clinical-tracker-sandbox-pr-3
+
 # this should be customised to delete cloudformation stacks and proxygen deployments if they are used
 main() {
-  delete_cloudformation_stacks
+  #delete_cloudformation_stacks
+  delete_cname_records
 }
 
 delete_cloudformation_stacks() {
@@ -32,7 +36,7 @@ delete_cloudformation_stacks() {
     PULL_REQUEST=${PULL_REQUEST//${SANDBOX_PULL_REQUEST_STACK_REGEX}/}
     echo "Checking pull request id ${PULL_REQUEST}"
     URL="https://api.github.com/repos/NHSDigital/${REPO_NAME}/pulls/${PULL_REQUEST}"
-    RESPONSE=$(curl "${URL}" 2>/dev/null)
+    RESPONSE=$(curl --url "${URL}" --header "Authorization: Bearer ${GITHUB_TOKEN}" 2>/dev/null)
     STATE=$(echo "${RESPONSE}" | jq -r .state)
     if [ "$STATE" == "closed" ]; then
       echo "** going to delete stack $i as state is ${STATE} **"
@@ -45,5 +49,38 @@ delete_cloudformation_stacks() {
   done
 }
 
+delete_cname_records() {
+  HOSTED_ZONE_ID=$(aws route53 list-hosted-zones-by-name --dns-name dev.eps.national.nhs.uk. | jq -r ".HostedZones[0] | .Id")
+  CNAME_RECORDS=$(aws route53 list-resource-record-sets --hosted-zone-id "${HOSTED_ZONE_ID}" \
+    --query "ResourceRecordSets[?Type == 'CNAME' && (contains(Name, '${CNAME_QUERY}') || contains(Name, '${CNAME_SANDBOX_QUERY}'))]" \
+    | jq -r " .[] | .Name")
+
+  mapfile -t CNAME_RECORDS_ARRAY <<< "$CNAME_RECORDS"
+
+  for i in "${CNAME_RECORDS_ARRAY[@]}"
+  do
+    echo "Checking if CNAME record $i has open pull request"
+
+    PULL_REQUEST=$(echo "$i" | grep -Po '(?<=-pr-)\d+')
+    echo "Checking pull request id ${PULL_REQUEST}"
+    URL="https://api.github.com/repos/NHSDigital/${REPO_NAME}/pulls/${PULL_REQUEST}"
+    RESPONSE=$(curl --url "${URL}" --header "Authorization: Bearer ${GITHUB_TOKEN}" 2>/dev/null)
+    STATE=$(echo "${RESPONSE}" | jq -r .state)
+    if [ "$STATE" == "closed" ]; then
+      echo "** going to delete CNAME record $i as state is ${STATE} **"
+      record_set=$(aws route53 list-resource-record-sets --hosted-zone-id "${HOSTED_ZONE_ID}" \
+        --query "ResourceRecordSets[?Name == '$i']" --output json | jq .[0])
+
+      jq -n --argjson record_set "${record_set}" \
+          '{Changes: [{Action: "DELETE", ResourceRecordSet: $record_set}]}' > /tmp/payload.json
+
+      aws route53 change-resource-record-sets --hosted-zone-id "${HOSTED_ZONE_ID}" --change-batch file:///tmp/payload.json
+
+      echo "CNAME record $i deleted"
+      else
+        echo "not going to delete CNAME record $i as state is ${STATE} **"
+      fi
+  done
+}
 
 main
