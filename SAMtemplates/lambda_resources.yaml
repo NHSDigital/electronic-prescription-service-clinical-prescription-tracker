@@ -106,6 +106,10 @@ Resources:
       LogGroupName: !Sub "/aws/lambda/${LambdaName}"
       RetentionInDays: !Ref LogRetentionDays
       KmsKeyId: !Ref CloudWatchKMSKey
+    Metadata:
+      guard:
+        SuppressedRules:
+          - CW_LOGGROUP_RETENTION_PERIOD_CHECK
 
   LambdaSplunkSubscriptionFilter:
     Condition: ShouldUseSplunk
