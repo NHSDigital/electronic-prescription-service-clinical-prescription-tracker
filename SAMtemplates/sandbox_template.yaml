@@ -91,13 +91,11 @@ Resources:
         EnableSplunk: !Ref EnableSplunk
         LambdaName: !Sub "${AWS::StackName}-Sandbox"
         LogRetentionDays: !Ref LogRetentionDays
-
   SandboxLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub "/aws/lambda/${AWS::StackName}-Sandbox"
       RetentionInDays: !Ref LogRetentionDays
-
   Sandbox:
     Type: AWS::Serverless::Function
     Properties:
@@ -140,6 +138,11 @@ Resources:
         EnableSplunk: !Ref EnableSplunk
         LambdaName: !Sub "${AWS::StackName}-statusLambda"
         LogRetentionDays: !Ref LogRetentionDays
+  StatusLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${AWS::StackName}-statusLambda"
+      RetentionInDays: !Ref LogRetentionDays
   StatusLambda:
     Type: AWS::Serverless::Function
     Properties:
