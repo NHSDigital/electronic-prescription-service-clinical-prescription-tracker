@@ -29,7 +29,7 @@ describe("Unit test for status check", function () {
     const result: APIGatewayProxyResult = (await handler(
       mockAPIGatewayProxyEvent,
       dummyContext
-    )) as APIGatewayProxyResult
+    ))
 
     expect(result.statusCode).toEqual(200)
     expect(JSON.parse(result.body)).toMatchObject({
@@ -44,7 +44,7 @@ describe("Unit test for status check", function () {
     const result: APIGatewayProxyResult = (await handler(
       mockAPIGatewayProxyEvent,
       dummyContext
-    )) as APIGatewayProxyResult
+    ))
 
     expect(result.statusCode).toEqual(200)
     expect(JSON.parse(result.body)).toMatchObject({
