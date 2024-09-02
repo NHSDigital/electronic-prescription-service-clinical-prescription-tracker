@@ -107,6 +107,13 @@ Resources:
         LambdaName: !Sub "${AWS::StackName}-statusLambda"
         AccessToSpine: "true"
         LogRetentionDays: !Ref LogRetentionDays
+
+  StatusLambdaLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${AWS::StackName}-statusLambda"
+      RetentionInDays: !Ref LogRetentionDays
+
   StatusLambda:
     Type: AWS::Serverless::Function
     Properties:
