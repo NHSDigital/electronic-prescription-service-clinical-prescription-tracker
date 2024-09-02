@@ -112,6 +112,7 @@ Resources:
     Properties:
       LogGroupName: !Sub "/aws/lambda/${AWS::StackName}-statusLambda"
       RetentionInDays: !Ref LogRetentionDays
+      KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
   StatusLambda:
     Type: AWS::Serverless::Function
     Properties:
