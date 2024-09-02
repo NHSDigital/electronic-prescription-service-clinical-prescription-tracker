@@ -48,7 +48,6 @@ Parameters:
   LogRetentionDays:
     Type: Number
     Description: How long to keep logs for
-    Default: 30
     AllowedValues:
       [
         1,
