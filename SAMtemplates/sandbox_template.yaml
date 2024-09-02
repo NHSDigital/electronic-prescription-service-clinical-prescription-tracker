@@ -48,6 +48,7 @@ Parameters:
   LogRetentionDays:
     Type: Number
     Description: How long to keep logs for
+    Default: 30
     AllowedValues:
       [
         1,
@@ -95,9 +96,12 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub "/aws/lambda/${AWS::StackName}-Sandbox"
-      # RetentionInDays: !Ref LogRetentionDays # FIXME: For some reason, this fails checks?
-      RetentionInDays: 30
-      KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn 
+      RetentionInDays: !Ref LogRetentionDays
+      KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+    Metadata:
+      guard:
+        SuppressedRules:
+          - CW_LOGGROUP_RETENTION_PERIOD_CHECK
   Sandbox:
     Type: AWS::Serverless::Function
     Properties:
@@ -144,9 +148,12 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub "/aws/lambda/${AWS::StackName}-statusLambda"
-      # RetentionInDays: !Ref LogRetentionDays # FIXME: For some reason, this fails checks?
-      RetentionInDays: 30
+      RetentionInDays: !Ref LogRetentionDays
       KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+    Metadata:
+      guard:
+        SuppressedRules:
+          - CW_LOGGROUP_RETENTION_PERIOD_CHECK
   StatusLambda:
     Type: AWS::Serverless::Function
     Properties:
