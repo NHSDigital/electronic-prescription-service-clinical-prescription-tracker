@@ -111,7 +111,8 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub "/aws/lambda/${AWS::StackName}-statusLambda"
-      RetentionInDays: !Ref LogRetentionDays
+      # RetentionInDays: !Ref LogRetentionDays # FIXME: For some reason, this fails checks?
+      RetentionInDays: 30
       KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
   StatusLambda:
     Type: AWS::Serverless::Function
