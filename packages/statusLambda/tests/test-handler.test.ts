@@ -73,7 +73,7 @@ describe("Unit test for status check", function () {
     const result: APIGatewayProxyResult = (await handler(
       mockAPIGatewayProxyEvent,
       dummyContext
-    )) as APIGatewayProxyResult
+    ))
 
     const headers = result.headers
 
@@ -102,7 +102,7 @@ describe("Unit test for status check", function () {
     const result: APIGatewayProxyResult = (await handler(
       mockAPIGatewayProxyEvent,
       dummyContext
-    )) as APIGatewayProxyResult
+    ))
 
     expect(result.statusCode).toEqual(200)
     const result_body = JSON.parse(result.body)
@@ -119,7 +119,7 @@ describe("Unit test for status check", function () {
     const result: APIGatewayProxyResult = (await handler(
       mockAPIGatewayProxyEvent,
       dummyContext
-    )) as APIGatewayProxyResult
+    ))
 
     expect(result.statusCode).toEqual(200)
     const result_body = JSON.parse(result.body)
@@ -136,7 +136,7 @@ describe("Unit test for status check", function () {
     const result: APIGatewayProxyResult = (await handler(
       mockAPIGatewayProxyEvent,
       dummyContext
-    )) as APIGatewayProxyResult
+    ))
 
     expect(result.statusCode).toEqual(200)
     const result_body = JSON.parse(result.body)
@@ -153,7 +153,7 @@ describe("Unit test for status check", function () {
     const result: APIGatewayProxyResult = (await handler(
       mockAPIGatewayProxyEvent,
       dummyContext
-    )) as APIGatewayProxyResult
+    ))
 
     expect(result.statusCode).toEqual(200)
     const result_body = JSON.parse(result.body)
