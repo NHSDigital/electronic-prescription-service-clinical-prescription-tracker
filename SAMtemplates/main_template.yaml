@@ -108,7 +108,7 @@ Resources:
         AccessToSpine: "true"
         LogRetentionDays: !Ref LogRetentionDays
   StatusLambda:
-    Type: AWS::Serverless::Function
+    Type: AWS::Serverless::Function # NOSONAR - The scan complains that this has no log group, but it's defined in the lambda resources above.
     Properties:
       FunctionName: !Sub "${AWS::StackName}-statusLambda"
       CodeUri: ../packages
