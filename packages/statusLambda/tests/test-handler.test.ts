@@ -6,11 +6,10 @@ import {
   describe,
   it
 } from "@jest/globals"
-import {helloworldContext} from "@clinicaltracker_common/testing"
 import {Logger} from "@aws-lambda-powertools/logger"
 import MockAdapter from "axios-mock-adapter"
 import axios from "axios"
-import {mockAPIGatewayProxyEvent} from "@clinicaltracker_common/testing"
+import {mockAPIGatewayProxyEvent, helloworldContext} from "@clinicaltracker_common/testing"
 
 const mock = new MockAdapter(axios)
 
@@ -30,7 +29,7 @@ describe("Unit test for status check", function () {
     const result: APIGatewayProxyResult = (await handler(
       mockAPIGatewayProxyEvent,
       dummyContext
-    )) as APIGatewayProxyResult
+    ))
 
     expect(result.statusCode).toEqual(200)
     expect(JSON.parse(result.body)).toMatchObject({
@@ -45,7 +44,7 @@ describe("Unit test for status check", function () {
     const result: APIGatewayProxyResult = (await handler(
       mockAPIGatewayProxyEvent,
       dummyContext
-    )) as APIGatewayProxyResult
+    ))
 
     expect(result.statusCode).toEqual(200)
     expect(JSON.parse(result.body)).toMatchObject({
@@ -74,7 +73,7 @@ describe("Unit test for status check", function () {
     const result: APIGatewayProxyResult = (await handler(
       mockAPIGatewayProxyEvent,
       dummyContext
-    )) as APIGatewayProxyResult
+    ))
 
     const headers = result.headers
 
@@ -103,7 +102,7 @@ describe("Unit test for status check", function () {
     const result: APIGatewayProxyResult = (await handler(
       mockAPIGatewayProxyEvent,
       dummyContext
-    )) as APIGatewayProxyResult
+    ))
 
     expect(result.statusCode).toEqual(200)
     const result_body = JSON.parse(result.body)
@@ -120,7 +119,7 @@ describe("Unit test for status check", function () {
     const result: APIGatewayProxyResult = (await handler(
       mockAPIGatewayProxyEvent,
       dummyContext
-    )) as APIGatewayProxyResult
+    ))
 
     expect(result.statusCode).toEqual(200)
     const result_body = JSON.parse(result.body)
@@ -137,7 +136,7 @@ describe("Unit test for status check", function () {
     const result: APIGatewayProxyResult = (await handler(
       mockAPIGatewayProxyEvent,
       dummyContext
-    )) as APIGatewayProxyResult
+    ))
 
     expect(result.statusCode).toEqual(200)
     const result_body = JSON.parse(result.body)
@@ -154,7 +153,7 @@ describe("Unit test for status check", function () {
     const result: APIGatewayProxyResult = (await handler(
       mockAPIGatewayProxyEvent,
       dummyContext
-    )) as APIGatewayProxyResult
+    ))
 
     expect(result.statusCode).toEqual(200)
     const result_body = JSON.parse(result.body)
