@@ -1,0 +1,43 @@
+{
+  "name": "electronic-prescription-service-clinical-prescription-tracker-monorepo",
+  "version": "1.0.0",
+  "description": "![Build](https://github.com/NHSDigital/electronic-prescription-service-clinical-prescription-tracker/workflows/Build/badge.svg?branch=main)",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "check-licenses": "node_modules/.bin/license-checker --failOn GPL --failOn LGPL"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NHSDigital/electronic-prescription-service-clinical-prescription-tracker"
+  },
+  "keywords": [],
+  "author": "NHS Digital",
+  "license": "MIT",
+  "workspaces": [
+    "packages/sandbox",
+    "packages/statusLambda",
+    "packages/common/testing"
+  ],
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/release-notes-generator": "^14.0.1",
+    "@types/aws-lambda": "^8.10.145",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^22.5.2",
+    "@typescript-eslint/eslint-plugin": "^8.4.0",
+    "@typescript-eslint/parser": "^8.4.0",
+    "aws-lambda": "^1.0.7",
+    "eslint": "^9.9.0",
+    "eslint-plugin-import-newlines": "^1.4.0",
+    "jest": "^29.7.0",
+    "jest-junit": "^16.0.0",
+    "license-checker": "^25.0.1",
+    "semantic-release": "^24.1.0",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "conventional-changelog-eslint": "^6.0.0"
+  }
+}
