@@ -117,6 +117,7 @@ jobs:
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.version_tag}}
       STACK_NAME: clinical-tracker
       TARGET_ENVIRONMENT: dev
+      APIGEE_ENVIRONMENT: internal-dev
       ENABLE_MUTUAL_TLS: true
       DEPLOY_SANDBOX: false
       BUILD_ARTIFACT: packaged_code
@@ -142,6 +143,7 @@ jobs:
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.version_tag}}
       STACK_NAME: clinical-tracker-sandbox
       TARGET_ENVIRONMENT: dev
+      APIGEE_ENVIRONMENT: internal-dev-sandbox
       ENABLE_MUTUAL_TLS: true
       DEPLOY_SANDBOX: true
       BUILD_ARTIFACT: packaged_sandbox_code
@@ -161,6 +163,7 @@ jobs:
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.version_tag}}
       STACK_NAME: clinical-tracker
       TARGET_ENVIRONMENT: ref
+      APIGEE_ENVIRONMENT: ref
       ENABLE_MUTUAL_TLS: true
       DEPLOY_SANDBOX: false
       BUILD_ARTIFACT: packaged_code
@@ -180,6 +183,7 @@ jobs:
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.version_tag}}
       STACK_NAME: clinical-tracker
       TARGET_ENVIRONMENT: qa
+      APIGEE_ENVIRONMENT: internal-qa
       ENABLE_MUTUAL_TLS: true
       DEPLOY_SANDBOX: false
       BUILD_ARTIFACT: packaged_code
@@ -199,6 +203,7 @@ jobs:
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.version_tag}}
       STACK_NAME: clinical-tracker
       TARGET_ENVIRONMENT: int
+      APIGEE_ENVIRONMENT: int
       ENABLE_MUTUAL_TLS: true
       DEPLOY_SANDBOX: false
       BUILD_ARTIFACT: packaged_code
@@ -224,6 +229,7 @@ jobs:
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.version_tag}}
       STACK_NAME: clinical-tracker-sandbox
       TARGET_ENVIRONMENT: int
+      APIGEE_ENVIRONMENT: int-sandbox
       ENABLE_MUTUAL_TLS: true
       DEPLOY_SANDBOX: true
       BUILD_ARTIFACT: packaged_sandbox_code
@@ -243,6 +249,7 @@ jobs:
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.version_tag}}
       STACK_NAME: clinical-tracker
       TARGET_ENVIRONMENT: prod
+      APIGEE_ENVIRONMENT: prod
       ENABLE_MUTUAL_TLS: true
       DEPLOY_SANDBOX: false
       BUILD_ARTIFACT: packaged_code
