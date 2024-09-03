@@ -91,16 +91,6 @@ Resources:
         EnableSplunk: !Ref EnableSplunk
         LambdaName: !Sub "${AWS::StackName}-Sandbox"
         LogRetentionDays: !Ref LogRetentionDays
-  SandboxLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub "/aws/lambda/${AWS::StackName}-Sandbox"
-      RetentionInDays: !Ref LogRetentionDays
-      KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
-    Metadata:
-      guard:
-        SuppressedRules:
-          - CW_LOGGROUP_RETENTION_PERIOD_CHECK
   Sandbox:
     Type: AWS::Serverless::Function
     Properties:
