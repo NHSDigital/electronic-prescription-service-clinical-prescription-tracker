@@ -17,12 +17,12 @@ Parameters:
     Type: String
     Description: Splunk delivery stream
     Default: none
-  EnableSplunk_A:
+  EnableSplunk:
     Type: String
     Description: Whether to use splunk
     Default: false
     AllowedValues: [true, false]
-  LambdaName:
+  LambdaName_A:
     Type: String
     Description: Name of lambda we are creating for
   AccessToSpine:

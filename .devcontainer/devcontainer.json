@@ -21,6 +21,7 @@
       "installDockerBuildx": "true"
     }
   },
+  "remoteEnv": { "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}" },
   "customizations": {
     "vscode": {
       "extensions": [
