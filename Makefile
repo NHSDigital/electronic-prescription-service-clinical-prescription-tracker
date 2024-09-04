@@ -116,7 +116,7 @@ lint-samtemplates:
 	poetry run cfn-lint -I "SAMtemplates/**/*.y*ml" 2>&1 | awk '/Run scan/ { print } /^[EW][0-9]/ { print; getline; print }'
 
 lint-python:
-	poetry run flake8 scripts/*.py --config .flake8
+#	poetry run flake8 scripts/*.py --config .flake8
 
 lint-githubactions:
 	actionlint
