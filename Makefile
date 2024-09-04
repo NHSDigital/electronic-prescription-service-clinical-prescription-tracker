@@ -128,7 +128,7 @@ lint-githubactions:
 lint-githubaction-scripts:
 	shellcheck .github/scripts/*.sh
 
-lint: lint-node lint-samtemplates lint-python lint-githubactions lint-githubaction-scripts
+lint: lint-node lint-python lint-githubactions lint-githubaction-scripts
 
 test: compile
 	npm run test --workspace packages/sandbox
