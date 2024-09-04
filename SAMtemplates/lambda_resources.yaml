@@ -17,7 +17,7 @@ Parameters:
     Type: String
     Description: Splunk delivery stream
     Default: none
-  EnableSplunk:
+  EnableSplunk_A:
     Type: String
     Description: Whether to use splunk
     Default: false
