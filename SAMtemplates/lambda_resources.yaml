@@ -22,7 +22,7 @@ Parameters:
     Description: Whether to use splunk
     Default: false
     AllowedValues: [true, false]
-  LambdaName_A:
+  LambdaName:
     Type: String
     Description: Name of lambda we are creating for
   AccessToSpine:
