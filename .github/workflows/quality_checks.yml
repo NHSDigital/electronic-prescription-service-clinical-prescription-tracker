@@ -16,7 +16,7 @@ jobs:
           ref: ${{ env.BRANCH_NAME }}
           fetch-depth: 0
 
-      - name: Hello world action step
+      - name: Run cfn lint action
         id: hello
         uses: anthony-nhs/poc-cfn-lint@main
 
