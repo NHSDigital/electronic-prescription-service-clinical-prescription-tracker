@@ -116,7 +116,7 @@ lint-samtemplates:
 	mkdir -p ~/git_actions
 	git -C ~/git_actions/poc-cfn-lint/ pull || git clone https://github.com/anthony-nhs/poc-cfn-lint/ ~/git_actions/poc-cfn-lint/
 	docker build -t cfn-lint -f ~/git_actions/poc-cfn-lint/Dockerfile ~/git_actions/poc-cfn-lint/
-	docker run --rm -v $${LOCAL_WORKSPACE_FOLDER:-.}:/github/workspace cfn-lint
+	docker run -it --rm -v $${LOCAL_WORKSPACE_FOLDER:-.}:/github/workspace cfn-lint
 
 lint-python:
 #	poetry run flake8 scripts/*.py --config .flake8
