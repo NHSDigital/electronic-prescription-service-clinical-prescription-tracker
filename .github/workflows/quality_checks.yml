@@ -60,6 +60,14 @@ jobs:
 
       - name: Generate and check SBOMs
         uses: NHSDigital/eps-action-sbom@main
+        with:
+          workspace: ${{ github.workspace }}
+      
+      - name: Upload SBOMs
+        uses: actions/upload-artifact@v3
+        with:
+          name: SBOMS
+          path: '**/*sbom*.json'
 
       - name: Run cfn lint
         uses: anthony-nhs/poc-cfn-lint@main

@@ -111,7 +111,7 @@ sbom:
 	mkdir -p ~/git_actions
 	git -C ~/git_actions/eps-actions-sbom/ pull || git clone https://github.com/NHSDigital/eps-action-sbom.git ~/git_actions/eps-actions-sbom/
 	docker build -t eps-sbom -f ~/git_actions/eps-actions-sbom/Dockerfile ~/git_actions/eps-actions-sbom/
-	docker run -it --rm -v $${LOCAL_WORKSPACE_FOLDER:-.}:/app eps-sbom
+	docker run -it --rm -v $${LOCAL_WORKSPACE_FOLDER:-.}:/github/workspace eps-sbom
 
 lint-node: compile-node
 	npm run lint --workspace packages/sandbox
