@@ -58,6 +58,9 @@ jobs:
       - name: run unit tests
         run: make test
 
+      - name: Generate and check SBOMs
+        uses: NHSDigital/eps-action-sbom@main
+
       - name: Run cfn lint
         uses: anthony-nhs/poc-cfn-lint@main
 
