@@ -45,6 +45,15 @@ jobs:
           echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> ~/.npmrc
           echo "@nhsdigital:registry=https://npm.pkg.github.com" >> ~/.npmrc
 
+      - name: Generate and check SBOMs
+        uses: NHSDigital/eps-action-sbom@main
+      
+      - name: Upload SBOMs
+        uses: actions/upload-artifact@v3
+        with:
+          name: SBOMS
+          path: '**/*sbom*.json'
+
       - name: make install
         run: |
           make install
