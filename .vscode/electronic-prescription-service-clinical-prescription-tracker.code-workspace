@@ -12,6 +12,10 @@
 			"name": "packages/sandbox",
 			"path": "../packages/sandbox"
 		},
+    {
+      "name": "packages/specification",
+      "path": "../packages/specification"
+    },
 		{
 			"name": "packages/statusLambda",
 			"path": "../packages/statusLambda"
