@@ -101,7 +101,10 @@ sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-sta
 compile-node:
 	npx tsc --build tsconfig.build.json
 
-compile: compile-node
+compile-specification:
+	npm run resolve --workspace packages/specification/
+
+compile: compile-node compile-specification
 
 download-get-secrets-layer:
 	mkdir -p packages/getSecretLayer/lib
@@ -111,6 +114,9 @@ lint-node: compile-node
 	npm run lint --workspace packages/sandbox
 	npm run lint --workspace packages/statusLambda
 	npm run lint --workspace packages/common/testing
+
+lint-specification: compile-specification
+	npm run lint --workspace packages/specification
 
 lint-samtemplates:
 	poetry run cfn-lint -I "SAMtemplates/**/*.y*ml" 2>&1 | awk '/Run scan/ { print } /^[EW][0-9]/ { print; getline; print }'
@@ -124,7 +130,7 @@ lint-githubactions:
 lint-githubaction-scripts:
 	shellcheck .github/scripts/*.sh
 
-lint: lint-node lint-samtemplates lint-python lint-githubactions lint-githubaction-scripts
+lint: lint-node lint-samtemplates lint-python lint-githubactions lint-githubaction-scripts lint-specification
 
 test: compile
 	npm run test --workspace packages/sandbox

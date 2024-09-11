@@ -1,0 +1,22 @@
+{
+  "name": "apim-spec",
+  "version": "0.0.1",
+  "description": "OAS (Swagger v3) API Definition for Electronic Prescription Service Prescription Clinical Tracker",
+  "type": "module",
+  "scripts": {
+    "lint": "redocly lint --extends=recommended --config ./redocly.yaml",
+    "resolve": "redocly bundle eps-clinical-prescription-tracker.yaml -d -o dist/eps-clinical-prescription-tracker.resolved.json",
+    "clean": "rm -rf lib coverage",
+    "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
+  },
+  "author": "NHS Digital",
+  "license": "MIT",
+  "engines": {
+    "node": "20.10.x",
+    "npm": "10.2.x"
+  },
+  "homepage": "https://github.com/NHSDigital/electronic-prescription-service-clinical-prescription-tracker",
+  "devDependencies": {
+    "@redocly/cli": "^1.24.0"
+  }
+}
