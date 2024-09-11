@@ -46,9 +46,7 @@ jobs:
           echo "@nhsdigital:registry=https://npm.pkg.github.com" >> ~/.npmrc
 
       - name: Generate and check SBOMs
-        uses: NHSDigital/eps-action-sbom@bump-npm
-        with:
-          node_version: 20
+        uses: NHSDigital/eps-action-sbom@npm20_version
     
       
       - name: Upload SBOMs
