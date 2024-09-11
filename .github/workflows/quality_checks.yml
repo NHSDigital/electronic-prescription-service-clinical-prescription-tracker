@@ -48,7 +48,6 @@ jobs:
       - name: Generate and check SBOMs
         uses: NHSDigital/eps-action-sbom@bump-npm
         with:
-          python_version: 3.12
           node_version: 20
     
       
