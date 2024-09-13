@@ -54,8 +54,8 @@ on:
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE:
         required: true
-      TARGET_SPINE_SERVER:
-        required: true
+      # TARGET_SPINE_SERVER:
+      #   required: true
       DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE:
         required: false
       INT_CLOUD_FORMATION_CHECK_VERSION_ROLE:
@@ -119,7 +119,7 @@ jobs:
           LOG_RETENTION_DAYS: ${{ inputs.LOG_RETENTION_DAYS }}
           stack_name: ${{ inputs.STACK_NAME }}
           TARGET_ENVIRONMENT: ${{ inputs.TARGET_ENVIRONMENT }}
-          target_spine_server: ${{ secrets.TARGET_SPINE_SERVER }}
+          # target_spine_server: ${{ secrets.TARGET_SPINE_SERVER }}
           template_file: template.yaml
           TRUSTSTORE_FILE: ${{ inputs.TRUSTSTORE_FILE }}
           VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}
