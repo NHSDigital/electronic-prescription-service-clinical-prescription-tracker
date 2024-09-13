@@ -111,6 +111,18 @@ jobs:
           name: ${{ inputs.BUILD_ARTIFACT }}
           path: .
 
+      - name: Install proxygen-cli
+        run: |
+          pip install proxygen-cli
+
+      # For testing
+      - name: Export proxygen path
+        run: |
+          PROXYGEN_PATH=$(which proxygen)
+          echo "Proxygen location: $PROXYGEN_PATH"
+          echo "PROXYGEN_PATH=${PROXYGEN_PATH}" >> "$GITHUB_ENV"
+
+      # For testing
       - name: Export specification paths
         run: |
           SPEC_PATH="$(pwd)/.aws-sam/build/specification/eps-clinical-prescription-tracker-api.resolved.json"
@@ -156,6 +168,7 @@ jobs:
         env:
           API_TYPE: standard
           VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}
+          PROXYGEN_PATH: ${{ env.PROXYGEN_PATH }} # For Testing
           SPEC_PATH: ${{ env.SPEC_PATH }}
           STACK_NAME: ${{ inputs.STACK_NAME }}
           AWS_ENVIRONMENT: ${{ inputs.AWS_ENVIRONMENT }}

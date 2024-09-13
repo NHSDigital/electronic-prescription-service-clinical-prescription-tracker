@@ -23,12 +23,12 @@ if [ -z "${client_cert}" ]; then
 fi
 
 put_secret_lambda=lambda-resources-ProxygenPTLMTLSSecretPut
-instance_put_lambda=lambda-resources-ProxygenPTLInstancePut
+# instance_put_lambda=lambda-resources-ProxygenPTLInstancePut
 spec_publish_lambda=lambda-resources-ProxygenPTLSpecPublish
 
 if [[ "$APIGEE_ENVIRONMENT" =~ ^(int|sandbox|prod)$ ]]; then 
     put_secret_lambda=lambda-resources-ProxygenProdMTLSSecretPut
-    instance_put_lambda=lambda-resources-ProxygenProdInstancePut
+    # instance_put_lambda=lambda-resources-ProxygenProdInstancePut
     spec_publish_lambda=lambda-resources-ProxygenProdSpecPublish
 fi
 
@@ -122,24 +122,30 @@ echo
 echo "Deploy the API instance using Proxygen proxy lambda"
 if [[ "${DRY_RUN}" == "false" ]]; then
 
-    jq -n --argfile spec "${SPEC_PATH}" \
-        --arg apiName "${apigee_api}" \
-        --arg environment "${APIGEE_ENVIRONMENT}" \
-        --arg instance "${instance}" \
-        --arg kid "${PROXYGEN_KID}" \
-        --arg proxygenSecretName "${proxygen_private_key_arn}" \
-        '{apiName: $apiName, environment: $environment, specDefinition: $spec, instance: $instance, kid: $kid, proxygenSecretName: $proxygenSecretName}' > payload.json
+    # Store the API key secret using Proxygen CLI
+    "$PROXYGEN_PATH" secret put --mtls-cert ~/.proxygen/tmp/client_cert.pem --mtls-key ~/.proxygen/tmp/client_private_key.pem "$APIGEE_ENVIRONMENT" kris-mtls-1
 
-    aws lambda invoke --function-name "${instance_put_lambda}" --cli-binary-format raw-in-base64-out --payload file://payload.json out.txt > response.json
+    # Deploy the API instance using Proxygen CLI
+    "$PROXYGEN_PATH" instance deploy --no-confirm "$APIGEE_ENVIRONMENT" "$instance" "$SPEC_PATH"
 
-    if eval "cat response.json | jq -e '.FunctionError' >/dev/null"; then
-        echo 'Error calling lambda'
-        cat out.txt
-        exit 1
-    fi
-    echo "Instance deployed"
-else
-    echo "Would call ${instance_put_lambda}"
+#     jq -n --argfile spec "${SPEC_PATH}" \
+#         --arg apiName "${apigee_api}" \
+#         --arg environment "${APIGEE_ENVIRONMENT}" \
+#         --arg instance "${instance}" \
+#         --arg kid "${PROXYGEN_KID}" \
+#         --arg proxygenSecretName "${proxygen_private_key_arn}" \
+#         '{apiName: $apiName, environment: $environment, specDefinition: $spec, instance: $instance, kid: $kid, proxygenSecretName: $proxygenSecretName}' > payload.json
+
+#     aws lambda invoke --function-name "${instance_put_lambda}" --cli-binary-format raw-in-base64-out --payload file://payload.json out.txt > response.json
+
+#     if eval "cat response.json | jq -e '.FunctionError' >/dev/null"; then
+#         echo 'Error calling lambda'
+#         cat out.txt
+#         exit 1
+#     fi
+#     echo "Instance deployed"
+# else
+#     echo "Would call ${instance_put_lambda}"
 fi
 
 if [[ "${APIGEE_ENVIRONMENT}" == "int" ]]; then
