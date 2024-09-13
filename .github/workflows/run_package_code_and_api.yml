@@ -70,6 +70,17 @@ jobs:
             .aws-sam/build
             packages/getSecretLayer/lib/get-secrets-layer.zip 
 
+      - uses: actions/upload-artifact@v4
+        name: Upload specification artifact
+        with:
+          name: specification_code
+          path: |
+            .aws-sam/build/specification
+
+      - name: Debug Spec Directory
+        run: |
+          ls -al .aws-sam/build/specification/
+
       - shell: bash
         name: Package sandbox
         run: |
