@@ -111,6 +111,12 @@ jobs:
           name: ${{ inputs.BUILD_ARTIFACT }}
           path: .
 
+      - name: Export specification paths
+        run: |
+          SPEC_PATH="$(pwd)/.aws-sam/build/specification/eps-clinical-prescription-tracker-api.resolved.json"
+          echo "Specification location: $SPEC_PATH"
+          echo "SPEC_PATH=${SPEC_PATH}" >> "$GITHUB_ENV"
+
       - name: release code
         shell: bash
         working-directory: .github/scripts
