@@ -15,6 +15,7 @@
   "license": "MIT",
   "workspaces": [
     "packages/sandbox",
+    "packages/specification",
     "packages/statusLambda",
     "packages/common/testing"
   ],
