@@ -156,7 +156,6 @@ jobs:
         env:
           API_TYPE: standard
           VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}
-          PROXYGEN_PATH: ${{ env.PROXYGEN_PATH }}
           SPEC_PATH: ${{ env.SPEC_PATH }}
           STACK_NAME: ${{ inputs.STACK_NAME }}
           AWS_ENVIRONMENT: ${{ inputs.AWS_ENVIRONMENT }}
