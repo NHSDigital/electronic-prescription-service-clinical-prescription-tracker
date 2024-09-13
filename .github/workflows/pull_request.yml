@@ -59,14 +59,15 @@ jobs:
 
   release_code:
     needs: [get_issue_number, package_code, get_commit_id]
-    uses: ./.github/workflows/sam_release_code.yml
+    uses: ./.github/workflows/run_release_code_and_api.yml
     with:
       STACK_NAME: clinical-tracker-pr-${{needs.get_issue_number.outputs.issue_number}}
       ARTIFACT_BUCKET_PREFIX: PR-${{needs.get_issue_number.outputs.issue_number}}
-      TARGET_ENVIRONMENT: dev-pr
+      # TARGET_ENVIRONMENT: dev-pr
+      AWS_ENVIRONMENT: dev
       APIGEE_ENVIRONMENT: internal-dev
       ENABLE_MUTUAL_TLS: false
-      DEPLOY_SANDBOX: false
+      # DEPLOY_SANDBOX: false
       BUILD_ARTIFACT: packaged_code
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       VERSION_NUMBER: PR-${{ needs.get_issue_number.outputs.issue_number }}
@@ -75,18 +76,19 @@ jobs:
       LOG_RETENTION_DAYS: 30
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-      TARGET_SPINE_SERVER: ${{ secrets.DEV_TARGET_SPINE_SERVER }}
+      # TARGET_SPINE_SERVER: ${{ secrets.DEV_TARGET_SPINE_SERVER }}
 
   release_sandbox_code:
     needs: [get_issue_number, package_code, get_commit_id]
-    uses: ./.github/workflows/sam_release_code.yml
+    uses: ./.github/workflows/run_release_code_and_api.yml
     with:
       STACK_NAME: clinical-tracker-sandbox-pr-${{needs.get_issue_number.outputs.issue_number}}
       ARTIFACT_BUCKET_PREFIX: PR-sandbox-${{needs.get_issue_number.outputs.issue_number}}
-      TARGET_ENVIRONMENT: dev-pr
+      # TARGET_ENVIRONMENT: dev-pr
+      AWS_ENVIRONMENT: dev
       APIGEE_ENVIRONMENT: internal-dev-sandbox
       ENABLE_MUTUAL_TLS: false
-      DEPLOY_SANDBOX: true
+      # DEPLOY_SANDBOX: true
       BUILD_ARTIFACT: packaged_sandbox_code
       TRUSTSTORE_FILE: clinical-tracker-sandbox-truststore.pem
       VERSION_NUMBER: PR-${{ needs.get_issue_number.outputs.issue_number }}
@@ -95,4 +97,4 @@ jobs:
       LOG_RETENTION_DAYS: 30
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-      TARGET_SPINE_SERVER: sandbox
+      # TARGET_SPINE_SERVER: sandbox
