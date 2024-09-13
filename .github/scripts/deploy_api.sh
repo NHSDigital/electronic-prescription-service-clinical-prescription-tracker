@@ -42,8 +42,10 @@ if [[ ${STACK_NAME} == clinical-tracker-pr-* ]]; then
 fi
 
 # Determine the proxy instance based on the provided $STACK_NAME
-instance="clinical-prescription-tracker${instance_suffix}"
-apigee_api=clinical-prescription-tracker-api
+# instance="clinical-prescription-tracker${instance_suffix}"
+# apigee_api=clinical-prescription-tracker-api
+apigee_api=prescription-clinical-tracker
+instance="prescription-clinical-tracker${instance_suffix}"
 
 echo "Is pull request: ${is_pull_request}"
 echo "Proxy instance: ${instance}"
