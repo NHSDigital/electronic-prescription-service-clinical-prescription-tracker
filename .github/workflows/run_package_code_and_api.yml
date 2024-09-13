@@ -50,13 +50,6 @@ jobs:
           make install
 
       # Break down the "Package code" step
-      - shell: bash
-        name: Prepare environment
-        run: |
-          cp .tool-versions ~/
-          rm -rf .aws-sam
-          export PATH=$PATH:$PWD/node_modules/.bin
-
       # Compile specification
       - shell: bash
         name: Compile specification
@@ -72,6 +65,9 @@ jobs:
       - shell: bash
         name: SAM build
         run: |
+          cp .tool-versions ~/
+          rm -rf .aws-sam
+          export PATH=$PATH:$PWD/node_modules/.bin
           make sam-build
           cp Makefile .aws-sam/build/
           cp samconfig_package_and_deploy.toml .aws-sam/build/
