@@ -49,13 +49,29 @@ jobs:
         run: |
           make install
 
+      # Break down the "Package code" step
       - shell: bash
-        name: Package code
+        name: Prepare environment
         run: |
           cp .tool-versions ~/
           rm -rf .aws-sam
           export PATH=$PATH:$PWD/node_modules/.bin
+
+      # Compile specification
+      - shell: bash
+        name: Compile specification
+        run: |
           make compile-specification
+      
+      # Check if dist directory exists and contains the file
+      - name: List contents of dist directory
+        run: |
+          ls -al packages/specification/dist/
+
+      # If the file is present, continue with sam build
+      - shell: bash
+        name: SAM build
+        run: |
           make sam-build
           cp Makefile .aws-sam/build/
           cp samconfig_package_and_deploy.toml .aws-sam/build/
