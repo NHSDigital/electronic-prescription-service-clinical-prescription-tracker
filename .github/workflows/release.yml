@@ -115,7 +115,7 @@ jobs:
 
   package_code:
     needs: tag_release
-    uses: ./.github/workflows/sam_package_code.yml
+    uses: ./.github/workflows/run_package_code_and_api.yml
 
   release_dev:
     needs: [tag_release, package_code, get_commit_id]
