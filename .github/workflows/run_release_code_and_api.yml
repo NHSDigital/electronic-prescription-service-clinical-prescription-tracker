@@ -111,14 +111,9 @@ jobs:
           name: ${{ inputs.BUILD_ARTIFACT }}
           path: .
 
-      - name: List Files in Artifact Directory
-        run: |
-          echo "Listing files in the downloaded artifact directory:"
-          ls -R .
-
       - name: Export specification paths
         run: |
-          SPEC_PATH="$(pwd)/.aws-sam/build/specification/eps-prescription-status-update-api.resolved.json"
+          SPEC_PATH="$(pwd)/.aws-sam/build/specification/eps-clinical-prescription-tracker-api.resolved.json"
           echo "Specification location: $SPEC_PATH"
           echo "SPEC_PATH=${SPEC_PATH}" >> "$GITHUB_ENV"
 
