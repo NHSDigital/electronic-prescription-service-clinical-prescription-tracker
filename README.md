@@ -260,8 +260,8 @@ Workflows are in the `.github/workflows` folder:
 - `delete_old_cloudformation_stacks.yml` Workflow for deleting old cloud formation stacks. Runs daily.
 - `dependabot_auto_approve_and_merge.yml` Workflow to auto merge dependabot updates.
 - `pr-link.yaml` This workflow template links Pull Requests to Jira tickets and runs when a pull request is opened.
-- `pull_request.yml` Called when pull request is opened or updated. Calls sam_package_code and sam_release_code to build and deploy the code. Deploys to dev AWS account. The main stack deployed adopts the naming convention clinical-tracker-pr-<PULL_REQUEST_ID>, while the sandbox stack follows the pattern clinical-tracker-sandbox-pr-<PULL_REQUEST_ID>
+- `pull_request.yml` Called when pull request is opened or updated. Calls run_package_code_and_api and run_release_code_and_api to build and deploy the code. Deploys to dev AWS account and internal-dev and internal-dev sandbox apigee environments. The main stack deployed adopts the naming convention clinical-tracker-pr-<PULL_REQUEST_ID>, while the sandbox stack follows the pattern 
 - `quality_checks.yml` Runs check-licenses, lint, test and SonarCloud scan against the repo. Called from pull_request.yml and release.yml
 - `release.yml` Run when code is merged to main branch or a tag starting v is pushed. Calls sam_package_code and sam_release_code to build and deploy the code.
-- `sam_package_code.yml` Packages code and uploads to a github artifact for later deployment.
-- `sam_release_code.yml` Release code built by sam_package_code.yml to an environment.
+- `run_package_code_and_api.yml` Packages code and api and uploads to a github artifact for later deployment.
+- `run_release_code_and_api.yml` Release code and api built by run_package_code_and_api.yml to an environment.
