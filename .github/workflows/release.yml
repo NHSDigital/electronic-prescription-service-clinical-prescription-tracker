@@ -126,7 +126,6 @@ jobs:
       AWS_ENVIRONMENT: dev
       APIGEE_ENVIRONMENT: internal-dev
       ENABLE_MUTUAL_TLS: true
-      # DEPLOY_SANDBOX: false
       BUILD_ARTIFACT: packaged_code
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       VERSION_NUMBER: ${{needs.tag_release.outputs.version_tag}}
@@ -153,7 +152,6 @@ jobs:
       AWS_ENVIRONMENT: dev
       APIGEE_ENVIRONMENT: internal-dev-sandbox
       ENABLE_MUTUAL_TLS: true
-      # DEPLOY_SANDBOX: true
       BUILD_ARTIFACT: packaged_sandbox_code
       TRUSTSTORE_FILE: clinical-tracker-sandbox-truststore.pem
       VERSION_NUMBER: ${{needs.tag_release.outputs.version_tag}}
@@ -174,7 +172,6 @@ jobs:
       AWS_ENVIRONMENT: ref
       APIGEE_ENVIRONMENT: ref
       ENABLE_MUTUAL_TLS: true
-      # DEPLOY_SANDBOX: false
       BUILD_ARTIFACT: packaged_code
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       VERSION_NUMBER: ${{needs.tag_release.outputs.version_tag}}
@@ -195,7 +192,6 @@ jobs:
       AWS_ENVIRONMENT: qa
       APIGEE_ENVIRONMENT: internal-qa
       ENABLE_MUTUAL_TLS: true
-      # DEPLOY_SANDBOX: false
       BUILD_ARTIFACT: packaged_code
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       VERSION_NUMBER: ${{needs.tag_release.outputs.version_tag}}
@@ -216,7 +212,6 @@ jobs:
       AWS_ENVIRONMENT: int
       APIGEE_ENVIRONMENT: int
       ENABLE_MUTUAL_TLS: true
-      # DEPLOY_SANDBOX: false
       BUILD_ARTIFACT: packaged_code
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       VERSION_NUMBER: ${{needs.tag_release.outputs.version_tag}}
@@ -243,7 +238,6 @@ jobs:
       AWS_ENVIRONMENT: int
       APIGEE_ENVIRONMENT: int-sandbox
       ENABLE_MUTUAL_TLS: true
-      # DEPLOY_SANDBOX: true
       BUILD_ARTIFACT: packaged_sandbox_code
       TRUSTSTORE_FILE: clinical-tracker-sandbox-truststore.pem
       VERSION_NUMBER: ${{needs.tag_release.outputs.version_tag}}
@@ -264,7 +258,6 @@ jobs:
       AWS_ENVIRONMENT: prod
       APIGEE_ENVIRONMENT: prod
       ENABLE_MUTUAL_TLS: true
-      # DEPLOY_SANDBOX: false
       BUILD_ARTIFACT: packaged_code
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       VERSION_NUMBER: ${{needs.tag_release.outputs.version_tag}}

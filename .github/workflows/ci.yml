@@ -105,10 +105,8 @@ jobs:
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.version_tag}}
       STACK_NAME: clinical-tracker
       AWS_ENVIRONMENT: dev
-      # TARGET_ENVIRONMENT: dev
       APIGEE_ENVIRONMENT: internal-dev
       ENABLE_MUTUAL_TLS: true
-      # DEPLOY_SANDBOX: false
       BUILD_ARTIFACT: packaged_code
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       VERSION_NUMBER: ${{needs.tag_release.outputs.version_tag}}
@@ -133,10 +131,8 @@ jobs:
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.version_tag}}
       STACK_NAME: clinical-tracker-sandbox
       AWS_ENVIRONMENT: dev
-      # TARGET_ENVIRONMENT: dev
       APIGEE_ENVIRONMENT: internal-dev-sandbox
       ENABLE_MUTUAL_TLS: true
-      # DEPLOY_SANDBOX: true
       BUILD_ARTIFACT: packaged_sandbox_code
       TRUSTSTORE_FILE: clinical-tracker-sandbox-truststore.pem
       VERSION_NUMBER: ${{needs.tag_release.outputs.version_tag}}
@@ -155,10 +151,8 @@ jobs:
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.version_tag}}
       STACK_NAME: clinical-tracker
       AWS_ENVIRONMENT: qa
-      # TARGET_ENVIRONMENT: qa
       APIGEE_ENVIRONMENT: internal-qa
       ENABLE_MUTUAL_TLS: true
-      # DEPLOY_SANDBOX: false
       BUILD_ARTIFACT: packaged_code
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       VERSION_NUMBER: ${{needs.tag_release.outputs.version_tag}}
