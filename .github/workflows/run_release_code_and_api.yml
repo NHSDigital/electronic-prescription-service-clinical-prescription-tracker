@@ -183,7 +183,7 @@ jobs:
       - name: Deploy mTLS key
         run: |
           PROXYGEN_PATH=$(which proxygen)
-          "$PROXYGEN_PATH" secret put --mtls-cert ~/.proxygen/tmp/client_cert --mtls-key ~/.proxygen/tmp/client_private_key internal-dev clinical-tracker-mtls-1
+          "$PROXYGEN_PATH" secret put --mtls-cert ~/.proxygen/tmp/client_cert.pem --mtls-key ~/.proxygen/tmp/client_private_key.pem internal-dev clinical-tracker-mtls-1
 
       - name: Deploy CPT API
         shell: bash
