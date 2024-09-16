@@ -169,8 +169,6 @@ jobs:
           private_key_path: /home/runner/.proxygen/tmp/client_private_key
           base_url: https://identity.prod.api.platform.nhs.uk/realms/api-producers
           client_secret: https://nhsdigital.github.io/identity-service-jwks/jwks/paas/prescription-clinical-tracker.json
-          username: my-username
-          password: my-password
           EOF
 
           cat <<EOF > ~/.proxygen/settings.yaml
