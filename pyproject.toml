@@ -32,12 +32,11 @@ jsonpath-rw = "^1.4.0"
 semver = "^3.0.2"
 gitpython = "^3.1.42"
 requests = "^2.32.3"
-boto3 = "^1.35.17"
+boto3 = "^1.35.19"
 argparse = "^1.4.0"
 pre-commit = "^3.8.0"
 pytest = "^8.3.3"
-cfn-lint = "^1.12.4"
-pyjwt = {extras = ["crypto"], version = "^2.9.0"}
+cfn-lint = "^1.13.0"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^3.8.0"
