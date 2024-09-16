@@ -143,6 +143,9 @@ jobs:
           aws secretsmanager get-secret-value --secret-id "${client_private_key_arn}" --query SecretString --output text > ~/.proxygen/tmp/client_private_key
           aws secretsmanager get-secret-value --secret-id "${client_cert_arn}" --query SecretString --output text > ~/.proxygen/tmp/client_cert
 
+          proxygen_private_key_arn=$(aws cloudformation list-exports --query "Exports[?Name=='account-resources:account-resources-ClinicalTracker-ProxygenPrivateKey'].Value" --output text)
+          aws secretsmanager get-secret-value --secret-id "${proxygen_private_key_arn}" --query SecretString --output text > ~/.proxygen/tmp/proxygen_private_key
+
       - name: Configure AWS Credentials for api release
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -166,7 +169,7 @@ jobs:
           cat <<EOF > ~/.proxygen/credentials.yaml
           client_id: prescription-clinical-tracker-client
           key_id: eps-clinical-tracker
-          private_key_path: /home/runner/.proxygen/tmp/client_private_key
+          private_key_path: /home/runner/.proxygen/tmp/proxygen_private_key
           base_url: https://identity.prod.api.platform.nhs.uk/realms/api-producers
           client_secret: https://nhsdigital.github.io/identity-service-jwks/jwks/paas/prescription-clinical-tracker.json
           EOF
@@ -180,7 +183,7 @@ jobs:
       - name: Deploy mTLS key
         run: |
           PROXYGEN_PATH=$(which proxygen)
-          "$PROXYGEN_PATH" secret put --mtls-cert ~/.proxygen/tmp/client_cert.pem --mtls-key ~/.proxygen/tmp/client_private_key.pem internal-dev clinical-tracker-mtls-1
+          "$PROXYGEN_PATH" secret put --mtls-cert ~/.proxygen/tmp/client_cert --mtls-key ~/.proxygen/tmp/client_private_key internal-dev clinical-tracker-mtls-1
 
       - name: Deploy CPT API
         shell: bash
