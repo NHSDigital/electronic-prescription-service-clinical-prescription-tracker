@@ -157,7 +157,7 @@ jobs:
       - name: Print client_private_key_path
         run: |
           echo "Client private key path: ~/.proxygen/tmp/client_private_key"
-          ls -l ~/.proxygen/tmp/client_private_key  # Check if the file exists and print its details
+          ls -l ~/.proxygen/tmp/client_private_key
 
       - name: Set up proxygen credentials and settings
         run: |
@@ -166,7 +166,7 @@ jobs:
           cat <<EOF > ~/.proxygen/credentials.yaml
           client_id: prescription-clinical-tracker-client
           key_id: eps-clinical-tracker
-          private_key_path: ~/.proxygen/tmp/client_private_key
+          private_key_path: /home/runner/.proxygen/tmp/client_private_key
           base_url: https://identity.prod.api.platform.nhs.uk/realms/api-producers
           client_secret: https://nhsdigital.github.io/identity-service-jwks/jwks/paas/prescription-clinical-tracker.json
           username: my-username
