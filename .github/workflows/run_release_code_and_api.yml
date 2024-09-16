@@ -156,6 +156,24 @@ jobs:
         run: |
           pip install proxygen-cli
 
+      - name: Set up proxygen credentials and settings
+        run: |
+          mkdir -p ~/.proxygen
+
+          cat <<EOF > ~/.proxygen/credentials.yaml
+          client_id: prescription-clinical-tracker-client
+          key_id: eps-clinical-tracker
+          private_key_path: ~/.proxygen/tmp/client_private_key
+          base_url: https://identity.prod.api.platform.nhs.uk/realms/api-producers
+          client_secret: https://nhsdigital.github.io/identity-service-jwks/jwks/paas/prescription-clinical-tracker.json
+          EOF
+
+          cat <<EOF > ~/.proxygen/settings.yaml
+          api: prescription-clinical-tracker
+          endpoint_url: https://proxygen.prod.api.platform.nhs.uk
+          spec_output_format: json
+          EOF
+
       - name: Deploy mTLS key
         run: |
           PROXYGEN_PATH=$(which proxygen)
