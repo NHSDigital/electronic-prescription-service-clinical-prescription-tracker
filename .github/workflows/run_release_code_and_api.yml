@@ -169,7 +169,7 @@ jobs:
           cat <<EOF > ~/.proxygen/credentials.yaml
           client_id: prescription-clinical-tracker-client
           key_id: eps-clinical-tracker
-          private_key_path: /home/runner/.proxygen/tmp/proxygen_private_key
+          private_key_path: tmp/proxygen_private_key.pem
           base_url: https://identity.prod.api.platform.nhs.uk/realms/api-producers
           client_secret: https://nhsdigital.github.io/identity-service-jwks/jwks/paas/prescription-clinical-tracker.json
           EOF
