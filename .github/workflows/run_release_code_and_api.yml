@@ -139,11 +139,9 @@ jobs:
           mkdir -p ~/.proxygen/tmp
           client_private_key_arn=$(aws cloudformation list-exports --query "Exports[?Name=='account-resources:ClinicalTrackerClientKeySecret'].Value" --output text)
           client_cert_arn=$(aws cloudformation list-exports --query "Exports[?Name=='account-resources:ClinicalTrackerClientCertSecret'].Value" --output text)
+
           aws secretsmanager get-secret-value --secret-id "${client_private_key_arn}" --query SecretString --output text > ~/.proxygen/tmp/client_private_key
           aws secretsmanager get-secret-value --secret-id "${client_cert_arn}" --query SecretString --output text > ~/.proxygen/tmp/client_cert
-          
-          echo "client_private_key_arn=${client_private_key_arn}" >> "$GITHUB_ENV"
-          echo "client_cert_arn=${client_cert_arn}" >> "$GITHUB_ENV"
 
       - name: Configure AWS Credentials for api release
         uses: aws-actions/configure-aws-credentials@v4
@@ -156,6 +154,11 @@ jobs:
         run: |
           pip install proxygen-cli
 
+      - name: Print client_private_key_path
+        run: |
+          echo "Client private key path: ~/.proxygen/tmp/client_private_key"
+          ls -l ~/.proxygen/tmp/client_private_key  # Check if the file exists and print its details
+
       - name: Set up proxygen credentials and settings
         run: |
           mkdir -p ~/.proxygen
@@ -166,6 +169,8 @@ jobs:
           private_key_path: ~/.proxygen/tmp/client_private_key
           base_url: https://identity.prod.api.platform.nhs.uk/realms/api-producers
           client_secret: https://nhsdigital.github.io/identity-service-jwks/jwks/paas/prescription-clinical-tracker.json
+          username: my-username
+          password: my-password
           EOF
 
           cat <<EOF > ~/.proxygen/settings.yaml
