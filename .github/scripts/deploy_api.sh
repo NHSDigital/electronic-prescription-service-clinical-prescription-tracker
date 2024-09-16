@@ -125,6 +125,9 @@ if [[ "${DRY_RUN}" == "false" ]]; then
     jq -n --argfile spec "${SPEC_PATH}" \
         --arg apiName "${apigee_api}" \
         --arg environment "${APIGEE_ENVIRONMENT}" \
+        --arg secretName "clinical-tracker-mtls-1" \
+        --arg secretKey "${client_private_key}" \
+        --arg secretCert "${client_cert}" \
         --arg instance "${instance}" \
         --arg kid "${PROXYGEN_KID}" \
         --arg proxygenSecretName "${proxygen_private_key_arn}" \
