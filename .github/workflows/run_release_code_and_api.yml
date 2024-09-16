@@ -181,8 +181,8 @@ jobs:
         run: |
           PROXYGEN_PATH=$(which proxygen)
           $PROXYGEN_PATH secret put \
-            --mtls-cert /home/runner/.proxygen/tmp/client_cert \
-            --mtls-key /home/runner/.proxygen/tmp/client_private_key \
+            --mtls-cert ~/.proxygen/tmp/client_cert \
+            --mtls-key ~/.proxygen/tmp/client_private_key \
             internal-dev clinical-tracker-mtls-1
 
       - name: Deploy CPT API
