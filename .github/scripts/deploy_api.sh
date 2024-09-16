@@ -93,7 +93,7 @@ echo "Retrieving proxygen credentials"
 # Retrieve the proxygen private key and client private key and cert from AWS Secrets Manager
 proxygen_private_key_arn=$(aws cloudformation list-exports --query "Exports[?Name=='account-resources:${PROXYGEN_PRIVATE_KEY_NAME}'].Value" --output text)
 
-if [[ "${is_pull_request}" == "false" ]]; then
+if [[ "${is_pull_request}" == "true" ]]; then
     echo
     echo "Store the secret used for mutual TLS to AWS using Proxygen proxy lambda"
     if [[ "${DRY_RUN}" == "false" ]]; then
@@ -125,9 +125,6 @@ if [[ "${DRY_RUN}" == "false" ]]; then
     jq -n --argfile spec "${SPEC_PATH}" \
         --arg apiName "${apigee_api}" \
         --arg environment "${APIGEE_ENVIRONMENT}" \
-        --arg secretName "clinical-tracker-mtls-1" \
-        --arg secretKey "${client_private_key}" \
-        --arg secretCert "${client_cert}" \
         --arg instance "${instance}" \
         --arg kid "${PROXYGEN_KID}" \
         --arg proxygenSecretName "${proxygen_private_key_arn}" \
