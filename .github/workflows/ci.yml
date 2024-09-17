@@ -2,14 +2,17 @@ name: merge to main workflow
 
 on:
   push:
-    branches: [main]
+    branches: 
+      - main
 
 env:
   BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
 
 jobs:
   quality_checks:
-    uses: ./.github/workflows/quality_checks.yml
+    uses: NHSDigital/eps-workflow-quality-checks/workflows/quality-checks.yml@aea-000-dev
+    with:
+      node_version: "20"
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
