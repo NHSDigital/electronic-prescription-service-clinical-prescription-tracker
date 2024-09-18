@@ -31,7 +31,7 @@ jobs:
         with:
           script: |
             if (context.issue.number) {
-              // Return the issue number if present
+              // Return issue number if present
               return context.issue.number;
             } else {
               // Otherwise return issue number from commit
