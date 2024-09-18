@@ -9,6 +9,10 @@
 			"path": "../packages/common"
 		},
 		{
+			"name": "packages/prescriptionSearch",
+			"path": "../packages/prescriptionSearch"
+		},
+		{
 			"name": "packages/sandbox",
 			"path": "../packages/sandbox"
 		},
@@ -61,6 +65,7 @@
 			"pino",
 			"pollable",
 			"powertools",
+			"prescriptionSearch",
 			"Prosthetist",
 			"querystring",
 			"reingest",
