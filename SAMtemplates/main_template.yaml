@@ -266,3 +266,53 @@ Resources:
       LogGroupName: !Ref ApiGwAccessLogs
       FilterPattern: "" # All logs
       DestinationArn: !ImportValue lambda-resources:SplunkDeliveryStream
+
+  # Clinical View lambda
+  ClinicalViewResources:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: lambda_resources.yaml
+      Parameters:
+        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        SplunkSubscriptionFilterRole: !ImportValue lambda-resources:SplunkSubscriptionFilterRole
+        SplunkDeliveryStream: !ImportValue lambda-resources:SplunkDeliveryStream
+        EnableSplunk: !Ref EnableSplunk
+        LambdaName: !Sub "${AWS::StackName}-clinicalViewLambda"
+        AccessToSpine: "true"
+        LogRetentionDays: !Ref LogRetentionDays
+  ClinicalViewLambda:
+    Type: AWS::Serverless::Function # NOSONAR - The scan complains that this has no log group, but it's defined in the lambda resources above.
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-clinicalViewLambda"
+      CodeUri: ../packages
+      Handler: handler.handler
+      Role: !GetAtt ClinicalViewResources.Outputs.LambdaRoleArn
+      Environment:
+        Variables:
+          VERSION_NUMBER: !Ref VersionNumber
+          COMMIT_ID: !Ref CommitId
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/get-secrets-layer
+      Layers:
+        - !Ref GetSecretsLayer
+      # Events:
+      #   status:
+      #     Type: HttpApi
+      #     Properties:
+      #       ApiId: !Ref HttpApiGateway
+      #       Path: /clinical-view
+      #       Method: get
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      guard:
+        SuppressedRules:
+          - LAMBDA_DLQ_CHECK
+          - LAMBDA_INSIDE_VPC
+          - LAMBDA_CONCURRENCY_CHECK
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        tsconfig: clinicalViewLambda/tsconfig.json
+        packages: bundle
+        EntryPoints:
+          - clinicalViewLambda/src/handler.ts

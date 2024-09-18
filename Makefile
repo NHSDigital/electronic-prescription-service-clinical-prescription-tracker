@@ -111,6 +111,7 @@ lint-node: compile-node
 	npm run lint --workspace packages/sandbox
 	npm run lint --workspace packages/statusLambda
 	npm run lint --workspace packages/common/testing
+	npm run lint --workspace packages/clinicalViewLambda
 
 lint-samtemplates:
 	poetry run cfn-lint -I "SAMtemplates/**/*.y*ml" 2>&1 | awk '/Run scan/ { print } /^[EW][0-9]/ { print; getline; print }'
@@ -129,6 +130,7 @@ lint: lint-node lint-samtemplates lint-python lint-githubactions lint-githubacti
 test: compile
 	npm run test --workspace packages/sandbox
 	npm run test --workspace packages/statusLambda
+	npm run test --workspace packages/clinicalViewLambda
 
 clean:
 	rm -rf packages/sandbox/coverage
@@ -137,6 +139,7 @@ clean:
 	rm -rf packages/sandbox/lib
 	rm -rf packages/statusLambda/lib
 	rm -rf packages/common/testing/lib
+	rm -rf packages/clinicalViewLambda/lib
 	rm -rf .aws-sam
 
 deep-clean: clean
@@ -149,6 +152,7 @@ check-licenses-node:
 	npm run check-licenses
 	npm run check-licenses --workspace packages/sandbox
 	npm run check-licenses --workspace packages/statusLambda
+	npm run check-licenses --workspace packages/clinicalViewLambda
 
 check-licenses-python:
 	scripts/check_python_licenses.sh
