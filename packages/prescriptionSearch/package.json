@@ -1,7 +1,7 @@
 {
   "name": "prescriptionSearch",
   "version": "1.0.0",
-  "description": "prescriptionSearch",
+  "description": "Call prescription search interaction",
   "main": "prescriptionSearch.js",
   "author": "NHS Digital",
   "license": "MIT",
@@ -17,7 +17,8 @@
     "@aws-lambda-powertools/logger": "^2.8.0",
     "@middy/core": "^5.4.7",
     "@middy/input-output-logger": "^5.5.0",
-    "@nhs/fhir-middy-error-handler": "^2.1.3"
+    "@nhs/fhir-middy-error-handler": "^2.1.3",
+    "@nhsdigital/eps-spine-client": "npm:@nhsdigital/eps-spine-client@^2.0.13"
   },
   "devDependencies": {
     "@clinicaltracker_common/testing": "^1.0.0"
