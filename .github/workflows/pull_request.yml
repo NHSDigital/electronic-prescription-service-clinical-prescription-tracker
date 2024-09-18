@@ -9,10 +9,12 @@ env:
 
 jobs:
   quality_checks:
-    uses: ./.github/workflows/quality_checks.yml
+    uses: NHSDigital/eps-workflow-quality-checks/.github/workflows/quality-checks.yml@main
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
+    with:
+      node_version: "20"
+  
   pr_title_format_check:
     uses: ./.github/workflows/pr_title_check.yml
 
@@ -32,7 +34,7 @@ jobs:
               // Return issue number if present
               return context.issue.number;
             } else {
-              // Otherwise return issue number from commit
+              // Otherwise return the issue number from commit
               return (
                 await github.rest.repos.listPullRequestsAssociatedWithCommit({
                   commit_sha: context.sha,
