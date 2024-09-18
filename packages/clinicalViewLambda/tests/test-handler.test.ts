@@ -23,7 +23,7 @@ describe("clinical view", () => {
     process.env.TargetSpineServer = "live"
 
     const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
-    const logger = new Logger({serviceName: "getMyPrescriptions", logLevel: LOG_LEVEL})
+    const logger = new Logger({serviceName: "clinicalViewLambda", logLevel: LOG_LEVEL})
     const spineClient = createSpineClient(logger)
     const HandlerParams = {logger, spineClient}
     handler = newHandler(HandlerParams)
