@@ -7,7 +7,7 @@ import middy from "@middy/core"
 import {ClinicalViewParams} from "@nhsdigital/eps-spine-client/lib/live-spine-client"
 
 const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
-export const logger = new Logger({serviceName: "getMyPrescriptions", logLevel: LOG_LEVEL})
+export const logger = new Logger({serviceName: "clinicalViewLambda", logLevel: LOG_LEVEL})
 const spineClient = createSpineClient(logger)
 
 type HandlerParams = {
