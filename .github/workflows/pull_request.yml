@@ -34,7 +34,7 @@ jobs:
               // Return issue number if present
               return context.issue.number;
             } else {
-              // Otherwise return issue number from commit
+              // Otherwise return the issue number from commit
               return (
                 await github.rest.repos.listPullRequestsAssociatedWithCommit({
                   commit_sha: context.sha,
