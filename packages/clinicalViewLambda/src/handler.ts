@@ -15,7 +15,7 @@ type HandlerParams = {
     spineClient: SpineClient
 }
 
-export const apiGatewayHandler = (params: HandlerParams, event: APIGatewayEvent) => {
+export const apiGatewayHandler = async (params: HandlerParams, event: APIGatewayEvent) => {
   const inboundHeaders = event.headers
 
   const requestId = inboundHeaders["apigw-request-id"] ?? ""
@@ -37,7 +37,7 @@ export const apiGatewayHandler = (params: HandlerParams, event: APIGatewayEvent)
     jobRoleCode
   }
 
-  return params.spineClient.clinicalView(inboundHeaders, clinicalViewParams)
+  return await params.spineClient.clinicalView(inboundHeaders, clinicalViewParams)
 }
 
 export const newHandler = (params: HandlerParams) => {
