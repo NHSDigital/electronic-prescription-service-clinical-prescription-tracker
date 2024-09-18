@@ -5,10 +5,12 @@ import {LogLevel} from "@aws-lambda-powertools/logger/types"
 import middy from "@middy/core"
 import inputOutputLogger from "@middy/input-output-logger"
 import errorHandler from "@nhs/fhir-middy-error-handler"
-import successData from "../examples/GetMyPrescriptions/Bundle/success.json"
+// import {createSpineClient} from "@nhsdigital/eps-spine-client"
+// import {SpineClient} from "@nhsdigital/eps-spine-client/lib/spine-client"
 
 const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
 export const logger = new Logger({serviceName: "prescriptionSearch", logLevel: LOG_LEVEL})
+// const spineClient = createSpineClient(logger)
 
 /* eslint-disable  max-len */
 
