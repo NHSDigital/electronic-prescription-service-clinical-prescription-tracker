@@ -11,7 +11,8 @@ import {createSpineClient} from "@nhsdigital/eps-spine-client"
 const mock = new MockAdapter(axios)
 
 const MOCK_EVENT: APIGatewayEvent = {
-  headers:{}
+  headers:{},
+  queryStringParameters: {}
 } as unknown as APIGatewayEvent
 
 describe("clinical view", () => {
