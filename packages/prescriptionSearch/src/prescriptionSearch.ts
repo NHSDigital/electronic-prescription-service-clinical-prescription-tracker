@@ -24,15 +24,14 @@ export const apiGatewayHandler = async (
   params: HandlerParams,
   event: APIGatewayEvent
 ): Promise<APIGatewayProxyResult> => {
-  // Extract inbound headers
+  // Extract inbound headers and provide fallbacks for missing headers
   const inboundHeaders = event.headers
 
-  // Extract necessary fields from headers or default to empty strings
-  const requestId = inboundHeaders["apigw-request-id"] ?? ""
-  const organizationId = inboundHeaders["nhsd-organization-uuid"] ?? ""
-  const sdsRoleProfileId = inboundHeaders["nhsd-session-urid"] ?? ""
-  const sdsId = inboundHeaders["nhsd-identity-uuid"] ?? ""
-  const jobRoleCode = inboundHeaders["nhsd-session-jobrole"] ?? ""
+  const requestId = inboundHeaders["apigw-request-id"] || "default-request-id"
+  const organizationId = inboundHeaders["nhsd-organization-uuid"] || ""
+  const sdsRoleProfileId = inboundHeaders["nhsd-session-urid"] || ""
+  const sdsId = inboundHeaders["nhsd-identity-uuid"] || ""
+  const jobRoleCode = inboundHeaders["nhsd-session-jobrole"] || ""
 
   // Extract required query parameter or default to empty string
   const prescriptionId = event.queryStringParameters?.prescriptionId ?? ""
@@ -53,6 +52,17 @@ export const apiGatewayHandler = async (
   // Build creationDateRange if any date is provided
   const creationDateRange = lowDate || highDate ? {lowDate, highDate} : undefined
 
+  // Log the trace IDs for observability
+  const traceIDs = {
+    "apigw-request-id": requestId,
+    "nhsd-organization-uuid": organizationId,
+    "nhsd-session-urid": sdsRoleProfileId,
+    "nhsd-identity-uuid": sdsId,
+    "nhsd-session-jobrole": jobRoleCode
+  }
+  params.logger.appendKeys(traceIDs)
+  params.logger.info(`Starting prescription search for request: ${requestId}`)
+
   // Build the prescription search parameters object
   const prescriptionSearchParams: PrescriptionSearchParams = {
     requestId,
@@ -65,11 +75,19 @@ export const apiGatewayHandler = async (
     creationDateRange
   }
 
-  // Call the Spine Client's prescriptionSearch method with headers and parameters
-  const response = await params.spineClient.prescriptionSearch(inboundHeaders, prescriptionSearchParams)
-  return {
-    statusCode: response.status,
-    body: JSON.stringify(response.data)
+  try {
+    // Call the Spine Client's prescriptionSearch method with headers and parameters
+    const response = await params.spineClient.prescriptionSearch(inboundHeaders, prescriptionSearchParams)
+    return {
+      statusCode: response.status,
+      body: JSON.stringify(response.data)
+    }
+  } catch (error) {
+    params.logger.error("Error during Spine prescription search", {error})
+    return {
+      statusCode: 500,
+      body: JSON.stringify({message: "Internal server error"})
+    }
   }
 }
 
