@@ -4,6 +4,7 @@ import {Logger} from "@aws-lambda-powertools/logger"
 import {createSpineClient} from "@nhsdigital/eps-spine-client"
 import {APIGatewayEvent, APIGatewayProxyResult} from "aws-lambda"
 import middy from "@middy/core"
+import {v4 as uuidv4} from "uuid"
 import {PrescriptionSearchParams} from "@nhsdigital/eps-spine-client/lib/live-spine-client"
 
 // Set log level from environment variable
@@ -64,9 +65,15 @@ export const apiGatewayHandler = async (
     creationDateRange
   }
 
+  // Add wsa:MessageID header
+  const headers = {
+    ...inboundHeaders,
+    "wsa:MessageID": uuidv4()
+  }
+
   try {
     // Call the Spine Client's prescriptionSearch method with headers and parameters
-    const response = await params.spineClient.prescriptionSearch(inboundHeaders, prescriptionSearchParams)
+    const response = await params.spineClient.prescriptionSearch(headers, prescriptionSearchParams)
     return {
       statusCode: response.status,
       body: JSON.stringify(response.data)
