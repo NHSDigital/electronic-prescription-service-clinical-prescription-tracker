@@ -4,6 +4,7 @@ import {Logger} from "@aws-lambda-powertools/logger"
 import {createSpineClient} from "@nhsdigital/eps-spine-client"
 import {APIGatewayEvent, APIGatewayProxyResult} from "aws-lambda"
 import middy from "@middy/core"
+import {v4 as uuidv4} from "uuid"
 import {PrescriptionSearchParams} from "@nhsdigital/eps-spine-client/lib/live-spine-client"
 
 // Set log level from environment variable
@@ -19,14 +20,33 @@ type HandlerParams = {
   spineClient: SpineClient
 }
 
+// Define a type for the sanitised error
+interface SanitisedError {
+  message: string
+  name?: string
+}
+
+const sanitiseError = (error: unknown): SanitisedError => {
+  const sanitisedError: SanitisedError = {message: "An error occurred."}
+
+  // Check if error is an instance of Error
+  if (error instanceof Error) {
+    sanitisedError.message = error.message
+    sanitisedError.name = error.name
+  } else {
+    sanitisedError.message = String(error)
+  }
+  return sanitisedError
+}
+
 // Main handler logic to process API Gateway event
 export const apiGatewayHandler = async (
   params: HandlerParams,
   event: APIGatewayEvent
 ): Promise<APIGatewayProxyResult> => {
-  // Extract inbound headers and provide fallbacks for missing headers
-  const inboundHeaders = event.headers
+  const inboundHeaders = event.headers || {}
 
+  // Provide fallbacks for missing headers
   const requestId = inboundHeaders["apigw-request-id"] || "default-request-id"
   const organizationId = inboundHeaders["nhsd-organization-uuid"] || ""
   const sdsRoleProfileId = inboundHeaders["nhsd-session-urid"] || ""
@@ -50,18 +70,7 @@ export const apiGatewayHandler = async (
   const highDate = event.queryStringParameters?.highDate
 
   // Build creationDateRange if any date is provided
-  const creationDateRange = lowDate || highDate ? {lowDate, highDate} : undefined
-
-  // Log the trace IDs for observability
-  const traceIDs = {
-    "apigw-request-id": requestId,
-    "nhsd-organization-uuid": organizationId,
-    "nhsd-session-urid": sdsRoleProfileId,
-    "nhsd-identity-uuid": sdsId,
-    "nhsd-session-jobrole": jobRoleCode
-  }
-  params.logger.appendKeys(traceIDs)
-  params.logger.info(`Starting prescription search for request: ${requestId}`)
+  const creationDateRange = (lowDate || highDate) ? {lowDate, highDate} : undefined
 
   // Build the prescription search parameters object
   const prescriptionSearchParams: PrescriptionSearchParams = {
@@ -75,15 +84,22 @@ export const apiGatewayHandler = async (
     creationDateRange
   }
 
+  // Add wsa:MessageID header
+  const headers = {
+    ...inboundHeaders,
+    "wsa:MessageID": uuidv4()
+  }
+
   try {
     // Call the Spine Client's prescriptionSearch method with headers and parameters
-    const response = await params.spineClient.prescriptionSearch(inboundHeaders, prescriptionSearchParams)
+    const response = await params.spineClient.prescriptionSearch(headers, prescriptionSearchParams)
     return {
       statusCode: response.status,
       body: JSON.stringify(response.data)
     }
   } catch (error) {
-    params.logger.error("Error during Spine prescription search", {error})
+    const sanitisedError = sanitiseError(error)
+    params.logger.error("Error during Spine prescription search", {error: sanitisedError})
     return {
       statusCode: 500,
       body: JSON.stringify({message: "Internal server error"})
@@ -93,8 +109,7 @@ export const apiGatewayHandler = async (
 
 // Wrap handler with middleware using middy
 export const newHandler = (params: HandlerParams) => {
-  const newHandler = middy((event: APIGatewayEvent) => apiGatewayHandler(params, event))
-  return newHandler
+  return middy((event: APIGatewayEvent) => apiGatewayHandler(params, event))
 }
 
 // Define default handler parameters
