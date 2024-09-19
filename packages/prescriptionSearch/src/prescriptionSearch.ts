@@ -68,7 +68,7 @@ export const apiGatewayHandler = async (
   // Add wsa:MessageID header
   const headers = {
     ...inboundHeaders,
-    "wsa:MessageID": uuidv4()
+    "wsa:MessageID": `uuid:${uuidv4()}`
   }
 
   try {
