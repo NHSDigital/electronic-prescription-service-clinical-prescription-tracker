@@ -5,6 +5,7 @@
 This is the AWS layer that provides an API for Clinical Prescription Tracker.
 
 - `packages/common/testing` Module that contains some test data used for tests in other modules.
+- `packages/prescriptionSearch` Calls the Prescription Search interaction.
 - `packages/sandbox/` Returns [static data](./packages/sandbox/examples/GetMyPrescriptions/Bundle/success.json) from the Sandbox.
 - `packages/statusLambda/` Returns the status of the getMyPrescriptions endpoint.
 - `SAMtemplates/` Contains the SAM templates used to define the stacks.

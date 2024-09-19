@@ -266,3 +266,55 @@ Resources:
       LogGroupName: !Ref ApiGwAccessLogs
       FilterPattern: "" # All logs
       DestinationArn: !ImportValue lambda-resources:SplunkDeliveryStream
+
+  PrescriptionSearch:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-PrescriptionSearch"
+      CodeUri: ../packages
+      Handler: prescriptionSearch.handler
+      Role: !GetAtt PrescriptionSearchResources.Outputs.LambdaRoleArn
+      Environment:
+        Variables:
+          VERSION_NUMBER: !Ref VersionNumber
+          COMMIT_ID: !Ref CommitId
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/get-secrets-layer
+      Layers:
+        - !Ref GetSecretsLayer
+    Metadata:
+      BuildMethod: esbuild
+      guard:
+        SuppressedRules:
+          - LAMBDA_DLQ_CHECK
+          - LAMBDA_INSIDE_VPC
+          - LAMBDA_CONCURRENCY_CHECK
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        tsconfig: prescriptionSearch/tsconfig.json
+        packages: bundle
+        EntryPoints:
+          - prescriptionSearch/src/prescriptionSearch.ts
+          
+  PrescriptionSearchResources:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: lambda_resources.yaml
+      Parameters:
+        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        SplunkSubscriptionFilterRole: !ImportValue lambda-resources:SplunkSubscriptionFilterRole
+        SplunkDeliveryStream: !ImportValue lambda-resources:SplunkDeliveryStream
+        EnableSplunk: !Ref EnableSplunk
+        LambdaName: !Sub "${AWS::StackName}-PrescriptionSearch"
+        AccessToSpine: "true"
+        LogRetentionDays: !Ref LogRetentionDays
+
+Outputs:
+  PrescriptionSearchFunctionName:
+    Description: The function name of the PrescriptionSearch lambda
+    Value: !Ref PrescriptionSearch
+
+  PrescriptionSearchFunctionArn:
+    Description: The function ARN of the PrescriptionSearch lambda
+    Value: !GetAtt PrescriptionSearch.Arn
