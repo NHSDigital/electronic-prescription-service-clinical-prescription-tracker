@@ -37,7 +37,12 @@ export const apiGatewayHandler = async (params: HandlerParams, event: APIGateway
     jobRoleCode
   }
 
-  return await params.spineClient.clinicalView(inboundHeaders, clinicalViewParams)
+  const response = await params.spineClient.clinicalView(inboundHeaders, clinicalViewParams)
+
+  return {
+    data: response.data,
+    status: response.status
+  }
 }
 
 export const newHandler = (params: HandlerParams) => {
