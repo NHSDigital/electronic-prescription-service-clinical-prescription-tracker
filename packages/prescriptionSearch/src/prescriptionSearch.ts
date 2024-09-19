@@ -20,25 +20,6 @@ type HandlerParams = {
   spineClient: SpineClient
 }
 
-// Define a type for the sanitised error
-interface SanitisedError {
-  message: string
-  name?: string
-}
-
-const sanitiseError = (error: unknown): SanitisedError => {
-  const sanitisedError: SanitisedError = {message: "An error occurred."}
-
-  // Check if error is an instance of Error
-  if (error instanceof Error) {
-    sanitisedError.message = error.message
-    sanitisedError.name = error.name
-  } else {
-    sanitisedError.message = String(error)
-  }
-  return sanitisedError
-}
-
 // Main handler logic to process API Gateway event
 export const apiGatewayHandler = async (
   params: HandlerParams,
@@ -98,8 +79,7 @@ export const apiGatewayHandler = async (
       body: JSON.stringify(response.data)
     }
   } catch (error) {
-    const sanitisedError = sanitiseError(error)
-    params.logger.error("Error during Spine prescription search", {error: sanitisedError})
+    params.logger.error("Error during Spine prescription search", {error})
     return {
       statusCode: 500,
       body: JSON.stringify({message: "Internal server error"})
