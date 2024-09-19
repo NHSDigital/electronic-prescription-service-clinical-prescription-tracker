@@ -267,6 +267,20 @@ Resources:
       FilterPattern: "" # All logs
       DestinationArn: !ImportValue lambda-resources:SplunkDeliveryStream
 
+  # Prescription Search Lambda
+  PrescriptionSearchResources:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: lambda_resources.yaml
+      Parameters:
+        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        SplunkSubscriptionFilterRole: !ImportValue lambda-resources:SplunkSubscriptionFilterRole
+        SplunkDeliveryStream: !ImportValue lambda-resources:SplunkDeliveryStream
+        EnableSplunk: !Ref EnableSplunk
+        LambdaName: !Sub "${AWS::StackName}-PrescriptionSearch"
+        AccessToSpine: "true"
+        LogRetentionDays: !Ref LogRetentionDays
+
   PrescriptionSearch:
     Type: AWS::Serverless::Function
     Properties:
@@ -296,25 +310,3 @@ Resources:
         packages: bundle
         EntryPoints:
           - prescriptionSearch/src/prescriptionSearch.ts
-          
-  PrescriptionSearchResources:
-    Type: AWS::Serverless::Application
-    Properties:
-      Location: lambda_resources.yaml
-      Parameters:
-        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
-        SplunkSubscriptionFilterRole: !ImportValue lambda-resources:SplunkSubscriptionFilterRole
-        SplunkDeliveryStream: !ImportValue lambda-resources:SplunkDeliveryStream
-        EnableSplunk: !Ref EnableSplunk
-        LambdaName: !Sub "${AWS::StackName}-PrescriptionSearch"
-        AccessToSpine: "true"
-        LogRetentionDays: !Ref LogRetentionDays
-
-Outputs:
-  PrescriptionSearchFunctionName:
-    Description: The function name of the PrescriptionSearch lambda
-    Value: !Ref PrescriptionSearch
-
-  PrescriptionSearchFunctionArn:
-    Description: The function ARN of the PrescriptionSearch lambda
-    Value: !GetAtt PrescriptionSearch.Arn
