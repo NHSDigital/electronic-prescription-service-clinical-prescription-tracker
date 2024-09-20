@@ -38,10 +38,9 @@ export const apiGatewayHandler = async (
   }
 
   const nhsNumber = event.queryStringParameters?.nhsNumber
-
-  // const lowDate = event.queryStringParameters?.lowDate
-  // const highDate = event.queryStringParameters?.highDate
-  // const creationDateRange = (lowDate || highDate) ? {lowDate, highDate} : undefined
+  const lowDate = event.queryStringParameters?.lowDate
+  const highDate = event.queryStringParameters?.highDate
+  const creationDateRange = (lowDate || highDate) ? {lowDate, highDate} : undefined
 
   const prescriptionSearchParams: PrescriptionSearchParams = {
     requestId,
@@ -50,7 +49,8 @@ export const apiGatewayHandler = async (
     sdsRoleProfileId,
     sdsId,
     jobRoleCode,
-    nhsNumber
+    nhsNumber,
+    creationDateRange
   }
 
   try {
