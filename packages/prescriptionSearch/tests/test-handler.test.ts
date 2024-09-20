@@ -37,7 +37,7 @@ describe("Unit test for app handler", () => {
     const response = await handler(event, context)
 
     expect(mock.history.post.length).toBe(1)
-    expect(JSON.parse(response.body)).toEqual({data: "success"})
+    expect(response.body).toEqual({data: "success"})
   })
 
   test("should handle missing required query parameter (prescriptionId)", async () => {
@@ -46,7 +46,7 @@ describe("Unit test for app handler", () => {
 
     const response = await handler(event, context)
 
-    expect(mock.history.post.length).toBe(0) // No API call should be made
+    expect(mock.history.post.length).toBe(0)
     expect(response).toEqual({
       statusCode: 400,
       body: JSON.stringify({message: "Missing required query parameter: prescriptionId"})
@@ -71,7 +71,7 @@ describe("Unit test for app handler", () => {
     const response = await handler(event, context)
 
     expect(mock.history.post.length).toBe(1)
-    expect(JSON.parse(response.body)).toEqual({data: "success"})
+    expect(response.body).toEqual({data: "success"})
   })
 
   test("should build creationDateRange when dates are provided", async () => {
@@ -91,16 +91,16 @@ describe("Unit test for app handler", () => {
     const response = await handler(event, context)
 
     expect(mock.history.post.length).toBe(1)
-    expect(JSON.parse(response.body)).toEqual({data: "success"})
+    expect(response.body).toEqual({data: "success"})
   })
 
   test("should initialize the logger with correct parameters", () => {
     const logger = new Logger({serviceName: "prescriptionSearch", logLevel: LOG_LEVEL})
-    expect(logger).toBeDefined() // Check if logger is initialized
+    expect(logger).toBeDefined()
   })
 
   test("should create a spine client", () => {
     const spineClient = createSpineClient(new Logger({serviceName: "prescriptionSearch", logLevel: LOG_LEVEL}))
-    expect(spineClient).toBeDefined() // Check if client is created
+    expect(spineClient).toBeDefined()
   })
 })

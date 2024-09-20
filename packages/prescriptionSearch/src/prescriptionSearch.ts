@@ -57,7 +57,7 @@ export const apiGatewayHandler = async (
     const response = await params.spineClient.prescriptionSearch(inboundHeaders, prescriptionSearchParams)
     return {
       statusCode: response.status,
-      body: JSON.stringify(response.data)
+      body: response.data
     }
   } catch (error) {
     params.logger.error("Error during Spine prescription search", {error})
