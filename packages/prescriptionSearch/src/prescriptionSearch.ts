@@ -53,18 +53,11 @@ export const apiGatewayHandler = async (
     creationDateRange
   }
 
-  try {
-    const response = await params.spineClient.prescriptionSearch(inboundHeaders, prescriptionSearchParams)
-    return {
-      statusCode: response.status,
-      body: response.data
-    }
-  } catch (error) {
-    params.logger.error("Error during Spine prescription search")
-    return {
-      statusCode: 500,
-      body: JSON.stringify({message: "Internal server error"})
-    }
+  const response = await params.spineClient.prescriptionSearch(inboundHeaders, prescriptionSearchParams)
+
+  return {
+    statusCode: response.status,
+    body: response.data
   }
 }
 
