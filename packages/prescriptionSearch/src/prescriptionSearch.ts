@@ -60,7 +60,7 @@ export const apiGatewayHandler = async (
       body: response.data
     }
   } catch (error) {
-    params.logger.error("Error during Spine prescription search", {error})
+    params.logger.error("Error during Spine prescription search")
     return {
       statusCode: 500,
       body: JSON.stringify({message: "Internal server error"})
