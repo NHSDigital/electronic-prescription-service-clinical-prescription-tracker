@@ -88,7 +88,7 @@ Resources:
         StackName: AWS::StackName
         LambdaName: !Sub ${AWS::StackName}-Sandbox
         LambdaArn: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${AWS::StackName}-Sandbox
-        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        CloudWatchKMSKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
         SplunkSubscriptionFilterRole: !ImportValue lambda-resources:SplunkSubscriptionFilterRole
         SplunkDeliveryStreamArn: !ImportValue lambda-resources:SplunkDeliveryStream
         EnableSplunk: !Ref EnableSplunk
@@ -133,7 +133,7 @@ Resources:
         StackName: AWS::StackName
         LambdaName: !Sub ${AWS::StackName}-status
         LambdaArn: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${AWS::StackName}-status
-        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        CloudWatchKMSKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
         SplunkSubscriptionFilterRole: !ImportValue lambda-resources:SplunkSubscriptionFilterRole
         SplunkDeliveryStreamArn: !ImportValue lambda-resources:SplunkDeliveryStream
         EnableSplunk: !Ref EnableSplunk

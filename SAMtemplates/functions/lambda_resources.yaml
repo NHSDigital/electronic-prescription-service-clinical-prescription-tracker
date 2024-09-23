@@ -28,7 +28,7 @@ Parameters:
   LogRetentionInDays:
     Type: Number
 
-  CloudWatchKMSKey:
+  CloudWatchKMSKeyId:
     Type: String
     Description: Cloudwatch KMS key
 
@@ -116,7 +116,7 @@ Resources:
     Properties:
       LogGroupName: !Sub "/aws/lambda/${LambdaName}"
       RetentionInDays: !Ref LogRetentionInDays
-      KmsKeyId: !Ref CloudWatchKMSKey
+      KmsKeyId: !Ref CloudWatchKMSKeyId
     Metadata:
       guard:
         SuppressedRules:
