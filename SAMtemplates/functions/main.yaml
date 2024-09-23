@@ -57,9 +57,9 @@ Conditions:
     - true
     - !Ref EnableMutualTLS
 
-  # ShouldUseSplunk: !Equals
-  #   - true
-  #   - !Ref EnableSplunk
+  ShouldUseSplunk: !Equals
+    - true
+    - !Ref EnableSplunk
 
 Resources:
   GetSecretsLayer:
@@ -257,7 +257,8 @@ Resources:
           Fn::Join:
             - "."
             - - !Ref "AWS::StackName"
-              - Fn::ImportValue: eps-route53-resources:EPS-domain
+              - "functions"
+              - !Select [ 5, !Split [ ":", Fn::ImportValue: eps-route53-resources:EPS-domain ] ]
         CertificateArn: !Ref GenerateCertificate
         Route53:
           HostedZoneId:
@@ -290,64 +291,64 @@ Resources:
           - ShouldUseMutualTLS
           - true
           - !Ref "AWS::NoValue"
-      # AccessLogSettings:
-      #   DestinationArn: !GetAtt ApiGwAccessLogs.Arn
-      #   Format: "{ \
-      #     \"requestTime\": \"$context.requestTime\", \
-      #     \"apiId\": \"$context.apiId\", \
-      #     \"accountId\": \"$context.accountId\", \
-      #     \"resourcePath\": \"$context.resourcePath\", \
-      #     \"stage\": \"$context.stage\", \
-      #     \"requestId\": \"$context.requestId\", \
-      #     \"extendedRequestId\": \"$context.extendedRequestId\", \
-      #     \"status\": \"$context.status\", \
-      #     \"httpMethod\": \"$context.httpMethod\", \
-      #     \"protocol\": \"$context.protocol\", \
-      #     \"path\": \"$context.path\", \
-      #     \"responseLatency\": \"$context.responseLatency\", \
-      #     \"responseLength\": \"$context.responseLength\",
-      #     \"domainName\": \"$context.domainName\", \
-      #     \"identity\": { \
-      #     \"sourceIp\": \"$context.identity.sourceIp\", \
-      #     \"userAgent\": \"$context.identity.userAgent\", \
-      #     \"clientCert\":{ \
-      #     \"subjectDN\": \"$context.identity.clientCert.subjectDN\", \
-      #     \"issuerDN\": \"$context.identity.clientCert.issuerDN\", \
-      #     \"serialNumber\": \"$context.identity.clientCert.serialNumber\", \
-      #     \"validityNotBefore\": \"$context.identity.clientCert.validity.notBefore\", \
-      #     \"validityNotAfter\": \"$context.identity.clientCert.validity.notAfter\" \
-      #     }}, \
-      #     \"integration\":{ \
-      #     \"error\": \"$context.integration.error\", \
-      #     \"integrationStatus\": \"$context.integration.integrationStatus\", \
-      #     \"latency\": \"$context.integration.latency\", \
-      #     \"requestId\": \"$context.integration.requestId\", \
-      #     \"status\": \"$context.integration.status\" \
-      #     }}"
+      AccessLogSettings:
+        DestinationArn: !GetAtt ApiGwAccessLogs.Arn
+        Format: "{ \
+          \"requestTime\": \"$context.requestTime\", \
+          \"apiId\": \"$context.apiId\", \
+          \"accountId\": \"$context.accountId\", \
+          \"resourcePath\": \"$context.resourcePath\", \
+          \"stage\": \"$context.stage\", \
+          \"requestId\": \"$context.requestId\", \
+          \"extendedRequestId\": \"$context.extendedRequestId\", \
+          \"status\": \"$context.status\", \
+          \"httpMethod\": \"$context.httpMethod\", \
+          \"protocol\": \"$context.protocol\", \
+          \"path\": \"$context.path\", \
+          \"responseLatency\": \"$context.responseLatency\", \
+          \"responseLength\": \"$context.responseLength\", \
+          \"domainName\": \"$context.domainName\", \
+          \"identity\": { \
+          \"sourceIp\": \"$context.identity.sourceIp\", \
+          \"userAgent\": \"$context.identity.userAgent\", \
+          \"clientCert\":{ \
+          \"subjectDN\": \"$context.identity.clientCert.subjectDN\", \
+          \"issuerDN\": \"$context.identity.clientCert.issuerDN\", \
+          \"serialNumber\": \"$context.identity.clientCert.serialNumber\", \
+          \"validityNotBefore\": \"$context.identity.clientCert.validity.notBefore\", \
+          \"validityNotAfter\": \"$context.identity.clientCert.validity.notAfter\" \
+          }}, \
+          \"integration\":{ \
+          \"error\": \"$context.integration.error\", \
+          \"integrationStatus\": \"$context.integration.integrationStatus\", \
+          \"latency\": \"$context.integration.latency\", \
+          \"requestId\": \"$context.integration.requestId\", \
+          \"status\": \"$context.integration.status\" \
+          }}"
 
-  # ApiGwAccessLogs:
-  #   Type: AWS::Logs::LogGroup
-  #   Metadata:
-  #     guard:
-  #       SuppressedRules:
-  #         - CW_LOGGROUP_RETENTION_PERIOD_CHECK
-  #   Properties:
-  #     LogGroupName:
-  #       !Join [
-  #         "/",
-  #         ["/aws/apigateway", !Ref "AWS::StackName", !Sub "${HttpApiGateway}"],
-  #       ]
-  #     RetentionInDays: !Ref LogRetentionInDays
-  #     KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+  ApiGwAccessLogs:
+    Type: AWS::Logs::LogGroup
+    Metadata:
+      guard:
+        SuppressedRules:
+          - CW_LOGGROUP_RETENTION_PERIOD_CHECK
+    Properties:
+      LogGroupName:
+        !Join [
+          "/",
+          ["/aws/apigateway", !Ref "AWS::StackName", !Sub "${HttpApiGateway}"],
+        ]
+      RetentionInDays: !Ref LogRetentionInDays
+      KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
 
-  # ApiGwAccessLogsSplunkSubscriptionFilter:
-  #   Condition: ShouldUseSplunk
-  #   Type: AWS::Logs::SubscriptionFilter
-  #   Properties:
-  #     RoleArn: !ImportValue lambda-resources:SplunkSubscriptionFilterRole
-  #     LogGroupName: !Ref ApiGwAccessLogs
-  #     FilterPattern: "" # All logs
-  #     DestinationArn: !ImportValue lambda-resources:SplunkDeliveryStream
+  ApiGwAccessLogsSplunkSubscriptionFilter:
+    Condition: ShouldUseSplunk
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      RoleArn: !ImportValue lambda-resources:SplunkSubscriptionFilterRole
+      LogGroupName: !Ref ApiGwAccessLogs
+      FilterPattern: "" # All logs
+      DestinationArn: !ImportValue lambda-resources:SplunkDeliveryStream
 
 Outputs:
   ClinicalViewFunctionName:
