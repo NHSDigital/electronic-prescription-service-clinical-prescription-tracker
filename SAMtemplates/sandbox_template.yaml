@@ -83,16 +83,19 @@ Resources:
   SandboxResources:
     Type: AWS::Serverless::Application
     Properties:
-      Location: lambda_resources.yaml
+      Location: functions/lambda_resources.yaml
       Parameters:
+        StackName: AWS::StackName
+        LambdaName: !Sub ${AWS::StackName}-Sandbox
+        LambdaArn: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${AWS::StackName}-Sandbox
         CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
         SplunkSubscriptionFilterRole: !ImportValue lambda-resources:SplunkSubscriptionFilterRole
         SplunkDeliveryStreamArn: !ImportValue lambda-resources:SplunkDeliveryStream
         EnableSplunk: !Ref EnableSplunk
-        LambdaName: !Sub "${AWS::StackName}-Sandbox"
         LogRetentionInDays: !Ref LogRetentionInDays
+
   Sandbox:
-    Type: AWS::Serverless::Function # NOSONAR - The scan complains that this has no log group, but it's defined in the lambda resources above.
+    Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub "${AWS::StackName}-Sandbox"
       CodeUri: ../packages
@@ -116,30 +119,33 @@ Resources:
         Minify: true
         Target: "es2020"
         Sourcemap: true
-        tsconfig: sandbox/tsconfig.json
+        tsconfig: statusLambda/tsconfig.json
         packages: bundle
         EntryPoints:
-          - sandbox/src/sandbox.ts
+          - statusLambda/src/statusLambda.ts
 
   # _status endpoint lambda
-  StatusLambdaResources:
+  StatusResources:
     Type: AWS::Serverless::Application
     Properties:
-      Location: lambda_resources.yaml
+      Location: functions/lambda_resources.yaml
       Parameters:
+        StackName: AWS::StackName
+        LambdaName: !Sub ${AWS::StackName}-status
+        LambdaArn: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${AWS::StackName}-status
         CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
         SplunkSubscriptionFilterRole: !ImportValue lambda-resources:SplunkSubscriptionFilterRole
         SplunkDeliveryStreamArn: !ImportValue lambda-resources:SplunkDeliveryStream
         EnableSplunk: !Ref EnableSplunk
-        LambdaName: !Sub "${AWS::StackName}-statusLambda"
         LogRetentionInDays: !Ref LogRetentionInDays
-  StatusLambda:
+
+  Status:
     Type: AWS::Serverless::Function # NOSONAR - The scan complains that this has no log group, but it's defined in the lambda resources above.
     Properties:
-      FunctionName: !Sub "${AWS::StackName}-statusLambda"
+      FunctionName: !Sub "${AWS::StackName}-status"
       CodeUri: ../packages
       Handler: statusLambda.handler
-      Role: !GetAtt StatusLambdaResources.Outputs.LambdaRoleArn
+      Role: !GetAtt StatusResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
           VERSION_NUMBER: !Ref VersionNumber
