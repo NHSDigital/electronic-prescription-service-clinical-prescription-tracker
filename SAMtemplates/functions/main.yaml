@@ -73,7 +73,7 @@ Resources:
   ClinicalView:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub "${AWS::StackName}-ClinicalView"
+      FunctionName: !Sub "${StackName}-ClinicalView"
       CodeUri: ../../packages
       Handler: handler.handler
       Role: !GetAtt ClinicalViewResources.Outputs.LambdaRoleArn
@@ -113,7 +113,7 @@ Resources:
       Location: lambda_resources.yaml
       Parameters:
         StackName: !Ref StackName
-        LambdaName: !Sub "${AWS::StackName}-ClinicalView"
+        LambdaName: !Sub "${StackName}-ClinicalView"
         LambdaArn: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${StackName}-ClinicalView
         IncludeAdditionalPolicies: true
         AdditionalPolicies: !Join
@@ -128,7 +128,7 @@ Resources:
   PrescriptionSearch:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub "${AWS::StackName}-PrescriptionSearch"
+      FunctionName: !Sub "${StackName}-PrescriptionSearch"
       CodeUri: ../../packages
       Handler: prescriptionSearch.handler
       Role: !GetAtt PrescriptionSearchResources.Outputs.LambdaRoleArn
@@ -139,6 +139,13 @@ Resources:
           AWS_LAMBDA_EXEC_WRAPPER: /opt/get-secrets-layer
       Layers:
         - !Ref GetSecretsLayer
+      # Events:
+      #   status:
+      #     Type: HttpApi
+      #     Properties:
+      #       ApiId: !Ref HttpApiGateway
+      #       Path: /prescription-search
+      #       Method: get
     Metadata:
       BuildMethod: esbuild
       guard:
