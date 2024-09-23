@@ -15,6 +15,10 @@
 		{
 			"name": "packages/statusLambda",
 			"path": "../packages/statusLambda"
+		},
+		{
+			"name": "packages/clinicalViewLambda",
+			"path": "../packages/clinicalViewLambda"
 		}
 	],
 	"settings": {

@@ -6,6 +6,7 @@
   "references": [
     { "path": "packages/sandbox" },
     { "path": "packages/statusLambda" },
-    { "path": "packages/common/testing" }
+    { "path": "packages/common/testing" },
+    { "path": "packages/clinicalViewLambda" }
   ]
 }

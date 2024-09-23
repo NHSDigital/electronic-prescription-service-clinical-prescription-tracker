@@ -16,7 +16,8 @@
   "workspaces": [
     "packages/sandbox",
     "packages/statusLambda",
-    "packages/common/testing"
+    "packages/common/testing",
+    "packages/clinicalViewLambda"
   ],
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.3",
