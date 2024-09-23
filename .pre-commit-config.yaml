@@ -50,6 +50,15 @@ repos:
         types_or: [ts, tsx, javascript, jsx, json]
         pass_filenames: false
 
+      - id: lint-clinical-view-lambda
+        name: Lint clinical view lambda
+        entry: npm
+        args: ["run", "--prefix=packages/clinicalViewLambda", "lint"]
+        language: system
+        files: ^packages\/clinicalViewLambda
+        types_or: [ts, tsx, javascript, jsx, json]
+        pass_filenames: false
+
       - id: lint-getSecretLayer
         name: Lint getSecretLayer
         entry: make
