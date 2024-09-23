@@ -1,12 +1,11 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  clinical tracker api sandbox template
+  CPT lambda functions and related resources
 
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 30
+    Timeout: 50
     MemorySize: 256
     Architectures:
       - x86_64
@@ -15,97 +14,77 @@ Globals:
       Variables:
         NODE_OPTIONS: --enable-source-maps
         TargetSpineServer: !Ref TargetSpineServer
+        SpinePrivateKeyARN: !ImportValue account-resources:SpinePrivateKey
+        SpinePublicCertificateARN: !ImportValue account-resources:SpinePublicCertificate
+        SpineASIDARN: !ImportValue account-resources:SpineASID
+        SpinePartyKeyARN: !ImportValue account-resources:SpinePartyKey
+        SpineCAChainARN: !ImportValue account-resources:SpineCAChain
+        ServiceSearchApiKeyARN: !ImportValue account-resources:ServiceSearchApiKey
     Layers:
       - !Sub "arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:38"
 
 Parameters:
-  TargetSpineServer:
+  StackName:
     Type: String
-    Description: TargetSpineServer
     Default: none
-  TruststoreVersion:
-    Type: String
-    Description: TruststoreVersion
-    Default: none
+
   EnableMutualTLS:
     Type: String
-    Description: Whether to use mutual TLS
-    Default: false
-    AllowedValues: [true, false]
-  EnableSplunk:
+
+  TruststoreVersion:
     Type: String
-    Description: Whether to use splunk
-    Default: false
-    AllowedValues: [true, false]
-  VersionNumber:
+
+  TargetSpineServer:
     Type: String
-    Description: Current release version
-    Default: "xxx"
-  CommitId:
+
+  LogLevel:
     Type: String
-    Description: Most recent commit hash
-    Default: "xxx"
+
   LogRetentionInDays:
     Type: Number
-    Description: How long to keep logs for
-    AllowedValues:
-      [
-        1,
-        3,
-        5,
-        7,
-        14,
-        30,
-        60,
-        90,
-        120,
-        150,
-        180,
-        365,
-        400,
-        545,
-        731,
-        1096,
-        1827,
-        2192,
-        2557,
-        2922,
-        3288,
-        3653,
-      ]
+
+  EnableSplunk:
+    Type: String
+
+  VersionNumber:
+    Type: String
+
+  CommitId:
+    Type: String
 
 Conditions:
-  ShouldUseMutualTLS: !Equals [true, !Ref EnableMutualTLS]
-  ShouldUseSplunk: !Equals [true, !Ref EnableSplunk]
+  ShouldUseMutualTLS: !Equals
+    - true
+    - !Ref EnableMutualTLS
+
+  ShouldUseSplunk: !Equals
+    - true
+    - !Ref EnableSplunk
 
 Resources:
-  # sandbox lambda
-  SandboxResources:
-    Type: AWS::Serverless::Application
+  GetSecretsLayer:
+    Type: AWS::Serverless::LayerVersion
     Properties:
-      Location: lambda_resources.yaml
-      Parameters:
-        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
-        SplunkSubscriptionFilterRole: !ImportValue lambda-resources:SplunkSubscriptionFilterRole
-        SplunkDeliveryStreamArn: !ImportValue lambda-resources:SplunkDeliveryStream
-        EnableSplunk: !Ref EnableSplunk
-        LambdaName: !Sub "${AWS::StackName}-Sandbox"
-        LogRetentionInDays: !Ref LogRetentionInDays
-  Sandbox:
-    Type: AWS::Serverless::Function # NOSONAR - The scan complains that this has no log group, but it's defined in the lambda resources above.
+      LayerName: get-secrets-layer
+      Description: get secrets layer
+      ContentUri: ../../packages/getSecretLayer/lib/get-secrets-layer.zip
+      RetentionPolicy: Retain
+
+  PrescriptionSearch:
+    Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub "${AWS::StackName}-Sandbox"
-      CodeUri: ../packages
-      Handler: sandbox.handler
-      Role: !GetAtt SandboxResources.Outputs.LambdaRoleArn
-      Events:
-        sandbox:
-          Type: HttpApi
-          Properties:
-            ApiId: !Ref HttpApiGateway
-            Path: /Bundle
-            Method: get
-    Metadata: # Manage esbuild properties
+      FunctionName: !Sub "${AWS::StackName}-PrescriptionSearch"
+      CodeUri: ../../packages
+      Handler: prescriptionSearch.handler
+      Role: !GetAtt PrescriptionSearchResources.Outputs.LambdaRoleArn
+      Environment:
+        Variables:
+          VERSION_NUMBER: !Ref VersionNumber
+          COMMIT_ID: !Ref CommitId
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/get-secrets-layer
+      Layers:
+        - !Ref GetSecretsLayer
+    Metadata:
       BuildMethod: esbuild
       guard:
         SuppressedRules:
@@ -116,34 +95,43 @@ Resources:
         Minify: true
         Target: "es2020"
         Sourcemap: true
-        tsconfig: sandbox/tsconfig.json
+        tsconfig: prescriptionSearch/tsconfig.json
         packages: bundle
         EntryPoints:
-          - sandbox/src/sandbox.ts
+          - prescriptionSearch/src/prescriptionSearch.ts
 
-  # _status endpoint lambda
-  StatusLambdaResources:
+  PrescriptionSearchResources:
     Type: AWS::Serverless::Application
     Properties:
       Location: lambda_resources.yaml
       Parameters:
+        StackName: !Ref StackName
+        LambdaName: !Sub "${StackName}-PrescriptionSearch"
+        LambdaArn: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${StackName}-PrescriptionSearch
+        IncludeAdditionalPolicies: true
+        AdditionalPolicies: !Join
+          - ","
+          - - !ImportValue account-resources:LambdaAccessSecretsPolicy
+        LogRetentionInDays: !Ref LogRetentionInDays
         CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        EnableSplunk: !Ref EnableSplunk
         SplunkSubscriptionFilterRole: !ImportValue lambda-resources:SplunkSubscriptionFilterRole
         SplunkDeliveryStreamArn: !ImportValue lambda-resources:SplunkDeliveryStream
-        EnableSplunk: !Ref EnableSplunk
-        LambdaName: !Sub "${AWS::StackName}-statusLambda"
-        LogRetentionInDays: !Ref LogRetentionInDays
-  StatusLambda:
-    Type: AWS::Serverless::Function # NOSONAR - The scan complains that this has no log group, but it's defined in the lambda resources above.
+
+  Status:
+    Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub "${AWS::StackName}-statusLambda"
-      CodeUri: ../packages
+      FunctionName: !Sub "${StackName}-status"
+      CodeUri: ../../packages
       Handler: statusLambda.handler
-      Role: !GetAtt StatusLambdaResources.Outputs.LambdaRoleArn
+      Role: !GetAtt StatusResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
           VERSION_NUMBER: !Ref VersionNumber
           COMMIT_ID: !Ref CommitId
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/get-secrets-layer
+      Layers:
+        - !Ref GetSecretsLayer
       Events:
         status:
           Type: HttpApi
@@ -151,7 +139,7 @@ Resources:
             ApiId: !Ref HttpApiGateway
             Path: /_status
             Method: get
-    Metadata: # Manage esbuild properties
+    Metadata:
       BuildMethod: esbuild
       guard:
         SuppressedRules:
@@ -167,7 +155,23 @@ Resources:
         EntryPoints:
           - statusLambda/src/statusLambda.ts
 
-  # TLS cert for custom domain
+  StatusResources:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: lambda_resources.yaml
+      Parameters:
+        StackName: !Ref StackName
+        LambdaName: !Sub ${StackName}-status
+        IncludeAdditionalPolicies: true
+        AdditionalPolicies: !Join
+          - ","
+          - - !ImportValue account-resources:LambdaAccessSecretsPolicy
+        LogRetentionInDays: !Ref LogRetentionInDays
+        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        EnableSplunk: !Ref EnableSplunk
+        SplunkSubscriptionFilterRole: !ImportValue lambda-resources:SplunkSubscriptionFilterRole
+        SplunkDeliveryStreamArn: !ImportValue lambda-resources:SplunkDeliveryStream
+
   GenerateCertificate:
     Type: AWS::CertificateManager::Certificate
     Properties:
@@ -186,11 +190,12 @@ Resources:
           HostedZoneId:
             Fn::ImportValue: eps-route53-resources:EPS-ZoneID
 
-  # Http api
   HttpApiGateway:
     Type: AWS::Serverless::HttpApi
     Properties:
       StageName: Prod
+      DefaultRouteSettings:
+        DetailedMetricsEnabled: true
       Domain:
         DomainName:
           Fn::Join:
@@ -217,7 +222,7 @@ Resources:
                           Fn::ImportValue: account-resources:TrustStoreBucket,
                         ],
                       ]
-                    - "clinical-tracker-sandbox-truststore.pem"
+                    - "clinical-tracker-truststore.pem"
               - !Ref "AWS::NoValue"
           TruststoreVersion:
             "Fn::If":
@@ -266,6 +271,10 @@ Resources:
 
   ApiGwAccessLogs:
     Type: AWS::Logs::LogGroup
+    Metadata:
+      guard:
+        SuppressedRules:
+          - CW_LOGGROUP_RETENTION_PERIOD_CHECK
     Properties:
       LogGroupName:
         !Join [
@@ -274,10 +283,6 @@ Resources:
         ]
       RetentionInDays: !Ref LogRetentionInDays
       KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
-    Metadata:
-      guard:
-        SuppressedRules:
-          - CW_LOGGROUP_RETENTION_PERIOD_CHECK
 
   ApiGwAccessLogsSplunkSubscriptionFilter:
     Condition: ShouldUseSplunk
@@ -287,3 +292,20 @@ Resources:
       LogGroupName: !Ref ApiGwAccessLogs
       FilterPattern: "" # All logs
       DestinationArn: !ImportValue lambda-resources:SplunkDeliveryStream
+
+Outputs:
+  PrescriptionSearchFunctionName:
+    Description: The function name of the PrescriptionSearch lambda
+    Value: !Ref PrescriptionSearch
+
+  GetMyPrescriptionsFunctionArn:
+    Description: The function ARN of the PrescriptionSearch lambda
+    Value: !GetAtt PrescriptionSearch.Arn
+
+  StatusFunctionName:
+    Description: The function name of the Status lambda
+    Value: !Ref Status
+
+  StatusFunctionArn:
+    Description: The function ARN of the Status lambda
+    Value: !GetAtt Status.Arn
