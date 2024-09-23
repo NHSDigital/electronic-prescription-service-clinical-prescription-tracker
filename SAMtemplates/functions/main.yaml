@@ -70,6 +70,61 @@ Resources:
       ContentUri: ../../packages/getSecretLayer/lib/get-secrets-layer.zip
       RetentionPolicy: Retain
 
+  ClinicalViewLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-clinicalViewLambda"
+      CodeUri: ../../packages
+      Handler: handler.handler
+      Role: !GetAtt ClinicalViewResources.Outputs.LambdaRoleArn
+      Environment:
+        Variables:
+          VERSION_NUMBER: !Ref VersionNumber
+          COMMIT_ID: !Ref CommitId
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/get-secrets-layer
+      Layers:
+        - !Ref GetSecretsLayer
+      # Events:
+      #   status:
+      #     Type: HttpApi
+      #     Properties:
+      #       ApiId: !Ref HttpApiGateway
+      #       Path: /clinical-view
+      #       Method: get
+    Metadata: # Manage esbuild properties
+      BuildMethod: esbuild
+      guard:
+        SuppressedRules:
+          - LAMBDA_DLQ_CHECK
+          - LAMBDA_INSIDE_VPC
+          - LAMBDA_CONCURRENCY_CHECK
+      BuildProperties:
+        Minify: true
+        Target: "es2020"
+        Sourcemap: true
+        tsconfig: clinicalViewLambda/tsconfig.json
+        packages: bundle
+        EntryPoints:
+          - clinicalViewLambda/src/handler.ts
+
+  ClinicalViewResources:
+    Type: AWS::Serverless::Application
+    Properties:
+      Location: lambda_resources.yaml
+      Parameters:
+        StackName: !Ref StackName
+        LambdaName: !Sub "${AWS::StackName}-clinicalViewLambda"
+        LambdaArn: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${StackName}-clinicalViewLambda
+        IncludeAdditionalPolicies: true
+        AdditionalPolicies: !Join
+          - ","
+          - - !ImportValue account-resources:LambdaAccessSecretsPolicy
+        LogRetentionInDays: !Ref LogRetentionInDays
+        CloudWatchKMSKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
+        EnableSplunk: !Ref EnableSplunk
+        SplunkSubscriptionFilterRole: !ImportValue lambda-resources:SplunkSubscriptionFilterRole
+        SplunkDeliveryStreamArn: !ImportValue lambda-resources:SplunkDeliveryStream
+
   PrescriptionSearch:
     Type: AWS::Serverless::Function
     Properties:
