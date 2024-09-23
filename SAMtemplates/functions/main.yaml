@@ -257,8 +257,7 @@ Resources:
           Fn::Join:
             - "."
             - - !Ref "AWS::StackName"
-              - "functions"
-              - !Select [ 4, !Split [ ":", Fn::ImportValue: eps-route53-resources:EPS-domain ] ]
+              - Fn::ImportValue: eps-route53-resources:EPS-domain
         CertificateArn: !Ref GenerateCertificate
         Route53:
           HostedZoneId:
