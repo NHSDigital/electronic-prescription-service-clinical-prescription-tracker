@@ -1,4 +1,9 @@
-import {expect, describe, it} from "@jest/globals"
+import {
+  expect,
+  describe,
+  it,
+  jest
+} from "@jest/globals"
 import {newHandler} from "../src/handler"
 import MockAdapter from "axios-mock-adapter"
 import axios from "axios"
@@ -29,13 +34,15 @@ const CLINICAL_VIEW_URL = `https://live/syncservice-pds/pds`
 
 describe("clinical view", () => {
   let handler: MiddyfiedHandler
+  let logger: Logger
 
   beforeEach(() => {
     mock.reset()
     process.env.TargetSpineServer = "live"
 
     const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
-    const logger = new Logger({serviceName: "clinicalViewLambda", logLevel: LOG_LEVEL})
+    logger = new Logger({serviceName: "clinicalViewLambda", logLevel: LOG_LEVEL})
+    jest.spyOn(logger, "error")
     const spineClient = createSpineClient(logger)
     const HandlerParams = {logger, spineClient}
     handler = newHandler(HandlerParams)
@@ -99,5 +106,8 @@ describe("clinical view", () => {
       prescriptionId: "9AD427-A83008-2E461K",
       error: "Internal Server Error"
     })
+
+    //@ts-expect-error find function param type
+    expect(logger.error.mock.calls.find((x) => x[0].message === "Error in Spine Client")).toBeTruthy()
   })
 })
