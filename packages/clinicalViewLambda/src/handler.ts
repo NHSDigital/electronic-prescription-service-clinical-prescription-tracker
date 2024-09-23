@@ -5,7 +5,6 @@ import {createSpineClient} from "@nhsdigital/eps-spine-client"
 import {APIGatewayEvent, APIGatewayProxyEventHeaders, APIGatewayProxyEventQueryStringParameters} from "aws-lambda"
 import middy from "@middy/core"
 import {ClinicalViewParams} from "@nhsdigital/eps-spine-client/lib/live-spine-client"
-import "xmldom"
 import {DOMParser} from "xmldom"
 import {AxiosResponse} from "axios"
 
