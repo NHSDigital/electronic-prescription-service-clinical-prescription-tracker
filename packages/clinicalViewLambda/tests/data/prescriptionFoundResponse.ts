@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 export default `<?xml version='1.0' encoding='UTF-8'?>
 <SOAP:Envelope xmlns:crs="http://national.carerecords.nhs.uk/schema/crs/"
     xmlns:SOAP="http://schemas.xmlsoap.org/soap/envelope/"
