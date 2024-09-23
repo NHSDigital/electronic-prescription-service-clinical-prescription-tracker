@@ -162,6 +162,7 @@ Resources:
       Parameters:
         StackName: !Ref StackName
         LambdaName: !Sub ${StackName}-status
+        LambdaArn: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${StackName}-status
         IncludeAdditionalPolicies: true
         AdditionalPolicies: !Join
           - ","
