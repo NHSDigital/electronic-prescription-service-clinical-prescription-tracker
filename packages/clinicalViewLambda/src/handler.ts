@@ -10,8 +10,8 @@ import {DOMParser} from "xmldom"
 import {AxiosResponse} from "axios"
 
 const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
-export const logger = new Logger({serviceName: "clinicalViewLambda", logLevel: LOG_LEVEL})
-const spineClient = createSpineClient(logger)
+export const defaultLogger = new Logger({serviceName: "clinicalViewLambda", logLevel: LOG_LEVEL})
+const defaultSpineClient = createSpineClient(defaultLogger)
 
 type HandlerParams = {
     logger: Logger,
@@ -28,6 +28,8 @@ type HandlerResponse = {
 }
 
 export const apiGatewayHandler = async (params: HandlerParams, event: APIGatewayEvent): Promise<HandlerResponse> => {
+  const logger = params.logger
+
   const inboundHeaders = event.headers
   const queryStringParameters = event.queryStringParameters ?? {}
   const prescriptionId = event.queryStringParameters?.prescriptionId ?? ""
@@ -120,5 +122,5 @@ export const newHandler = (params: HandlerParams) => {
   return newHandler
 }
 
-const DEFAULT_HANDLER_PARAMS: HandlerParams = {logger, spineClient}
+const DEFAULT_HANDLER_PARAMS: HandlerParams = {logger: defaultLogger, spineClient: defaultSpineClient}
 export const handler = newHandler(DEFAULT_HANDLER_PARAMS)
