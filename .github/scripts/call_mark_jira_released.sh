@@ -4,7 +4,7 @@ echo "calling mark jira released"
 
 cat <<EOF > payload.json
 { 
-  "releaseVersion": "Clinical-Tracker-$RELEASE_TAG"
+  "releaseVersion": "CPT-$RELEASE_TAG"
 }
 EOF
 cat payload.json

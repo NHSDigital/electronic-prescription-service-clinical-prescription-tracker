@@ -6,9 +6,9 @@ cat <<EOF > payload.json
   "targetTag": "$DEV_TAG",
   "repoName": "electronic-prescription-service-clinical-prescription-tracker",
   "targetEnvironment": "$ENV",
-  "productName": "Clinical Tracker",
+  "productName": "Clinical Prescription Tracker",
   "releaseNotesPageId": "$PAGE_ID",
-  "releaseNotesPageTitle": "Current Clinical Tracker release notes - $ENV"
+  "releaseNotesPageTitle": "Current CPT release notes - $ENV"
 }
 EOF
 cat payload.json
