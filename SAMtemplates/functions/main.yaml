@@ -235,13 +235,13 @@ Resources:
       DomainName:
         Fn::Join:
           - "."
-          - - !Ref "AWS::StackName"
+          - - !Sub ${StackName}
             - Fn::ImportValue: eps-route53-resources:EPS-domain
       DomainValidationOptions:
         - DomainName:
             Fn::Join:
               - "."
-              - - !Ref "AWS::StackName"
+              - - !Sub ${StackName}
                 - Fn::ImportValue: eps-route53-resources:EPS-domain
           HostedZoneId:
             Fn::ImportValue: eps-route53-resources:EPS-ZoneID
@@ -256,7 +256,7 @@ Resources:
         DomainName:
           Fn::Join:
             - "."
-            - - !Ref "AWS::StackName"
+            - - !Sub ${StackName}
               - Fn::ImportValue: eps-route53-resources:EPS-domain
         CertificateArn: !Ref GenerateCertificate
         Route53:
@@ -335,7 +335,7 @@ Resources:
       LogGroupName:
         !Join [
           "/",
-          ["/aws/apigateway", !Ref "AWS::StackName", !Sub "${HttpApiGateway}"],
+          ["/aws/apigateway", !Sub "${StackName}", !Sub "${HttpApiGateway}"],
         ]
       RetentionInDays: !Ref LogRetentionInDays
       KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
