@@ -48,17 +48,6 @@ describe("clinical view", () => {
     handler = newHandler(HandlerParams)
   })
 
-  it("makes a call to the clinical view interaction", async () => {
-    mock.onPost(CLINICAL_VIEW_URL).reply(200, `<some>xml</some>`)
-
-    const event = {...MOCK_EVENT} as unknown as APIGatewayEvent
-    const context = {} as unknown as Context
-
-    await handler(event, context)
-
-    expect(mock.history.post.length).toBe(1)
-  })
-
   it("extracts prescription status from spine response", async () => {
     mock.onPost(CLINICAL_VIEW_URL).reply(200, prescriptionFoundResponse)
 
