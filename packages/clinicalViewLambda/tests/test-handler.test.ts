@@ -90,12 +90,11 @@ describe("clinical view", () => {
 
     // Spine client retries 3 times
     expect(mock.history.post.length).toBe(4)
-    expect(response.status).toBe(500)
-    expect(response.data).toEqual({
-      prescriptionId: "9AD427-A83008-2E461K",
-      error: "Internal Server Error"
+    expect(JSON.parse(response.body)).toMatchObject({
+      resourceType: "OperationOutcome"
     })
 
-    expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({message: "Error in Spine Client"}))
+    expect(logger.error)
+      .toHaveBeenCalledWith(expect.stringContaining("error in response from spine"), expect.any(Object))
   })
 })

@@ -7,6 +7,7 @@ import middy from "@middy/core"
 import {ClinicalViewParams} from "@nhsdigital/eps-spine-client/lib/live-spine-client"
 import {DOMParser} from "xmldom"
 import {AxiosResponse} from "axios"
+import errorHandler from "@nhs/fhir-middy-error-handler"
 
 const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
 export const defaultLogger = new Logger({serviceName: "clinicalViewLambda", logLevel: LOG_LEVEL})
@@ -27,8 +28,6 @@ type HandlerResponse = {
 }
 
 export const apiGatewayHandler = async (params: HandlerParams, event: APIGatewayEvent): Promise<HandlerResponse> => {
-  const logger = params.logger
-
   const inboundHeaders = event.headers
   const queryStringParameters = event.queryStringParameters ?? {}
   const prescriptionId = event.queryStringParameters?.prescriptionId ?? ""
@@ -36,12 +35,7 @@ export const apiGatewayHandler = async (params: HandlerParams, event: APIGateway
   const clinicalViewParams = buildClinicalViewParams(inboundHeaders, queryStringParameters)
 
   let spineResponse
-  try {
-    spineResponse = await params.spineClient.clinicalView(inboundHeaders, clinicalViewParams)
-  } catch (error) {
-    logger.error({message: "Error in Spine Client", error})
-    return spineClientErrorResponse(prescriptionId)
-  }
+  spineResponse = await params.spineClient.clinicalView(inboundHeaders, clinicalViewParams)
 
   return handleSpineResponse(spineResponse, prescriptionId)
 }
@@ -106,18 +100,9 @@ const prescriptionNotFoundResponse = (prescriptionId: string) => {
   }
 }
 
-const spineClientErrorResponse = (prescriptionId: string) => {
-  return {
-    data: {
-      prescriptionId,
-      error: "Internal Server Error"
-    },
-    status: 500
-  }
-}
-
 export const newHandler = (params: HandlerParams) => {
   const newHandler = middy((event: APIGatewayEvent) => apiGatewayHandler(params, event))
+    .use(errorHandler({logger: params.logger}))
   return newHandler
 }
 
