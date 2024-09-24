@@ -5,9 +5,10 @@
 This is the AWS layer that provides an API for Clinical Prescription Tracker.
 
 - `packages/common/testing` Module that contains some test data used for tests in other modules.
+- `packages/clinicalViewLambda` Calls the Clinical View Spine interaction.
+- `packages/prescriptionSearch` Calls the Prescription Search interaction.
 - `packages/sandbox/` Returns [static data](./packages/sandbox/examples/GetMyPrescriptions/Bundle/success.json) from the Sandbox.
 - `packages/statusLambda/` Returns the status of the getMyPrescriptions endpoint.
-- `packages/clinicalViewLambda` Calls the Clinical View Spine interaction.
 - `SAMtemplates/` Contains the SAM templates used to define the stacks.
 - `scripts/` Utilities helpful to developers of this specification.
 - `.devcontainer` Contains a dockerfile and vscode devcontainer definition.

@@ -6,11 +6,11 @@ cat <<EOF > payload.json
   "targetTag": "$RELEASE_TAG",
   "repoName": "electronic-prescription-service-clinical-prescription-tracker",
   "targetEnvironment": "INT",
-  "productName": "Clinical Tracker",
+  "productName": "Clinical Prescription Tracker",
   "releaseNotesPageId": "$PAGE_ID",
-  "releaseNotesPageTitle": "Clinical-Tracker-$RELEASE_TAG - Deployed to [INT] on $(date +'%d-%m-%y')",
+  "releaseNotesPageTitle": "CPT-$RELEASE_TAG - Deployed to [INT] on $(date +'%d-%m-%y')",
   "createReleaseCandidate": "true",
-  "releasePrefix": "Clinical-Tracker-"
+  "releasePrefix": "CPT-"
 }
 EOF
 cat payload.json

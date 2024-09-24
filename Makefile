@@ -23,6 +23,10 @@ install-hooks: install-python
 sam-build: sam-validate compile download-get-secrets-layer
 	sam build --template-file SAMtemplates/main_template.yaml --region eu-west-2
 
+# to be removed
+sam-build-old: sam-validate compile download-get-secrets-layer
+	sam build --template-file SAMtemplates/main_template.old.yaml --region eu-west-2
+
 sam-build-sandbox: sam-validate-sandbox compile download-get-secrets-layer
 	sam build --template-file SAMtemplates/sandbox_template.yaml --region eu-west-2
 
@@ -65,11 +69,11 @@ sam-list-outputs: guard-AWS_DEFAULT_PROFILE guard-stack_name
 
 sam-validate: 
 	sam validate --template-file SAMtemplates/main_template.yaml --region eu-west-2
-	sam validate --template-file SAMtemplates/lambda_resources.yaml --region eu-west-2
+	sam validate --template-file SAMtemplates/functions/main.yaml --region eu-west-2
+	sam validate --template-file SAMtemplates/functions/lambda_resources.yaml --region eu-west-2
 
 sam-validate-sandbox: 
 	sam validate --template-file SAMtemplates/sandbox_template.yaml --region eu-west-2
-	sam validate --template-file SAMtemplates/lambda_resources.yaml --region eu-west-2
 
 sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-stack_name guard-template_file guard-cloud_formation_execution_role guard-LATEST_TRUSTSTORE_VERSION guard-enable_mutual_tls guard-VERSION_NUMBER guard-COMMIT_ID guard-LOG_LEVEL guard-LOG_RETENTION_DAYS guard-TARGET_ENVIRONMENT
 	sam deploy \
@@ -92,7 +96,7 @@ sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-sta
 			  VersionNumber=$$VERSION_NUMBER \
 			  CommitId=$$COMMIT_ID \
 			  LogLevel=$$LOG_LEVEL \
-			  LogRetentionDays=$$LOG_RETENTION_DAYS \
+			  LogRetentionInDays=$$LOG_RETENTION_DAYS \
 			  Env=$$TARGET_ENVIRONMENT
 
 compile-node:
@@ -108,6 +112,7 @@ download-get-secrets-layer:
 	curl -LJ https://github.com/NHSDigital/electronic-prescription-service-get-secrets/releases/download/$$(curl -s "https://api.github.com/repos/NHSDigital/electronic-prescription-service-get-secrets/releases/latest" | jq -r .tag_name)/get-secrets-layer.zip -o packages/getSecretLayer/lib/get-secrets-layer.zip
 
 lint-node: compile-node
+	npm run lint --workspace packages/prescriptionSearch
 	npm run lint --workspace packages/sandbox
 	npm run lint --workspace packages/statusLambda
 	npm run lint --workspace packages/common/testing
@@ -131,14 +136,17 @@ lint-githubaction-scripts:
 lint: lint-node lint-samtemplates lint-python lint-githubactions lint-githubaction-scripts lint-specification
 
 test: compile
+	npm run test --workspace packages/prescriptionSearch
 	npm run test --workspace packages/sandbox
 	npm run test --workspace packages/statusLambda
 	npm run test --workspace packages/clinicalViewLambda
 
 clean:
+	rm -rf packages/sandbox/prescriptionSearch
 	rm -rf packages/sandbox/coverage
 	rm -rf packages/statusLambda/coverage
 	rm -rf packages/common/testing/coverage
+	rm -rf packages/prescriptionSearch/lib
 	rm -rf packages/sandbox/lib
 	rm -rf packages/statusLambda/lib
 	rm -rf packages/common/testing/lib
@@ -153,6 +161,7 @@ check-licenses: check-licenses-node check-licenses-python
 
 check-licenses-node:
 	npm run check-licenses
+	npm run check-licenses --workspace packages/prescriptionSearch
 	npm run check-licenses --workspace packages/sandbox
 	npm run check-licenses --workspace packages/statusLambda
 	npm run check-licenses --workspace packages/clinicalViewLambda

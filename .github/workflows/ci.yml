@@ -103,8 +103,8 @@ jobs:
     uses: ./.github/workflows/run_release_code_and_api.yml
     with:
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.version_tag}}
-      STACK_NAME: clinical-tracker
-      AWS_ENVIRONMENT: dev
+      STACK_NAME: cpt
+      TARGET_ENVIRONMENT: dev
       APIGEE_ENVIRONMENT: internal-dev
       ENABLE_MUTUAL_TLS: true
       BUILD_ARTIFACT: packaged_code
@@ -129,8 +129,8 @@ jobs:
     uses: ./.github/workflows/run_release_code_and_api.yml
     with:
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.version_tag}}
-      STACK_NAME: clinical-tracker-sandbox
-      AWS_ENVIRONMENT: dev
+      STACK_NAME: cpt-sandbox
+      TARGET_ENVIRONMENT: dev
       APIGEE_ENVIRONMENT: internal-dev-sandbox
       ENABLE_MUTUAL_TLS: true
       BUILD_ARTIFACT: packaged_sandbox_code
@@ -149,8 +149,8 @@ jobs:
     uses: ./.github/workflows/run_release_code_and_api.yml
     with:
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.version_tag}}
-      STACK_NAME: clinical-tracker
-      AWS_ENVIRONMENT: qa
+      STACK_NAME: cpt
+      TARGET_ENVIRONMENT: qa
       APIGEE_ENVIRONMENT: internal-qa
       ENABLE_MUTUAL_TLS: true
       BUILD_ARTIFACT: packaged_code
