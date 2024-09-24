@@ -75,6 +75,12 @@ fi
 
 # Find and replace securitySchemes
 if [[ "${APIGEE_ENVIRONMENT}" == "prod" ]]; then
+    jq '.components.securitySchemes."app-level0" = {"$ref": "https://proxygen.prod.api.platform.nhs.uk/components/securitySchemes/app-level0"}' "${SPEC_PATH}" > temp.json && mv temp.json "${SPEC_PATH}"
+else
+    jq '.components.securitySchemes."app-level0" = {"$ref": "https://proxygen.ptl.api.platform.nhs.uk/components/securitySchemes/app-level0"}' "${SPEC_PATH}" > temp.json && mv temp.json "${SPEC_PATH}"
+fi
+
+if [[ "${APIGEE_ENVIRONMENT}" == "prod" ]]; then
     jq '.components.securitySchemes."app-level3" = {"$ref": "https://proxygen.prod.api.platform.nhs.uk/components/securitySchemes/app-level3"}' "${SPEC_PATH}" > temp.json && mv temp.json "${SPEC_PATH}"
 else
     jq '.components.securitySchemes."app-level3" = {"$ref": "https://proxygen.ptl.api.platform.nhs.uk/components/securitySchemes/app-level3"}' "${SPEC_PATH}" > temp.json && mv temp.json "${SPEC_PATH}"
