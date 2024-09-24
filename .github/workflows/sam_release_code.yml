@@ -111,7 +111,7 @@ jobs:
         shell: bash
         working-directory: .github/scripts
         env:
-          artifact_bucket_prefix: clinical-tracker/${{ inputs.ARTIFACT_BUCKET_PREFIX }}
+          artifact_bucket_prefix: clinical_prescription_tracker/${{ inputs.ARTIFACT_BUCKET_PREFIX }}
           COMMIT_ID: ${{ inputs.COMMIT_ID }}
           deploy_sandbox: ${{ inputs.DEPLOY_SANDBOX }}
           enable_mutual_tls: ${{ inputs.ENABLE_MUTUAL_TLS }}

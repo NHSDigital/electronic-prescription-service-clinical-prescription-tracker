@@ -6,15 +6,15 @@
 REPO_NAME=electronic-prescription-service-clinical-prescription-tracker
 
 # this should be a regex used in jq command that parses the output from aws cloudformation list-stacks and just captures stacks we are interested in
-CAPTURE_REGEX="^clinical-tracker-(sandbox-)?pr-(\\d+)$"
+CAPTURE_REGEX="^cpt-(sandbox-)?pr-(\\d+)$"
 
 # this should be a regex that is used to get the pull request id from the cloud formation stack name
 # this is used in a replace command to replace the stack name so what is left is just the pull request id
-PULL_REQUEST_STACK_REGEX=clinical-tracker-pr-
-SANDBOX_PULL_REQUEST_STACK_REGEX=clinical-tracker-sandbox-pr-
+PULL_REQUEST_STACK_REGEX=cpt-pr-
+SANDBOX_PULL_REQUEST_STACK_REGEX=cpt-sandbox-pr-
 
-CNAME_QUERY=clinical-tracker-pr
-CNAME_SANDBOX_QUERY=clinical-tracker-sandbox-pr
+CNAME_QUERY=cpt-pr
+CNAME_SANDBOX_QUERY=cpt-sandbox-pr
 
 # this should be customised to delete cloudformation stacks and proxygen deployments if they are used
 main() {

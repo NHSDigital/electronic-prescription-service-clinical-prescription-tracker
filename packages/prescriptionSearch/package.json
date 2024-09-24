@@ -1,0 +1,20 @@
+{
+  "name": "prescriptionSearch",
+  "version": "1.0.0",
+  "description": "Call the Prescription Search interaction",
+  "main": "prescriptionSearch.js",
+  "author": "NHS Digital",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+      "unit": "POWERTOOLS_DEV=true NODE_OPTIONS=--experimental-vm-modules jest --no-cache --coverage",
+      "lint": "eslint  --max-warnings 0 --fix --config ../../eslint.config.mjs .",
+      "compile": "tsc",
+      "test": "npm run compile && npm run unit",
+      "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
+  },
+  "dependencies": {
+      "@nhsdigital/eps-spine-client": "npm:@nhsdigital/eps-spine-client@v2.1.1"
+  },
+  "devDependencies": {}
+}

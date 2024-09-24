@@ -13,12 +13,12 @@ authors = [
     "Phil Gee <phil.gee@nhs.net>",
     "Adam Brown <adam.brown41@nhs.net>",
     "Jonathan Welch <jonathan.welch1@nhs.net>",
-    "Natasa Fragkou <natasa.fragkou@nhs.net>",
     "Jack Spagnoli <jack.spagnoli1@nhs.net>",
-    "Tom Smith <tom.smith24@nhs.net>",
     "Sean Steberis <sean.steberis2@nhs.net>",
-    "Rizwan Mehmood <rizwan.mehmood1@nhs.net>",
-    "Thomas Merrington <thomas.merrington1@nhs.net>"
+    "Thomas Merrington <thomas.merrington1@nhs.net>",
+    "Jim Wild <james.wild6@nhs.net>",
+    "Toby Lawrence <toby.lawrence3@nhs.net>",
+    "Kayalvizhi Rathinavelu <kayalvizhi.rathinavelu@nhs.net>"
 ]
 readme = "README.md"
 repository = "https://github.com/NHSDigital/electronic-prescription-service-clinical-prescription-tracker"

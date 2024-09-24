@@ -5,7 +5,7 @@ Description: >
   Resources for a lambda
 
 Parameters:
-  CloudWatchKMSKey:
+  CloudWatchKMSKeyId:
     Type: String
     Description: Cloudwatch KMS key
     AllowedPattern: "^arn:[a-z0-9-]+:kms:[a-z0-9-]+:\\d{12}:(key|alias)/.+\\Z"
@@ -105,7 +105,7 @@ Resources:
     Properties:
       LogGroupName: !Sub "/aws/lambda/${LambdaName}"
       RetentionInDays: !Ref LogRetentionDays
-      KmsKeyId: !Ref CloudWatchKMSKey
+      KmsKeyId: !Ref CloudWatchKMSKeyId
     Metadata:
       guard:
         SuppressedRules:
