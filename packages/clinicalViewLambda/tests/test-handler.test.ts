@@ -56,7 +56,7 @@ describe("clinical view", () => {
 
     const response = await handler(event, context)
 
-    expect(mock.history.post.length).toBe(1)
+    expect(mock.history.post[0].data).toContain("9AD427-A83008-2E461K")
     expect(response.status).toBe(200)
     expect(response.data).toEqual({
       prescriptionId: "9AD427-A83008-2E461K",
