@@ -96,7 +96,6 @@ describe("clinical view", () => {
       error: "Internal Server Error"
     })
 
-    //@ts-expect-error find function param type
-    expect(logger.error.mock.calls.find((x) => x[0].message === "Error in Spine Client")).toBeTruthy()
+    expect(logger.error).toHaveBeenCalledWith(expect.objectContaining({message: "Error in Spine Client"}))
   })
 })
