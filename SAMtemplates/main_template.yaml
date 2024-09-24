@@ -77,7 +77,6 @@ Resources:
         EnableMutualTLS: !Ref EnableMutualTLS
         TruststoreVersion: !Ref TruststoreVersion
         TargetSpineServer: !Ref TargetSpineServer
-        LogLevel: !Ref LogLevel
         LogRetentionInDays: !Ref LogRetentionInDays
         EnableSplunk: !Ref EnableSplunk
         VersionNumber: !Ref VersionNumber

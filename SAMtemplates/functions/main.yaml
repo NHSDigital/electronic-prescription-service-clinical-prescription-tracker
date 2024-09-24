@@ -37,9 +37,6 @@ Parameters:
   TargetSpineServer:
     Type: String
 
-  LogLevel:
-    Type: String
-
   LogRetentionInDays:
     Type: Number
 
