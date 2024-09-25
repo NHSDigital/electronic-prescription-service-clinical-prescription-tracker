@@ -81,8 +81,8 @@ jobs:
     needs: [get_issue_number, package_code, get_commit_id]
     uses: ./.github/workflows/run_release_code_and_api.yml
     with:
-      STACK_NAME: cpt-sandbox-pr-${{needs.get_issue_number.outputs.issue_number}}
-      ARTIFACT_BUCKET_PREFIX: PR-sandbox-${{needs.get_issue_number.outputs.issue_number}}
+      STACK_NAME: cpt-pr-${{needs.get_issue_number.outputs.issue_number}}-sandbox
+      ARTIFACT_BUCKET_PREFIX: PR-${{needs.get_issue_number.outputs.issue_number}}-sandbox
       TARGET_ENVIRONMENT: dev
       APIGEE_ENVIRONMENT: internal-dev-sandbox
       ENABLE_MUTUAL_TLS: false
