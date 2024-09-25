@@ -34,16 +34,14 @@ fi
 
 is_pull_request=false
 instance_suffix=""
-if [[ ${STACK_NAME} == clinical-tracker-pr-* ]]; then
+if [[ ${STACK_NAME} == cpt-pr-* ]]; then
     is_pull_request=true
     # Extracting the PR ID from $STACK_NAME
-    pr_id=$(echo "${STACK_NAME}" | cut -d'-' -f4)
+    pr_id=$(echo "${STACK_NAME}" | cut -d'-' -f3)
     instance_suffix=-"pr-${pr_id}"
 fi
 
 # Determine the proxy instance based on the provided $STACK_NAME
-# instance="clinical-prescription-tracker${instance_suffix}"
-# apigee_api=clinical-prescription-tracker-api
 apigee_api=prescription-clinical-tracker
 instance="prescription-clinical-tracker${instance_suffix}"
 
