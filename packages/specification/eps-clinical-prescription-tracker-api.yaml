@@ -229,7 +229,7 @@ x-nhsd-apim:
   target:
     type: hosted
     healthcheck: /_status
-    url: https://clinical-tracker.dev.eps.national.nhs.uk
+    url: https://cpt.dev.eps.national.nhs.uk
     security:
       type: mtls
       secret: clinical-tracker-mtls-1
