@@ -8,9 +8,9 @@ REPO_NAME=electronic-prescription-service-clinical-prescription-tracker
 # Main function to delete relevant proxygen deployments
 main() {
   echo "Checking clinical tracker deployments"
-  PULL_REQUEST_PROXYGEN_REGEX=prescription-clinical-tracker-pr-
-  delete_apigee_deployments "internal-dev" "prescription-clinical-tracker" "ClinicalTrackerProxygenPrivateKey" "eps-clinical-tracker"
-  delete_apigee_deployments "internal-dev-sandbox" "prescription-clinical-tracker" "ClinicalTrackerProxygenPrivateKey" "eps-clinical-tracker"
+  PULL_REQUEST_PROXYGEN_REGEX=clinical-prescription-tracker-pr-
+  delete_apigee_deployments "internal-dev" "clinical-prescription-tracker" "ClinicalTrackerProxygenPrivateKey" "eps-clinical-tracker"
+  delete_apigee_deployments "internal-dev-sandbox" "clinical-prescription-tracker" "ClinicalTrackerProxygenPrivateKey" "eps-clinical-tracker"
 }
 
 # Function to delete Apigee deployments
