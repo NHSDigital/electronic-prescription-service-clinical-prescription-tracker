@@ -99,6 +99,8 @@ sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-sta
 			  LogRetentionInDays=$$LOG_RETENTION_DAYS \
 			  Env=$$TARGET_ENVIRONMENT
 
+compile: compile-node compile-specification
+
 compile-node:
 	npx tsc --build tsconfig.build.json
 
@@ -106,22 +108,18 @@ compile-specification:
 	npm run compile --workspace packages/prescriptionSearch
 	npm run resolve --workspace packages/specification
 
-compile: compile-node compile-specification
-
 download-get-secrets-layer:
 	mkdir -p packages/getSecretLayer/lib
 	curl -LJ https://github.com/NHSDigital/electronic-prescription-service-get-secrets/releases/download/$$(curl -s "https://api.github.com/repos/NHSDigital/electronic-prescription-service-get-secrets/releases/latest" | jq -r .tag_name)/get-secrets-layer.zip -o packages/getSecretLayer/lib/get-secrets-layer.zip
 
-lint-node: compile
+lint: lint-node lint-samtemplates lint-python lint-githubactions lint-githubaction-scripts lint-specification
+
+lint-node: compile-node
 	npm run lint --workspace packages/clinicalViewLambda
 	npm run lint --workspace packages/prescriptionSearch
 	npm run lint --workspace packages/sandbox
-	npm run lint --workspace packages/specification
 	npm run lint --workspace packages/statusLambda
 	npm run lint --workspace packages/common/testing
-
-lint-specification: compile-specification
-	npm run lint --workspace packages/specification
 
 lint-samtemplates:
 	poetry run cfn-lint -I "SAMtemplates/**/*.y*ml" 2>&1 | awk '/Run scan/ { print } /^[EW][0-9]/ { print; getline; print }'
@@ -135,7 +133,8 @@ lint-githubactions:
 lint-githubaction-scripts:
 	shellcheck .github/scripts/*.sh
 
-lint: lint-node lint-samtemplates lint-python lint-githubactions lint-githubaction-scripts lint-specification
+lint-specification: compile-specification
+	npm run lint --workspace packages/specification
 
 test: compile
 	npm run test --workspace packages/prescriptionSearch
