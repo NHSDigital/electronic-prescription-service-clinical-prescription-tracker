@@ -2,7 +2,8 @@
   "name": "prescriptionSearch",
   "version": "1.0.0",
   "description": "Call the Prescription Search interaction",
-  "main": "prescriptionSearch.js",
+  "main": "lib/src/prescriptionSearch.js",
+  "types": "lib/src/prescriptionSearch.d.ts",
   "author": "NHS Digital",
   "license": "MIT",
   "type": "module",
@@ -14,7 +15,8 @@
     "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
   },
   "dependencies": {
-    "@nhsdigital/eps-spine-client": "npm:@nhsdigital/eps-spine-client@v2.1.2"
+    "@nhsdigital/eps-spine-client": "npm:@nhsdigital/eps-spine-client@v2.1.2",
+    "json-schema-to-ts": "^3.1.0"
   },
   "devDependencies": {}
 }

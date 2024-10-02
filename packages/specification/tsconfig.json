@@ -4,6 +4,11 @@
     "rootDir": ".",
     "outDir": "lib"
   },
+  "references": [
+    {
+      "path": "../prescriptionSearch"
+    }
+  ],
   "include": ["src/**/*", "tests/**/*"],
   "exclude": ["node_modules"]
 }

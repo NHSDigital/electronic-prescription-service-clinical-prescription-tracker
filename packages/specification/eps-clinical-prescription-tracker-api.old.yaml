@@ -129,7 +129,7 @@ paths:
           content:
             application/fhir+json:
               schema:
-                $ref: schemas/resources/ResponseBundle.json
+                $ref: "#/components/schemas/ResponseBundle"
         "4XX":
           description: |
             An error occurred as follows:
@@ -144,7 +144,7 @@ paths:
           content:
             application/fhir+json:
               schema:
-                $ref: schemas/resources/OperationOutcome.json
+                $ref: "#/components/schemas/OperationOutcome"
       security:
         - app-level0: []
 components:
@@ -161,6 +161,64 @@ components:
       schema:
         type: string
         example: 11C46F5F-CDEF-4865-94B2-0EE0EDCC26DA
+  schemas:
+    ResponseBundle:
+      type: object
+      required: [resourceType, type, entry]
+      description: A FHIR searchset Bundle.
+      properties:
+        resourceType:
+          type: string
+          enum: [Bundle]
+          description: FHIR resource type.
+        id:
+          type: string
+          description: Object ID for the Bundle.
+          example: "164996aa-29eb-4f14-a5ac-4b556a7baf6e"
+        meta:
+          type: object
+          description: Metadata about the bundle
+        type:
+          type: string
+          description: Denotes that the bundle is a list of resources returned as a result of a search.
+          enum: [searchset]
+        total:
+          type: number
+          description: |
+            The number of prescription bundles contained within the searchset
+
+            Note that this excludes OperationOutcomes.
+        entry:
+          type: array
+          description: |
+            A collection of resources contained within the Bundle.
+
+            Note that the presence of an OperationOutcome resource as part of the bundle implies that one
+            of a patient's prescriptions have been excluded from the response due to a processing error.
+            An OperationOutcome resource will be included for each prescription that cannot be processed.
+          items:
+            oneOf:
+              - $ref: "#/components/schemas/PrescriptionBundle"
+              - $ref: "#/components/schemas/OperationOutcome"
+    PrescriptionBundle:
+      type: object
+      required:
+        - fullUrl
+        - search
+        - resource
+      properties:
+        fullUrl:
+          type: string
+          example: "urn:uuid:fedef61e-bc62-452e-91c0-6f44ad2d5c0c"
+          description: The FHIR urn of the contained Bundle
+        search:
+          type: object
+          properties:
+            mode:
+              type: string
+              example: "match"
+    OperationOutcome:
+      $ref: "schemas/resources/OperationOutcome.yaml"
 x-nhsd-apim:
   temporary: false
   monitoring: false
