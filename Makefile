@@ -112,7 +112,7 @@ download-get-secrets-layer:
 	mkdir -p packages/getSecretLayer/lib
 	curl -LJ https://github.com/NHSDigital/electronic-prescription-service-get-secrets/releases/download/$$(curl -s "https://api.github.com/repos/NHSDigital/electronic-prescription-service-get-secrets/releases/latest" | jq -r .tag_name)/get-secrets-layer.zip -o packages/getSecretLayer/lib/get-secrets-layer.zip
 
-lint-node: compile-node
+lint-node: compile
 	npm run lint --workspace packages/clinicalViewLambda
 	npm run lint --workspace packages/prescriptionSearch
 	npm run lint --workspace packages/sandbox
