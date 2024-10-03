@@ -103,9 +103,9 @@ compile: compile-node compile-specification
 
 compile-node:
 	npx tsc --build tsconfig.build.json
-
-compile-specification: 
 	npm run compile --workspace packages/prescriptionSearch
+
+compile-specification:
 	npm run resolve --workspace packages/specification
 
 download-get-secrets-layer:
