@@ -141,15 +141,18 @@ test: compile
 	npm run test --workspace packages/clinicalView
 
 clean:
-	rm -rf packages/sandbox/prescriptionSearch
-	rm -rf packages/sandbox/coverage
-	rm -rf packages/statusLambda/coverage
+	rm -rf packages/clinicalView/coverage
 	rm -rf packages/common/testing/coverage
+	rm -rf packages/prescriptionSearch/coverage
+	rm -rf packages/sandbox/coverage
+	rm -rf packages/specification/coverage
+	rm -rf packages/statusLambda/coverage
+	rm -rf packages/clinicalView/lib
+	rm -rf packages/common/testing/lib
 	rm -rf packages/prescriptionSearch/lib
 	rm -rf packages/sandbox/lib
+	rm -rf packages/specification/lib
 	rm -rf packages/statusLambda/lib
-	rm -rf packages/common/testing/lib
-	rm -rf packages/clinicalView/lib
 	rm -rf .aws-sam
 
 deep-clean: clean
