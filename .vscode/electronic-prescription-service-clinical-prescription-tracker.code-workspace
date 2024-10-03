@@ -9,8 +9,8 @@
 			"path": "../packages/clinicalViewLambda"
 		},
 		{
-			"name": "packages/common",
-			"path": "../packages/common"
+			"name": "packages/common/testing",
+			"path": "../packages/common/testing"
 		},
 		{
 			"name": "packages/prescriptionSearch",
