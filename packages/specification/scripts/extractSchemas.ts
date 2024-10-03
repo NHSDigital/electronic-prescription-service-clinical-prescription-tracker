@@ -35,6 +35,7 @@ function collapseExamples(schema: JSONSchema): JSONSchema {
   }
 
   // Create a new object for the result
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const result: any = {...schema}
 
   // Collapse `examples` to a single `example`
