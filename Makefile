@@ -99,10 +99,12 @@ sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-sta
 			  LogRetentionInDays=$$LOG_RETENTION_DAYS \
 			  Env=$$TARGET_ENVIRONMENT
 
-compile: compile-node compile-specification
+compile: compile-node compile-packages compile-specification
 
 compile-node:
 	npx tsc --build tsconfig.build.json
+
+compile-packages:
 	npm run compile --workspace packages/prescriptionSearch
 
 compile-specification:
@@ -114,7 +116,7 @@ download-get-secrets-layer:
 
 lint: lint-node lint-samtemplates lint-python lint-githubactions lint-githubaction-scripts lint-specification
 
-lint-node: compile-node
+lint-node: compile
 	npm run lint --workspace packages/clinicalViewLambda
 	npm run lint --workspace packages/prescriptionSearch
 	npm run lint --workspace packages/sandbox
