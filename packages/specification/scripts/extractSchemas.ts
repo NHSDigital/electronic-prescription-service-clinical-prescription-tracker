@@ -29,36 +29,38 @@ function isNotJSONSchemaArray(schema: JSONSchema | ReadonlyArray<JSONSchema>): s
 }
 
 // Function to collapse examples
-function collapseExamples(schema: JSONSchema) {
-  if (typeof schema !== "object") {
-    return schema // return as is if not an object
+function collapseExamples(schema: JSONSchema): JSONSchema {
+  if (typeof schema !== "object" || schema === null) {
+    return schema
   }
 
-  // Clone the schema object
-  const result = {...schema}
+  // Create a new object for the result
+  const result: JSONSchema = {...schema}
 
   // Collapse `examples` to a single `example`
-  if (schema.examples) {
-    result.example = schema.examples[0]
-    delete result.examples
+  if (Array.isArray(schema.examples) && schema.examples.length > 0) {
+    (result as any).example = schema.examples[0]
+    delete (result as any).examples
   }
 
   // Recursively handle `items` if present
   if (schema.items) {
     if (isNotJSONSchemaArray(schema.items)) {
-      result.items = collapseExamples(schema.items)
+      (result as any).items = collapseExamples(schema.items)
     } else {
-      result.items = schema.items.map(collapseExamples)
+      (result as any).items = schema.items.map(collapseExamples)
     }
   }
 
   // Recursively handle `properties` if present
   if (schema.properties) {
+    const properties: Record<string, JSONSchema> = {}
     for (const key in schema.properties) {
       if (Object.prototype.hasOwnProperty.call(schema.properties, key)) {
-        result.properties[key] = collapseExamples(schema.properties[key])
+        properties[key] = collapseExamples(schema.properties[key])
       }
     }
+    (result as any).properties = properties
   }
 
   return result
