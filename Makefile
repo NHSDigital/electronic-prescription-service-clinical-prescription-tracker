@@ -23,10 +23,6 @@ install-hooks: install-python
 sam-build: sam-validate compile download-get-secrets-layer
 	sam build --template-file SAMtemplates/main_template.yaml --region eu-west-2
 
-# to be removed
-sam-build-old: sam-validate compile download-get-secrets-layer
-	sam build --template-file SAMtemplates/main_template.old.yaml --region eu-west-2
-
 sam-build-sandbox: sam-validate-sandbox compile download-get-secrets-layer
 	sam build --template-file SAMtemplates/sandbox_template.yaml --region eu-west-2
 
