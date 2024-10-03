@@ -59,6 +59,15 @@ repos:
         types_or: [ts, tsx, javascript, jsx, json]
         pass_filenames: false
 
+      - id: lint-prescription-search
+        name: Lint prescription search lambda
+        entry: npm
+        args: ["run", "--prefix=packages/prescriptionSearch", "lint"]
+        language: system
+        files: ^packages\/prescriptionSearch
+        types_or: [ts, tsx, javascript, jsx, json]
+        pass_filenames: false
+
       - id: lint-getSecretLayer
         name: Lint getSecretLayer
         entry: make
