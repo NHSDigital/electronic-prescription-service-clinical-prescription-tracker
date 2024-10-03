@@ -9,6 +9,6 @@
       "path": "../prescriptionSearch"
     }
   ],
-  "include": ["src/**/*", "tests/**/*"],
+  "include": ["scripts/**/*", "tests/**/*"],
   "exclude": ["node_modules"]
 }
