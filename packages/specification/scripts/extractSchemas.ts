@@ -1,7 +1,7 @@
 import fs from "fs"
 import path from "path"
 import {
-  responseBundleSchema as ResponseBundle,
+  bundleSchema as ResponseBundle,
   outcomeSchema as OperationOutcome,
 } from "prescriptionSearch"
 import {JSONSchema} from "json-schema-to-ts"
@@ -35,20 +35,20 @@ function collapseExamples(schema: JSONSchema): JSONSchema {
   }
 
   // Create a new object for the result
-  const result: JSONSchema = {...schema}
+  const result: any = {...schema}
 
   // Collapse `examples` to a single `example`
   if (Array.isArray(schema.examples) && schema.examples.length > 0) {
-    (result as any).example = schema.examples[0]
-    delete (result as any).examples
+    result.example = schema.examples[0]
+    delete result.examples
   }
 
   // Recursively handle `items` if present
   if (schema.items) {
     if (isNotJSONSchemaArray(schema.items)) {
-      (result as any).items = collapseExamples(schema.items)
+      result.items = collapseExamples(schema.items)
     } else {
-      (result as any).items = schema.items.map(collapseExamples)
+      result.items = schema.items.map(collapseExamples)
     }
   }
 
@@ -60,7 +60,7 @@ function collapseExamples(schema: JSONSchema): JSONSchema {
         properties[key] = collapseExamples(schema.properties[key])
       }
     }
-    (result as any).properties = properties
+    result.properties = properties
   }
 
   return result

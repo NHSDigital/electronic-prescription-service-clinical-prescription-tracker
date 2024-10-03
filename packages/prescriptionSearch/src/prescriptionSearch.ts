@@ -5,8 +5,7 @@ import {createSpineClient} from "@nhsdigital/eps-spine-client"
 import {APIGatewayEvent, APIGatewayProxyResult} from "aws-lambda"
 import middy from "@middy/core"
 import {PrescriptionSearchParams} from "@nhsdigital/eps-spine-client/lib/live-spine-client"
-import {bundleSchema} from "./schema/request"
-import {bundleSchema as responseBundleSchema, outcomeSchema} from "./schema/response"
+import {bundleSchema, outcomeSchema} from "./schema/response"
 
 export const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
 export const logger = new Logger({serviceName: "prescriptionSearch", logLevel: LOG_LEVEL})
@@ -71,4 +70,4 @@ export const newHandler = (params: HandlerParams) => {
 const DEFAULT_HANDLER_PARAMS: HandlerParams = {logger, spineClient}
 export const handler = newHandler(DEFAULT_HANDLER_PARAMS)
 
-export {bundleSchema, responseBundleSchema, outcomeSchema}
+export {bundleSchema, outcomeSchema}
