@@ -41,7 +41,7 @@ describe("clinical view", () => {
     process.env.TargetSpineServer = "live"
 
     const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
-    logger = new Logger({serviceName: "clinicalViewLambda", logLevel: LOG_LEVEL})
+    logger = new Logger({serviceName: "clinicalView", logLevel: LOG_LEVEL})
     jest.spyOn(logger, "error")
     const spineClient = createSpineClient(logger)
     const HandlerParams = {logger, spineClient}

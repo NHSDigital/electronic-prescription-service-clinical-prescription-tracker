@@ -4,7 +4,7 @@
 
 This is the AWS layer that provides an API for Clinical Prescription Tracker.
 
-- `packages/clinicalViewLambda` Calls the Clinical View Spine interaction.
+- `packages/clinicalView` Calls the Clinical View Spine interaction.
 - `packages/common/testing` Module that contains some test data used for tests in other modules.
 - `packages/prescriptionSearch` Calls the Prescription Search interaction.
 - `packages/sandbox/` Returns [static data](./packages/sandbox/examples/GetMyPrescriptions/Bundle/success.json) from the Sandbox.

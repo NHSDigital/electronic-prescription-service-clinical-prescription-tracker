@@ -5,8 +5,8 @@
 			"path": ".."
 		},
 		{
-			"name": "packages/clinicalViewLambda",
-			"path": "../packages/clinicalViewLambda"
+			"name": "packages/clinicalView",
+			"path": "../packages/clinicalView"
 		},
 		{
 			"name": "packages/common/testing",

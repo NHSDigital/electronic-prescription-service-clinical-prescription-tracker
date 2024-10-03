@@ -19,7 +19,7 @@
     "packages/specification",
     "packages/statusLambda",
     "packages/common/testing",
-    "packages/clinicalViewLambda"
+    "packages/clinicalView"
   ],
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.3",

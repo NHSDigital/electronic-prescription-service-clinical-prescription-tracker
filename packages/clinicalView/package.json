@@ -1,5 +1,5 @@
 {
-    "name": "clinicalViewLambda",
+    "name": "clinicalView",
     "version": "1.0.0",
     "description": "Call clinical view interaction",
     "main": "handler.js",
