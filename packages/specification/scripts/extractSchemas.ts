@@ -6,45 +6,36 @@ import {
 } from "prescriptionSearch"
 import {JSONSchema} from "json-schema-to-ts"
 
-// Record to store schemas
 const schemas: Record<string, JSONSchema> = {ResponseBundle, OperationOutcome}
 
-// Define the folder paths
 const schemasFolder = path.join(".", "schemas")
 const resourcesFolder = path.join(schemasFolder, "resources")
 
-// Create `schemas` folder if it doesn't exist
 if (!fs.existsSync(schemasFolder)) {
   fs.mkdirSync(schemasFolder)
 }
 
-// Create `resources` folder if it doesn't exist
 if (!fs.existsSync(resourcesFolder)) {
   fs.mkdirSync(resourcesFolder)
 }
 
-// Function to check if the schema is not an array
 function isNotJSONSchemaArray(schema: JSONSchema | ReadonlyArray<JSONSchema>): schema is JSONSchema {
   return !Array.isArray(schema)
 }
 
-// Function to collapse examples
-function collapseExamples(schema: JSONSchema): JSONSchema {
+export function collapseExamples(schema: JSONSchema): JSONSchema {
   if (typeof schema !== "object" || schema === null) {
     return schema
   }
 
-  // Create a new object for the result
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const result: any = {...schema}
 
-  // Collapse `examples` to a single `example`
   if (Array.isArray(schema.examples) && schema.examples.length > 0) {
     result.example = schema.examples[0]
     delete result.examples
   }
 
-  // Recursively handle `items` if present
   if (schema.items) {
     if (isNotJSONSchemaArray(schema.items)) {
       result.items = collapseExamples(schema.items)
@@ -53,7 +44,6 @@ function collapseExamples(schema: JSONSchema): JSONSchema {
     }
   }
 
-  // Recursively handle `properties` if present
   if (schema.properties) {
     const properties: Record<string, JSONSchema> = {}
     for (const key in schema.properties) {
@@ -67,7 +57,6 @@ function collapseExamples(schema: JSONSchema): JSONSchema {
   return result
 }
 
-// Write the schemas to the `resources` folder
 for (const name in schemas) {
   if (Object.prototype.hasOwnProperty.call(schemas, name)) {
     const schema = schemas[name]
