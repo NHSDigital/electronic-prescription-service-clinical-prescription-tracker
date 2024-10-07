@@ -22,6 +22,7 @@ authors = [
 ]
 readme = "README.md"
 repository = "https://github.com/NHSDigital/electronic-prescription-service-clinical-prescription-tracker"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.12"
@@ -29,7 +30,7 @@ pyyaml = "^6.0"
 docopt = "^0.6.2"
 jsonpath-rw = "^1.4.0"
 semver = "^3.0.2"
-gitpython = "^3.1.43"
+gitpython = "^3.1.42"
 requests = "^2.32.3"
 boto3 = "^1.35.34"
 argparse = "^1.4.0"
@@ -38,10 +39,14 @@ pytest = "^8.3.3"
 cfn-lint = "^1.16.0"
 
 [tool.poetry.dev-dependencies]
+pre-commit = "^4.0.0"
+cfn-lint = "^1.12.4"
+black = "^24.8.0"
 flake8 = "^7.1.1"
-black = "^24.8"
-pip-licenses = "^5.0.0"
 jinja2 = "^3.1.4"
+pip-licenses = "^5.0.0"
+click = "^8.1.7"
+rich = "^13.8.1"
 
 [tool.poetry.scripts]
 

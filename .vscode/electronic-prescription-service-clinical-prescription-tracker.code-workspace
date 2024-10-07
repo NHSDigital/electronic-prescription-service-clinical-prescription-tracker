@@ -5,12 +5,12 @@
 			"path": ".."
 		},
 		{
-			"name": "packages/clinicalViewLambda",
-			"path": "../packages/clinicalViewLambda"
+			"name": "packages/clinicalView",
+			"path": "../packages/clinicalView"
 		},
 		{
-			"name": "packages/common",
-			"path": "../packages/common"
+			"name": "packages/common/testing",
+			"path": "../packages/common/testing"
 		},
 		{
 			"name": "packages/prescriptionSearch",
@@ -20,6 +20,10 @@
 			"name": "packages/sandbox",
 			"path": "../packages/sandbox"
 		},
+    {
+      "name": "packages/specification",
+      "path": "../packages/specification"
+    },
 		{
 			"name": "packages/statusLambda",
 			"path": "../packages/statusLambda"
@@ -60,7 +64,7 @@
 			"liter",
 			"MiddyfiedHandler",
 			"milliliter",
-			"NHSD",
+			"nhsdigital",
 			"nhsdlogin",
 			"nhslogin",
 			"NOSONAR",

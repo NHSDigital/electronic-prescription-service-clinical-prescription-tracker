@@ -4,10 +4,11 @@
   "files": [],
   // Building this project will build all of the following:
   "references": [
+    { "path": "packages/clinicalView" },
+    { "path": "packages/common/testing" },
     { "path": "packages/prescriptionSearch" },
     { "path": "packages/sandbox" },
-    { "path": "packages/statusLambda" },
-    { "path": "packages/common/testing" },
-    { "path": "packages/clinicalViewLambda" }
+    { "path": "packages/specification" },
+    { "path": "packages/statusLambda" }
   ]
 }

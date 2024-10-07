@@ -16,9 +16,10 @@
   "workspaces": [
     "packages/prescriptionSearch",
     "packages/sandbox",
+    "packages/specification",
     "packages/statusLambda",
     "packages/common/testing",
-    "packages/clinicalViewLambda"
+    "packages/clinicalView"
   ],
   "devDependencies": {
     "@semantic-release/changelog": "^6.0.3",
@@ -40,6 +41,7 @@
     "typescript": "^5.6.2"
   },
   "dependencies": {
-    "conventional-changelog-eslint": "^6.0.0"
+    "conventional-changelog-eslint": "^6.0.0",
+    "esbuild": "^0.23.1"
   }
 }

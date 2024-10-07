@@ -10,21 +10,21 @@ import {AxiosResponse} from "axios"
 import errorHandler from "@nhs/fhir-middy-error-handler"
 
 const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
-export const defaultLogger = new Logger({serviceName: "clinicalViewLambda", logLevel: LOG_LEVEL})
+export const defaultLogger = new Logger({serviceName: "clinicalView", logLevel: LOG_LEVEL})
 const defaultSpineClient = createSpineClient(defaultLogger)
 
 type HandlerParams = {
-    logger: Logger,
-    spineClient: SpineClient
+  logger: Logger,
+  spineClient: SpineClient
 }
 
 type HandlerResponse = {
-    data: {
-        prescriptionId: string,
-        prescriptionStatus?: string,
-        error?: string
-    },
-    status: number
+  data: {
+    prescriptionId: string,
+    prescriptionStatus?: string,
+    error?: string
+  },
+  status: number
 }
 
 export const apiGatewayHandler = async (params: HandlerParams, event: APIGatewayEvent): Promise<HandlerResponse> => {
@@ -69,13 +69,13 @@ const handleSpineResponse = (spineResponse: AxiosResponse<string, unknown>, pres
   const acknowledgement = soap_response.getElementsByTagName("acknowledgement").item(0)
   const acknowledgementTypeCode = acknowledgement?.getAttribute("typeCode")
 
-  if (acknowledgementTypeCode !== "AA"){
+  if (acknowledgementTypeCode !== "AA") {
     return prescriptionNotFoundResponse(prescriptionId)
   }
 
   const prescriptionStatus = soap_response.getElementsByTagName("prescriptionStatus")?.item(0)?.textContent
 
-  if (!prescriptionStatus){
+  if (!prescriptionStatus) {
     return prescriptionNotFoundResponse(prescriptionId)
   }
 
