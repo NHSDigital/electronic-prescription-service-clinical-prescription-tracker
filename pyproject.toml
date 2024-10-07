@@ -33,7 +33,7 @@ gitpython = "^3.1.43"
 requests = "^2.32.3"
 boto3 = "^1.35.34"
 argparse = "^1.4.0"
-pre-commit = "^3.5.0"
+pre-commit = "^4.0.0"
 pytest = "^8.3.3"
 cfn-lint = "^1.16.0"
 
