@@ -15,7 +15,7 @@
     "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
   },
   "dependencies": {
-    "@nhsdigital/eps-spine-client": "npm:@nhsdigital/eps-spine-client@v2.1.2",
+    "@nhsdigital/eps-spine-client": "npm:@nhsdigital/eps-spine-client@^2.1.3",
     "json-schema-to-ts": "^3.1.0"
   },
   "devDependencies": {}
