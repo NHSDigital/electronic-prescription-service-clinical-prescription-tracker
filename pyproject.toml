@@ -41,7 +41,7 @@ cfn-lint = "^1.16.0"
 [tool.poetry.dev-dependencies]
 pre-commit = "^4.0.0"
 cfn-lint = "^1.12.4"
-black = "^24.8.0"
+black = "^24.10.0"
 flake8 = "^7.1.1"
 jinja2 = "^3.1.4"
 pip-licenses = "^5.0.0"
