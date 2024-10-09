@@ -1,4 +1,4 @@
-name: sam release code
+name: release code and api
 
 on:
   workflow_call:
@@ -21,9 +21,6 @@ on:
       BUILD_ARTIFACT:
         required: true
         type: string
-      DEPLOY_SANDBOX:
-        required: true
-        type: boolean
       TRUSTSTORE_FILE:
         required: true
         type: string
@@ -34,8 +31,9 @@ on:
         required: true
         type: string
       LOG_LEVEL:
-        required: true
+        required: false
         type: string
+        default: INFO
       LOG_RETENTION_DAYS:
         required: true
         type: string
@@ -51,10 +49,14 @@ on:
       MARK_JIRA_RELEASED:
         type: boolean
         default: false
+      DEPLOY_APIGEE:
+        type: boolean
+        default: true
+      ENABLE_ALERTS:
+        type: boolean
+        default: true
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE:
-        required: true
-      TARGET_SPINE_SERVER:
         required: true
       DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE:
         required: false
@@ -64,9 +66,11 @@ on:
         required: false
       DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE:
         required: false
-  
+      PROXYGEN_ROLE:
+        required: false
+
 jobs:
-  sam_release_code:
+  release_code_and_api:
     runs-on: ubuntu-latest
     environment: ${{ inputs.TARGET_ENVIRONMENT }}
     permissions:
@@ -101,30 +105,65 @@ jobs:
           role-to-assume: ${{ secrets.CLOUD_FORMATION_DEPLOY_ROLE }}
           role-session-name: github-actions
 
-      - name: download build artifact
+      - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.BUILD_ARTIFACT }}
           path: .
 
+      - name: Export specification paths
+        run: |
+          SPEC_PATH="$(pwd)/.aws-sam/build/specification/eps-clinical-prescription-tracker-api.resolved.json"
+          echo "Specification location: $SPEC_PATH"
+          echo "SPEC_PATH=${SPEC_PATH}" >> "$GITHUB_ENV"
+
       - name: release code
         shell: bash
         working-directory: .github/scripts
         env:
-          artifact_bucket_prefix: clinical-tracker/${{ inputs.ARTIFACT_BUCKET_PREFIX }}
+          artifact_bucket_prefix: clinical_prescription_tracker/${{ inputs.ARTIFACT_BUCKET_PREFIX }}
           COMMIT_ID: ${{ inputs.COMMIT_ID }}
-          deploy_sandbox: ${{ inputs.DEPLOY_SANDBOX }}
           enable_mutual_tls: ${{ inputs.ENABLE_MUTUAL_TLS }}
           LOG_LEVEL: ${{ inputs.LOG_LEVEL }}
           LOG_RETENTION_DAYS: ${{ inputs.LOG_RETENTION_DAYS }}
           stack_name: ${{ inputs.STACK_NAME }}
           TARGET_ENVIRONMENT: ${{ inputs.TARGET_ENVIRONMENT }}
-          target_spine_server: ${{ secrets.TARGET_SPINE_SERVER }}
           template_file: template.yaml
           TRUSTSTORE_FILE: ${{ inputs.TRUSTSTORE_FILE }}
           VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}
+        run: ./release_code.sh
+
+      - name: get mtls secrets
+        shell: bash
         run: |
-          ./release_code.sh
+          mkdir -p ~/.proxygen/tmp
+          client_private_key_arn=$(aws cloudformation list-exports --query "Exports[?Name=='account-resources:ClinicalTrackerClientKeySecret'].Value" --output text)
+          client_cert_arn=$(aws cloudformation list-exports --query "Exports[?Name=='account-resources:ClinicalTrackerClientCertSecret'].Value" --output text)
+          aws secretsmanager get-secret-value --secret-id "${client_private_key_arn}" --query SecretString --output text > ~/.proxygen/tmp/client_private_key
+          aws secretsmanager get-secret-value --secret-id "${client_cert_arn}" --query SecretString --output text > ~/.proxygen/tmp/client_cert
+
+      - name: Configure AWS Credentials for api release
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-2
+          role-to-assume: ${{ secrets.PROXYGEN_ROLE }}
+          role-session-name: proxygen-ptl
+
+      - name: Deploy CPT API
+        shell: bash
+        working-directory: .github/scripts
+        if: ${{ inputs.DEPLOY_APIGEE == true && always() && !failure() && !cancelled() }}
+        env:
+          API_TYPE: standard
+          VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}
+          SPEC_PATH: ${{ env.SPEC_PATH }}
+          STACK_NAME: ${{ inputs.STACK_NAME }}
+          TARGET_ENVIRONMENT: ${{ inputs.TARGET_ENVIRONMENT }}
+          APIGEE_ENVIRONMENT: ${{ inputs.APIGEE_ENVIRONMENT }}
+          PROXYGEN_PRIVATE_KEY_NAME: ClinicalTrackerProxygenPrivateKey
+          PROXYGEN_KID: "eps-clinical-tracker"
+          DRY_RUN: false
+        run: ./deploy_api.sh
 
       - name: create_int_release_notes
         uses: ./.github/actions/update_confluence_jira
@@ -156,14 +195,13 @@ jobs:
           DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
 
       - name: Checkout gh-pages
-        if: ${{ !startsWith(inputs.STACK_NAME, 'lambda-resources-pr-') }}
         uses: actions/checkout@v4
         with:
           ref: gh-pages
           path: gh-pages
 
-      - name: update release tag in github pages
-        if: ${{ inputs.TARGET_ENVIRONMENT != 'dev-pr' }}
+      - name: Update release tag in github pages
+        if: ${{ !startsWith(inputs.STACK_NAME, 'clinical-tracker-pr-') }}
         run: |
           cd gh-pages
           NOW=$(date +'%Y-%m-%dT%H:%M:%S')

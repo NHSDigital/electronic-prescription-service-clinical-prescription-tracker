@@ -6,17 +6,14 @@
 REPO_NAME=electronic-prescription-service-clinical-prescription-tracker
 
 # this should be a regex used in jq command that parses the output from aws cloudformation list-stacks and just captures stacks we are interested in
-CAPTURE_REGEX="^clinical-tracker-(sandbox-)?pr-(\\d+)$"
+CAPTURE_REGEX="^cpt-pr-(\\d+)(-sandbox)?$"
 
 # this should be a regex that is used to get the pull request id from the cloud formation stack name
 # this is used in a replace command to replace the stack name so what is left is just the pull request id
-PULL_REQUEST_STACK_REGEX=clinical-tracker-pr-
-SANDBOX_PULL_REQUEST_STACK_REGEX=clinical-tracker-sandbox-pr-
+PULL_REQUEST_STACK_REGEX=cpt-pr-
 
-CNAME_QUERY=clinical-tracker-pr
-CNAME_SANDBOX_QUERY=clinical-tracker-sandbox-pr
+CNAME_QUERY=cpt-pr-
 
-# this should be customised to delete cloudformation stacks and proxygen deployments if they are used
 main() {
   delete_cloudformation_stacks
   delete_cname_records
@@ -33,10 +30,10 @@ delete_cloudformation_stacks() {
   do 
     echo "Checking if stack $i has open pull request"
     PULL_REQUEST=${i//${PULL_REQUEST_STACK_REGEX}/}
-    PULL_REQUEST=${PULL_REQUEST//${SANDBOX_PULL_REQUEST_STACK_REGEX}/}
+    PULL_REQUEST=${PULL_REQUEST//-sandbox/}
     echo "Checking pull request id ${PULL_REQUEST}"
     URL="https://api.github.com/repos/NHSDigital/${REPO_NAME}/pulls/${PULL_REQUEST}"
-    RESPONSE=$(curl --url "${URL}" --header "Authorization: Bearer ${GITHUB_TOKEN}" 2>/dev/null)
+    RESPONSE=$(curl "${URL}" 2>/dev/null)
     STATE=$(echo "${RESPONSE}" | jq -r .state)
     if [ "$STATE" == "closed" ]; then
       echo "** going to delete stack $i as state is ${STATE} **"
@@ -52,7 +49,7 @@ delete_cloudformation_stacks() {
 delete_cname_records() {
   HOSTED_ZONE_ID=$(aws route53 list-hosted-zones-by-name --dns-name dev.eps.national.nhs.uk. | jq -r ".HostedZones[0] | .Id")
   CNAME_RECORDS=$(aws route53 list-resource-record-sets --hosted-zone-id "${HOSTED_ZONE_ID}" \
-    --query "ResourceRecordSets[?Type == 'CNAME' && (contains(Name, '${CNAME_QUERY}') || contains(Name, '${CNAME_SANDBOX_QUERY}'))]" \
+    --query "ResourceRecordSets[?Type == 'CNAME' && contains(Name, '${CNAME_QUERY}')]" \
     | jq -r " .[] | .Name")
 
   mapfile -t CNAME_RECORDS_ARRAY <<< "$CNAME_RECORDS"

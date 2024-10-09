@@ -35,8 +35,7 @@ sam-sync: guard-AWS_DEFAULT_PROFILE guard-stack_name compile download-get-secret
 		--watch \
 		--template-file SAMtemplates/main_template.yaml \
 		--parameter-overrides \
-			  EnableSplunk=false\
-			  TargetSpineServer=$$TARGET_SPINE_SERVER \
+			  EnableSplunk=false
 
 sam-sync-sandbox: guard-stack_name compile download-get-secrets-layer
 	sam sync \
@@ -50,8 +49,7 @@ sam-deploy: guard-AWS_DEFAULT_PROFILE guard-stack_name
 	sam deploy \
 		--stack-name $$stack_name \
 		--parameter-overrides \
-			  EnableSplunk=false \
-			  TargetSpineServer=$$TARGET_SPINE_SERVER \
+			  EnableSplunk=false
 
 sam-delete: guard-AWS_DEFAULT_PROFILE guard-stack_name
 	sam delete --stack-name $$stack_name
@@ -67,13 +65,13 @@ sam-list-outputs: guard-AWS_DEFAULT_PROFILE guard-stack_name
 
 sam-validate: 
 	sam validate --template-file SAMtemplates/main_template.yaml --region eu-west-2
-	sam validate --template-file SAMtemplates/lambda_resources.yaml --region eu-west-2
+	sam validate --template-file SAMtemplates/functions/main.yaml --region eu-west-2
+	sam validate --template-file SAMtemplates/functions/lambda_resources.yaml --region eu-west-2
 
 sam-validate-sandbox: 
 	sam validate --template-file SAMtemplates/sandbox_template.yaml --region eu-west-2
-	sam validate --template-file SAMtemplates/lambda_resources.yaml --region eu-west-2
 
-sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-stack_name guard-template_file guard-cloud_formation_execution_role guard-LATEST_TRUSTSTORE_VERSION guard-enable_mutual_tls guard-VERSION_NUMBER guard-COMMIT_ID guard-LOG_LEVEL guard-LOG_RETENTION_DAYS guard-TARGET_ENVIRONMENT guard-target_spine_server
+sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-stack_name guard-template_file guard-cloud_formation_execution_role guard-LATEST_TRUSTSTORE_VERSION guard-enable_mutual_tls guard-VERSION_NUMBER guard-COMMIT_ID guard-LOG_LEVEL guard-LOG_RETENTION_DAYS guard-TARGET_ENVIRONMENT
 	sam deploy \
 		--template-file $$template_file \
 		--stack-name $$stack_name \
@@ -90,18 +88,23 @@ sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-sta
 		--parameter-overrides \
 			  TruststoreVersion=$$LATEST_TRUSTSTORE_VERSION \
 			  EnableMutualTLS=$$enable_mutual_tls \
-			  TargetSpineServer=$$target_spine_server \
 			  EnableSplunk=true \
 			  VersionNumber=$$VERSION_NUMBER \
 			  CommitId=$$COMMIT_ID \
 			  LogLevel=$$LOG_LEVEL \
-			  LogRetentionDays=$$LOG_RETENTION_DAYS \
+			  LogRetentionInDays=$$LOG_RETENTION_DAYS \
 			  Env=$$TARGET_ENVIRONMENT
+
+compile: compile-node compile-packages compile-specification
 
 compile-node:
 	npx tsc --build tsconfig.build.json
 
-compile: compile-node
+compile-packages:
+	npm run compile --workspace packages/prescriptionSearch
+
+compile-specification:
+	npm run resolve --workspace packages/specification
 
 download-get-secrets-layer:
 	mkdir -p packages/getSecretLayer/lib
@@ -113,7 +116,11 @@ sbom:
 	docker build -t eps-sbom -f ~/git_actions/eps-actions-sbom/Dockerfile ~/git_actions/eps-actions-sbom/
 	docker run -it --rm -v $${LOCAL_WORKSPACE_FOLDER:-.}:/github/workspace eps-sbom
 
-lint-node: compile-node
+lint: lint-node lint-samtemplates lint-python lint-githubactions lint-githubaction-scripts lint-specification
+
+lint-node: compile
+	npm run lint --workspace packages/clinicalView
+	npm run lint --workspace packages/prescriptionSearch
 	npm run lint --workspace packages/sandbox
 	npm run lint --workspace packages/statusLambda
 	npm run lint --workspace packages/common/testing
@@ -130,19 +137,28 @@ lint-githubactions:
 lint-githubaction-scripts:
 	shellcheck .github/scripts/*.sh
 
-lint: lint-node lint-samtemplates lint-python lint-githubactions lint-githubaction-scripts
+lint-specification: compile-specification
+	npm run lint --workspace packages/specification
 
 test: compile
+	npm run test --workspace packages/prescriptionSearch
 	npm run test --workspace packages/sandbox
 	npm run test --workspace packages/statusLambda
+	npm run test --workspace packages/clinicalView
 
 clean:
-	rm -rf packages/sandbox/coverage
-	rm -rf packages/statusLambda/coverage
+	rm -rf packages/clinicalView/coverage
 	rm -rf packages/common/testing/coverage
-	rm -rf packages/sandbox/lib
-	rm -rf packages/statusLambda/lib
+	rm -rf packages/prescriptionSearch/coverage
+	rm -rf packages/sandbox/coverage
+	rm -rf packages/specification/coverage
+	rm -rf packages/statusLambda/coverage
+	rm -rf packages/clinicalView/lib
 	rm -rf packages/common/testing/lib
+	rm -rf packages/prescriptionSearch/lib
+	rm -rf packages/sandbox/lib
+	rm -rf packages/specification/lib
+	rm -rf packages/statusLambda/lib
 	rm -rf .aws-sam
 
 deep-clean: clean
@@ -153,8 +169,10 @@ check-licenses: check-licenses-node check-licenses-python
 
 check-licenses-node:
 	npm run check-licenses
+	npm run check-licenses --workspace packages/prescriptionSearch
 	npm run check-licenses --workspace packages/sandbox
 	npm run check-licenses --workspace packages/statusLambda
+	npm run check-licenses --workspace packages/clinicalView
 
 check-licenses-python:
 	scripts/check_python_licenses.sh

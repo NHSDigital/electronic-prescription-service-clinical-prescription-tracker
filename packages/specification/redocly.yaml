@@ -1,0 +1,3 @@
+apis:
+  cpts:
+    root: ./dist/eps-clinical-prescription-tracker-api.resolved.json

@@ -5,13 +5,25 @@
 			"path": ".."
 		},
 		{
-			"name": "packages/common",
-			"path": "../packages/common"
+			"name": "packages/clinicalView",
+			"path": "../packages/clinicalView"
+		},
+		{
+			"name": "packages/common/testing",
+			"path": "../packages/common/testing"
+		},
+		{
+			"name": "packages/prescriptionSearch",
+			"path": "../packages/prescriptionSearch"
 		},
 		{
 			"name": "packages/sandbox",
 			"path": "../packages/sandbox"
 		},
+    {
+      "name": "packages/specification",
+      "path": "../packages/specification"
+    },
 		{
 			"name": "packages/statusLambda",
 			"path": "../packages/statusLambda"
@@ -50,8 +62,9 @@
 			"homecare",
 			"HSCN",
 			"liter",
+			"MiddyfiedHandler",
 			"milliliter",
-			"NHSD",
+			"nhsdigital",
 			"nhsdlogin",
 			"nhslogin",
 			"NOSONAR",
@@ -61,6 +74,7 @@
 			"pino",
 			"pollable",
 			"powertools",
+			"prescriptionSearch",
 			"Prosthetist",
 			"querystring",
 			"reingest",

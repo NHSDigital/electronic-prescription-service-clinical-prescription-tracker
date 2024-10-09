@@ -4,8 +4,11 @@
 
 This is the AWS layer that provides an API for Clinical Prescription Tracker.
 
+- `packages/clinicalView` Calls the Clinical View Spine interaction.
 - `packages/common/testing` Module that contains some test data used for tests in other modules.
+- `packages/prescriptionSearch` Calls the Prescription Search interaction.
 - `packages/sandbox/` Returns [static data](./packages/sandbox/examples/GetMyPrescriptions/Bundle/success.json) from the Sandbox.
+- `packages/specification/` This [Open API Specification](https://swagger.io/docs/specification/about/) describes the endpoints, methods and messages.
 - `packages/statusLambda/` Returns the status of the getMyPrescriptions endpoint.
 - `SAMtemplates/` Contains the SAM templates used to define the stacks.
 - `scripts/` Utilities helpful to developers of this specification.
@@ -171,10 +174,10 @@ There are `make` commands that are run as part of the CI pipeline and help alias
 
 #### install targets
 
-- `install-node` Installs node dependencies
-- `install-python` Installs python dependencies
-- `install-hooks` Installs git pre commit hooks
-- `install` Runs all install targets
+- `install-node` Installs node dependencies.
+- `install-python` Installs python dependencies.
+- `install-hooks` Installs git pre commit hooks.
+- `install` Runs all install targets.
 
 #### SAM targets
 
@@ -192,11 +195,11 @@ These are used to do common commands
 - `sam-validate` Validates the main SAM template and the splunk firehose template.
 - `sam-validate-sandbox` Validates the sandbox SAM template and the splunk firehose template.
 - `sam-deploy-package` Deploys a package created by sam-build. Used in CI builds. Needs the following environment variables set.
-  - artifact_bucket - bucket where uploaded packaged files are
-  - artifact_bucket_prefix - prefix in bucket of where uploaded packaged files ore
-  - stack_name - name of stack to deploy
-  - template_file - name of template file created by sam-package
-  - cloud_formation_execution_role - ARN of role that cloud formation assumes when applying the changeset
+  - artifact_bucket - Bucket where the uploaded package files are stored.
+  - artifact_bucket_prefix - Prefix in the bucket where the uploaded package files are stored.
+  - stack_name - Name of the CloudFormation stack to deploy.
+  - template_file - Name of the template file created by `sam-package`.
+  - cloud_formation_execution_role - ARN of the role that CloudFormation assumes when applying the changeset.
 
   #### Download secrets
 
@@ -209,28 +212,30 @@ These are used to do common commands
 
 #### Linting and testing
 
-- `lint` Runs lint for all code
-- `lint-node` Runs lint for node code
-- `lint-cloudformation` Runs lint for cloudformation templates
-- `lint-samtemplates` Runs lint for SAM templates
-- `test` Runs unit tests for all code
-- `cfn-guard` runs cfn-guard for sam and cloudformation templates
+- `lint` Runs lint for all code.
+- `lint-node` Runs lint for node code.
+- `lint-cloudformation` Runs lint for cloudformation templates.
+- `lint-samtemplates` Runs lint for SAM templates.
+- `test` Runs unit tests for all code.
+- `cfn-guard` runs cfn-guard for sam and cloudformation templates.
 
 #### Compiling
 
-- `compile` Compiles all code
-- `compile-node` Runs tsc to compile typescript code
+- `compile` Compiles all code.
+- `compile-node` Runs TypeScript compiler (tsc) for the project.
+- `compile-packages` Compiles specific packages.
+- `compile-specification` Compiles the OpenAPI specification files.
 
 #### Check licenses
 
-- `check-licenses` Checks licenses for all packages used - calls check-licenses-node, check-licenses-python
-- `check-licenses-node` Checks licenses for all node code
-- `check-licenses-python` Checks licenses for all python code
+- `check-licenses` Checks licenses for all packages used - calls check-licenses-node, check-licenses-python.
+- `check-licenses-node` Checks licenses for all node code.
+- `check-licenses-python` Checks licenses for all python code.
 
 #### CLI Login to AWS
 
-- `aws-configure` Configures a connection to AWS
-- `aws-login` Reconnects to AWS from a previously configured connection
+- `aws-configure` Configures a connection to AWS.
+- `aws-login` Reconnects to AWS from a previously configured connection.
 
 ### Github folder
 
@@ -260,8 +265,8 @@ Workflows are in the `.github/workflows` folder:
 - `delete_old_cloudformation_stacks.yml` Workflow for deleting old cloud formation stacks. Runs daily.
 - `dependabot_auto_approve_and_merge.yml` Workflow to auto merge dependabot updates.
 - `pr-link.yaml` This workflow template links Pull Requests to Jira tickets and runs when a pull request is opened.
-- `pull_request.yml` Called when pull request is opened or updated. Calls sam_package_code and sam_release_code to build and deploy the code. Deploys to dev AWS account. The main stack deployed adopts the naming convention clinical-tracker-pr-<PULL_REQUEST_ID>, while the sandbox stack follows the pattern clinical-tracker-sandbox-pr-<PULL_REQUEST_ID>
+- `pull_request.yml` Called when pull request is opened or updated. Calls run_package_code_and_api and run_release_code_and_api to build and deploy the code. Deploys to dev AWS account and internal-dev and internal-dev sandbox apigee environments. The main stack deployed adopts the naming convention clinical-tracker-pr-<PULL_REQUEST_ID>, while the sandbox stack follows the pattern 
 - `quality_checks.yml` Runs check-licenses, lint, test and SonarCloud scan against the repo. Called from pull_request.yml and release.yml
-- `release.yml` Run when code is merged to main branch or a tag starting v is pushed. Calls sam_package_code and sam_release_code to build and deploy the code.
-- `sam_package_code.yml` Packages code and uploads to a github artifact for later deployment.
-- `sam_release_code.yml` Release code built by sam_package_code.yml to an environment.
+- `release.yml` Runs on demand to create a release and deploy to all environments.
+- `run_package_code_and_api.yml` Packages code and api and uploads to a github artifact for later deployment.
+- `run_release_code_and_api.yml` Release code and api built by run_package_code_and_api.yml to an environment.

@@ -1,59 +1,30 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  clinical tracker api
-
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
-Globals:
-  Function:
-    Timeout: 50
-    MemorySize: 256
-    Architectures:
-      - x86_64
-    Runtime: nodejs20.x
-    Environment:
-      Variables:
-        TargetSpineServer: !Ref TargetSpineServer
-        NODE_OPTIONS: --enable-source-maps
-        SpinePrivateKeyARN: !ImportValue account-resources:SpinePrivateKey
-        SpinePublicCertificateARN: !ImportValue account-resources:SpinePublicCertificate
-        SpineASIDARN: !ImportValue account-resources:SpineASID
-        SpinePartyKeyARN: !ImportValue account-resources:SpinePartyKey
-        SpineCAChainARN: !ImportValue account-resources:SpineCAChain
-        ServiceSearchApiKeyARN: !ImportValue account-resources:ServiceSearchApiKey
-    Layers:
-      - !Sub "arn:aws:lambda:${AWS::Region}:580247275435:layer:LambdaInsightsExtension:38"
+  CPT resources
 
 Parameters:
-  TargetSpineServer:
-    Type: String
-    Description: TargetSpineServer
-    Default: none
-  TruststoreVersion:
-    Type: String
-    Description: TruststoreVersion
-    Default: none
   EnableMutualTLS:
     Type: String
-    Description: Whether to use mutual TLS
     Default: false
-    AllowedValues: [true, false]
-  EnableSplunk:
+    AllowedValues:
+      - true
+      - false
+
+  TruststoreVersion:
     Type: String
-    Description: Whether to use splunk
-    Default: false
-    AllowedValues: [true, false]
-  VersionNumber:
+    Default: none
+
+  TargetSpineServer:
     Type: String
-    Description: Current release version
-    Default: "xxx"
-  CommitId:
+    Default: none
+
+  LogLevel:
     Type: String
-    Description: Most recent commit hash
-    Default: "xxx"
-  LogRetentionDays:
+    Default: "INFO"
+
+  LogRetentionInDays:
     Type: Number
-    Description: How long to keep logs for
     Default: 30
     AllowedValues:
       [
@@ -81,188 +52,32 @@ Parameters:
         3653,
       ]
 
-Conditions:
-  ShouldUseMutualTLS: !Equals [true, !Ref EnableMutualTLS]
-  ShouldUseSplunk: !Equals [true, !Ref EnableSplunk]
+  EnableSplunk:
+    Type: String
+    Default: false
+    AllowedValues:
+      - true
+      - false
+
+  VersionNumber:
+    Type: String
+    Default: "xxx"
+
+  CommitId:
+    Type: String
+    Default: "xxx"
 
 Resources:
-  GetSecretsLayer:
-    Type: AWS::Serverless::LayerVersion
-    Properties:
-      LayerName: get-secrets-layer
-      Description: get secrets layer
-      ContentUri: ../packages/getSecretLayer/lib/get-secrets-layer.zip
-      RetentionPolicy: Retain
-
-  # _status endpoint lambda
-  StatusLambdaResources:
+  Functions:
     Type: AWS::Serverless::Application
     Properties:
-      Location: lambda_resources.yaml
+      Location: functions/main.yaml
       Parameters:
-        CloudWatchKMSKey: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
-        SplunkSubscriptionFilterRole: !ImportValue lambda-resources:SplunkSubscriptionFilterRole
-        SplunkDeliveryStream: !ImportValue lambda-resources:SplunkDeliveryStream
+        StackName: !Ref AWS::StackName
+        EnableMutualTLS: !Ref EnableMutualTLS
+        TruststoreVersion: !Ref TruststoreVersion
+        TargetSpineServer: !Ref TargetSpineServer
+        LogRetentionInDays: !Ref LogRetentionInDays
         EnableSplunk: !Ref EnableSplunk
-        LambdaName: !Sub "${AWS::StackName}-statusLambda"
-        AccessToSpine: "true"
-        LogRetentionDays: !Ref LogRetentionDays
-  StatusLambda:
-    Type: AWS::Serverless::Function # NOSONAR - The scan complains that this has no log group, but it's defined in the lambda resources above.
-    Properties:
-      FunctionName: !Sub "${AWS::StackName}-statusLambda"
-      CodeUri: ../packages
-      Handler: statusLambda.handler
-      Role: !GetAtt StatusLambdaResources.Outputs.LambdaRoleArn
-      Environment:
-        Variables:
-          VERSION_NUMBER: !Ref VersionNumber
-          COMMIT_ID: !Ref CommitId
-          AWS_LAMBDA_EXEC_WRAPPER: /opt/get-secrets-layer
-      Layers:
-        - !Ref GetSecretsLayer
-      Events:
-        status:
-          Type: HttpApi
-          Properties:
-            ApiId: !Ref HttpApiGateway
-            Path: /_status
-            Method: get
-    Metadata: # Manage esbuild properties
-      BuildMethod: esbuild
-      guard:
-        SuppressedRules:
-          - LAMBDA_DLQ_CHECK
-          - LAMBDA_INSIDE_VPC
-          - LAMBDA_CONCURRENCY_CHECK
-      BuildProperties:
-        Minify: true
-        Target: "es2020"
-        Sourcemap: true
-        tsconfig: statusLambda/tsconfig.json
-        packages: bundle
-        EntryPoints:
-          - statusLambda/src/statusLambda.ts
-
-  # TLS cert for custom domain
-  GenerateCertificate:
-    Type: AWS::CertificateManager::Certificate
-    Properties:
-      ValidationMethod: DNS
-      DomainName:
-        Fn::Join:
-          - "."
-          - - !Ref "AWS::StackName"
-            - Fn::ImportValue: eps-route53-resources:EPS-domain
-      DomainValidationOptions:
-        - DomainName:
-            Fn::Join:
-              - "."
-              - - !Ref "AWS::StackName"
-                - Fn::ImportValue: eps-route53-resources:EPS-domain
-          HostedZoneId:
-            Fn::ImportValue: eps-route53-resources:EPS-ZoneID
-
-  # Http api
-  HttpApiGateway:
-    Type: AWS::Serverless::HttpApi
-    Properties:
-      StageName: Prod
-      DefaultRouteSettings:
-        DetailedMetricsEnabled: true
-      Domain:
-        DomainName:
-          Fn::Join:
-            - "."
-            - - !Ref "AWS::StackName"
-              - Fn::ImportValue: eps-route53-resources:EPS-domain
-        CertificateArn: !Ref GenerateCertificate
-        Route53:
-          HostedZoneId:
-            Fn::ImportValue: eps-route53-resources:EPS-ZoneID
-        EndpointConfiguration: REGIONAL
-        SecurityPolicy: TLS_1_2
-        MutualTlsAuthentication:
-          TruststoreUri:
-            "Fn::If":
-              - ShouldUseMutualTLS
-              - Fn::Join:
-                  - "/"
-                  - - "s3:/"
-                    - !Select [
-                        5,
-                        !Split [
-                          ":",
-                          Fn::ImportValue: account-resources:TrustStoreBucket,
-                        ],
-                      ]
-                    - "clinical-tracker-truststore.pem"
-              - !Ref "AWS::NoValue"
-          TruststoreVersion:
-            "Fn::If":
-              - ShouldUseMutualTLS
-              - !Ref TruststoreVersion
-              - !Ref "AWS::NoValue"
-      DisableExecuteApiEndpoint:
-        "Fn::If":
-          - ShouldUseMutualTLS
-          - true
-          - !Ref "AWS::NoValue"
-      AccessLogSettings:
-        DestinationArn: !GetAtt ApiGwAccessLogs.Arn
-        Format: "{ \
-          \"requestTime\": \"$context.requestTime\", \
-          \"apiId\": \"$context.apiId\", \
-          \"accountId\": \"$context.accountId\", \
-          \"resourcePath\": \"$context.resourcePath\", \
-          \"stage\": \"$context.stage\", \
-          \"requestId\": \"$context.requestId\", \
-          \"extendedRequestId\": \"$context.extendedRequestId\", \
-          \"status\": \"$context.status\", \
-          \"httpMethod\": \"$context.httpMethod\", \
-          \"protocol\": \"$context.protocol\", \
-          \"path\": \"$context.path\", \
-          \"responseLatency\": \"$context.responseLatency\", \
-          \"responseLength\": \"$context.responseLength\",
-          \"domainName\": \"$context.domainName\", \
-          \"identity\": { \
-          \"sourceIp\": \"$context.identity.sourceIp\", \
-          \"userAgent\": \"$context.identity.userAgent\", \
-          \"clientCert\":{ \
-          \"subjectDN\": \"$context.identity.clientCert.subjectDN\", \
-          \"issuerDN\": \"$context.identity.clientCert.issuerDN\", \
-          \"serialNumber\": \"$context.identity.clientCert.serialNumber\", \
-          \"validityNotBefore\": \"$context.identity.clientCert.validity.notBefore\", \
-          \"validityNotAfter\": \"$context.identity.clientCert.validity.notAfter\" \
-          }}, \
-          \"integration\":{ \
-          \"error\": \"$context.integration.error\", \
-          \"integrationStatus\": \"$context.integration.integrationStatus\", \
-          \"latency\": \"$context.integration.latency\", \
-          \"requestId\": \"$context.integration.requestId\", \
-          \"status\": \"$context.integration.status\" \
-          }}"
-
-  ApiGwAccessLogs:
-    Type: AWS::Logs::LogGroup
-    Metadata:
-      guard:
-        SuppressedRules:
-          - CW_LOGGROUP_RETENTION_PERIOD_CHECK
-    Properties:
-      LogGroupName:
-        !Join [
-          "/",
-          ["/aws/apigateway", !Ref "AWS::StackName", !Sub "${HttpApiGateway}"],
-        ]
-      RetentionInDays: !Ref LogRetentionDays
-      KmsKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
-
-  ApiGwAccessLogsSplunkSubscriptionFilter:
-    Condition: ShouldUseSplunk
-    Type: AWS::Logs::SubscriptionFilter
-    Properties:
-      RoleArn: !ImportValue lambda-resources:SplunkSubscriptionFilterRole
-      LogGroupName: !Ref ApiGwAccessLogs
-      FilterPattern: "" # All logs
-      DestinationArn: !ImportValue lambda-resources:SplunkDeliveryStream
+        VersionNumber: !Ref VersionNumber
+        CommitId: !Ref CommitId

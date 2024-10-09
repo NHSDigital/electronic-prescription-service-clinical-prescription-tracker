@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.defaults.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "lib"
+  },
+  "references": [
+    {
+      "path": "../prescriptionSearch"
+    }
+  ],
+  "include": ["scripts/**/*", "tests/**/*"],
+  "exclude": ["node_modules"]
+}
