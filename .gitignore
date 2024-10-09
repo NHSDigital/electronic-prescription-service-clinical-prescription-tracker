@@ -1,4 +1,5 @@
 *.log
+*sbom*.json
 **/build/
 **/dist/
 **/newman/
