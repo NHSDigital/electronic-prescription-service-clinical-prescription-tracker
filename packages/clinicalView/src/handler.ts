@@ -5,7 +5,7 @@ import {createSpineClient} from "@nhsdigital/eps-spine-client"
 import {APIGatewayEvent, APIGatewayProxyEventHeaders, APIGatewayProxyEventQueryStringParameters} from "aws-lambda"
 import middy from "@middy/core"
 import {ClinicalViewParams} from "@nhsdigital/eps-spine-client/lib/live-spine-client"
-import {DOMParser} from "xmldom"
+import {DOMParser} from "@xmldom/xmldom"
 import {AxiosResponse} from "axios"
 import errorHandler from "@nhs/fhir-middy-error-handler"
 
@@ -65,7 +65,7 @@ const buildClinicalViewParams = (
 }
 
 const handleSpineResponse = (spineResponse: AxiosResponse<string, unknown>, prescriptionId: string) => {
-  const soap_response = (new DOMParser()).parseFromString(spineResponse.data)
+  const soap_response = (new DOMParser()).parseFromString(spineResponse.data, "text/xml")
   const acknowledgement = soap_response.getElementsByTagName("acknowledgement").item(0)
   const acknowledgementTypeCode = acknowledgement?.getAttribute("typeCode")
 
