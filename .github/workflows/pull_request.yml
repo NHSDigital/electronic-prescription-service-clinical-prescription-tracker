@@ -15,6 +15,12 @@ jobs:
     with:
       node_version: "20"
   
+  sbom_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: NHSDigital/eps-action-sbom@aea-0000-move-to-syft
+        name: SBOM test
+
   pr_title_format_check:
     uses: ./.github/workflows/pr_title_check.yml
 
