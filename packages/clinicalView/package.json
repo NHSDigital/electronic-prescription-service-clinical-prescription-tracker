@@ -14,8 +14,8 @@
         "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
     },
     "dependencies": {
-        "@nhs/fhir-middy-error-handler": "^2.1.6",
         "@nhsdigital/eps-spine-client": "^2.1.3",
+        "@nhs/fhir-middy-error-handler": "^2.1.7",
         "@types/xmldom": "^0.1.34",
         "@xmldom/xmldom": "^0.9.3",
         "axios": "^1.7.7"
