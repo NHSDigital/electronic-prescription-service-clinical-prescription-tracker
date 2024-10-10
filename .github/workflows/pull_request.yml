@@ -4,9 +4,8 @@ on:
   pull_request:
     branches: [main]
 
-env:
-  BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
-
 jobs:
   sbom_scan:
     uses: NHSDigital/eps-action-sbom/.github/workflows/sbom_workflow.yml@aea-0000-move-to-syft
+    with:
+      BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
