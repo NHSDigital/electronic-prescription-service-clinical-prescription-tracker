@@ -5,5 +5,5 @@ on:
     branches: [main]
 
 jobs:
-  sbom_scans:
+  sbom_scan:
     uses: NHSDigital/eps-action-sbom/.github/workflows/sbom_workflow.yml@aea-0000-move-to-syft
