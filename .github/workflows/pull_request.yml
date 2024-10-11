@@ -4,6 +4,264 @@ on:
   pull_request:
     branches: [main]
 
+  workflow_call:
+    secrets:
+      SONAR_TOKEN:
+        required: true
+
 jobs:
-  sbom_scans:
-    uses: NHSDigital/eps-action-sbom/.github/workflows/sbom_workflow.yml@aea-0000-move-to-syft
+  quality_checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+          fetch-depth: 0
+
+      # using git commit sha for version of action to ensure we have stable version
+      - name: Install asdf
+        uses: asdf-vm/actions/setup@05e0d2ed97b598bfce82fd30daf324ae0c4570e6
+        with:
+          asdf_branch: v0.14.1
+
+      - name: Cache asdf
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.asdf
+          key: ${{ runner.os }}-asdf-${{ hashFiles('**/.tool-versions') }}
+          restore-keys: |
+            ${{ runner.os }}-asdf-
+
+      - name: Install asdf dependencies in .tool-versions
+        uses: asdf-vm/actions/install@05e0d2ed97b598bfce82fd30daf324ae0c4570e6
+        with:
+          asdf_branch: v0.14.1
+        env:
+          PYTHON_CONFIGURE_OPTS: --enable-shared
+
+      - name: Setting up .npmrc
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> ~/.npmrc
+          echo "@nhsdigital:registry=https://npm.pkg.github.com" >> ~/.npmrc
+
+      - name: make install
+        run: |
+          make install
+
+      - name: Check if project uses Poetry
+        id: check_poetry
+        run: |
+          if [ -f "pyproject.toml" ] && grep -q '\[tool.poetry\]' pyproject.toml; then
+            echo "****************"
+            echo "Project uses poetry"
+            echo "****************"
+            echo "uses_poetry=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "****************"
+            echo "Project does not use poetry"
+            echo "****************"
+            echo "uses_poetry=false" >> "$GITHUB_OUTPUT"
+          fi
+  
+      - name: Check for SAM templates
+        id: check_sam_templates
+        run: |
+          if [ -d "SAMtemplates" ]; then
+            echo "****************"
+            echo "Project has SAM templates"
+            echo "****************"
+            echo "sam_exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "****************"
+            echo "Project does not have SAM templates"
+            echo "****************"
+            echo "sam_exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check for cloudformation templates
+        id: check_cf_templates
+        run: |
+          if [ -d "cloudformation" ]; then
+            echo "****************"
+            echo "Project has cloudformation templates"
+            echo "****************"
+            echo "cf_exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "****************"
+            echo "Project does not have cloudformation templates"
+            echo "****************"
+            echo "cf_exists=false" >> "$GITHUB_OUTPUT"
+          fi
+  
+      - name: Check for cdk
+        id: check_cdk
+        run: |
+          if [ -d "packages/cdk" ]; then
+            echo "****************"
+            echo "Project has cdk"
+            echo "****************"
+            echo "cdk_exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "****************"
+            echo "Project does not have cdk"
+            echo "****************"
+            echo "cdk_exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check licenses (Makefile)
+        run: |
+          make check-licenses
+
+      - name: Check licenses (Python)
+        if: steps.check_poetry.outputs.uses_poetry == 'true'
+        run: |
+          #!/bin/bash
+          set -euo pipefail
+
+          # Install pip-licenses if not already installed
+          if ! poetry run pip show pip-licenses > /dev/null 2>&1; then
+            echo "pip-licenses is not detected. Installing..."
+            poetry run pip install pip-licenses
+          fi
+
+          LICENSES=$(poetry run pip-licenses)
+          INCOMPATIBLE_LIBS=$(echo "$LICENSES" | grep 'GPL' || true)
+
+          if [[ -z $INCOMPATIBLE_LIBS ]]; then
+              echo "Checked licenses are OK"
+              exit 0
+          else
+              echo "The following libraries were found which are not compatible with this project's license:"
+              echo "$INCOMPATIBLE_LIBS"
+              exit 1
+          fi
+  
+      - name: actionlint
+        uses: raven-actions/actionlint@v2
+
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          ignore_paths: >-
+            *test*
+            .venv
+            node_modules
+            .git
+
+      - name: Run cfn-lint
+        if: steps.check_sam_templates.outputs.sam_exists == 'true' || steps.check_cf_templates.outputs.cf_exists == 'true'
+        run: |
+          pip install cfn-lint
+          cfn-lint -I "cloudformation/**/*.y*ml" 2>&1 | awk '/Run scan/ { print } /^[EW][0-9]/ { print; getline; print }'
+          cfn-lint -I "SAMtemplates/**/*.y*ml" 2>&1 | awk '/Run scan/ { print } /^[EW][0-9]/ { print; getline; print }'
+
+      - name: Run unit tests
+        run: make test
+  
+      - name: Run cdk-synth
+        if: steps.check_cdk.outputs.cdk_exists == 'true'
+        run: |
+          make cdk-synth
+  
+      - name: Install AWS SAM CLI
+        if: steps.check_sam_templates.outputs.sam_exists == 'true'
+        run: |
+          pip install aws-sam-cli
+
+      - name: Init cfn-guard
+        run: |
+          #!/usr/bin/env bash
+          set -eou pipefail
+
+          rm -rf /tmp/ruleset
+          rm -rf cfn_guard_output
+
+          wget -O /tmp/ruleset.zip https://github.com/aws-cloudformation/aws-guard-rules-registry/releases/download/1.0.2/ruleset-build-v1.0.2.zip >/dev/null 2>&1
+          unzip /tmp/ruleset.zip -d /tmp/ruleset/ >/dev/null 2>&1
+
+          curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/aws-cloudformation/cloudformation-guard/main/install-guard.sh | sh >/dev/null 2>&1
+
+          mkdir -p cfn_guard_output
+
+      - name: Run cfn-guard script for sam templates
+        if: steps.check_sam_templates.outputs.sam_exists == 'true'
+        run: |
+          #!/usr/bin/env bash
+          set -eou pipefail
+
+          declare -a rulesets=("ncsc" "ncsc-cafv3" "wa-Reliability-Pillar" "wa-Security-Pillar")
+          for ruleset in "${rulesets[@]}"
+          do
+            while IFS= read -r -d '' file
+            do
+              echo "checking SAM template $file with ruleset $ruleset"
+              mkdir -p "$(dirname cfn_guard_output/"$file")"
+
+              # Transform the SAM template to CloudFormation and then run through cfn-guard
+              SAM_OUTPUT=$(sam validate -t "$file" --region eu-west-2 --debug 2>&1 | \
+                  grep -Pazo '(?s)AWSTemplateFormatVersion.*\n\/' | tr -d '\0')
+              echo "${SAM_OUTPUT::-1}" | ~/.guard/bin/cfn-guard validate \
+                  --rules "/tmp/ruleset/output/$ruleset.guard" \
+                  --show-summary fail \
+                  > "cfn_guard_output/${file}_${ruleset}.txt"
+
+            done < <(find ./SAMtemplates -name '*.y*ml' -print0)
+          done
+
+      - name: Run cfn-guard script for cloudformation templates
+        if: steps.check_cf_templates.outputs.cf_exists == 'true'
+        run: |
+          #!/usr/bin/env bash
+
+          declare -a rulesets=("ncsc" "ncsc-cafv3" "wa-Reliability-Pillar" "wa-Security-Pillar")
+          for ruleset in "${rulesets[@]}"
+          do
+            echo "Checking all templates in cloudformation folder with ruleest $ruleset"
+
+            ~/.guard/bin/cfn-guard validate \
+                --data cloudformation \
+                    --rules "/tmp/ruleset/output/$ruleset.guard" \
+                --show-summary fail \
+                > "cfn_guard_output/cloudformation_$ruleset.txt"
+          done
+
+      - name: Run cfn-guard script for cdk templates
+        if: steps.check_cdk.outputs.cdk_exists == 'true'
+        run: |
+          #!/usr/bin/env bash
+
+          declare -a rulesets=("ncsc" "ncsc-cafv3" "wa-Reliability-Pillar" "wa-Security-Pillar")
+          for ruleset in "${rulesets[@]}"
+          do
+            echo "Checking all templates in cdk.out folder with ruleest $ruleset"
+
+            ~/.guard/bin/cfn-guard validate \
+                --data cdk.out \
+                    --rules "/tmp/ruleset/output/$ruleset.guard" \
+                --show-summary fail \
+                > "cfn_guard_output/cdk.out_$ruleset.txt"
+          done
+
+      - name: Show cfn-guard output
+        if: failure()
+        run: find cfn_guard_output -type f -print0 | xargs -0 cat
+
+      - name: Upload cfn_guard_output
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cfn_guard_output
+          path: cfn_guard_output
+
+      - name: Generate and check SBOMs
+        uses: NHSDigital/eps-action-sbom@aea-0000-move-to-syft
+  
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
