@@ -257,7 +257,7 @@ jobs:
           name: cfn_guard_output
           path: cfn_guard_output
 
-      - name: Generate and check SBOMs
+      - name: Generate and check SBOM
         uses: NHSDigital/eps-action-sbom@aea-0000-move-to-syft
   
       - name: SonarCloud Scan
