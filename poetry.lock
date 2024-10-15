@@ -107,17 +107,17 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "boto3"
-version = "1.35.37"
+version = "1.35.39"
 description = "The AWS SDK for Python"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "boto3-1.35.37-py3-none-any.whl", hash = "sha256:385ca77bf8ea4ab2d97f6e2435bdb29f77d9301e2f7ac796c2f465753c2adf3c"},
-    {file = "boto3-1.35.37.tar.gz", hash = "sha256:470d981583885859fed2fd1c185eeb01cc03e60272d499bafe41b12625b158c8"},
+    {file = "boto3-1.35.39-py3-none-any.whl", hash = "sha256:5970b62c1ec8177501e02520f0d41839ca5fc549b30bac4e8c0c0882ae776217"},
+    {file = "boto3-1.35.39.tar.gz", hash = "sha256:670f811c65e3c5fe4ed8c8d69be0b44b1d649e992c0fc16de43816d1188f88f1"},
 ]
 
 [package.dependencies]
-botocore = ">=1.35.37,<1.36.0"
+botocore = ">=1.35.39,<1.36.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.10.0,<0.11.0"
 
@@ -126,13 +126,13 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.35.37"
+version = "1.35.39"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "botocore-1.35.37-py3-none-any.whl", hash = "sha256:64f965d4ba7adb8d79ce044c3aef7356e05dd74753cf7e9115b80f477845d920"},
-    {file = "botocore-1.35.37.tar.gz", hash = "sha256:b2b4d29bafd95b698344f2f0577bb67064adbf1735d8a0e3c7473daa59c23ba6"},
+    {file = "botocore-1.35.39-py3-none-any.whl", hash = "sha256:781c547eb6a79c0e4b0bedd87b81fbfed957816b4841d33e20c8f1989c7c19ce"},
+    {file = "botocore-1.35.39.tar.gz", hash = "sha256:cb7f851933b5ccc2fba4f0a8b846252410aa0efac5bfbe93b82d10801f5f8e90"},
 ]
 
 [package.dependencies]
@@ -167,13 +167,13 @@ files = [
 
 [[package]]
 name = "cfn-lint"
-version = "1.16.0"
+version = "1.16.1"
 description = "Checks CloudFormation templates for practices and behaviour that could potentially be improved"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "cfn_lint-1.16.0-py3-none-any.whl", hash = "sha256:c2f628e18edc76e8d4969821a16e584807583bc8bd967fecfce1327b662f273b"},
-    {file = "cfn_lint-1.16.0.tar.gz", hash = "sha256:c341a1bf28e95dbc01a6dd7c76a3cf3d0c9b8d52a5a4539c60bd4130fcefc766"},
+    {file = "cfn_lint-1.16.1-py3-none-any.whl", hash = "sha256:071970610f227f6998e9b6f72514d3f068d24c49cb296c072be9c0d4992c405a"},
+    {file = "cfn_lint-1.16.1.tar.gz", hash = "sha256:e7b6a2fbb39368974044e7ecd109bed56224cf11b9bd92ebeb5e8ae5d5754725"},
 ]
 
 [package.dependencies]
@@ -1507,4 +1507,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "fe1d30876aaa8ff7f9d02b6880fd8cfcecca095405dd05c4aefef24abd59fcbb"
+content-hash = "bd608cd9b8309bf910901f516d008c24dab71f314744e7e093a5f620c44c0d97"
