@@ -9,12 +9,10 @@ env:
 
 jobs:
   quality_checks:
-    uses: NHSDigital/eps-workflow-quality-checks/.github/workflows/quality-checks.yml@v2
+    uses: NHSDigital/eps-workflow-quality-checks/.github/workflows/quality-checks.yml@main
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    with:
-      node_version: "20"
-  
+
   get_commit_id:
     runs-on: ubuntu-latest
     outputs:
