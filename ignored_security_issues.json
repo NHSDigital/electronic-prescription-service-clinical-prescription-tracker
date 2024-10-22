@@ -1,5 +1,14 @@
 [
-    "GHSA-8rmg-jf7p-4p22",
-    "GHSA-gc25-3vc5-2jf9",
-    "GHSA-crh6-fp67-6883"
+    {
+        "vulnerability_id": "GHSA-8rmg-jf7p-4p22",
+        "reason": "False positive: https://github.com/github/advisory-database/issues/3280"
+    },
+    {
+        "vulnerability_id": "GHSA-gc25-3vc5-2jf9",
+        "reason": "We have a custom package with the same name as a package with an issue. False positive: https://github.com/advisories/GHSA-gc25-3vc5-2jf9"
+    },
+    {
+        "vulnerability_id": "GHSA-crh6-fp67-6883",
+        "reason": "A ticket is on the backlog to address this issue"
+    }
 ]
