@@ -236,7 +236,7 @@ jobs:
       ARTIFACT_BUCKET_PREFIX: ${{needs.tag_release.outputs.version_tag}}
       STACK_NAME: cpt-sandbox
       TARGET_ENVIRONMENT: int
-      APIGEE_ENVIRONMENT: int-sandbox
+      APIGEE_ENVIRONMENT: sandbox
       ENABLE_MUTUAL_TLS: true
       BUILD_ARTIFACT: packaged_sandbox_code
       TRUSTSTORE_FILE: clinical-tracker-sandbox-truststore.pem
