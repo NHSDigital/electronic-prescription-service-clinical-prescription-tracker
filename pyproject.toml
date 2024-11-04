@@ -46,7 +46,7 @@ flake8 = "^7.1.1"
 jinja2 = "^3.1.4"
 pip-licenses = "^5.0.0"
 click = "^8.1.7"
-rich = "^13.9.3"
+rich = "^13.9.4"
 
 [tool.poetry.scripts]
 
