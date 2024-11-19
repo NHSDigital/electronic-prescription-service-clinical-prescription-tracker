@@ -85,7 +85,7 @@ Resources:
     Properties:
       Location: functions/lambda_resources.yaml
       Parameters:
-        StackName: AWS::StackName
+        StackName: !Ref AWS::StackName
         LambdaName: !Sub ${AWS::StackName}-Sandbox
         LambdaArn: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${AWS::StackName}-Sandbox
         CloudWatchKMSKeyId: !ImportValue account-resources:CloudwatchLogsKmsKeyArn
