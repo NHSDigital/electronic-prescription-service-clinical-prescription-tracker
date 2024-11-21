@@ -1,10 +1,10 @@
-import {SpineClient} from "@nhsdigital/eps-spine-client/lib/spine-client"
+import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
 import {LogLevel} from "@aws-lambda-powertools/logger/types"
 import {Logger} from "@aws-lambda-powertools/logger"
-import {createSpineClient} from "@nhsdigital/eps-spine-client"
+import {createSpineClient} from "@NHSDigital/eps-spine-client"
 import {APIGatewayEvent, APIGatewayProxyResult} from "aws-lambda"
 import middy from "@middy/core"
-import {PrescriptionSearchParams} from "@nhsdigital/eps-spine-client/lib/live-spine-client"
+import {PrescriptionSearchParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
 import {bundleSchema, outcomeSchema} from "./schema/response"
 
 export const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
