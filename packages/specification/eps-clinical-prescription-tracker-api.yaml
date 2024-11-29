@@ -121,8 +121,6 @@ paths:
       description: |
         ## Overview
         Use this endpoint to search for EPS prescriptions and find out what the status of the prescription is.
-      parameters:
-        - $ref: "#/components/parameters/ApiKey"
       responses:
         "200":
           description: Successful retrieval.
@@ -146,28 +144,18 @@ paths:
               schema:
                 $ref: schemas/resources/OperationOutcome.json
       security:
-        - app-level0: []
+        - nhs-cis2-aal3: []
 components:
   securitySchemes:
-    app-level0:
-      $ref: https://proxygen.prod.api.platform.nhs.uk/components/securitySchemes/app-level0
-  parameters:
-    ApiKey:
-      in: header
-      name: API-KEY
-      required: true
-      description: |
-        API Key used to authenticate with the system
-      schema:
-        type: string
-        example: 11C46F5F-CDEF-4865-94B2-0EE0EDCC26DA
+    nhs-cis2-aal3:
+      $ref: https://proxygen.prod.api.platform.nhs.uk/components/securitySchemes/nhs-cis2-aal3
 x-nhsd-apim:
   temporary: false
   monitoring: true
   access:
     - title: Application Restricted
       grants:
-        app-level0: []
+        nhs-cis2-aal3: []
   target:
     type: hosted
     healthcheck: /_status
