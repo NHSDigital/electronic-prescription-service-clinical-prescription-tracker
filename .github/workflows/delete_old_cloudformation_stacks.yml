@@ -30,7 +30,7 @@ jobs:
         with:
           aws-region: eu-west-2
           role-to-assume: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-          role-session-name: github-actions
+          role-session-name: cpt-api-delete-old-stacks
 
       - name: delete stacks
         shell: bash
@@ -57,7 +57,7 @@ jobs:
         with:
           aws-region: eu-west-2
           role-to-assume: ${{ secrets.PROXYGEN_PTL_ROLE }}
-          role-session-name: delete-old-proxygen
+          role-session-name: cpt-api-delete-old-proxygen
 
       - name: delete proxygen deployments
         shell: bash

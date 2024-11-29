@@ -103,7 +103,7 @@ jobs:
         with:
           aws-region: eu-west-2
           role-to-assume: ${{ secrets.CLOUD_FORMATION_DEPLOY_ROLE }}
-          role-session-name: github-actions
+          role-session-name: cpt-api-release-code
 
       - name: Download build artifact
         uses: actions/download-artifact@v4
@@ -147,7 +147,7 @@ jobs:
         with:
           aws-region: eu-west-2
           role-to-assume: ${{ secrets.PROXYGEN_ROLE }}
-          role-session-name: proxygen-ptl
+          role-session-name: cpt-api-proxygen
 
       - name: Deploy CPT API
         shell: bash
