@@ -1,7 +1,10 @@
 import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
 import {LogLevel} from "@aws-lambda-powertools/logger/types"
 import {Logger} from "@aws-lambda-powertools/logger"
+import {injectLambdaContext} from "@aws-lambda-powertools/logger/middleware"
+import inputOutputLogger from "@middy/input-output-logger"
 import {createSpineClient} from "@NHSDigital/eps-spine-client"
+import errorHandler from "@nhs/fhir-middy-error-handler"
 import {APIGatewayEvent, APIGatewayProxyResult} from "aws-lambda"
 import middy from "@middy/core"
 import {PrescriptionSearchParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
@@ -64,6 +67,15 @@ export const apiGatewayHandler = async (
 
 export const newHandler = (params: HandlerParams) => {
   const newHandler = middy((event: APIGatewayEvent) => apiGatewayHandler(params, event))
+    .use(injectLambdaContext(logger, {clearState: true}))
+    .use(
+      inputOutputLogger({
+        logger: (request) => {
+          logger.info(request)
+        }
+      })
+    )
+    .use(errorHandler({logger: logger}))
   return newHandler
 }
 
