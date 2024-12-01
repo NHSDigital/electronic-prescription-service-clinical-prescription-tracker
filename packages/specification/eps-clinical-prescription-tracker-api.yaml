@@ -157,9 +157,14 @@ x-nhsd-apim:
       grants:
         nhs-cis2-aal3: []
   target:
-    type: hosted
+    type: external
     healthcheck: /_status
     url: https://cpt.dev.eps.national.nhs.uk
     security:
       type: mtls
       secret: clinical-tracker-mtls-1
+  target-identity:
+    - name: cis2-urid
+      header: "nhsd-session-urid"
+    - name: cis2-uuid
+      header: "nhsd-identity-uuid"
