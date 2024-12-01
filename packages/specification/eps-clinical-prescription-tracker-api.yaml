@@ -164,7 +164,5 @@ x-nhsd-apim:
       type: mtls
       secret: clinical-tracker-mtls-1
   target-identity:
-    - name: cis2-urid
-      header: "nhsd-session-urid"
     - name: cis2-uuid
       header: "nhsd-identity-uuid"
