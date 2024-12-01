@@ -25,7 +25,7 @@ export const apiGatewayHandler = async (
 ): Promise<APIGatewayProxyResult> => {
   const inboundHeaders = event.headers
 
-  const requestId = inboundHeaders["apigw-request-id"] ?? ""
+  const requestId = inboundHeaders["x-request-id"] ?? ""
   const organizationId = inboundHeaders["nhsd-organization-uuid"] ?? ""
   const sdsRoleProfileId = inboundHeaders["nhsd-session-urid"] ?? ""
   const sdsId = inboundHeaders["nhsd-identity-uuid"] ?? ""
