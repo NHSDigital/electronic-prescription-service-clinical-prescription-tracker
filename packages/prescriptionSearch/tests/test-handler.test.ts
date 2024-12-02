@@ -10,7 +10,13 @@ import {createSpineClient} from "@NHSDigital/eps-spine-client"
 const mock = new MockAdapter(axios)
 
 const MOCK_EVENT: APIGatewayEvent = {
-  headers: {},
+  headers: {
+    "x-request-id": "foo",
+    "nhsd-organization-uuid": "bar",
+    "nhsd-session-urid": "baz",
+    "nhsd-identity-uuid": "foo2",
+    "nhsd-session-jobrole": "foo3"
+  },
   queryStringParameters: {}
 } as unknown as APIGatewayEvent
 
@@ -47,10 +53,23 @@ describe("Unit test for app handler", () => {
     const response = await handler(event, context)
 
     expect(mock.history.post.length).toBe(0)
-    expect(response).toEqual({
-      statusCode: 400,
-      body: JSON.stringify({message: "Missing required query parameter: prescriptionId"})
-    })
+    expect(response.statusCode).toEqual(400)
+    expect(JSON.parse(response.body)).toEqual(
+      [
+        {"response": {
+          "outcome": {
+            "issue": [{
+              "code": "value",
+              "diagnostics": "Missing required query parameter: prescriptionId",
+              "severity": "error"
+            }],
+            "meta": {
+              "lastUpdated": expect.any(String)
+            },
+            "resourceType": "OperationOutcome"
+          }, "status": "400 Bad Request"
+        }}]
+    )
   })
 
   test("should handle optional query parameters correctly", async () => {
@@ -102,5 +121,31 @@ describe("Unit test for app handler", () => {
   test("should create a spine client", () => {
     const spineClient = createSpineClient(new Logger({serviceName: "prescriptionSearch", logLevel: LOG_LEVEL}))
     expect(spineClient).toBeDefined()
+  })
+
+  it("when x-request-id header is missing, expect 400 status code and relevant error message", async () => {
+    const event = {...MOCK_EVENT, queryStringParameters: {prescriptionId: "12345"}} as unknown as APIGatewayEvent
+    const context = {} as unknown as Context
+    event.headers["x-request-id"] = undefined
+    const response = await handler(event, context)
+
+    expect(response.statusCode).toEqual(400)
+    expect(JSON.parse(response.body)).toEqual(
+      [
+        {"response": {
+          "outcome": {
+            "issue": [{
+              "code": "value",
+              "diagnostics": "Missing or empty x-request-id header",
+              "severity": "error"
+            }],
+            "meta": {
+              "lastUpdated": expect.any(String)
+            },
+            "resourceType": "OperationOutcome"
+          }, "status": "400 Bad Request"
+        }}]
+    )
+
   })
 })
