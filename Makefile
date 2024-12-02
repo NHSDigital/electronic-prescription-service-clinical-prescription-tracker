@@ -88,6 +88,7 @@ sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-sta
 		--parameter-overrides \
 			  TruststoreVersion=$$LATEST_TRUSTSTORE_VERSION \
 			  EnableMutualTLS=$$enable_mutual_tls \
+			  TargetSpineServer=$$target_spine_server \
 			  EnableSplunk=true \
 			  VersionNumber=$$VERSION_NUMBER \
 			  CommitId=$$COMMIT_ID \

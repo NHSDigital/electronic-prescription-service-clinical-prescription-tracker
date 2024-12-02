@@ -136,13 +136,13 @@ Resources:
           AWS_LAMBDA_EXEC_WRAPPER: /opt/get-secrets-layer
       Layers:
         - !Ref GetSecretsLayer
-      # Events:
-      #   status:
-      #     Type: HttpApi
-      #     Properties:
-      #       ApiId: !Ref HttpApiGateway
-      #       Path: /prescription-search
-      #       Method: get
+      Events:
+        status:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApiGateway
+            Path: /
+            Method: get
     Metadata:
       BuildMethod: esbuild
       guard:

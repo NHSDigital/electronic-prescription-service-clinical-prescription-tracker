@@ -117,7 +117,7 @@ jobs:
       CREATE_PROD_RELEASE_NOTES: true
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-      # TARGET_SPINE_SERVER: ${{ secrets.DEV_TARGET_SPINE_SERVER }}
+      TARGET_SPINE_SERVER: ${{ secrets.DEV_TARGET_SPINE_SERVER }}
       DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
       INT_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
       PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
@@ -142,7 +142,7 @@ jobs:
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
-      # TARGET_SPINE_SERVER: sandbox
+      TARGET_SPINE_SERVER: sandbox
 
   release_qa:
     needs: [tag_release, release_dev, release_dev_sandbox, package_code, get_commit_id]
@@ -162,4 +162,4 @@ jobs:
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
       PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
-      # TARGET_SPINE_SERVER: ${{ secrets.QA_TARGET_SPINE_SERVER }}
+      TARGET_SPINE_SERVER: ${{ secrets.QA_TARGET_SPINE_SERVER }}
