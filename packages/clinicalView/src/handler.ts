@@ -1,6 +1,9 @@
 import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
 import {LogLevel} from "@aws-lambda-powertools/logger/types"
 import {Logger} from "@aws-lambda-powertools/logger"
+import {injectLambdaContext} from "@aws-lambda-powertools/logger/middleware"
+import inputOutputLogger from "@middy/input-output-logger"
+
 import {createSpineClient} from "@NHSDigital/eps-spine-client"
 import {APIGatewayEvent, APIGatewayProxyEventHeaders, APIGatewayProxyEventQueryStringParameters} from "aws-lambda"
 import middy from "@middy/core"
@@ -10,8 +13,8 @@ import {AxiosResponse} from "axios"
 import errorHandler from "@nhs/fhir-middy-error-handler"
 
 const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
-export const defaultLogger = new Logger({serviceName: "clinicalView", logLevel: LOG_LEVEL})
-const defaultSpineClient = createSpineClient(defaultLogger)
+export const logger = new Logger({serviceName: "clinicalView", logLevel: LOG_LEVEL})
+const defaultSpineClient = createSpineClient(logger)
 
 type HandlerParams = {
   logger: Logger,
@@ -102,9 +105,17 @@ const prescriptionNotFoundResponse = (prescriptionId: string) => {
 
 export const newHandler = (params: HandlerParams) => {
   const newHandler = middy((event: APIGatewayEvent) => apiGatewayHandler(params, event))
-    .use(errorHandler({logger: params.logger}))
+    .use(injectLambdaContext(logger, {clearState: true}))
+    .use(
+      inputOutputLogger({
+        logger: (request) => {
+          logger.info(request)
+        }
+      })
+    )
+    .use(errorHandler({logger: logger}))
   return newHandler
 }
 
-const DEFAULT_HANDLER_PARAMS: HandlerParams = {logger: defaultLogger, spineClient: defaultSpineClient}
+const DEFAULT_HANDLER_PARAMS: HandlerParams = {logger: logger, spineClient: defaultSpineClient}
 export const handler = newHandler(DEFAULT_HANDLER_PARAMS)
