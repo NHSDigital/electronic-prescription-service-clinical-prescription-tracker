@@ -9,6 +9,8 @@ import {APIGatewayEvent, APIGatewayProxyResult} from "aws-lambda"
 import middy from "@middy/core"
 import {PrescriptionSearchParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
 import {bundleSchema, outcomeSchema} from "./schema/response"
+import {BundleEntry} from "fhir/r4"
+import {badRequest} from "./utils/responses"
 
 export const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
 export const logger = new Logger({serviceName: "prescriptionSearch", logLevel: LOG_LEVEL})
@@ -25,19 +27,27 @@ export const apiGatewayHandler = async (
 ): Promise<APIGatewayProxyResult> => {
   const inboundHeaders = event.headers
 
-  const requestId = inboundHeaders["x-request-id"] ?? ""
-  const organizationId = inboundHeaders["nhsd-organization-uuid"] ?? ""
-  const sdsRoleProfileId = inboundHeaders["nhsd-session-urid"] ?? ""
-  const sdsId = inboundHeaders["nhsd-identity-uuid"] ?? ""
-  const jobRoleCode = inboundHeaders["nhsd-session-jobrole"] ?? ""
+  let responseEntries: Array<BundleEntry> = []
+  const requestId = getRequiredHeader(event, "x-request-id", responseEntries)
+  const organizationId = getRequiredHeader(event, "nhsd-organization-uuid", responseEntries)
+  const sdsRoleProfileId = getRequiredHeader(event, "nhsd-session-urid", responseEntries)
+  const sdsId = getRequiredHeader(event, "nhsd-identity-uuid", responseEntries)
+  const jobRoleCode = getRequiredHeader(event, "nhsd-session-jobrole", responseEntries)
 
   const prescriptionId = event.queryStringParameters?.prescriptionId ?? ""
 
   // Handle missing prescriptionId
   if (!prescriptionId) {
+    const errorMessage = "Missing required query parameter: prescriptionId"
+    logger.error(errorMessage)
+    const entry: BundleEntry = badRequest(errorMessage)
+    responseEntries.push(entry)
+  }
+
+  if (responseEntries.length > 0) {
     return {
       statusCode: 400,
-      body: JSON.stringify({message: "Missing required query parameter: prescriptionId"})
+      body: JSON.stringify(responseEntries)
     }
   }
 
@@ -65,6 +75,20 @@ export const apiGatewayHandler = async (
   }
 }
 
+export function getRequiredHeader(
+  event: APIGatewayEvent,
+  headerName: string,
+  responseEntries: Array<BundleEntry>): string {
+  const headerValue = event.headers[headerName]
+  if (!headerValue) {
+    const errorMessage = `Missing or empty ${headerName} header`
+    logger.error(errorMessage)
+    const entry: BundleEntry = badRequest(errorMessage)
+    responseEntries.push(entry)
+    return ""
+  }
+  return headerValue
+}
 export const newHandler = (params: HandlerParams) => {
   const newHandler = middy((event: APIGatewayEvent) => apiGatewayHandler(params, event))
     .use(injectLambdaContext(logger, {clearState: true}))
