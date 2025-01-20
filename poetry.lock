@@ -1386,13 +1386,13 @@ crt = ["botocore[crt] (>=1.33.2,<2.0a.0)"]
 
 [[package]]
 name = "semver"
-version = "3.0.2"
+version = "3.0.3"
 description = "Python helper for Semantic Versioning (https://semver.org)"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "semver-3.0.2-py3-none-any.whl", hash = "sha256:b1ea4686fe70b981f85359eda33199d60c53964284e0cfb4977d243e37cf4bf4"},
-    {file = "semver-3.0.2.tar.gz", hash = "sha256:6253adb39c70f6e51afed2fa7152bcd414c411286088fb4b9effb133885ab4cc"},
+    {file = "semver-3.0.3-py3-none-any.whl", hash = "sha256:4bf5e5a52f98cd8377cfb99088eb743722f3d47cefc8a37e503c1e5806846b17"},
+    {file = "semver-3.0.3.tar.gz", hash = "sha256:8769a03a93507fecdf19b6eefb08d5e95b462504871a61e29e09798822888c94"},
 ]
 
 [[package]]
@@ -1507,4 +1507,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "4685c08636f7ff7b3cf8ec536a30a79d6a9abde7748d3403854b69ec44df1748"
+content-hash = "f605d3b9392ebcd2a57ee26310d1b36c25ffacea3d55c9832fb7f680e5bc18c8"
