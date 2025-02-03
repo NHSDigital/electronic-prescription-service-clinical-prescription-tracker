@@ -5,7 +5,7 @@ import axios from "axios"
 import {APIGatewayEvent, Context} from "aws-lambda"
 import {MiddyfiedHandler} from "@middy/core"
 import {Logger} from "@aws-lambda-powertools/logger"
-import {createSpineClient} from "@NHSDigital/eps-spine-client"
+import {createSpineClient} from "@nhsdigital/eps-spine-client"
 
 const mock = new MockAdapter(axios)
 
