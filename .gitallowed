@@ -18,3 +18,5 @@ console\.log\(`access token : \${access_token}`\)
 .:packages/clinicalView/tests/data/prescriptionNotFoundResponse.*root=*
 .:packages/clinicalViewLambda/tests/data/prescriptionFoundResponse.*root=*
 .:packages/clinicalViewLambda/tests/data/prescriptionNotFoundResponse.*root=*
+root=\\"1\.2
+root=\\"2\.1
