@@ -20,3 +20,4 @@ console\.log\(`access token : \${access_token}`\)
 .:packages/clinicalViewLambda/tests/data/prescriptionNotFoundResponse.*root=*
 root=\\"1\.2
 root=\\"2\.1
+.*2\.16\.840\.1\.113883\.2\.1\.3\.2\.4\.17\.32.*
