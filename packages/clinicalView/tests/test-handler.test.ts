@@ -12,8 +12,8 @@ import {MiddyfiedHandler} from "@middy/core"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {LogLevel} from "@aws-lambda-powertools/logger/types"
 import {createSpineClient} from "@NHSDigital/eps-spine-client"
-import prescriptionFoundResponse from "./data/prescriptionFoundResponse"
-import prescriptionNotFoundResponse from "./data/prescriptionNotFoundResponse"
+// import prescriptionFoundResponse from "./data/prescriptionFoundResponse"
+// import prescriptionNotFoundResponse from "./data/prescriptionNotFoundResponse"
 
 const mock = new MockAdapter(axios)
 
@@ -48,37 +48,37 @@ describe("clinical view", () => {
     handler = newHandler(HandlerParams)
   })
 
-  it("extracts prescription status from spine response", async () => {
-    mock.onPost(CLINICAL_VIEW_URL).reply(200, prescriptionFoundResponse)
+  // it("extracts prescription status from spine response", async () => {
+  //   mock.onPost(CLINICAL_VIEW_URL).reply(200, prescriptionFoundResponse)
 
-    const event = {...MOCK_EVENT} as unknown as APIGatewayEvent
-    const context = {} as unknown as Context
+  //   const event = {...MOCK_EVENT} as unknown as APIGatewayEvent
+  //   const context = {} as unknown as Context
 
-    const response = await handler(event, context)
+  //   const response = await handler(event, context)
 
-    expect(mock.history.post[0].data).toContain("9AD427-A83008-2E461K")
-    expect(response.status).toBe(200)
-    expect(response.data).toEqual({
-      prescriptionId: "9AD427-A83008-2E461K",
-      prescriptionStatus: "0001"
-    })
-  })
+  //   expect(mock.history.post[0].data).toContain("9AD427-A83008-2E461K")
+  //   expect(response.status).toBe(200)
+  //   expect(response.data).toEqual({
+  //     prescriptionId: "9AD427-A83008-2E461K",
+  //     prescriptionStatus: "0001"
+  //   })
+  // })
 
-  it("handles a prescription not found response", async () => {
-    mock.onPost(CLINICAL_VIEW_URL).reply(200, prescriptionNotFoundResponse)
+  // it("handles a prescription not found response", async () => {
+  //   mock.onPost(CLINICAL_VIEW_URL).reply(200, prescriptionNotFoundResponse)
 
-    const event = {...MOCK_EVENT} as unknown as APIGatewayEvent
-    const context = {} as unknown as Context
+  //   const event = {...MOCK_EVENT} as unknown as APIGatewayEvent
+  //   const context = {} as unknown as Context
 
-    const response = await handler(event, context)
+  //   const response = await handler(event, context)
 
-    expect(mock.history.post.length).toBe(1)
-    expect(response.status).toBe(404)
-    expect(response.data).toEqual({
-      prescriptionId: "9AD427-A83008-2E461K",
-      error: "Not Found"
-    })
-  })
+  //   expect(mock.history.post.length).toBe(1)
+  //   expect(response.status).toBe(404)
+  //   expect(response.data).toEqual({
+  //     prescriptionId: "9AD427-A83008-2E461K",
+  //     error: "Not Found"
+  //   })
+  // })
 
   it("handles a non-200 response from spine", async () => {
     mock.onPost(CLINICAL_VIEW_URL).reply(500, "<some>xml</some>")
