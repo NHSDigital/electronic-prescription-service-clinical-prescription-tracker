@@ -145,6 +145,62 @@ paths:
                 $ref: schemas/resources/OperationOutcome.json
       security:
         - nhs-cis2-aal3: []
+  /RequestGroup/{prescriptionId}:
+    get:
+      operationId: get-prescription-request-group
+      summary: Retrieve Prescription Request Group
+      description: |
+        ## Overview
+        Use this endpoint to retrieve a **RequestGroup** for a given **prescriptionId** from EPS.
+      parameters:
+        - name: prescriptionId
+          in: path
+          required: true
+          description: The EPS Prescription ID.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful retrieval.
+          content:
+            application/fhir+json:
+              schema:
+                type: object
+                properties:
+                  prescriptionId:
+                    type: string
+                    description: The unique EPS prescription identifier.
+                  prescriptionStatus:
+                    type: string
+                    description: The status of the prescription.
+        "404":
+          description: Prescription not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Not Found"
+        "4XX":
+          description: |
+            An error occurred as follows:
+
+            | HTTP status | Error code          | Description                                                                                                                               |
+            | ----------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+            | 400         | `value`             | Missing values or invalid JSON in request                                                                                                 |
+            | 401         | `processing`        | Missing or invalid OAuth 2.0 bearer token in request                                                                                      |
+            | 408         | `timeout`           | Request timed out                                                                                                                         |
+
+            The error code will be included in the returned OperationOutcome (below).
+          content:
+            application/fhir+json:
+              schema:
+                $ref: schemas/resources/OperationOutcome.json
+      security:
+        - nhs-cis2-aal3: []
+
 components:
   securitySchemes:
     nhs-cis2-aal3:
