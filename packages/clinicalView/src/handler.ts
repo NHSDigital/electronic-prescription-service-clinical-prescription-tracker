@@ -31,6 +31,11 @@ type HandlerResponse = {
 }
 
 export const apiGatewayHandler = async (params: HandlerParams, event: APIGatewayEvent): Promise<HandlerResponse> => {
+
+  logger.info("Received API request", {event})
+  const prescriptionIdTest = event.pathParameters?.prescriptionId
+  logger.info("Processing prescriptionIdTest", {prescriptionIdTest})
+
   const inboundHeaders = event.headers
   const queryStringParameters = event.queryStringParameters ?? {}
   const prescriptionId = event.queryStringParameters?.prescriptionId ?? ""
