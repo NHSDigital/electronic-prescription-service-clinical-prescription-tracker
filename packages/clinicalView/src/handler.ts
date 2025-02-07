@@ -18,8 +18,11 @@ import {AxiosResponse} from "axios"
 import {v4 as uuidv4} from "uuid"
 import errorHandler from "@nhs/fhir-middy-error-handler"
 
+// Set up logger with log level from environment variables
 const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
 export const logger = new Logger({serviceName: "clinicalView", logLevel: LOG_LEVEL})
+
+// Create the default Spine client instance
 const defaultSpineClient = createSpineClient(logger)
 
 type HandlerParams = {
@@ -36,38 +39,68 @@ type HandlerResponse = {
   status: number
 }
 
+/**
+ * Handles API Gateway requests and calls Spine to fetch prescription details.
+ */
 export const apiGatewayHandler = async (params: HandlerParams, event: APIGatewayEvent): Promise<HandlerResponse> => {
-
   logger.info("Received API request", {event})
 
+  // Extract headers, query parameters, and path parameters
   const inboundHeaders = event.headers
   const queryStringParameters = event.queryStringParameters ?? {}
   const pathParameters = event.pathParameters ?? {}
   const prescriptionId = event.pathParameters?.prescriptionId ?? ""
 
-  logger.info("Processing prescriptionId", {prescriptionId})
+  logger.info("Extracted parameters", {
+    prescriptionId,
+    headers: inboundHeaders,
+    queryParams: queryStringParameters,
+    pathParams: pathParameters
+  })
 
+  // Build parameters required for Spine API request
   const clinicalViewParams = buildClinicalViewParams(inboundHeaders, queryStringParameters, pathParameters)
+
+  logger.info("Built clinicalViewParams for Spine request", {clinicalViewParams})
 
   let spineResponse
   spineResponse = await params.spineClient.clinicalView(inboundHeaders, clinicalViewParams)
 
+  logger.info("Received response from Spine", {status: spineResponse.status, data: spineResponse.data})
+
   return handleSpineResponse(spineResponse, prescriptionId)
 }
 
+/**
+ * Builds the parameters required for the Spine clinical view request.
+ */
 const buildClinicalViewParams = (
   inboundHeaders: APIGatewayProxyEventHeaders,
   queryStringParameters: APIGatewayProxyEventQueryStringParameters,
   pathParameters: APIGatewayProxyEventPathParameters
 ): ClinicalViewParams => {
+  // Generate a unique request ID if not provided
   const requestId = inboundHeaders["apigw-request-id"] ?? `uuid:${uuidv4()}`
+
+  // Extract necessary values from headers
   const organizationId = inboundHeaders["nhsd-organization-uuid"] ?? ""
   const sdsRoleProfileId = inboundHeaders["nhsd-session-urid"] ?? ""
   const sdsId = inboundHeaders["nhsd-identity-uuid"] ?? ""
   const jobRoleCode = inboundHeaders["nhsd-session-jobrole"] ?? ""
 
+  // Extract query parameters
   const repeatNumber = queryStringParameters?.repeatNumber
   const prescriptionId = pathParameters?.prescriptionId ?? ""
+
+  logger.info("Constructed ClinicalViewParams", {
+    requestId,
+    prescriptionId,
+    organizationId,
+    repeatNumber,
+    sdsRoleProfileId,
+    sdsId,
+    jobRoleCode
+  })
 
   return {
     requestId,
@@ -80,8 +113,16 @@ const buildClinicalViewParams = (
   }
 }
 
+/**
+ * Processes the response received from Spine and extracts relevant information.
+ */
 const handleSpineResponse = (spineResponse: AxiosResponse<string, unknown>, prescriptionId: string) => {
+  logger.info("Processing Spine SOAP response", {responseData: spineResponse.data})
+
+  // Parse SOAP response
   const soap_response = (new DOMParser()).parseFromString(spineResponse.data, "text/xml")
+
+  // Extract acknowledgment and check if it's a success
   const acknowledgement = soap_response.getElementsByTagName("acknowledgement").item(0)
   const acknowledgementTypeCode = acknowledgement?.getAttribute("typeCode")
 
@@ -89,11 +130,17 @@ const handleSpineResponse = (spineResponse: AxiosResponse<string, unknown>, pres
     return prescriptionNotFoundResponse(prescriptionId)
   }
 
+  // Extract prescription status from the response
   const prescriptionStatus = soap_response.getElementsByTagName("prescriptionStatus")?.item(0)?.textContent
 
   if (!prescriptionStatus) {
     return prescriptionNotFoundResponse(prescriptionId)
   }
+
+  logger.info("Successfully retrieved prescription status", {
+    prescriptionId,
+    prescriptionStatus
+  })
 
   const response = {
     prescriptionId,
@@ -106,6 +153,9 @@ const handleSpineResponse = (spineResponse: AxiosResponse<string, unknown>, pres
   }
 }
 
+/**
+ * Generates a 404 response when a prescription is not found.
+ */
 const prescriptionNotFoundResponse = (prescriptionId: string) => {
   return {
     data: {
@@ -116,6 +166,9 @@ const prescriptionNotFoundResponse = (prescriptionId: string) => {
   }
 }
 
+/**
+ * Wraps the API handler with middleware for better logging and error handling.
+ */
 export const newHandler = (params: HandlerParams) => {
   const newHandler = middy((event: APIGatewayEvent) => apiGatewayHandler(params, event))
     .use(injectLambdaContext(logger, {clearState: true}))
@@ -130,5 +183,6 @@ export const newHandler = (params: HandlerParams) => {
   return newHandler
 }
 
+// Default handler configuration
 const DEFAULT_HANDLER_PARAMS: HandlerParams = {logger: logger, spineClient: defaultSpineClient}
 export const handler = newHandler(DEFAULT_HANDLER_PARAMS)
