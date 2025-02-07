@@ -21,3 +21,7 @@ console\.log\(`access token : \${access_token}`\)
 root=\\"1\.2
 root=\\"2\.1
 .*2\.16\.840\.1\.113883\.2\.1\.3\.2\.4\.17\.32.*
+root=\\"1\.2\.826\.0\.1285\.0\.2\.0\.107
+root=\\"2\.16\.840\.1\.113883\.2\.1\.3\.2\.4\.
+extension="MCCI_IN010000UK13"
+extension="PRESCRIPTIONSEARCHRESPONSE_SM01"
