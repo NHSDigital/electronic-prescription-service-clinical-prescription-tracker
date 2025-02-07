@@ -5,7 +5,12 @@ import {injectLambdaContext} from "@aws-lambda-powertools/logger/middleware"
 import inputOutputLogger from "@middy/input-output-logger"
 
 import {createSpineClient} from "@NHSDigital/eps-spine-client"
-import {APIGatewayEvent, APIGatewayProxyEventHeaders, APIGatewayProxyEventQueryStringParameters} from "aws-lambda"
+import {
+  APIGatewayEvent,
+  APIGatewayProxyEventHeaders,
+  APIGatewayProxyEventQueryStringParameters,
+  APIGatewayProxyEventPathParameters
+} from "aws-lambda"
 import middy from "@middy/core"
 import {ClinicalViewParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
 import {DOMParser} from "@xmldom/xmldom"
@@ -33,14 +38,15 @@ type HandlerResponse = {
 export const apiGatewayHandler = async (params: HandlerParams, event: APIGatewayEvent): Promise<HandlerResponse> => {
 
   logger.info("Received API request", {event})
-  const prescriptionIdTest = event.pathParameters?.prescriptionId
-  logger.info("Processing prescriptionIdTest", {prescriptionIdTest})
 
   const inboundHeaders = event.headers
   const queryStringParameters = event.queryStringParameters ?? {}
-  const prescriptionId = event.queryStringParameters?.prescriptionId ?? ""
+  const pathParameters = event.pathParameters ?? {}
+  const prescriptionId = event.pathParameters?.prescriptionId ?? ""
 
-  const clinicalViewParams = buildClinicalViewParams(inboundHeaders, queryStringParameters)
+  logger.info("Processing prescriptionId", {prescriptionId})
+
+  const clinicalViewParams = buildClinicalViewParams(inboundHeaders, queryStringParameters, pathParameters)
 
   let spineResponse
   spineResponse = await params.spineClient.clinicalView(inboundHeaders, clinicalViewParams)
@@ -50,7 +56,8 @@ export const apiGatewayHandler = async (params: HandlerParams, event: APIGateway
 
 const buildClinicalViewParams = (
   inboundHeaders: APIGatewayProxyEventHeaders,
-  queryStringParameters: APIGatewayProxyEventQueryStringParameters
+  queryStringParameters: APIGatewayProxyEventQueryStringParameters,
+  pathParameters: APIGatewayProxyEventPathParameters
 ): ClinicalViewParams => {
   const requestId = inboundHeaders["apigw-request-id"] ?? ""
   const organizationId = inboundHeaders["nhsd-organization-uuid"] ?? ""
@@ -59,7 +66,7 @@ const buildClinicalViewParams = (
   const jobRoleCode = inboundHeaders["nhsd-session-jobrole"] ?? ""
 
   const repeatNumber = queryStringParameters?.repeatNumber
-  const prescriptionId = queryStringParameters?.prescriptionId ?? ""
+  const prescriptionId = pathParameters?.prescriptionId ?? ""
 
   return {
     requestId,
