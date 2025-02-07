@@ -86,7 +86,7 @@ Resources:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApiGateway
-            Path: /clinical-view
+            Path: /RequestGroup/{prescriptionId}
             Method: get
     Metadata: # Manage esbuild properties
       BuildMethod: esbuild
