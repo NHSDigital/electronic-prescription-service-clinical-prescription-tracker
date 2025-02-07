@@ -15,6 +15,7 @@ import middy from "@middy/core"
 import {ClinicalViewParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
 import {DOMParser} from "@xmldom/xmldom"
 import {AxiosResponse} from "axios"
+import {v4 as uuidv4} from "uuid"
 import errorHandler from "@nhs/fhir-middy-error-handler"
 
 const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
@@ -59,7 +60,7 @@ const buildClinicalViewParams = (
   queryStringParameters: APIGatewayProxyEventQueryStringParameters,
   pathParameters: APIGatewayProxyEventPathParameters
 ): ClinicalViewParams => {
-  const requestId = inboundHeaders["apigw-request-id"] ?? ""
+  const requestId = inboundHeaders["apigw-request-id"] ?? `uuid:${uuidv4()}`
   const organizationId = inboundHeaders["nhsd-organization-uuid"] ?? ""
   const sdsRoleProfileId = inboundHeaders["nhsd-session-urid"] ?? ""
   const sdsId = inboundHeaders["nhsd-identity-uuid"] ?? ""
