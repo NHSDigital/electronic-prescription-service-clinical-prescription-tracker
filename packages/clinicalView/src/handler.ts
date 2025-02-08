@@ -80,7 +80,7 @@ const buildClinicalViewParams = (
   pathParameters: APIGatewayProxyEventPathParameters
 ): ClinicalViewParams => {
   // Generate a unique request ID if not provided
-  const requestId = inboundHeaders["apigw-request-id"] ?? `uuid:${uuidv4()}`
+  const requestId = inboundHeaders["apigw-request-id"] ?? uuidv4()
 
   // Extract necessary values from headers
   const organizationId = inboundHeaders["nhsd-organization-uuid"] ?? ""
