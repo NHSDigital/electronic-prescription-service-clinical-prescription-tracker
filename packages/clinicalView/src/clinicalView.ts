@@ -1,12 +1,7 @@
 import {LogLevel} from "@aws-lambda-powertools/logger/types"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {injectLambdaContext} from "@aws-lambda-powertools/logger/middleware"
-import {
-  APIGatewayEvent,
-  APIGatewayProxyEventHeaders,
-  APIGatewayProxyEventQueryStringParameters,
-  APIGatewayProxyEventPathParameters
-} from "aws-lambda"
+import {APIGatewayEvent, APIGatewayProxyEventHeaders, APIGatewayProxyEventPathParameters} from "aws-lambda"
 import inputOutputLogger from "@middy/input-output-logger"
 import middy from "@middy/core"
 import errorHandler from "@nhs/fhir-middy-error-handler"
@@ -46,14 +41,12 @@ export const apiGatewayHandler = async (params: HandlerParams, event: APIGateway
 
   // Extract headers, query parameters, and path parameters
   const inboundHeaders = event.headers
-  const queryStringParameters = event.queryStringParameters ?? {}
   const pathParameters = event.pathParameters ?? {}
   const prescriptionId = event.pathParameters?.prescriptionId ?? ""
 
   logger.info("Extracted parameters", {
     prescriptionId,
     headers: inboundHeaders,
-    queryStringParameters: queryStringParameters,
     pathParameters: pathParameters
   })
 
@@ -73,7 +66,7 @@ export const apiGatewayHandler = async (params: HandlerParams, event: APIGateway
   }
 
   // Build parameters required for Spine API request
-  const clinicalViewParams = buildClinicalViewParams(inboundHeaders, queryStringParameters, pathParameters)
+  const clinicalViewParams = buildClinicalViewParams(inboundHeaders, pathParameters)
 
   logger.info("Built clinicalViewParams for Spine request", {clinicalViewParams})
 
@@ -91,7 +84,6 @@ export const apiGatewayHandler = async (params: HandlerParams, event: APIGateway
  */
 const buildClinicalViewParams = (
   inboundHeaders: APIGatewayProxyEventHeaders,
-  queryStringParameters: APIGatewayProxyEventQueryStringParameters,
   pathParameters: APIGatewayProxyEventPathParameters
 ): ClinicalViewParams => {
   // Generate a unique request ID if not provided
@@ -104,14 +96,12 @@ const buildClinicalViewParams = (
   const jobRoleCode = inboundHeaders["nhsd-session-jobrole"] ?? ""
 
   // Extract query parameters
-  const repeatNumber = queryStringParameters?.repeatNumber
   const prescriptionId = pathParameters?.prescriptionId ?? ""
 
   logger.info("Constructed ClinicalViewParams", {
     requestId,
     prescriptionId,
     organizationId,
-    repeatNumber,
     sdsRoleProfileId,
     sdsId,
     jobRoleCode
@@ -121,7 +111,6 @@ const buildClinicalViewParams = (
     requestId,
     prescriptionId,
     organizationId,
-    repeatNumber,
     sdsRoleProfileId,
     sdsId,
     jobRoleCode
