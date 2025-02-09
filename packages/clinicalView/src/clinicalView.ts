@@ -13,10 +13,12 @@ import errorHandler from "@nhs/fhir-middy-error-handler"
 import {createSpineClient} from "@NHSDigital/eps-spine-client"
 import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
 import {ClinicalViewParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
-import {DOMParser} from "@xmldom/xmldom"
 import {AxiosResponse} from "axios"
-import {BundleEntry} from "fhir/r4"
+import {Bundle, BundleEntry, FhirResource} from "fhir/r4"
 import {v4 as uuidv4} from "uuid"
+import {extractPrescriptionData} from "./utils/prescriptionExtractor"
+import {buildFhirResponse} from "./utils/responseBuilder"
+import {FhirResponseParams} from "./utils/fhirMapper"
 import {prescriptionNotFoundResponse, badRequest} from "./utils/responses"
 
 // Set up logger with log level from environment variables
@@ -31,16 +33,10 @@ type HandlerParams = {
   spineClient: SpineClient
 }
 
-type HandlerResponse = {
-  resourceType?: string,
-  type?: string,
-  entry: {
-    prescriptionId: string,
-    prescriptionStatus?: string,
-    error?: string
-  },
-  status: number
-}
+type HandlerResponse =
+  | Bundle<FhirResource>
+  | {data: {prescriptionId: string; error: string}}
+  | {statusCode: number; body: string}
 
 /**
  * Handles API Gateway requests and calls Spine to fetch prescription details.
@@ -61,12 +57,19 @@ export const apiGatewayHandler = async (params: HandlerParams, event: APIGateway
     pathParameters: pathParameters
   })
 
-  // Handle missing prescriptionId
+  // Handle missing prescriptionId by collecting error response entries
+  let responseEntries: Array<BundleEntry> = []
   if (!prescriptionId) {
     const errorMessage = "Missing required query parameter: prescriptionId"
     logger.error(errorMessage)
-    const entry: BundleEntry = badRequest(errorMessage)
-    logger.info("Bad Request", {entry})
+    responseEntries.push(badRequest(errorMessage))
+  }
+
+  if (responseEntries.length > 0) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify(responseEntries)
+    }
   }
 
   // Build parameters required for Spine API request
@@ -74,7 +77,7 @@ export const apiGatewayHandler = async (params: HandlerParams, event: APIGateway
 
   logger.info("Built clinicalViewParams for Spine request", {clinicalViewParams})
 
-  // Calls the SpineClient to interact with the Spine
+  // Call the Spine API to fetch the prescription
   let spineResponse
   spineResponse = await params.spineClient.clinicalView(inboundHeaders, clinicalViewParams)
 
@@ -128,46 +131,32 @@ const buildClinicalViewParams = (
 /**
  * Processes the response received from Spine and extracts relevant information.
  */
-const handleSpineResponse = (spineResponse: AxiosResponse<string, unknown>, prescriptionId: string) => {
+const handleSpineResponse = (
+  spineResponse: AxiosResponse<string, unknown>,
+  prescriptionId: string
+): HandlerResponse => {
   logger.info("Processing Spine SOAP response", {responseData: spineResponse.data})
 
-  // Parse SOAP response
-  const soap_response = (new DOMParser()).parseFromString(spineResponse.data, "text/xml")
+  // Extract relevant data from SOAP response
+  const extractedData: FhirResponseParams = extractPrescriptionData(spineResponse.data)
 
-  // Extract acknowledgment and check if it's a success
-  const acknowledgement = soap_response.getElementsByTagName("acknowledgement").item(0)
-  const acknowledgementTypeCode = acknowledgement?.getAttribute("typeCode")
+  // Extract the `typeCode` from the XML Element
+  const acknowledgementTypeCode = extractedData.acknowledgement?.getAttribute("typeCode") || "Unknown"
 
+  // Check if the response is a success
   if (acknowledgementTypeCode !== "AA") {
     return prescriptionNotFoundResponse(prescriptionId)
   }
 
-  // Extract prescription status from the response
-  const prescriptionStatus = soap_response.getElementsByTagName("prescriptionStatus")?.item(0)?.textContent
-
+  // Extract prescription status
+  const prescriptionStatus = extractedData.prescriptionStatus
   if (!prescriptionStatus) {
     return prescriptionNotFoundResponse(prescriptionId)
   }
 
-  logger.info("Successfully retrieved prescription status", {
-    prescriptionId,
-    prescriptionStatus
-  })
+  logger.info("Successfully retrieved extracted data", {"extractedData": extractedData})
 
-  const resourceType = "Bundle"
-  const type = "collection"
-
-  const response = {
-    prescriptionId,
-    prescriptionStatus
-  }
-
-  return {
-    resourceType: resourceType,
-    type: type,
-    entry: response,
-    status: spineResponse.status
-  }
+  return buildFhirResponse(extractedData)
 }
 
 /**

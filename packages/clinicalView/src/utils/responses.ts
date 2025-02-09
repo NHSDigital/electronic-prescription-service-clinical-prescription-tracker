@@ -1,16 +1,11 @@
 import {BundleEntry} from "fhir/r4"
 
-const resourceType = "Bundle"
-const type = "collection"
-
 /**
  * Generates a 404 response when a prescription is not found.
  */
 export const prescriptionNotFoundResponse = (prescriptionId: string) => {
   return {
-    resourceType: resourceType,
-    type: type,
-    entry: {
+    data: {
       prescriptionId,
       error: "Not Found"
     },
