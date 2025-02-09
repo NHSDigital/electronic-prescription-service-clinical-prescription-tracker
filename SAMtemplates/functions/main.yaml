@@ -72,7 +72,7 @@ Resources:
     Properties:
       FunctionName: !Sub "${StackName}-ClinicalView"
       CodeUri: ../../packages
-      Handler: handler.handler
+      Handler: clinicalView.handler
       Role: !GetAtt ClinicalViewResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
@@ -102,7 +102,7 @@ Resources:
         tsconfig: clinicalView/tsconfig.json
         packages: bundle
         EntryPoints:
-          - clinicalView/src/handler.ts
+          - clinicalView/src/clinicalView.ts
 
   ClinicalViewResources:
     Type: AWS::Serverless::Application
