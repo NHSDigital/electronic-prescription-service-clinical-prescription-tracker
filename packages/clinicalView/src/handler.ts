@@ -1,22 +1,23 @@
-import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
 import {LogLevel} from "@aws-lambda-powertools/logger/types"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {injectLambdaContext} from "@aws-lambda-powertools/logger/middleware"
-import inputOutputLogger from "@middy/input-output-logger"
-
-import {createSpineClient} from "@NHSDigital/eps-spine-client"
 import {
   APIGatewayEvent,
   APIGatewayProxyEventHeaders,
   APIGatewayProxyEventQueryStringParameters,
   APIGatewayProxyEventPathParameters
 } from "aws-lambda"
+import inputOutputLogger from "@middy/input-output-logger"
 import middy from "@middy/core"
+import errorHandler from "@nhs/fhir-middy-error-handler"
+import {createSpineClient} from "@NHSDigital/eps-spine-client"
+import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
 import {ClinicalViewParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
 import {DOMParser} from "@xmldom/xmldom"
 import {AxiosResponse} from "axios"
+import {BundleEntry} from "fhir/r4"
 import {v4 as uuidv4} from "uuid"
-import errorHandler from "@nhs/fhir-middy-error-handler"
+import {prescriptionNotFoundResponse, badRequest} from "./utils/responses"
 
 // Set up logger with log level from environment variables
 const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
@@ -59,6 +60,14 @@ export const apiGatewayHandler = async (params: HandlerParams, event: APIGateway
     queryStringParameters: queryStringParameters,
     pathParameters: pathParameters
   })
+
+  // Handle missing prescriptionId
+  if (!prescriptionId) {
+    const errorMessage = "Missing required query parameter: prescriptionId"
+    logger.error(errorMessage)
+    const entry: BundleEntry = badRequest(errorMessage)
+    logger.info("Bad Request:", {entry})
+  }
 
   // Build parameters required for Spine API request
   const clinicalViewParams = buildClinicalViewParams(inboundHeaders, queryStringParameters, pathParameters)
@@ -158,21 +167,6 @@ const handleSpineResponse = (spineResponse: AxiosResponse<string, unknown>, pres
     type: type,
     entry: response,
     status: spineResponse.status
-  }
-}
-
-/**
- * Generates a 404 response when a prescription is not found.
- */
-const prescriptionNotFoundResponse = (prescriptionId: string) => {
-  return {
-    resourceType: "Bundle",
-    type: "collection",
-    entry: {
-      prescriptionId,
-      error: "Not Found"
-    },
-    status: 404
   }
 }
 
