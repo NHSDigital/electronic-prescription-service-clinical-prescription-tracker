@@ -1,9 +1,8 @@
 import {RequestGroup} from "fhir/r4"
-import {Element} from "@xmldom/xmldom"
 
 // Define the type for fhirResponseParams based on your data
 export interface FhirResponseParams {
-  acknowledgement: Element | null
+  acknowledgementTypeCode: string
   prescriptionId: string
   prescriptionType: string
   prescriptionStatus: string

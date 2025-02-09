@@ -6,9 +6,11 @@ export function extractPrescriptionData(spineResponseData: string) {
 
   // Extract <acknowledgement> element
   const acknowledgementElement = soap_response.getElementsByTagName("acknowledgement").item(0)
+  // Extract the `typeCode` from the XML Element
+  const acknowledgementTypeCode = acknowledgementElement?.getAttribute("typeCode")
 
   return {
-    acknowledgement: acknowledgementElement || null, // Ensure it's either an Element or null
+    acknowledgementTypeCode: acknowledgementTypeCode || "",
     prescriptionId: soap_response.getElementsByTagName("prescriptionID").item(0)?.textContent || "",
     prescriptionType: soap_response.getElementsByTagName("prescriptionType").item(0)?.textContent || "",
     prescriptionStatus: soap_response.getElementsByTagName("prescriptionStatus").item(0)?.textContent || "",

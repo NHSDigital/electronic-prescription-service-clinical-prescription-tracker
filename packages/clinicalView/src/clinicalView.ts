@@ -1,7 +1,7 @@
 import {LogLevel} from "@aws-lambda-powertools/logger/types"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {injectLambdaContext} from "@aws-lambda-powertools/logger/middleware"
-import {APIGatewayEvent, APIGatewayProxyEventHeaders, APIGatewayProxyEventPathParameters} from "aws-lambda"
+import {APIGatewayEvent, APIGatewayProxyEventHeaders} from "aws-lambda"
 import inputOutputLogger from "@middy/input-output-logger"
 import middy from "@middy/core"
 import errorHandler from "@nhs/fhir-middy-error-handler"
@@ -39,7 +39,7 @@ type HandlerResponse =
 export const apiGatewayHandler = async (params: HandlerParams, event: APIGatewayEvent): Promise<HandlerResponse> => {
   logger.info("Received API request", {event})
 
-  // Extract headers, query parameters, and path parameters
+  // Extract headers and the path parameters from the event
   const inboundHeaders = event.headers
   const pathParameters = event.pathParameters ?? {}
   const prescriptionId = event.pathParameters?.prescriptionId ?? ""
@@ -66,16 +66,17 @@ export const apiGatewayHandler = async (params: HandlerParams, event: APIGateway
   }
 
   // Build parameters required for Spine API request
-  const clinicalViewParams = buildClinicalViewParams(inboundHeaders, pathParameters)
+  const clinicalViewParams = buildClinicalViewParams(inboundHeaders, prescriptionId)
 
   logger.info("Built clinicalViewParams for Spine request", {clinicalViewParams})
 
-  // Call the Spine API to fetch the prescription
+  // Call the Spine API to fetch prescription details
   let spineResponse
   spineResponse = await params.spineClient.clinicalView(inboundHeaders, clinicalViewParams)
 
   logger.info("Received response from Spine", {status: spineResponse.status, entry: spineResponse.data})
 
+  // Process the response from Spine
   return handleSpineResponse(spineResponse, prescriptionId)
 }
 
@@ -84,7 +85,7 @@ export const apiGatewayHandler = async (params: HandlerParams, event: APIGateway
  */
 const buildClinicalViewParams = (
   inboundHeaders: APIGatewayProxyEventHeaders,
-  pathParameters: APIGatewayProxyEventPathParameters
+  prescriptionId: string
 ): ClinicalViewParams => {
   // Generate a unique request ID if not provided
   const requestId = inboundHeaders["apigw-request-id"] ?? uuidv4()
@@ -94,9 +95,6 @@ const buildClinicalViewParams = (
   const sdsRoleProfileId = inboundHeaders["nhsd-session-urid"] ?? ""
   const sdsId = inboundHeaders["nhsd-identity-uuid"] ?? ""
   const jobRoleCode = inboundHeaders["nhsd-session-jobrole"] ?? ""
-
-  // Extract query parameters
-  const prescriptionId = pathParameters?.prescriptionId ?? ""
 
   logger.info("Constructed ClinicalViewParams", {
     requestId,
@@ -129,22 +127,19 @@ const handleSpineResponse = (
   // Extract relevant data from SOAP response
   const extractedData: FhirResponseParams = extractPrescriptionData(spineResponse.data)
 
-  // Extract the `typeCode` from the XML Element
-  const acknowledgementTypeCode = extractedData.acknowledgement?.getAttribute("typeCode") || "Unknown"
-
-  // Check if the response is a success
-  if (acknowledgementTypeCode !== "AA") {
+  // Check if the response was acknowledged successfully
+  if (extractedData.acknowledgementTypeCode !== "AA") {
     return prescriptionNotFoundResponse(prescriptionId)
   }
 
-  // Extract prescription status
-  const prescriptionStatus = extractedData.prescriptionStatus
-  if (!prescriptionStatus) {
+  // Check if prescription status is valid
+  if (!extractedData.prescriptionStatus) {
     return prescriptionNotFoundResponse(prescriptionId)
   }
 
-  logger.info("Successfully retrieved extracted data", {"extractedData": extractedData})
+  logger.info("Successfully retrieved prescription data from Spine", {"extractedData": extractedData})
 
+  // Build and return the FHIR response bundle
   return buildFhirResponse(extractedData)
 }
 
