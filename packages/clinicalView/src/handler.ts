@@ -31,7 +31,9 @@ type HandlerParams = {
 }
 
 type HandlerResponse = {
-  data: {
+  resourceType?: string,
+  type?: string,
+  entry: {
     prescriptionId: string,
     prescriptionStatus?: string,
     error?: string
@@ -63,10 +65,11 @@ export const apiGatewayHandler = async (params: HandlerParams, event: APIGateway
 
   logger.info("Built clinicalViewParams for Spine request", {clinicalViewParams})
 
+  // Calls the SpineClient to interact with the Spine
   let spineResponse
   spineResponse = await params.spineClient.clinicalView(inboundHeaders, clinicalViewParams)
 
-  logger.info("Received response from Spine", {status: spineResponse.status, data: spineResponse.data})
+  logger.info("Received response from Spine", {status: spineResponse.status, entry: spineResponse.data})
 
   return handleSpineResponse(spineResponse, prescriptionId)
 }
@@ -142,13 +145,18 @@ const handleSpineResponse = (spineResponse: AxiosResponse<string, unknown>, pres
     prescriptionStatus
   })
 
+  const resourceType = "Bundle"
+  const type = "collection"
+
   const response = {
     prescriptionId,
     prescriptionStatus
   }
 
   return {
-    data: response,
+    resourceType: resourceType,
+    type: type,
+    entry: response,
     status: spineResponse.status
   }
 }
@@ -158,7 +166,9 @@ const handleSpineResponse = (spineResponse: AxiosResponse<string, unknown>, pres
  */
 const prescriptionNotFoundResponse = (prescriptionId: string) => {
   return {
-    data: {
+    resourceType: "Bundle",
+    type: "collection",
+    entry: {
       prescriptionId,
       error: "Not Found"
     },

@@ -58,9 +58,14 @@ describe("clinical view", () => {
 
     expect(mock.history.post[0].data).toContain("9AD427-A83008-2E461K")
     expect(response.status).toBe(200)
-    expect(response.data).toEqual({
-      prescriptionId: "9AD427-A83008-2E461K",
-      prescriptionStatus: "0001"
+    expect(response).toEqual({
+      resourceType: "Bundle",
+      type: "collection",
+      entry: {
+        prescriptionId: "9AD427-A83008-2E461K",
+        prescriptionStatus: "0001"
+      },
+      status: 200
     })
   })
 
@@ -74,9 +79,15 @@ describe("clinical view", () => {
 
     expect(mock.history.post.length).toBe(1)
     expect(response.status).toBe(404)
-    expect(response.data).toEqual({
-      prescriptionId: "9AD427-A83008-2E461K",
-      error: "Not Found"
+    console.log("Kris response", response)
+    expect(response).toEqual({
+      resourceType: "Bundle",
+      type: "collection",
+      entry: {
+        prescriptionId: "9AD427-A83008-2E461K",
+        error: "Not Found"
+      },
+      status: 404
     })
   })
 
