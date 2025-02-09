@@ -54,8 +54,8 @@ export const apiGatewayHandler = async (params: HandlerParams, event: APIGateway
   logger.info("Extracted parameters", {
     prescriptionId,
     headers: inboundHeaders,
-    queryParams: queryStringParameters,
-    pathParams: pathParameters
+    queryStringParameters: queryStringParameters,
+    pathParameters: pathParameters
   })
 
   // Build parameters required for Spine API request
