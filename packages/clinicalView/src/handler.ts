@@ -66,7 +66,7 @@ export const apiGatewayHandler = async (params: HandlerParams, event: APIGateway
     const errorMessage = "Missing required query parameter: prescriptionId"
     logger.error(errorMessage)
     const entry: BundleEntry = badRequest(errorMessage)
-    logger.info("Bad Request:", {entry})
+    logger.info("Bad Request", {entry})
   }
 
   // Build parameters required for Spine API request
