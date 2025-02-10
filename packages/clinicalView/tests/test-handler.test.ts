@@ -33,7 +33,7 @@ const MOCK_EVENT: APIGatewayEvent = {
 
 const CLINICAL_VIEW_URL = `https://live/syncservice-pds/pds`
 
-describe("clinical view", () => {
+describe("clinicalView Handler", () => {
   let handler: MiddyfiedHandler
   let logger: Logger
 
