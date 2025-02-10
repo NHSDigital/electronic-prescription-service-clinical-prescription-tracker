@@ -102,6 +102,7 @@ compile-node:
 	npx tsc --build tsconfig.build.json
 
 compile-packages:
+	npm run compile --workspace packages/clinicalView
 	npm run compile --workspace packages/prescriptionSearch
 
 compile-specification:
