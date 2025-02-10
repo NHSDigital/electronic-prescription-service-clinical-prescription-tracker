@@ -4,7 +4,7 @@ import {
   it,
   jest
 } from "@jest/globals"
-import {newHandler} from "../src/handler"
+import {newHandler} from "../src/clinicalView"
 import MockAdapter from "axios-mock-adapter"
 import axios from "axios"
 import {APIGatewayEvent, Context} from "aws-lambda"
@@ -14,6 +14,7 @@ import {LogLevel} from "@aws-lambda-powertools/logger/types"
 import {createSpineClient} from "@NHSDigital/eps-spine-client"
 import prescriptionFoundResponse from "./data/prescriptionFoundResponse"
 import prescriptionNotFoundResponse from "./data/prescriptionNotFoundResponse"
+import {expectedFhirResponse, expectedPrescriptionNotFoundResponse} from "./data/expectedResponses"
 
 const mock = new MockAdapter(axios)
 
@@ -25,7 +26,7 @@ const MOCK_EVENT: APIGatewayEvent = {
     "nhsd-identity-uuid": "123456123456",
     "nhsd-session-jobrole": "123456123456"
   },
-  "queryStringParameters": {
+  "pathParameters": {
     "prescriptionId": "9AD427-A83008-2E461K"
   }
 } as unknown as APIGatewayEvent
@@ -48,7 +49,7 @@ describe("clinical view", () => {
     handler = newHandler(HandlerParams)
   })
 
-  it("extracts prescription status from spine response", async () => {
+  it("Builds FHIR Bundle from Spine prescription response", async () => {
     mock.onPost(CLINICAL_VIEW_URL).reply(200, prescriptionFoundResponse)
 
     const event = {...MOCK_EVENT} as unknown as APIGatewayEvent
@@ -57,14 +58,10 @@ describe("clinical view", () => {
     const response = await handler(event, context)
 
     expect(mock.history.post[0].data).toContain("9AD427-A83008-2E461K")
-    expect(response.status).toBe(200)
-    expect(response.data).toEqual({
-      prescriptionId: "9AD427-A83008-2E461K",
-      prescriptionStatus: "0001"
-    })
+    expect(response).toEqual(expectedFhirResponse)
   })
 
-  it("handles a prescription not found response", async () => {
+  it("Handles a prescription not found response", async () => {
     mock.onPost(CLINICAL_VIEW_URL).reply(200, prescriptionNotFoundResponse)
 
     const event = {...MOCK_EVENT} as unknown as APIGatewayEvent
@@ -73,14 +70,11 @@ describe("clinical view", () => {
     const response = await handler(event, context)
 
     expect(mock.history.post.length).toBe(1)
-    expect(response.status).toBe(404)
-    expect(response.data).toEqual({
-      prescriptionId: "9AD427-A83008-2E461K",
-      error: "Not Found"
-    })
+    expect(response.statusCode).toBe(404)
+    expect(response).toEqual(expectedPrescriptionNotFoundResponse)
   })
 
-  it("handles a non-200 response from spine", async () => {
+  it("Handles a non-200 response from spine", async () => {
     mock.onPost(CLINICAL_VIEW_URL).reply(500, "<some>xml</some>")
 
     const event = {...MOCK_EVENT} as unknown as APIGatewayEvent
@@ -96,5 +90,34 @@ describe("clinical view", () => {
 
     expect(logger.error)
       .toHaveBeenCalledWith(expect.stringContaining("error in response from spine"), expect.any(Object))
+  })
+
+  it("Handles a missing prescriptionId request", async () => {
+    const event = {...MOCK_EVENT, pathParameters: {}} as unknown as APIGatewayEvent
+    const context = {} as unknown as Context
+
+    const response = await handler(event, context)
+
+    expect(response.statusCode).toBe(400)
+    expect(JSON.parse(response.body)).toMatchObject([
+      {
+        response: {
+          status: "400 Bad Request",
+          outcome: {
+            resourceType: "OperationOutcome",
+            meta: {
+              lastUpdated: expect.any(String)
+            },
+            issue: [
+              {
+                code: "value",
+                severity: "error",
+                diagnostics: "Missing required query parameter: prescriptionId"
+              }
+            ]
+          }
+        }
+      }
+    ])
   })
 })
