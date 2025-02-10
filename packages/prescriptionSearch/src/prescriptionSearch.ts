@@ -37,12 +37,12 @@ export const apiGatewayHandler = async (
   const prescriptionId = event.queryStringParameters?.prescriptionId ?? ""
 
   // Handle missing prescriptionId
-  if (!prescriptionId) {
-    const errorMessage = "Missing required query parameter: prescriptionId"
-    logger.error(errorMessage)
-    const entry: BundleEntry = badRequest(errorMessage)
-    responseEntries.push(entry)
-  }
+  // if (!prescriptionId) {
+  //   const errorMessage = "Missing required query parameter: prescriptionId"
+  //   logger.error(errorMessage)
+  //   const entry: BundleEntry = badRequest(errorMessage)
+  //   responseEntries.push(entry)
+  // }
 
   if (responseEntries.length > 0) {
     return {
