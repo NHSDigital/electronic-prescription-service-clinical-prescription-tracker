@@ -15,6 +15,7 @@ import {extractPrescriptionData} from "./utils/prescriptionExtractor"
 import {buildFhirResponse} from "./utils/responseBuilder"
 import {FhirResponseParams} from "./utils/fhirMapper"
 import {prescriptionNotFoundResponse, badRequest} from "./utils/responses"
+import {requestGroupBundleSchema} from "./schema/requestGroupBundle"
 
 // Set up logger with log level from environment variables
 const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
@@ -162,3 +163,5 @@ export const newHandler = (params: HandlerParams) => {
 // Default handler configuration
 const DEFAULT_HANDLER_PARAMS: HandlerParams = {logger: logger, spineClient: defaultSpineClient}
 export const handler = newHandler(DEFAULT_HANDLER_PARAMS)
+
+export {requestGroupBundleSchema}
