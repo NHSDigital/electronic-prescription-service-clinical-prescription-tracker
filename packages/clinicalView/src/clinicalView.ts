@@ -77,7 +77,7 @@ export const apiGatewayHandler = async (params: HandlerParams, event: APIGateway
   logger.info("Received response from Spine", {status: spineResponse.status, entry: spineResponse.data})
 
   // Process the response from Spine
-  return handleSpineResponse(spineResponse, prescriptionId)
+  return handleSpineResponse(spineResponse)
 }
 
 /**
@@ -119,8 +119,7 @@ const buildClinicalViewParams = (
  * Processes the response received from Spine and extracts relevant information.
  */
 const handleSpineResponse = (
-  spineResponse: AxiosResponse<string, unknown>,
-  prescriptionId: string
+  spineResponse: AxiosResponse<string, unknown>
 ): HandlerResponse => {
   logger.info("Processing Spine SOAP response", {responseData: spineResponse.data})
 
@@ -129,12 +128,12 @@ const handleSpineResponse = (
 
   // Check if the response was acknowledged successfully
   if (extractedData.acknowledgementTypeCode !== "AA") {
-    return prescriptionNotFoundResponse(prescriptionId)
+    return prescriptionNotFoundResponse()
   }
 
   // Check if prescription status is valid
   if (!extractedData.prescriptionStatus) {
-    return prescriptionNotFoundResponse(prescriptionId)
+    return prescriptionNotFoundResponse()
   }
 
   logger.info("Successfully retrieved prescription data from Spine", {"extractedData": extractedData})

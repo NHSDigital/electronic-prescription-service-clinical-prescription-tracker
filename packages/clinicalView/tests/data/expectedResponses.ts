@@ -1,4 +1,4 @@
-const expectedFhirResponse = {
+export const expectedFhirResponse = {
   resourceType: "Bundle",
   type: "collection",
   entry: [
@@ -31,4 +31,28 @@ const expectedFhirResponse = {
   ]
 }
 
-export default expectedFhirResponse
+export const expectedPrescriptionNotFoundResponse = {
+  headers: {
+    "Content-Type": "application/fhir+json",
+    "Cache-Control": "no-cache"
+  },
+  statusCode: 404,
+  body: JSON.stringify({
+    resourceType: "OperationOutcome",
+    issue: [
+      {
+        severity: "error",
+        code: "not-found",
+        details: {
+          coding: [
+            {
+              system: "https://fhir.nhs.uk/CodeSystem/http-error-codes",
+              code: "RESOURCE_NOT_FOUND",
+              display: "404: Prescription not found"
+            }
+          ]
+        },
+        diagnostics: "No prescription found in the Spine response."
+      }]
+  })
+}

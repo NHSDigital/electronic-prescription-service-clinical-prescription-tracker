@@ -14,7 +14,7 @@ import {LogLevel} from "@aws-lambda-powertools/logger/types"
 import {createSpineClient} from "@NHSDigital/eps-spine-client"
 import prescriptionFoundResponse from "./data/prescriptionFoundResponse"
 import prescriptionNotFoundResponse from "./data/prescriptionNotFoundResponse"
-import expectedFhirResponse from "./data/expectedFhirResponse"
+import {expectedFhirResponse, expectedPrescriptionNotFoundResponse} from "./data/expectedResponses"
 
 const mock = new MockAdapter(axios)
 
@@ -70,14 +70,8 @@ describe("clinical view", () => {
     const response = await handler(event, context)
 
     expect(mock.history.post.length).toBe(1)
-    expect(response.status).toBe(404)
-    expect(response).toEqual({
-      data: {
-        prescriptionId: "9AD427-A83008-2E461K",
-        error: "Not Found"
-      },
-      status: 404
-    })
+    expect(response.statusCode).toBe(404)
+    expect(response).toEqual(expectedPrescriptionNotFoundResponse)
   })
 
   it("Handles a non-200 response from spine", async () => {
