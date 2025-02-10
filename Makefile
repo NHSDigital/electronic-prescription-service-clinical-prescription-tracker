@@ -143,10 +143,10 @@ lint-specification: compile-specification
 	npm run lint --workspace packages/specification
 
 test: compile
+	npm run test --workspace packages/clinicalView
 	npm run test --workspace packages/prescriptionSearch
 	npm run test --workspace packages/sandbox
 	npm run test --workspace packages/statusLambda
-	npm run test --workspace packages/clinicalView
 
 clean:
 	rm -rf packages/clinicalView/coverage
