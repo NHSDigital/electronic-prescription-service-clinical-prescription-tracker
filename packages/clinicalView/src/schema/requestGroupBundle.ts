@@ -257,14 +257,10 @@ export const requestGroupSchema = {
 export const bundleEntrySchema = {
   "type": "object",
   "properties": {
-    "resource": {
-      "oneOf": [
-        requestGroupSchema,
-        medicationRequestSchema
-      ]
-    }
+    "RequestGroup": requestGroupSchema,
+    "MedicationRequest": medicationRequestSchema
   },
-  "required": ["resource"],
+  "required": ["RequestGroup", "MedicationRequest"],
   "additionalProperties": false
 } as const satisfies JSONSchema
 
