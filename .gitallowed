@@ -19,5 +19,7 @@ console\.log\(`access token : \${access_token}`\)
 .:packages/clinicalViewLambda/tests/data/prescriptionFoundResponse.*root=*
 .:packages/clinicalViewLambda/tests/data/prescriptionNotFoundResponse.*root=*
 root=\"1\.2
+root=\\\"1\.2
 root=\"2\.1
+root=\\\"2\.1
 codeSystem="2\.1
