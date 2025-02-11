@@ -27,6 +27,36 @@ export const expectedFhirResponse = {
           ]
         }
       }
+    },
+    {
+      resource: {
+        resourceType: "MedicationRequest",
+        id: "9AD427-A83008-2E461K",
+        intent: "order",
+        status: "completed",
+        subject: {
+          reference: "Patient12345"
+        },
+        medicationCodeableConcept: {
+          coding: [
+            {
+              code: "Amoxicillin 250mg capsules",
+              display: "Amoxicillin 250mg capsules",
+              system: "https://fhir.nhs.uk/CodeSystem/medication"
+            }
+          ]
+        },
+        dispenseRequest: {
+          quantity: {
+            value: 20
+          }
+        },
+        dosageInstruction: [
+          {
+            text: "2 times a day for 10 days"
+          }
+        ]
+      }
     }
   ]
 }
