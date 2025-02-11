@@ -50,6 +50,7 @@ const parsePrescriptions = (xmlPrescriptions: Array<XmlPrescription>): Prescript
 
     const prescriptionDetails: PrescriptionDetails = {
       prescriptionId: xmlPrescription.id["@_value"],
+      prescriptionType: "erd", //todo: what about repeats?
       issueDate: xmlPrescription.prescribedDate["@_value"],
       treatmentType: xmlPrescription.prescriptionTreatmentType["@_value"],
       maxRepeats: xmlPrescription.maxRepeats["@_value"] === "None" ?
@@ -59,6 +60,7 @@ const parsePrescriptions = (xmlPrescriptions: Array<XmlPrescription>): Prescript
     let xmlIssues = xmlPrescription.issueDetail
     if (!Array.isArray(xmlIssues)) {
       xmlIssues = [xmlIssues]
+      prescriptionDetails.prescriptionType = "acute"
     }
 
     for (const xmlIssue of xmlIssues) {

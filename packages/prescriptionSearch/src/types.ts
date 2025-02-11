@@ -32,6 +32,7 @@ export interface PatientDetails {
 
 export interface PrescriptionDetails {
   prescriptionId: string
+  prescriptionType: "acute" | "repeat" | "erd"
   issueDate: string
   treatmentType: string
   maxRepeats: number | null
