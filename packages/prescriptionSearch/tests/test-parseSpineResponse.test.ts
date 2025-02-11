@@ -1,4 +1,3 @@
-import {prependOnceListener} from "process"
 import {parseSpineResponse} from "../src/parseSpineResponse"
 import {
   singleAcute,
