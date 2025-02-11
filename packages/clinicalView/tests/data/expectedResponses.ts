@@ -9,12 +9,12 @@ export const expectedFhirResponse = {
         status: "active",
         groupIdentifier: {
           system: "https://fhir.nhs.uk/Id/prescription-group",
-          value: "0001"
+          value: "9AD427-A83008-2E461K"
         },
         identifier: [
           {
             system: "https://fhir.nhs.uk/Id/prescription-order-number",
-            value: "9AD427-A83008-2E461K"
+            value: "1"
           }
         ],
         code: {

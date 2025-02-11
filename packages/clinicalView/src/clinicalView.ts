@@ -13,7 +13,7 @@ import {Bundle, BundleEntry, FhirResource} from "fhir/r4"
 import {v4 as uuidv4} from "uuid"
 import {extractPrescriptionData} from "./utils/prescriptionExtractor"
 import {buildFhirResponse} from "./utils/responseBuilder"
-import {FhirResponseParams} from "./utils/fhirMapper"
+import {FhirResponseParams} from "./utils/prescriptionExtractor"
 import {prescriptionNotFoundResponse, badRequest} from "./utils/responses"
 import {requestGroupBundleSchema} from "./schema/requestGroupBundle"
 
@@ -133,14 +133,18 @@ const handleSpineResponse = (
   }
 
   // Check if prescription status is valid
-  if (!extractedData.prescriptionStatus) {
+  if (!extractedData.statusCode) {
     return prescriptionNotFoundResponse()
   }
 
   logger.info("Successfully retrieved prescription data from Spine", {"extractedData": extractedData})
 
-  // Build and return the FHIR response bundle
-  return buildFhirResponse(extractedData)
+  // Build the FHIR response bundle
+  const fhirResponse = buildFhirResponse(extractedData)
+
+  logger.info("Generated FHIR response bundle", {fhirResponse})
+
+  return fhirResponse
 }
 
 /**
