@@ -41,8 +41,8 @@ export function mapMedicationRequest(extractedData: FhirResponseParams): Medicat
       coding: extractedData.productLineItems.length > 0
         ? extractedData.productLineItems.map(item => ({
           system: "https://fhir.nhs.uk/CodeSystem/medication",
-          code: item.product || "Unknown",
-          display: item.product || "Unknown medication"
+          code: item.medicationName || "Unknown",
+          display: item.medicationName || "Unknown medication"
         }))
         : [{
           system: "https://fhir.nhs.uk/CodeSystem/medication",
@@ -60,7 +60,7 @@ export function mapMedicationRequest(extractedData: FhirResponseParams): Medicat
     } : undefined,
     dosageInstruction: extractedData.productLineItems.length > 0
       ? extractedData.productLineItems.map(item => ({
-        text: item.dosage || "Unknown dosage"
+        text: item.dosageInstructions || "Unknown dosage"
       }))
       : [{text: "Unknown dosage"}] // Ensure it's always defined
   }

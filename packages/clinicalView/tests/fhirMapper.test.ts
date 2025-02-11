@@ -15,8 +15,16 @@ describe("MedicationRequest Mapper", () => {
       organizationSummaryObjective: "TESTORG",
       prescriptionType: "0101",
       productLineItems: [
-        {product: "Amoxicillin", quantity: "30", dosage: "Take one capsule three times a day", narrative: "tablet"},
-        {product: "Co-codamol", quantity: "20", dosage: "Take one tablet twice a day", narrative: "tablet"}
+        {
+          medicationName: "Amoxicillin",
+          quantity: "30",
+          dosageInstructions: "Take one capsule three times a day"
+        },
+        {
+          medicationName: "Co-codamol",
+          quantity: "20",
+          dosageInstructions: "Take one tablet twice a day"
+        }
       ]
     }
 

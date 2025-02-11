@@ -4,6 +4,7 @@ import {DOMParser} from "@xmldom/xmldom"
 export interface FhirResponseParams {
   acknowledgementTypeCode: string
 
+  // RequestGroup
   // Prescription Information Banner
   prescriptionID: string // RequestGroup.groupIdentifier
   statusCode: string // RequestGroup.extension.businessStatus
@@ -11,16 +12,15 @@ export interface FhirResponseParams {
   instanceNumber: string // RequestGroup.identifier
   maxRepeats: string // RequestGroup.extension.numberOfRepeatsAllowed
   daysSupply: string // RequestGroup.action.timing (this is a separate action from dispense)
-
   // Dispenser
   organizationSummaryObjective: string //RequestGroup.action.participant
 
+  // MedicationRequest
   // Prescribed Items
   productLineItems: Array<{
-    product: string
-    quantity: string
-    dosage: string
-    narrative: string
+    medicationName: string // MedicationRequest.medicationCodeableConcept
+    quantity: string // MedicationRequest.dispenseRequest.quantity.value
+    dosageInstructions: string // MedicationRequest.dosageInstruction
   }>
 
   // Prescriber Information
@@ -39,10 +39,9 @@ export function extractPrescriptionData(spineResponseData: string) {
   // Extract product items from lineItem elements
   const productLineItems = Array.from(soap_response.getElementsByTagName("parentPrescription")).map((lineItem) => {
     return {
-      product: lineItem.getElementsByTagName("productLineItem1")?.item(0)?.textContent || "",
+      medicationName: lineItem.getElementsByTagName("productLineItem1")?.item(0)?.textContent || "",
       quantity: lineItem.getElementsByTagName("quantityLineItem1")?.item(0)?.textContent || "0",
-      dosage: lineItem.getElementsByTagName("dosageLineItem1")?.item(0)?.textContent || "Unknown dosage",
-      narrative: lineItem.getElementsByTagName("narrativeLineItem1")?.item(0)?.textContent || "Unknown narrative"
+      dosageInstructions: lineItem.getElementsByTagName("dosageLineItem1")?.item(0)?.textContent || "Unknown dosage"
     }
   })
 
