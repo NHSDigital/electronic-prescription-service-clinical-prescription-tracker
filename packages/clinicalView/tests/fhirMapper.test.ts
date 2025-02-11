@@ -12,7 +12,7 @@ describe("MedicationRequest Mapper", () => {
       instanceNumber: "1",
       maxRepeats: "",
       daysSupply: "28",
-      dispensingOrganization: "TESTORG",
+      organizationSummaryObjective: "TESTORG",
       prescriptionType: "0101",
       productLineItems: [
         {product: "Amoxicillin", quantity: "30", dosage: "Take one capsule three times a day", narrative: "tablet"},
@@ -43,7 +43,7 @@ describe("MedicationRequest Mapper", () => {
       instanceNumber: "1",
       maxRepeats: "",
       daysSupply: "28",
-      dispensingOrganization: "TESTORG",
+      organizationSummaryObjective: "TESTORG",
       prescriptionType: "0101",
       productLineItems: []
     }

@@ -3,20 +3,28 @@ import {DOMParser} from "@xmldom/xmldom"
 // Define the type for FhirResponseParams based on your data
 export interface FhirResponseParams {
   acknowledgementTypeCode: string
-  prescriptionID: string
-  statusCode: string
-  typeCode: string
-  instanceNumber: string
-  maxRepeats: string
-  daysSupply: string
-  dispensingOrganization: string
-  prescriptionType: string
+
+  // Prescription Information Banner
+  prescriptionID: string // RequestGroup.groupIdentifier
+  statusCode: string // RequestGroup.extension.businessStatus
+  typeCode: string // RequestGroup.code
+  instanceNumber: string // RequestGroup.identifier
+  maxRepeats: string // RequestGroup.extension.numberOfRepeatsAllowed
+  daysSupply: string // RequestGroup.action.timing (this is a separate action from dispense)
+
+  // Dispenser
+  organizationSummaryObjective: string //RequestGroup.action.participant
+
+  // Prescribed Items
   productLineItems: Array<{
     product: string
     quantity: string
     dosage: string
     narrative: string
   }>
+
+  // Prescriber Information
+  prescriptionType: string // MedicationRequest.courseOfTherapyType
 }
 
 // Extracts data from the Spine response
@@ -53,12 +61,13 @@ export function extractPrescriptionData(spineResponseData: string) {
     daysSupply: soap_response.getElementsByTagName("daysSupply").item(0)?.textContent || "",
 
     // Dispenser
-    dispensingOrganization: soap_response.getElementsByTagName("dispensingOrganization").item(0)?.textContent || "",
-
-    // Prescriber information
-    prescriptionType: soap_response.getElementsByTagName("prescriptionType").item(0)?.textContent || "",
+    organizationSummaryObjective: soap_response
+      .getElementsByTagName("dispensingOrganization").item(0)?.textContent || "",
 
     // Prescribed Items
-    productLineItems
+    productLineItems,
+
+    // Prescriber Information
+    prescriptionType: soap_response.getElementsByTagName("prescriptionType").item(0)?.textContent || ""
   }
 }
