@@ -1,6 +1,7 @@
 import {RequestGroup, MedicationRequest} from "fhir/r4"
 import {FhirResponseParams} from "./prescriptionExtractor"
 
+// Maps the extracted data to the FHIR RequestGroup resource
 export function mapRequestGroup(extractedData: FhirResponseParams): RequestGroup {
   return {
     resourceType: "RequestGroup",
@@ -28,40 +29,32 @@ export function mapRequestGroup(extractedData: FhirResponseParams): RequestGroup
   }
 }
 
-export function mapMedicationRequest(extractedData: FhirResponseParams): MedicationRequest {
-  return {
+// Maps the extracted data to an array of MedicationRequest resources
+export function mapMedicationRequest(extractedData: FhirResponseParams): Array<MedicationRequest> {
+  return extractedData.productLineItems.map(item => ({
     resourceType: "MedicationRequest",
-    id: extractedData.prescriptionID,
+    id: extractedData.prescriptionID, // Assuming the prescriptionID is the same for all medication requests
     intent: "order", // Required field (Example value: 'proposal' | 'plan' | 'order')
     subject: {
-      reference: "Patient12345"
+      reference: "Patient12345" // This can be dynamic if available in the data
     },
     status: extractedData.statusCode === "0002" ? "active" : "completed",
     medicationCodeableConcept: {
-      coding: extractedData.productLineItems.length > 0
-        ? extractedData.productLineItems.map(item => ({
-          system: "https://fhir.nhs.uk/CodeSystem/medication",
-          code: item.medicationName || "Unknown",
-          display: item.medicationName || "Unknown medication"
-        }))
-        : [{
-          system: "https://fhir.nhs.uk/CodeSystem/medication",
-          code: "Unknown",
-          display: "Unknown medication"
-        }] // Ensure it's always defined
+      coding: [{
+        system: "https://fhir.nhs.uk/CodeSystem/medication",
+        code: item.medicationName || "Unknown",
+        display: item.medicationName || "Unknown medication"
+      }]
     },
-    dispenseRequest: extractedData.productLineItems.length > 0 ? {
+    dispenseRequest: {
       quantity: {
-        value: extractedData.productLineItems.reduce(
-          (total, item) => total + parseInt(item.quantity ?? "0", 10),
-          0
-        )
+        value: parseInt(item.quantity, 10) // Parse quantity to integer and use it in dispenseRequest
       }
-    } : undefined,
-    dosageInstruction: extractedData.productLineItems.length > 0
-      ? extractedData.productLineItems.map(item => ({
+    },
+    dosageInstruction: [
+      {
         text: item.dosageInstructions || "Unknown dosage"
-      }))
-      : [{text: "Unknown dosage"}] // Ensure it's always defined
-  }
+      }
+    ]
+  }))
 }

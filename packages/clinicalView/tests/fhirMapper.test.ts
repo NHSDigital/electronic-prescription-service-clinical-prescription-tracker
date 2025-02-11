@@ -28,18 +28,36 @@ describe("MedicationRequest Mapper", () => {
       ]
     }
 
-    const medicationRequest = mapMedicationRequest(extractedData)
+    // Map the extracted data to MedicationRequest objects
+    const medicationRequests = mapMedicationRequest(extractedData)
 
-    // Ensure medicationCodeableConcept is defined and contains the expected coding
-    expect(medicationRequest.medicationCodeableConcept).toBeDefined()
-    expect(medicationRequest.medicationCodeableConcept?.coding?.[0]).toHaveProperty("code", "Amoxicillin")
+    // Ensure medicationRequests is an array and has the correct number of elements
+    expect(medicationRequests).toBeInstanceOf(Array)
+    expect(medicationRequests.length).toBe(2) // There are 2 product line items, so 2 MedicationRequest objects
 
-    // Ensure dispenseRequest is defined and contains the correct quantity sum
-    expect(medicationRequest.dispenseRequest).toBeDefined()
-    expect(medicationRequest.dispenseRequest?.quantity?.value).toBe(50) // Summed quantity from all medications
+    // Check the properties of each MedicationRequest
+    medicationRequests.forEach((medicationRequest, index) => {
+      // Ensure medicationCodeableConcept is defined and contains the expected coding
+      expect(medicationRequest.medicationCodeableConcept).toBeDefined()
+      expect(
+        medicationRequest.medicationCodeableConcept?.coding?.[0]
+      ).toHaveProperty(
+        "code",
+        extractedData.productLineItems[index].medicationName
+      )
 
-    // Check the dosageInstruction field
-    expect(medicationRequest.dosageInstruction?.[0]).toHaveProperty("text", "Take one capsule three times a day")
+      // Ensure dispenseRequest is defined and contains the correct quantity
+      expect(medicationRequest.dispenseRequest).toBeDefined()
+      expect(
+        medicationRequest.dispenseRequest?.quantity?.value
+      ).toBe(parseInt(extractedData.productLineItems[index].quantity))
+
+      // Check the dosageInstruction field
+      expect(medicationRequest.dosageInstruction?.[0]).toHaveProperty(
+        "text",
+        extractedData.productLineItems[index].dosageInstructions
+      )
+    })
   })
 
   it("Handles missing product items data", () => {
@@ -53,20 +71,17 @@ describe("MedicationRequest Mapper", () => {
       daysSupply: "28",
       organizationSummaryObjective: "TESTORG",
       prescriptionType: "0101",
-      productLineItems: []
+      productLineItems: [] // No product items
     }
 
-    const medicationRequest = mapMedicationRequest(extractedData)
+    // Map the extracted data to MedicationRequest objects
+    const medicationRequests = mapMedicationRequest(extractedData)
 
-    // Ensure medicationCodeableConcept is defined and contains a default value
-    expect(medicationRequest.medicationCodeableConcept).toBeDefined()
-    expect(medicationRequest.medicationCodeableConcept?.coding?.[0]).toHaveProperty("code", "Unknown")
+    // Ensure medicationRequests is an empty array
+    expect(medicationRequests).toBeInstanceOf(Array)
+    expect(medicationRequests.length).toBe(0)
 
-    // Ensure dispenseRequest is undefined when there are no medications
-    expect(medicationRequest.dispenseRequest).toBeUndefined()
-
-    // Ensure dosageInstruction is an empty array
-    expect(medicationRequest.dosageInstruction).toBeDefined()
-    expect(medicationRequest.dosageInstruction?.[0]).toHaveProperty("text", "Unknown dosage")
+    // Ensure dispenseRequest and dosageInstruction are undefined when no product items exist
+    expect(medicationRequests).toEqual([])
   })
 })

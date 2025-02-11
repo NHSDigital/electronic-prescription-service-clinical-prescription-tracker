@@ -57,6 +57,96 @@ export const expectedFhirResponse = {
           }
         ]
       }
+    },
+    {
+      resource: {
+        resourceType: "MedicationRequest",
+        id: "9AD427-A83008-2E461K",
+        intent: "order",
+        status: "completed",
+        subject: {
+          reference: "Patient12345"
+        },
+        medicationCodeableConcept: {
+          coding: [
+            {
+              code: "Co-codamol 30mg/500mg tablets",
+              display: "Co-codamol 30mg/500mg tablets",
+              system: "https://fhir.nhs.uk/CodeSystem/medication"
+            }
+          ]
+        },
+        dispenseRequest: {
+          quantity: {
+            value: 20
+          }
+        },
+        dosageInstruction: [
+          {
+            text: "2 times a day for 10 days"
+          }
+        ]
+      }
+    },
+    {
+      resource: {
+        resourceType: "MedicationRequest",
+        id: "9AD427-A83008-2E461K",
+        intent: "order",
+        status: "completed",
+        subject: {
+          reference: "Patient12345"
+        },
+        medicationCodeableConcept: {
+          coding: [
+            {
+              code: "Pseudoephedrine hydrochloride 60mg tablets",
+              display: "Pseudoephedrine hydrochloride 60mg tablets",
+              system: "https://fhir.nhs.uk/CodeSystem/medication"
+            }
+          ]
+        },
+        dispenseRequest: {
+          quantity: {
+            value: 30
+          }
+        },
+        dosageInstruction: [
+          {
+            text: "3 times a day for 10 days"
+          }
+        ]
+      }
+    },
+    {
+      resource: {
+        resourceType: "MedicationRequest",
+        id: "9AD427-A83008-2E461K",
+        intent: "order",
+        status: "completed",
+        subject: {
+          reference: "Patient12345"
+        },
+        medicationCodeableConcept: {
+          coding: [
+            {
+              code: "Azithromycin 250mg capsules",
+              display: "Azithromycin 250mg capsules",
+              system: "https://fhir.nhs.uk/CodeSystem/medication"
+            }
+          ]
+        },
+        dispenseRequest: {
+          quantity: {
+            value: 30
+          }
+        },
+        dosageInstruction: [
+          {
+            text: "3 times a day for 10 days"
+          }
+        ]
+      }
     }
   ]
 }

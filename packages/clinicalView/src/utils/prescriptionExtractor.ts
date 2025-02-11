@@ -1,6 +1,8 @@
 import {DOMParser} from "@xmldom/xmldom"
 
-// Define the type for FhirResponseParams based on your data
+/**
+ * Define the type for FhirResponseParams based on the extracted data from the Spine response
+ */
 export interface FhirResponseParams {
   acknowledgementTypeCode: string
 
@@ -27,26 +29,44 @@ export interface FhirResponseParams {
   prescriptionType: string // MedicationRequest.courseOfTherapyType
 }
 
-// Extracts data from the Spine response
+/**
+ * Extracts prescription data from the Spine SOAP response
+*/
 export function extractPrescriptionData(spineResponseData: string) {
   const parser = new DOMParser()
   const soap_response = parser.parseFromString(spineResponseData, "text/xml")
 
-  // Extract <acknowledgement> element
+  // Extract the typeCode from the <acknowledgement> element
   const acknowledgementElement = soap_response.getElementsByTagName("acknowledgement").item(0)
   const acknowledgementTypeCode = acknowledgementElement?.getAttribute("typeCode")
 
-  // Extract product items from lineItem elements
-  const productLineItems = Array.from(soap_response.getElementsByTagName("parentPrescription")).map((lineItem) => {
-    return {
-      medicationName: lineItem.getElementsByTagName("productLineItem1")?.item(0)?.textContent || "",
-      quantity: lineItem.getElementsByTagName("quantityLineItem1")?.item(0)?.textContent || "0",
-      dosageInstructions: lineItem.getElementsByTagName("dosageLineItem1")?.item(0)?.textContent || "Unknown dosage"
+  // Extract product items from the lineItem elements of the SOAP response
+  const productLineItems = Array.from(
+    soap_response.getElementsByTagName("parentPrescription")
+  ).flatMap((parentPrescriptionElement) => {
+    const lineItems = []
+
+    // Loop through up to 5 line items (if they exist)
+    for (let i = 1; i <= 5; i++) { // Assuming a maximum of 5 items per prescription
+      const productName = parentPrescriptionElement.getElementsByTagName(`productLineItem${i}`)?.item(0)?.textContent
+      const quantity = parentPrescriptionElement.getElementsByTagName(`quantityLineItem${i}`)?.item(0)?.textContent
+      const dosage = parentPrescriptionElement.getElementsByTagName(`dosageLineItem${i}`)?.item(0)?.textContent
+
+      // Add line item to the list if a product name exists
+      if (productName) {
+        lineItems.push({
+          medicationName: productName,
+          quantity: quantity || "0",
+          dosageInstructions: dosage || "Unknown dosage"
+        })
+      }
     }
+
+    return lineItems
   })
 
   return {
-    // The acknowledgement element type code
+    // The acknowledgement element's typeCode
     acknowledgementTypeCode: acknowledgementTypeCode || "",
 
     // Prescription Information Banner
@@ -59,11 +79,11 @@ export function extractPrescriptionData(spineResponseData: string) {
     maxRepeats: soap_response.getElementsByTagName("maxrepeats").item(0)?.textContent || "",
     daysSupply: soap_response.getElementsByTagName("daysSupply").item(0)?.textContent || "",
 
-    // Dispenser
+    // Dispenser Information
     organizationSummaryObjective: soap_response
       .getElementsByTagName("dispensingOrganization").item(0)?.textContent || "",
 
-    // Prescribed Items
+    // Prescribed Medication Items
     productLineItems,
 
     // Prescriber Information
