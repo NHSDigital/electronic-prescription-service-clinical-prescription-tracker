@@ -1,5 +1,5 @@
 import {RequestGroup, MedicationRequest} from "fhir/r4"
-import {FhirResponseParams} from "./prescriptionExtractor"
+import {FhirResponseParams} from "./prescriptionDataParser"
 
 // Maps the extracted data to the FHIR RequestGroup resource
 export function mapRequestGroup(extractedData: FhirResponseParams): RequestGroup {

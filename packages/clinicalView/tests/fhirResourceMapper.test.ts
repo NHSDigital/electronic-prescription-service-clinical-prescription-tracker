@@ -1,6 +1,6 @@
 import {expect, describe, it} from "@jest/globals"
-import {mapMedicationRequest} from "../src/utils/fhirMapper"
-import {FhirResponseParams} from "../src/utils/prescriptionExtractor"
+import {mapMedicationRequest} from "../src/utils/fhirResourceMapper"
+import {FhirResponseParams} from "../src/utils/prescriptionDataParser"
 
 describe("MedicationRequest Mapper", () => {
   it("Correctly maps MedicationRequest from extracted data", () => {

@@ -4,8 +4,8 @@ import {
   RequestGroup,
   MedicationRequest
 } from "fhir/r4"
-import {mapRequestGroup, mapMedicationRequest} from "./fhirMapper"
-import {FhirResponseParams} from "./prescriptionExtractor"
+import {mapRequestGroup, mapMedicationRequest} from "./fhirResourceMapper"
+import {FhirResponseParams} from "./prescriptionDataParser"
 
 // Builds a FHIR Bundle from the extracted prescription data
 export function buildFhirResponse(extractedData: FhirResponseParams): Bundle<FhirResource> {

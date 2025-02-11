@@ -11,10 +11,10 @@ import {ClinicalViewParams} from "@nhsdigital/eps-spine-client/lib/live-spine-cl
 import {AxiosResponse} from "axios"
 import {Bundle, BundleEntry, FhirResource} from "fhir/r4"
 import {v4 as uuidv4} from "uuid"
-import {extractPrescriptionData} from "./utils/prescriptionExtractor"
-import {buildFhirResponse} from "./utils/responseBuilder"
-import {FhirResponseParams} from "./utils/prescriptionExtractor"
-import {prescriptionNotFoundResponse, badRequest} from "./utils/responses"
+import {extractPrescriptionData} from "./utils/prescriptionDataParser"
+import {buildFhirResponse} from "./utils/fhirResponseBuilder"
+import {FhirResponseParams} from "./utils/prescriptionDataParser"
+import {prescriptionNotFoundResponse, badRequest} from "./utils/responseTemplates"
 import {requestGroupBundleSchema} from "./schema/requestGroupBundle"
 
 // Set up logger with log level from environment variables
