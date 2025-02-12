@@ -1,7 +1,9 @@
 import {RequestGroup, MedicationRequest, Task} from "fhir/r4"
 import {FhirResponseParams} from "./prescriptionDataParser"
 
-// Maps the extracted data to the FHIR RequestGroup resource
+/**
+ * Maps the extracted data to the FHIR RequestGroup resource
+ */
 export function mapRequestGroup(extractedData: FhirResponseParams): RequestGroup {
   return {
     resourceType: "RequestGroup",
@@ -29,7 +31,9 @@ export function mapRequestGroup(extractedData: FhirResponseParams): RequestGroup
   }
 }
 
-// Maps the extracted data to an array of MedicationRequest resources
+/**
+ * Maps the extracted data to an array of MedicationRequest resources
+ */
 export function mapMedicationRequest(extractedData: FhirResponseParams): Array<MedicationRequest> {
   return extractedData.productLineItems.map(item => ({
     resourceType: "MedicationRequest",
@@ -59,7 +63,9 @@ export function mapMedicationRequest(extractedData: FhirResponseParams): Array<M
   }))
 }
 
-// Maps the extracted data to the Task resource
+/**
+ * Maps the extracted data to the Task resource
+ */
 export function mapTask(extractedData: FhirResponseParams): Task {
   return {
     resourceType: "Task",

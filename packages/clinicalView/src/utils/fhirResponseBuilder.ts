@@ -8,7 +8,9 @@ import {
 import {mapRequestGroup, mapMedicationRequest, mapTask} from "./fhirResourceMapper"
 import {FhirResponseParams} from "./prescriptionDataParser"
 
-// Builds a FHIR Bundle from the extracted prescription data
+/**
+ * Builds a FHIR Bundle from the extracted prescription data
+ */
 export function buildFhirResponse(extractedData: FhirResponseParams): Bundle<FhirResource> {
   // Map the extracted data to the RequestGroup resource
   const requestGroup = mapRequestGroup(extractedData) as RequestGroup
