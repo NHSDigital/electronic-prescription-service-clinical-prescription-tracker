@@ -54,9 +54,9 @@ def generate_timestamp():
     return date_time
 
 
-def trigger_test_run(env, pr_label, product, auth_header):
+def trigger_test_run(env, pr_label, product, auth_header, regression_test_branch="main"):
     body = {
-        "ref": "main",
+        "ref": regression_test_branch,
         "inputs": {
             "id": run_id,
             "tags": "@regression",
@@ -199,6 +199,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "--token", required=False, help="Please provide the authentication token."
     )
+    parser.add_argument(
+        "--regression_branch",
+        required=False,
+        help="The branch to use from the regression tests repository",
+        default=None
+    )
 
     arguments = parser.parse_args()
 
@@ -213,11 +219,16 @@ if __name__ == "__main__":
     auth_header = get_auth_header(arguments.is_called_from_github, arguments.token, arguments.user)
 
     pr_label = arguments.pr_label.lower()
+    regression_branch = arguments.regression_branch
+    if regression_branch is None:
+        regression_branch = REGRESSION_TESTS_REPO_TAG
+
     trigger_test_run(
         arguments.env,
         pr_label,
         arguments.product,
-        auth_header
+        auth_header,
+        regression_branch
     )
 
     workflow_id = find_workflow(auth_header)
