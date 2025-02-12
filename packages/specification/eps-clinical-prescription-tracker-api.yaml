@@ -12,7 +12,9 @@ info:
     email: api.management@nhs.net
   description: |
     ## Overview
-    The Clinical Prescription Tracker API
+    The Clinical Prescription Tracker API provides real-time tracking of prescriptions within the Electronic Prescription Service (EPS). It enables authorized users to retrieve details about prescription status, dispensation progress, and other essential prescription lifecycle information.
+
+    This API is designed to be used by healthcare providers, dispensers, and authorized NHS applications to track prescriptions from issuance to fulfillment.
 
     ## Who can use this API
     The Clinical Prescription Tracker query API is intended for NHS England internal use only.

@@ -2,289 +2,254 @@ import {FromSchema, JSONSchema} from "json-schema-to-ts"
 
 // Reusable schemas
 export const quantitySchema = {
-  "type": "object",
-  "properties": {
-    "value": {
-      "type": "integer",
-      "description": "The quantity value."
+  type: "object",
+  description: "Represents a quantity with a value and unit of measurement.",
+  properties: {
+    value: {
+      type: "integer",
+      description: "The numeric value of the quantity."
     },
-    "unit": {
-      "type": "string",
-      "description": "The unit of measurement (e.g., tablet, mg)."
+    unit: {
+      type: "string",
+      description: "The unit of measurement (e.g., tablet, mg)."
     }
   },
-  "required": ["value", "unit"],
-  "additionalProperties": false
-} as const satisfies JSONSchema
-
-export const periodSchema = {
-  "type": "object",
-  "properties": {
-    "start": {
-      "type": "string",
-      "format": "date-time",
-      "description": "The start date of the period."
-    },
-    "end": {
-      "type": "string",
-      "format": "date-time",
-      "description": "The end date of the period."
-    }
-  },
-  "required": ["start", "end"],
-  "additionalProperties": false
-} as const satisfies JSONSchema
-
-export const durationSchema = {
-  "type": "object",
-  "properties": {
-    "value": {
-      "type": "integer",
-      "description": "The value of the duration."
-    },
-    "unit": {
-      "type": "string",
-      "enum": ["days"],
-      "description": "The unit of duration (e.g., days)."
-    }
-  },
-  "required": ["value", "unit"],
-  "additionalProperties": false
-} as const satisfies JSONSchema
-
-export const codingSchema = {
-  "type": "object",
-  "properties": {
-    "system": {
-      "type": "string",
-      "description": "The coding system (e.g., SNOMED, ICD)."
-    },
-    "code": {
-      "type": "string",
-      "description": "The code of the concept."
-    },
-    "display": {
-      "type": "string",
-      "description": "The human-readable display of the code."
-    }
-  },
-  "required": ["system", "code"],
-  "additionalProperties": false
-} as const satisfies JSONSchema
-
-export const codeableConceptSchema = {
-  "type": "object",
-  "properties": {
-    "coding": {
-      "type": "array",
-      "items": codingSchema
-    }
-  },
-  "required": ["coding"],
-  "additionalProperties": false
+  required: ["value", "unit"],
+  additionalProperties: false
 } as const satisfies JSONSchema
 
 export const referenceSchema = {
-  "type": "object",
-  "properties": {
-    "reference": {
-      "type": "string",
-      "description": "A reference to another resource."
+  type: "object",
+  description: "A reference to another FHIR resource.",
+  properties: {
+    reference: {
+      type: "string",
+      description: "A reference to the ID of another FHIR resource."
     }
   },
-  "required": ["reference"],
-  "additionalProperties": false
+  required: ["reference"],
+  additionalProperties: false
 } as const satisfies JSONSchema
 
-export const timingRepeatSchema = {
-  "type": "object",
-  "properties": {
-    "frequency": {
-      "type": "integer",
-      "description": "The number of times the dosage is repeated."
+export const codingSchema = {
+  type: "object",
+  description: "A coding system used to identify medical concepts.",
+  properties: {
+    system: {
+      type: "string",
+      description: "The coding system (e.g., SNOMED, ICD)."
     },
-    "period": {
-      "type": "integer",
-      "description": "The period between dosages."
+    code: {
+      type: "string",
+      description: "The code that represents a concept within the system."
     },
-    "periodUnit": {
-      "type": "string",
-      "enum": ["d", "h"],
-      "description": "The unit of the period (days or hours)."
+    display: {
+      type: "string",
+      description: "A human-readable display of the code."
     }
   },
-  "required": ["frequency", "period", "periodUnit"],
-  "additionalProperties": false
+  required: ["system", "code"],
+  additionalProperties: false
 } as const satisfies JSONSchema
 
-export const timingSchema = {
-  "type": "object",
-  "properties": {
-    "repeat": timingRepeatSchema
+export const codeableConceptSchema = {
+  type: "object",
+  description: "A concept that is represented by a set of coded values.",
+  properties: {
+    coding: {
+      type: "array",
+      description: "An array of coding elements representing the concept.",
+      items: codingSchema
+    }
   },
-  "required": ["repeat"],
-  "additionalProperties": false
+  required: ["coding"],
+  additionalProperties: false
 } as const satisfies JSONSchema
 
 export const dosageInstructionSchema = {
-  "type": "object",
-  "properties": {
-    "text": {
-      "type": "string",
-      "description": "The dosage instructions text."
-    },
-    "timing": timingSchema,
-    "doseQuantity": quantitySchema
+  type: "object",
+  description: "Instructions on how a medication should be taken by the patient.",
+  properties: {
+    text: {
+      type: "string",
+      description: "A free-text representation of the dosage instructions."
+    }
   },
-  "required": ["text", "timing", "doseQuantity"],
-  "additionalProperties": false
+  required: ["text"],
+  additionalProperties: false
 } as const satisfies JSONSchema
 
 export const medicationRequestSchema = {
-  "type": "object",
-  "properties": {
-    "resourceType": {
-      "type": "string",
-      "enum": ["MedicationRequest"],
-      "description": "FHIR Resource Type for MedicationRequest."
+  type: "object",
+  description: "A request for a patient to be given a medication.",
+  properties: {
+    resourceType: {
+      type: "string",
+      enum: ["MedicationRequest"],
+      description: "Indicates that this resource is a MedicationRequest."
     },
-    "id": {
-      "type": "string",
-      "description": "The unique identifier for the MedicationRequest."
+    id: {
+      type: "string",
+      description: "The unique identifier for this MedicationRequest."
     },
-    "identifier": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "system": {
-            "type": "string",
-            "description": "The identifier system (e.g., FHIR URI, SNOMED)."
-          },
-          "value": {
-            "type": "string",
-            "description": "The identifier value."
-          }
-        },
-        "required": ["system", "value"],
-        "additionalProperties": false
+    intent: {
+      type: "string",
+      enum: ["order", "plan"],
+      description: "The intent of the medication request (e.g., order or plan)."
+    },
+    status: {
+      type: "string",
+      enum: ["active", "completed"],
+      description: "The current status of the medication request."
+    },
+    subject: referenceSchema,
+    medicationCodeableConcept: codeableConceptSchema,
+    dispenseRequest: {
+      type: "object",
+      description: "Details about the medication dispense request.",
+      properties: {
+        quantity: quantitySchema
       },
-      "description": "A set of identifiers assigned to this medication request."
+      required: ["quantity"],
+      additionalProperties: false
     },
-    "status": {
-      "type": "string",
-      "enum": ["active", "completed", "entered-in-error", "on-hold"],
-      "description": "The status of the MedicationRequest."
-    },
-    "intent": {
-      "type": "string",
-      "enum": ["order", "plan", "filler-order", "reflex-order"],
-      "description": "The intent of the medication request."
-    },
-    "medicationCodeableConcept": codeableConceptSchema,
-    "subject": referenceSchema,
-    "authoredOn": {
-      "type": "string",
-      "format": "date-time",
-      "description": "The date the MedicationRequest was authored."
-    },
-    "requester": referenceSchema,
-    "dosageInstruction": {
-      "type": "array",
-      "items": dosageInstructionSchema
-    },
-    "dispenseRequest": {
-      "type": "object",
-      "properties": {
-        "validityPeriod": periodSchema,
-        "quantity": quantitySchema,
-        "expectedSupplyDuration": durationSchema
-      },
-      "required": ["validityPeriod", "quantity", "expectedSupplyDuration"],
-      "additionalProperties": false
+    dosageInstruction: {
+      type: "array",
+      description: "An array of dosage instructions for the medication.",
+      items: dosageInstructionSchema
     }
   },
-  "required": ["resourceType", "status", "intent", "medicationCodeableConcept", "subject"],
-  "additionalProperties": false
+  required: ["resourceType", "intent", "status", "subject", "medicationCodeableConcept"],
+  additionalProperties: false
 } as const satisfies JSONSchema
 
 export const requestGroupSchema = {
-  "type": "object",
-  "properties": {
-    "resourceType": {
-      "type": "string",
-      "enum": ["RequestGroup"],
-      "description": "FHIR Resource Type for RequestGroup."
+  type: "object",
+  description: "A group of related requests intended to be acted upon together.",
+  properties: {
+    resourceType: {
+      type: "string",
+      enum: ["RequestGroup"],
+      description: "Indicates that this resource is a RequestGroup."
     },
-    "id": {
-      "type": "string",
-      "description": "The unique identifier for the RequestGroup."
+    id: {
+      type: "string",
+      description: "The unique identifier for this RequestGroup."
     },
-    "identifier": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "system": {
-            "type": "string",
-            "description": "The identifier system (e.g., FHIR URI, SNOMED)."
-          },
-          "value": {
-            "type": "string",
-            "description": "The identifier value."
-          }
+    status: {
+      type: "string",
+      enum: ["active", "completed"],
+      description: "The current status of the request group."
+    },
+    intent: {
+      type: "string",
+      enum: ["proposal"],
+      description: "The intent of the request group (e.g., proposal)."
+    },
+    groupIdentifier: {
+      type: "object",
+      description: "An identifier that groups related requests together.",
+      properties: {
+        system: {
+          type: "string",
+          description: "The system that defines the identifier (e.g., FHIR URI)."
         },
-        "required": ["system", "value"],
-        "additionalProperties": false
+        value: {
+          type: "string",
+          description: "The actual identifier value."
+        }
       },
-      "description": "A set of identifiers assigned to this request group."
-    },
-    "status": {
-      "type": "string",
-      "enum": ["draft", "active", "completed", "entered-in-error"],
-      "description": "The status of the request group."
-    },
-    "intent": {
-      "type": "string",
-      "enum": ["order", "plan", "filler-order", "reflex-order"],
-      "description": "The intent of the request group."
+      required: ["system", "value"],
+      additionalProperties: false
     }
   },
-  "required": ["resourceType", "id", "status", "intent"],
-  "additionalProperties": false
+  required: ["resourceType", "status", "intent"],
+  additionalProperties: false
+} as const satisfies JSONSchema
+
+export const taskSchema = {
+  type: "object",
+  description: "A task that represents a workflow step in fulfilling a request.",
+  properties: {
+    resourceType: {
+      type: "string",
+      enum: ["Task"],
+      description: "Indicates that this resource is a Task."
+    },
+    id: {
+      type: "string",
+      description: "The unique identifier for this Task."
+    },
+    status: {
+      type: "string",
+      enum: ["completed"],
+      description: "The current status of the Task."
+    },
+    intent: {
+      type: "string",
+      enum: ["order"],
+      description: "The intent of the task (e.g., order)."
+    },
+    groupIdentifier: {
+      type: "object",
+      description: "An identifier that groups related tasks together.",
+      properties: {
+        system: {
+          type: "string",
+          description: "The system that defines the identifier."
+        },
+        value: {
+          type: "string",
+          description: "The actual identifier value."
+        }
+      },
+      required: ["system", "value"],
+      additionalProperties: false
+    },
+    authoredOn: {
+      type: "string",
+      format: "date-time",
+      description: "The date and time the Task was authored."
+    }
+  },
+  required: ["resourceType", "status", "intent"],
+  additionalProperties: false
 } as const satisfies JSONSchema
 
 export const bundleEntrySchema = {
-  "type": "object",
-  "properties": {
-    "RequestGroup": requestGroupSchema,
-    "MedicationRequest": medicationRequestSchema
+  type: "object",
+  description: "Represents an entry in a FHIR bundle, containing one of the specified resource types.",
+  properties: {
+    RequestGroup: requestGroupSchema,
+    MedicationRequest: medicationRequestSchema,
+    Task: taskSchema
   },
-  "required": ["RequestGroup", "MedicationRequest"],
-  "additionalProperties": false
+  required: ["RequestGroup", "MedicationRequest", "Task"],
+  additionalProperties: false
 } as const satisfies JSONSchema
 
 export const requestGroupBundleSchema = {
-  "type": "object",
-  "properties": {
-    "resourceType": {
-      "type": "string",
-      "enum": ["Bundle"],
-      "description": "The type of FHIR resource."
+  type: "object",
+  description: "A FHIR Bundle containing a RequestGroup and associated MedicationRequest resources.",
+  properties: {
+    resourceType: {
+      type: "string",
+      enum: ["Bundle"],
+      description: "Indicates that this resource is a Bundle."
     },
-    "type": {
-      "type": "string",
-      "enum": ["collection"],
-      "description": "The type of the Bundle."
+    type: {
+      type: "string",
+      enum: ["collection"],
+      description: "The type of FHIR Bundle (collection)."
     },
-    "entry": {
-      "type": "array",
-      "items": bundleEntrySchema,
-      "description": "An array of entries in the bundle."
+    entry: {
+      type: "array",
+      description: "An array of entries in the bundle, each containing a FHIR resource.",
+      items: bundleEntrySchema
     }
   },
-  "required": ["resourceType", "type", "entry"],
-  "additionalProperties": false
+  required: ["resourceType", "type", "entry"],
+  additionalProperties: false
 } as const satisfies JSONSchema
 
 export type requestGroupBundleType = FromSchema<typeof requestGroupBundleSchema>
