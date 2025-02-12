@@ -1,32 +1,36 @@
 import {XMLParser} from "fast-xml-parser"
 
 import {
+  XmlResponse,
+  XmlSoapBody,
+  XmlSearchResults,
   PrescriptionSearchResults,
   XmlPrescription,
   PatientDetails,
   PrescriptionDetails,
   IssueDetails,
-  Prescription
+  Prescription,
+  XmlSoapEnvBody,
+  XmlError
 } from "./types"
 
-// TODO - logs
+// TODO - logging
 
 export const parseSpineResponse = (spineResponse: string): PrescriptionSearchResults | undefined => {
-  const parserOptions = {
-    ignoreAttributes: false
-  }
-  const xmlParser = new XMLParser(parserOptions)
-  const responseXml = xmlParser.parse(spineResponse)
+  const xmlParser: XMLParser = new XMLParser({ignoreAttributes: false})
+  const xmlResponse = xmlParser.parse(spineResponse) as XmlResponse
 
-  const xmlSoapBody = responseXml["SOAP:Envelope"]?.["SOAP:Body"]
+  // todo: pick out no results
+  const xmlSoapBody: XmlSoapBody | undefined = xmlResponse["SOAP:Envelope"]?.["SOAP:Body"]
   if (!xmlSoapBody) {
     // TODO: error stuff
     console.log("error")
-    return
+    const thing = parseErrorResponse(xmlResponse) // do something with this
+    return thing
   }
 
-  // eslint-disable-next-line max-len
-  const xmlSearchResults = xmlSoapBody.prescriptionSearchResponse.PRESCRIPTIONSEARCHRESPONSE_SM01.ControlActEvent.subject.searchResults
+  const xmlSearchResults: XmlSearchResults = xmlSoapBody.prescriptionSearchResponse
+    .PRESCRIPTIONSEARCHRESPONSE_SM01.ControlActEvent.subject.searchResults
   let xmlPrescriptions = xmlSearchResults.prescription
   if (!Array.isArray(xmlPrescriptions)) {
     xmlPrescriptions = [xmlPrescriptions]
@@ -50,7 +54,6 @@ const parsePrescriptions = (xmlPrescriptions: Array<XmlPrescription>): Prescript
 
     const prescriptionDetails: PrescriptionDetails = {
       prescriptionId: xmlPrescription.id["@_value"],
-      prescriptionType: "erd", //todo: what about repeats?
       issueDate: xmlPrescription.prescribedDate["@_value"],
       treatmentType: xmlPrescription.prescriptionTreatmentType["@_value"],
       maxRepeats: xmlPrescription.maxRepeats["@_value"] === "None" ?
@@ -60,7 +63,6 @@ const parsePrescriptions = (xmlPrescriptions: Array<XmlPrescription>): Prescript
     let xmlIssues = xmlPrescription.issueDetail
     if (!Array.isArray(xmlIssues)) {
       xmlIssues = [xmlIssues]
-      prescriptionDetails.prescriptionType = "acute"
     }
 
     for (const xmlIssue of xmlIssues) {
@@ -83,4 +85,19 @@ const parsePrescriptions = (xmlPrescriptions: Array<XmlPrescription>): Prescript
 
 const convertXmlBool = (value: string): boolean => {
   return value === "True" ? true : false
+}
+
+const parseErrorResponse = (responseXml: XmlResponse)=> {
+  const xmlSoapEnvBody: XmlSoapEnvBody | undefined = responseXml["SOAP-ENV:Envelope"]?.["SOAP-ENV:Body"]
+  if (!xmlSoapEnvBody){
+    // log
+    return
+  }
+
+  const xmlError: XmlError = xmlSoapEnvBody.prescriptionSearchResponse
+    .MCCI_IN010000UK13.acknowledgement.acknowledgementDetail.code
+
+  if (xmlError["@_displayName"] === "Prescription not found") {
+    // do something
+  }
 }

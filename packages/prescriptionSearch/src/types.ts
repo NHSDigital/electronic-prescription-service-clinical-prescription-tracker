@@ -22,6 +22,53 @@ export interface XmlPrescription {
   maxRepeats: XmlStringValue
 }
 
+export interface XmlSearchResults {
+  prescription : XmlPrescription | Array<XmlPrescription>
+}
+
+export interface XmlSoapBody {
+  prescriptionSearchResponse: {
+    PRESCRIPTIONSEARCHRESPONSE_SM01: {
+      ControlActEvent: {
+        subject: {
+          searchResults: XmlSearchResults
+        }
+      }
+    }
+  }
+}
+
+interface XmlSoapEnvelope {
+  "SOAP:Body" : XmlSoapBody
+}
+
+export interface XmlError {
+  "@_codeSystem": string
+  "@_code": string
+  "@_displayName": string
+}
+
+export interface XmlSoapEnvBody {
+  prescriptionSearchResponse: {
+    MCCI_IN010000UK13: {
+      acknowledgement: {
+        acknowledgementDetail: {
+          code: XmlError
+        }
+      }
+    }
+  }
+}
+
+interface XmlSoapEnvEnvelope {
+  "SOAP-ENV:Body" : XmlSoapEnvBody
+}
+
+export interface XmlResponse {
+  "SOAP:Envelope" ?: XmlSoapEnvelope
+  "SOAP-ENV:Envelope" ?: XmlSoapEnvEnvelope
+}
+
 export interface PatientDetails {
   nhsNumber: string
   prefix: string
@@ -32,7 +79,6 @@ export interface PatientDetails {
 
 export interface PrescriptionDetails {
   prescriptionId: string
-  prescriptionType: "acute" | "repeat" | "erd"
   issueDate: string
   treatmentType: string
   maxRepeats: number | null

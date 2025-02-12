@@ -16,7 +16,6 @@ import {PrescriptionSearchResults} from "./types"
 // given: string X
 // family: string X
 // prescriptionId: string X
-// prescriptionType: string X? double check
 // issueDate: string X
 // treatmentType: string ?? what is the mapping
 // maxRepeats: number | null ? proposed field does
