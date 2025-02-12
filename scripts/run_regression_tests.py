@@ -44,11 +44,7 @@ def get_headers():
 
 
 def generate_unique_run_id(length=15):
-    characters = string.ascii_uppercase + string.digits
-    num_char = len(characters)
-    indexes = [random.randint(0, num_char-1) for _ in range(num_char)]
-
-    return "".join([characters[i] for i in indexes])
+    return "".join(random.choices(string.ascii_uppercase + string.digits, k=length))
 
 
 def generate_timestamp():
