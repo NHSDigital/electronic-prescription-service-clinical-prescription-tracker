@@ -147,6 +147,50 @@ export const expectedFhirResponse = {
           }
         ]
       }
+    },
+    {
+      resource: {
+        resourceType: "Task",
+        id: "9AD427-A83008-2E461K",
+        status: "completed",
+        intent: "order",
+        authoredOn: "20240213105241",
+        groupIdentifier: {
+          system: "https://fhir.nhs.uk/Id/task-group",
+          value: "Prescription upload successful"
+        },
+        businessStatus: {
+          coding: [
+            {
+              code: "0001",
+              display: "Task Status",
+              system: "https://fhir.nhs.uk/CodeSystem/task-status"
+            }
+          ]
+        },
+        owner: {
+          identifier: {
+            system: "https://fhir.nhs.uk/Id/pharmacy",
+            value: "A83008"
+          }
+        },
+        output: [
+          {
+            type: {
+              coding: [
+                {
+                  code: "medication-dispense",
+                  system: "https://fhir.nhs.uk/CodeSystem/task-output",
+                  display: "Medication Dispense Reference"
+                }
+              ]
+            },
+            valueReference: {
+              reference: "MedicationDispense/9AD427-A83008-2E461K"
+            }
+          }
+        ]
+      }
     }
   ]
 }

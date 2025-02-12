@@ -25,7 +25,11 @@ describe("MedicationRequest Mapper", () => {
           quantity: "20",
           dosageInstructions: "Take one tablet twice a day"
         }
-      ]
+      ],
+      message: "Test message",
+      sentDateTime: "20250204151017",
+      newStatusCode: "0001",
+      organizationName: "A19999"
     }
 
     // Map the extracted data to MedicationRequest objects
@@ -71,7 +75,11 @@ describe("MedicationRequest Mapper", () => {
       daysSupply: "28",
       organizationSummaryObjective: "TESTORG",
       prescriptionType: "0101",
-      productLineItems: [] // No product items
+      productLineItems: [], // No product items
+      message: "Test message",
+      sentDateTime: "20250204151017",
+      newStatusCode: "0001",
+      organizationName: "A19999"
     }
 
     // Map the extracted data to MedicationRequest objects

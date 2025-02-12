@@ -27,6 +27,14 @@ export interface FhirResponseParams {
 
   // Prescriber Information
   prescriptionType: string // MedicationRequest.courseOfTherapyType
+
+  // Task
+  // Message History
+  message: string // Task resources referencing the prescription from Task.groupIdentifier
+  sentDateTime: string // Task.authoredOn
+  newStatusCode: string // 	Task.businessStatus for current Task
+  organizationName: string //Task.owner(.reference).identifier
+
 }
 
 /**
@@ -65,6 +73,20 @@ export function extractPrescriptionData(spineResponseData: string) {
     return lineItems
   })
 
+  // Extract filteredHistory items
+  const filteredHistoryItems = Array.from(soap_response.getElementsByTagName("filteredHistory")).map(item => ({
+    SCN: parseInt(item.getElementsByTagName("SCN")?.item(0)?.textContent || "0", 10),
+    message: item.getElementsByTagName("message")?.item(0)?.textContent || "",
+    sentDateTime: item.getElementsByTagName("timestamp")?.item(0)?.textContent || "",
+    newStatusCode: item.getElementsByTagName("toStatus")?.item(0)?.textContent || "",
+    organizationName: item.getElementsByTagName("agentPersonOrgCode")?.item(0)?.textContent || ""
+  }))
+
+  // Find the filteredHistory item with the highest SCN
+  const latestHistory = filteredHistoryItems.reduce((latest, current) => {
+    return current.SCN > latest.SCN ? current : latest
+  }, filteredHistoryItems[0] || {})
+
   return {
     // The acknowledgement element's typeCode
     acknowledgementTypeCode: acknowledgementTypeCode || "",
@@ -87,6 +109,12 @@ export function extractPrescriptionData(spineResponseData: string) {
     productLineItems,
 
     // Prescriber Information
-    prescriptionType: soap_response.getElementsByTagName("prescriptionType").item(0)?.textContent || ""
+    prescriptionType: soap_response.getElementsByTagName("prescriptionType").item(0)?.textContent || "",
+
+    // Task Details
+    message: latestHistory.message,
+    sentDateTime: latestHistory.sentDateTime,
+    newStatusCode: latestHistory.newStatusCode,
+    organizationName: latestHistory.organizationName
   }
 }

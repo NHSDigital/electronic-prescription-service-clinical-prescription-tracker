@@ -1,4 +1,4 @@
-import {RequestGroup, MedicationRequest} from "fhir/r4"
+import {RequestGroup, MedicationRequest, Task} from "fhir/r4"
 import {FhirResponseParams} from "./prescriptionDataParser"
 
 // Maps the extracted data to the FHIR RequestGroup resource
@@ -57,4 +57,50 @@ export function mapMedicationRequest(extractedData: FhirResponseParams): Array<M
       }
     ]
   }))
+}
+
+// Maps the extracted data to the Task resource
+export function mapTask(extractedData: FhirResponseParams): Task {
+  return {
+    resourceType: "Task",
+    id: extractedData.prescriptionID, // Map the prescriptionID as Task ID
+    status: "completed", // Assume task is completed (can be updated based on your status logic)
+    intent: "order", // Assuming order, adjust as necessary
+    groupIdentifier: {
+      system: "https://fhir.nhs.uk/Id/task-group",
+      value: extractedData.message
+    },
+    authoredOn: extractedData.sentDateTime || "",
+    owner: {
+      identifier: {
+        system: "https://fhir.nhs.uk/Id/pharmacy",
+        value: extractedData.organizationName
+      }
+    },
+    businessStatus: {
+      coding: [
+        {
+          system: "https://fhir.nhs.uk/CodeSystem/task-status",
+          code: extractedData.newStatusCode,
+          display: "Task Status"
+        }
+      ]
+    },
+    output: [
+      {
+        type: {
+          coding: [
+            {
+              system: "https://fhir.nhs.uk/CodeSystem/task-output",
+              code: "medication-dispense",
+              display: "Medication Dispense Reference"
+            }
+          ]
+        },
+        valueReference: {
+          reference: `MedicationDispense/${extractedData.prescriptionID}` // Map to MedicationDispense resource
+        }
+      }
+    ]
+  }
 }
