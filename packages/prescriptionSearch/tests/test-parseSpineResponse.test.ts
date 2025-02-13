@@ -7,11 +7,12 @@ import {
   multipleErd,
   multipleRepeat,
   multipleMixed,
+  notFound,
   error
 } from "./exampleSpineResponses/examples"
 
 describe("Test parseSpineResponse", () => {
-  it("It returns a correctly parsed response when spine returns a single acute prescription", async () => {
+  it("returns a correctly parsed response and no error when spine returns a single acute prescription", async () => {
     const expected = [
       {
         nhsNumber: "5839945242",
@@ -30,10 +31,10 @@ describe("Test parseSpineResponse", () => {
       }
     ]
     const result = parseSpineResponse(singleAcute)
-    expect(result).toEqual(expected)
+    expect(result).toEqual([expected, false])
   })
 
-  it("It returns a correctly parsed response when spine returns a multiple acute prescriptions", async () => {
+  it("returns a correctly parsed response and no error when spine returns multiple acute prescriptions", async () => {
     const expected = [
       {
         nhsNumber: "5839945242",
@@ -67,10 +68,10 @@ describe("Test parseSpineResponse", () => {
       }
     ]
     const result = parseSpineResponse(multipleAcute)
-    expect(result).toEqual(expected)
+    expect(result).toEqual([expected, false])
   })
 
-  it("It returns a correctly parsed response when spine returns a single erd prescription", async () => {
+  it("It returns a correctly parsed response and no error when spine returns a single erd prescription", async () => {
     const expected = [
       {
         nhsNumber: "9732730684",
@@ -179,10 +180,10 @@ describe("Test parseSpineResponse", () => {
       }
     ]
     const result = parseSpineResponse(singleErd)
-    expect(result).toEqual(expected)
+    expect(result).toEqual([expected, false])
   })
 
-  it("It returns a correctly parsed response when spine returns a multiple erd prescriptions", async () => {
+  it("returns a correctly parsed response and no error when spine returns multiple erd prescriptions", async () => {
     const expected = [
       {
         nhsNumber: "4669955012",
@@ -397,10 +398,10 @@ describe("Test parseSpineResponse", () => {
     ]
     const result = parseSpineResponse(multipleErd)
     console.log(result)
-    expect(result).toEqual(expected)
+    expect(result).toEqual([expected, false])
   })
 
-  it("It returns a correctly parsed response when spine returns a single repeat prescription", async () => {
+  it("returns a correctly parsed response and no error when spine returns a single repeat prescription", async () => {
     const expected = [
       {
         nhsNumber: "9732730684",
@@ -419,10 +420,10 @@ describe("Test parseSpineResponse", () => {
       }
     ]
     const result = parseSpineResponse(singleRepeat)
-    expect(result).toEqual(expected)
+    expect(result).toEqual([expected, false])
   })
 
-  it("It returns a correctly parsed response when spine returns a multiple repeat prescriptions", async () => {
+  it("returns a correctly parsed response and no error when spine returns multiple repeat prescriptions", async () => {
     const expected = [
       {
         nhsNumber: "9732730684",
@@ -456,10 +457,10 @@ describe("Test parseSpineResponse", () => {
       }
     ]
     const result = parseSpineResponse(multipleRepeat)
-    expect(result).toEqual(expected)
+    expect(result).toEqual([expected, false])
   })
 
-  it("It returns a correctly parsed response when spine returns a multiple mixed prescriptions", async () => {
+  it("returns a correctly parsed response and no error when spine returns multiple mixed prescriptions", async () => {
     const expected = [
       {
         nhsNumber: "5839945242",
@@ -598,13 +599,17 @@ describe("Test parseSpineResponse", () => {
       }
     ]
     const result = parseSpineResponse(multipleMixed)
-    expect(result).toEqual(expected)
+    expect(result).toEqual([expected, false])
   })
 
   // todo: test for not found
+  it("It returns undefined and no error when spine returns not found", async () => {
+    const result = parseSpineResponse(notFound)
+    expect(result).toEqual([undefined, false])
+  })
 
-  it("It returns undefined when spine returns an error", async () => {
+  it("It returns undefined and an error when spine returns an error", async () => {
     const result = parseSpineResponse(error)
-    expect(result).toEqual(undefined)
+    expect(result).toEqual([undefined, true])
   })
 })

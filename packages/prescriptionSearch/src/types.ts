@@ -2,7 +2,7 @@ type XmlStringValue = {
   "@_value": string
 }
 
-interface XmlIssueDetail {
+export interface XmlIssueDetail {
   instanceNumber: XmlStringValue
   prescriptionStatus: XmlStringValue
   prescCancPending: XmlStringValue

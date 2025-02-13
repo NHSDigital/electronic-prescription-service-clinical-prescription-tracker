@@ -6,6 +6,7 @@ import {
   XmlSearchResults,
   PrescriptionSearchResults,
   XmlPrescription,
+  XmlIssueDetail,
   PatientDetails,
   PrescriptionDetails,
   IssueDetails,
@@ -16,28 +17,29 @@ import {
 
 // TODO - logging
 
-export const parseSpineResponse = (spineResponse: string): PrescriptionSearchResults | undefined => {
+export const parseSpineResponse = (spineResponse: string): [
+  searchResult: PrescriptionSearchResults | undefined, error: boolean] => {
   const xmlParser: XMLParser = new XMLParser({ignoreAttributes: false})
   const xmlResponse = xmlParser.parse(spineResponse) as XmlResponse
 
-  // todo: pick out no results
   const xmlSoapBody: XmlSoapBody | undefined = xmlResponse["SOAP:Envelope"]?.["SOAP:Body"]
   if (!xmlSoapBody) {
-    // TODO: error stuff
-    console.log("error")
-    const thing = parseErrorResponse(xmlResponse) // do something with this
-    return thing
+    const error: string = parseErrorResponse(xmlResponse)
+    if (error === "Prescription not found"){
+      return [undefined, false] // should this be an error or empty results?
+    }
+    return [undefined, true]
   }
 
   const xmlSearchResults: XmlSearchResults = xmlSoapBody.prescriptionSearchResponse
     .PRESCRIPTIONSEARCHRESPONSE_SM01.ControlActEvent.subject.searchResults
-  let xmlPrescriptions = xmlSearchResults.prescription
+  let xmlPrescriptions: XmlPrescription | Array<XmlPrescription> = xmlSearchResults.prescription
   if (!Array.isArray(xmlPrescriptions)) {
     xmlPrescriptions = [xmlPrescriptions]
   }
 
   let prescriptionSearchResults: PrescriptionSearchResults = parsePrescriptions(xmlPrescriptions)
-  return prescriptionSearchResults
+  return [prescriptionSearchResults, false]
 }
 
 const parsePrescriptions = (xmlPrescriptions: Array<XmlPrescription>): PrescriptionSearchResults => {
@@ -60,7 +62,7 @@ const parsePrescriptions = (xmlPrescriptions: Array<XmlPrescription>): Prescript
         null : Number(xmlPrescription.maxRepeats["@_value"])
     }
 
-    let xmlIssues = xmlPrescription.issueDetail
+    let xmlIssues: XmlIssueDetail | Array<XmlIssueDetail> = xmlPrescription.issueDetail
     if (!Array.isArray(xmlIssues)) {
       xmlIssues = [xmlIssues]
     }
@@ -87,17 +89,14 @@ const convertXmlBool = (value: string): boolean => {
   return value === "True" ? true : false
 }
 
-const parseErrorResponse = (responseXml: XmlResponse)=> {
+const parseErrorResponse = (responseXml: XmlResponse): string => {
   const xmlSoapEnvBody: XmlSoapEnvBody | undefined = responseXml["SOAP-ENV:Envelope"]?.["SOAP-ENV:Body"]
   if (!xmlSoapEnvBody){
-    // log
-    return
+    return "Unknown Error"
   }
 
   const xmlError: XmlError = xmlSoapEnvBody.prescriptionSearchResponse
     .MCCI_IN010000UK13.acknowledgement.acknowledgementDetail.code
 
-  if (xmlError["@_displayName"] === "Prescription not found") {
-    // do something
-  }
+  return xmlError["@_displayName"]
 }
