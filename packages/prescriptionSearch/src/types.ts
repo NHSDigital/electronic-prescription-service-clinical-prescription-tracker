@@ -94,4 +94,8 @@ export interface IssueDetails {
 
 export type Prescription = PatientDetails & PrescriptionDetails & IssueDetails
 
-export type PrescriptionSearchResults = Array<Prescription>
+export enum TreatmentType {
+  ACUTE = "0001",
+  REPEAT = "0002",
+  ERD = "0003"
+}

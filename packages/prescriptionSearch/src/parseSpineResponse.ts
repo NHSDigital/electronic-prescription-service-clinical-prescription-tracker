@@ -4,7 +4,6 @@ import {
   XmlResponse,
   XmlSoapBody,
   XmlSearchResults,
-  PrescriptionSearchResults,
   XmlPrescription,
   XmlIssueDetail,
   PatientDetails,
@@ -18,7 +17,7 @@ import {
 // TODO - logging
 
 export const parseSpineResponse = (spineResponse: string): [
-  searchResult: PrescriptionSearchResults | undefined, error: boolean] => {
+  prescriptions: Array<Prescription> | undefined, error: boolean] => {
   const xmlParser: XMLParser = new XMLParser({ignoreAttributes: false})
   const xmlResponse = xmlParser.parse(spineResponse) as XmlResponse
 
@@ -26,7 +25,7 @@ export const parseSpineResponse = (spineResponse: string): [
   if (!xmlSoapBody) {
     const error: string = parseErrorResponse(xmlResponse)
     if (error === "Prescription not found"){
-      return [undefined, false] // should this be an error or empty results?
+      return [undefined, false] // TODO: Should no results be an error response, or an empty results response?
     }
     return [undefined, true]
   }
@@ -38,12 +37,12 @@ export const parseSpineResponse = (spineResponse: string): [
     xmlPrescriptions = [xmlPrescriptions]
   }
 
-  let prescriptionSearchResults: PrescriptionSearchResults = parsePrescriptions(xmlPrescriptions)
-  return [prescriptionSearchResults, false]
+  let parsedPrescriptions: Array<Prescription> = parsePrescriptions(xmlPrescriptions)
+  return [parsedPrescriptions, false]
 }
 
-const parsePrescriptions = (xmlPrescriptions: Array<XmlPrescription>): PrescriptionSearchResults => {
-  let parsedPrescriptions: PrescriptionSearchResults = []
+const parsePrescriptions = (xmlPrescriptions: Array<XmlPrescription>): Array<Prescription> => {
+  let parsedPrescriptions: Array<Prescription> = []
 
   for (const xmlPrescription of xmlPrescriptions) {
     const patientDetails: PatientDetails = {
