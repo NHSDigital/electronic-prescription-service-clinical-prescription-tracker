@@ -70,6 +70,8 @@ on:
         required: false
       PROXYGEN_ROLE:
         required: false
+      REGRESSION_TESTS_PEM:
+        required: true
 
 jobs:
   release_code_and_api:
@@ -217,3 +219,14 @@ jobs:
           git add _data/${{ inputs.APIGEE_ENVIRONMENT }}_deployments.csv
           git commit -m 'update releases for ${{ inputs.APIGEE_ENVIRONMENT }}'
           parallel --retries 10 --delay 3 ::: "git pull --rebase && git push"
+
+  regression_tests:
+    name: Regression Tests
+    uses: ./.github/workflows/run_regression_tests.yml
+    if: ${{ always() && !failure() && !cancelled() }}
+    needs: [release_code_and_api]
+    with:
+      ENVIRONMENT: ${{ inputs.TARGET_ENVIRONMENT }}
+      VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}
+    secrets:
+      REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
