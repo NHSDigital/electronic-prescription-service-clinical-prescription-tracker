@@ -99,3 +99,18 @@ export enum TreatmentType {
   REPEAT = "0002",
   ERD = "0003"
 }
+
+export interface SearchError {
+  status: string,
+  severity: "error" | "fatal",
+  description: string
+}
+
+interface FhirErrorDetails {
+  code: string
+  detailsCode: string
+  detailsDisplay: string
+}
+export interface ErrorMap {
+  [key: string]: FhirErrorDetails
+}

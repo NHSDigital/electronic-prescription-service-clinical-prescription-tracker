@@ -11,13 +11,14 @@ import {
   IssueDetails,
   Prescription,
   XmlSoapEnvBody,
-  XmlError
+  XmlError,
+  SearchError
 } from "./types"
 
 // TODO - logging
 
 export const parseSpineResponse = (spineResponse: string): [
-  prescriptions: Array<Prescription> | undefined, error: boolean] => {
+  prescriptions: Array<Prescription> | undefined, error: SearchError | undefined] => {
   const xmlParser: XMLParser = new XMLParser({ignoreAttributes: false})
   const xmlResponse = xmlParser.parse(spineResponse) as XmlResponse
 
@@ -25,9 +26,9 @@ export const parseSpineResponse = (spineResponse: string): [
   if (!xmlSoapBody) {
     const error: string = parseErrorResponse(xmlResponse)
     if (error === "Prescription not found"){
-      return [undefined, false] // TODO: Should no results be an error response, or an empty results response?
+      return [undefined, undefined] // TODO: Should no results be an error response, or an empty results response?
     }
-    return [undefined, true]
+    return [undefined, {status: "500", severity: "error", description: error}]
   }
 
   const xmlSearchResults: XmlSearchResults = xmlSoapBody.prescriptionSearchResponse
@@ -38,7 +39,7 @@ export const parseSpineResponse = (spineResponse: string): [
   }
 
   let parsedPrescriptions: Array<Prescription> = parsePrescriptions(xmlPrescriptions)
-  return [parsedPrescriptions, false]
+  return [parsedPrescriptions, undefined]
 }
 
 const parsePrescriptions = (xmlPrescriptions: Array<XmlPrescription>): Array<Prescription> => {

@@ -6,10 +6,16 @@ import {
   Extension,
   RequestGroup,
   Patient,
-  RequestGroupAction
+  RequestGroupAction,
+  OperationOutcome
 } from "fhir/r4"
 
-import {Prescription, TreatmentType} from "./types"
+import {
+  ErrorMap,
+  Prescription,
+  SearchError,
+  TreatmentType
+} from "./types"
 
 // TODO: logging
 // TODO: tests
@@ -19,7 +25,7 @@ export const generateFhirResponse = (prescriptions: Array<Prescription>): Bundle
   const responseBundle: Bundle = {
     resourceType: "Bundle",
     type: "searchset",
-    total: prescriptions.length,
+    total: prescriptions.length, // TODO: if Patient bundle is ok, should this count include the Patient bundle?
     entry: []
   }
 
@@ -131,4 +137,52 @@ export const generateFhirResponse = (prescriptions: Array<Prescription>): Bundle
   }
 
   return responseBundle
+}
+
+const errorMap: ErrorMap = {
+  400: {
+    code: "400 Bad Request",
+    detailsCode: "BAD_REQUEST",
+    detailsDisplay: "400: The Server was unable to process the request."
+  },
+  404: {
+    code: "404 Not Found",
+    detailsCode: "NOT_FOUND",
+    detailsDisplay: "404: The Server was unable to find the specified resource."
+  },
+  500: {
+    code: "500 Internal Server Error",
+    detailsCode: "SERVER_ERROR",
+    detailsDisplay: "500: The Server has encountered an error processing the request."
+  },
+  504: {
+    code: "504 Gateway Timeout",
+    detailsCode: "TIMEOUT",
+    detailsDisplay: "504: The server has timed out whilst processing the request."
+  }
+}
+
+export const generateFhirErrorResponse = (error: SearchError) => {
+  // TODO: should this be in a bundle or stand alone?
+  const operationOutcome: OperationOutcome = {
+    resourceType: "OperationOutcome",
+    meta: {
+      lastUpdated: new Date().toISOString()
+    },
+    issue: [{
+      code: errorMap[error.status].code,
+      severity: error.severity,
+      diagnostics: error.description,
+      details: {
+        coding: [{
+          //TODO: do we also need to include SpineErrorOrWarningCode codes?
+          system: "https://fhir.nhs.uk/CodeSystem/http-error-codes",
+          code: errorMap[error.status].detailsCode,
+          display: errorMap[error.status].detailsDisplay
+        }]
+      }
+    }]
+  }
+
+  return operationOutcome
 }
