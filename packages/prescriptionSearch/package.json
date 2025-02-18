@@ -15,8 +15,8 @@
     "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
   },
   "dependencies": {
-    "@nhsdigital/eps-spine-client": "^2.1.22",
     "@middy/http-header-normalizer": "^6.0.0",
+    "@nhsdigital/eps-spine-client": "^2.1.23",
     "json-schema-to-ts": "^3.1.0"
   },
   "devDependencies": {
