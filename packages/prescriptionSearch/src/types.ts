@@ -1,3 +1,27 @@
+export interface SearchError {
+  status: string,
+  severity: "error" | "fatal",
+  description: string
+}
+
+export interface QueryStringSearchParameters {
+  prescriptionID?: string
+  nhsNumber?: string
+  creationDateRange? : {
+    lowDate?: string,
+    highDate?: string
+  }
+}
+
+export interface HeaderSearchParameters {
+  requestId?: string
+  correlationId?: string
+  organizationId?: string
+  sdsRoleProfileId?: string
+  sdsId?: string
+  jobRoleCode?: string
+}
+
 type XmlStringValue = {
   "@_value": string
 }
@@ -100,13 +124,8 @@ export enum TreatmentType {
   ERD = "0003"
 }
 
-export interface SearchError {
-  status: string,
-  severity: "error" | "fatal",
-  description: string
-}
-
 interface FhirErrorDetails {
+  status: string
   code: string
   detailsCode: string
   detailsDisplay: string

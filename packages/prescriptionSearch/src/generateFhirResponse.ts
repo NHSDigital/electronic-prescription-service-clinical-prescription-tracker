@@ -18,7 +18,7 @@ import {
 } from "./types"
 
 // TODO: logging
-// TODO: tests
+// TODO: Finalize FHIR
 
 export const generateFhirResponse = (prescriptions: Array<Prescription>): Bundle => {
   // Create the Bundle wrapper
@@ -141,48 +141,67 @@ export const generateFhirResponse = (prescriptions: Array<Prescription>): Bundle
 
 const errorMap: ErrorMap = {
   400: {
-    code: "400 Bad Request",
+    status: "400 Bad Request",
+    code: "value",
     detailsCode: "BAD_REQUEST",
     detailsDisplay: "400: The Server was unable to process the request."
   },
   404: {
-    code: "404 Not Found",
+    status: "404 Not Found",
+    code: "not-found",
     detailsCode: "NOT_FOUND",
     detailsDisplay: "404: The Server was unable to find the specified resource."
   },
   500: {
-    code: "500 Internal Server Error",
+    status: "500 Internal Server Error",
+    code: "exception",
     detailsCode: "SERVER_ERROR",
     detailsDisplay: "500: The Server has encountered an error processing the request."
   },
   504: {
-    code: "504 Gateway Timeout",
+    status: "504 Gateway Timeout",
+    code: "timeout",
     detailsCode: "TIMEOUT",
     detailsDisplay: "504: The server has timed out whilst processing the request."
   }
 }
 
-export const generateFhirErrorResponse = (error: SearchError) => {
-  // TODO: should this be in a bundle or stand alone?
-  const operationOutcome: OperationOutcome = {
-    resourceType: "OperationOutcome",
-    meta: {
-      lastUpdated: new Date().toISOString()
-    },
-    issue: [{
-      code: errorMap[error.status].code,
-      severity: error.severity,
-      diagnostics: error.description,
-      details: {
-        coding: [{
-          //TODO: do we also need to include SpineErrorOrWarningCode codes?
-          system: "https://fhir.nhs.uk/CodeSystem/http-error-codes",
-          code: errorMap[error.status].detailsCode,
-          display: errorMap[error.status].detailsDisplay
-        }]
-      }
-    }]
+export const generateFhirErrorResponse = (errors: Array<SearchError>): Bundle => {
+  const responseBundle: Bundle ={
+    resourceType: "Bundle",
+    // TODO: what type? transaction-response doesnt feel right, searchset like the ok bundle? collection?
+    type: "searchset",
+    entry: []
   }
 
-  return operationOutcome
+  for(const error of errors){
+    const operationOutcome: BundleEntry<OperationOutcome> = {
+      response: {
+        status: errorMap[error.status].status,
+        outcome: {
+          resourceType: "OperationOutcome",
+          meta: {
+            lastUpdated: new Date().toISOString()
+          },
+          issue: [{
+            code: errorMap[error.status].code,
+            severity: error.severity,
+            diagnostics: error.description,
+            details: {
+              coding: [{
+              //TODO: do we also need to use/include SpineErrorOrWarningCode codes?
+                system: "https://fhir.nhs.uk/CodeSystem/http-error-codes",
+                code: errorMap[error.status].detailsCode,
+                display: errorMap[error.status].detailsDisplay
+              }]
+            }
+          }]
+        }
+      }
+    }
+
+    responseBundle.entry?.push(operationOutcome)
+  }
+
+  return responseBundle
 }

@@ -10,7 +10,6 @@ import {
   RequestGroupAction
 } from "fhir/r4"
 import {Prescription, SearchError} from "../src/types"
-import {inspect} from "util"
 
 const mockUUID = jest.fn()
 
@@ -748,10 +747,20 @@ describe("Test generateFhirResponse", () => {
 
 describe("Test generateFhirErrorResponse", () => {
   beforeEach(() => {
-    jest.resetModules()
-    jest.clearAllMocks()
     jest.useFakeTimers()
     jest.setSystemTime(new Date("2015-04-09T12:34:56.001Z"))
+  })
+
+  it("returns a searchset bundle when called", async () => {
+    const expected: Bundle = {
+      resourceType: "Bundle",
+      type: "searchset",
+      total: 0,
+      entry: []
+    }
+
+    const actual: Bundle = generateFhirResponse([])
+    expect(actual).toEqual(expected)
   })
 
   it("returns a correct OperationOutcome when called with an error", async () => {
@@ -762,29 +771,134 @@ describe("Test generateFhirErrorResponse", () => {
     }
 
     const expected = {
-      resourceType: "OperationOutcome",
-      meta: {lastUpdated: "2015-04-09T12:34:56.001Z"},
-      issue: [
-        {
-          code: "500 Internal Server Error",
-          severity: "error",
-          diagnostics: "An unknown error",
-          details: {
-            coding: [
-              {
+      response:{
+        status: "500 Internal Server Error",
+        outcome: {
+          resourceType: "OperationOutcome",
+          meta: {
+            lastUpdated: "2015-04-09T12:34:56.001Z"
+          },
+          issue: [{
+            code: "exception",
+            severity: "error",
+            diagnostics: "An unknown error",
+            details: {
+              coding: [{
                 system: "https://fhir.nhs.uk/CodeSystem/http-error-codes",
                 code: "SERVER_ERROR",
                 display: "500: The Server has encountered an error processing the request."
-              }
-            ]
+              }]
+            }
+          }]
+        }
+      }
+    }
+    const actualEntries = generateFhirErrorResponse([mockError]).entry as Array<BundleEntry>
+    const actualOperationOutcome = actualEntries[0] as BundleEntry<OperationOutcome>
+    expect(actualOperationOutcome).toEqual(expected)
+  })
+
+  it("it returns a correct bundle of resources when called with a list errors", async () => {
+    const mockErrors: Array<SearchError> = [
+      {
+        status: "400",
+        severity: "error",
+        description: "Header A missing"
+      },
+      {
+        status: "400",
+        severity: "error",
+        description: "Header B missing"
+      },
+      {
+        status: "400",
+        severity: "error",
+        description: "Header C missing"
+      }
+    ]
+
+    const expected = {
+      resourceType: "Bundle",
+      type: "searchset",
+      entry: [
+        {
+          response: {
+            status: "400 Bad Request",
+            outcome: {
+              resourceType: "OperationOutcome",
+              meta: {lastUpdated: "2015-04-09T12:34:56.001Z"},
+              issue: [
+                {
+                  code: "value",
+                  severity: "error",
+                  diagnostics: "Header A missing",
+                  details: {
+                    coding: [
+                      {
+                        system: "https://fhir.nhs.uk/CodeSystem/http-error-codes",
+                        code: "BAD_REQUEST",
+                        display: "400: The Server was unable to process the request."
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          response: {
+            status: "400 Bad Request",
+            outcome: {
+              resourceType: "OperationOutcome",
+              meta: {lastUpdated: "2015-04-09T12:34:56.001Z"},
+              issue: [
+                {
+                  code: "value",
+                  severity: "error",
+                  diagnostics: "Header B missing",
+                  details: {
+                    coding: [
+                      {
+                        system: "https://fhir.nhs.uk/CodeSystem/http-error-codes",
+                        code: "BAD_REQUEST",
+                        display: "400: The Server was unable to process the request."
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          response: {
+            status: "400 Bad Request",
+            outcome: {
+              resourceType: "OperationOutcome",
+              meta: {lastUpdated: "2015-04-09T12:34:56.001Z"},
+              issue: [
+                {
+                  code: "value",
+                  severity: "error",
+                  diagnostics: "Header C missing",
+                  details: {
+                    coding: [
+                      {
+                        system: "https://fhir.nhs.uk/CodeSystem/http-error-codes",
+                        code: "BAD_REQUEST",
+                        display: "400: The Server was unable to process the request."
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
           }
         }
       ]
     }
-
-    const actual = generateFhirErrorResponse(mockError) as OperationOutcome
-
-    console.log(inspect(actual, {showHidden: false, depth: null, colors: true}))
+    const actual = generateFhirErrorResponse(mockErrors) as Bundle
     expect(actual).toEqual(expected)
   })
 })

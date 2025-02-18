@@ -9,8 +9,12 @@ import {APIGatewayEvent, APIGatewayProxyResult} from "aws-lambda"
 import middy from "@middy/core"
 import {PrescriptionSearchParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
 import {bundleSchema, outcomeSchema} from "./schema/response"
-import {BundleEntry} from "fhir/r4"
-import {badRequest} from "./utils/responses"
+import {Bundle} from "fhir/r4"
+// import {badRequest} from "./utils/responses"
+import {validateRequest} from "./validateRequest"
+import {Prescription, SearchError} from "./types"
+import {generateFhirErrorResponse, generateFhirResponse} from "./generateFhirResponse"
+import {parseSpineResponse} from "./parseSpineResponse"
 
 export const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
 export const logger = new Logger({serviceName: "prescriptionSearch", logLevel: LOG_LEVEL})
@@ -21,74 +25,58 @@ type HandlerParams = {
   spineClient: SpineClient
 }
 
+// TODO: logging
+// TODO: tests
 export const apiGatewayHandler = async (
-  params: HandlerParams,
-  event: APIGatewayEvent
-): Promise<APIGatewayProxyResult> => {
-  const inboundHeaders = event.headers
+  params: HandlerParams, event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
+  const [searchParameters, validationErrors]:
+    [PrescriptionSearchParams, Array<SearchError>] = validateRequest(event)
 
-  let responseEntries: Array<BundleEntry> = []
-  const requestId = getRequiredHeader(event, "x-request-id", responseEntries)
-  const organizationId = getRequiredHeader(event, "nhsd-organization-uuid", responseEntries)
-  const sdsRoleProfileId = getRequiredHeader(event, "nhsd-session-urid", responseEntries)
-  const sdsId = getRequiredHeader(event, "nhsd-identity-uuid", responseEntries)
-  const jobRoleCode = getRequiredHeader(event, "nhsd-session-jobrole", responseEntries)
-
-  const prescriptionId = event.queryStringParameters?.prescriptionId ?? ""
-
-  // Handle missing prescriptionId
-  // if (!prescriptionId) {
-  //   const errorMessage = "Missing required query parameter: prescriptionId"
-  //   logger.error(errorMessage)
-  //   const entry: BundleEntry = badRequest(errorMessage)
-  //   responseEntries.push(entry)
-  // }
-
-  if (responseEntries.length > 0) {
+  if(validationErrors){
+    const errorResponseBundle: Bundle = generateFhirErrorResponse(validationErrors)
     return {
       statusCode: 400,
-      body: JSON.stringify(responseEntries)
+      body: JSON.stringify(errorResponseBundle)
     }
   }
 
-  const nhsNumber = event.queryStringParameters?.nhsNumber
-  const lowDate = event.queryStringParameters?.lowDate
-  const highDate = event.queryStringParameters?.highDate
-  const creationDateRange = (lowDate || highDate) ? {lowDate, highDate} : undefined
+  try{
+    const spineResponse = await params.spineClient.prescriptionSearch(event.headers, searchParameters)
+    const [prescriptions, searchError]: [Array<Prescription> | undefined,
+      SearchError | undefined] = parseSpineResponse(spineResponse.data)
 
-  const prescriptionSearchParams: PrescriptionSearchParams = {
-    requestId,
-    prescriptionId,
-    organizationId,
-    sdsRoleProfileId,
-    sdsId,
-    jobRoleCode,
-    nhsNumber,
-    creationDateRange
-  }
+    if (searchError){
+      const errorResponseBundle: Bundle = generateFhirErrorResponse([searchError])
+      return {
+        statusCode: 500,
+        body: JSON.stringify(errorResponseBundle)
+      }
+    }
 
-  const response = await params.spineClient.prescriptionSearch(inboundHeaders, prescriptionSearchParams)
+    if (!prescriptions && !searchError){
+      // TODO: what about no results?
+      return {
+        statusCode: 200,
+        body: ""
+      }
+    }
 
-  return {
-    statusCode: response.status,
-    body: response.data
+    const responseBundle = generateFhirResponse(prescriptions as Array<Prescription>)
+    return{
+      statusCode: 200,
+      body: JSON.stringify(responseBundle)
+    }
+  } catch {
+    // catch all error
+    const errorResponseBundle: Bundle = generateFhirErrorResponse(
+      [{status: "500", severity: "fatal", description: "Unknown error."}])
+    return {
+      statusCode: 500,
+      body: JSON.stringify(errorResponseBundle)
+    }
   }
 }
 
-export function getRequiredHeader(
-  event: APIGatewayEvent,
-  headerName: string,
-  responseEntries: Array<BundleEntry>): string {
-  const headerValue = event.headers[headerName]
-  if (!headerValue) {
-    const errorMessage = `Missing or empty ${headerName} header`
-    logger.error(errorMessage)
-    const entry: BundleEntry = badRequest(errorMessage)
-    responseEntries.push(entry)
-    return ""
-  }
-  return headerValue
-}
 export const newHandler = (params: HandlerParams) => {
   const newHandler = middy((event: APIGatewayEvent) => apiGatewayHandler(params, event))
     .use(injectLambdaContext(logger, {clearState: true}))
