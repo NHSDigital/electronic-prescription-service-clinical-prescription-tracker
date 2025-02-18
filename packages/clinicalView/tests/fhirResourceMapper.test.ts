@@ -29,7 +29,8 @@ describe("MedicationRequest Mapper", () => {
       message: "Test message",
       sentDateTime: "20250204151017",
       newStatusCode: "0001",
-      organizationName: "A19999"
+      organizationName: "A19999",
+      nominatedPerformer: "FU123"
     }
 
     // Map the extracted data to MedicationRequest objects
@@ -79,7 +80,8 @@ describe("MedicationRequest Mapper", () => {
       message: "Test message",
       sentDateTime: "20250204151017",
       newStatusCode: "0001",
-      organizationName: "A19999"
+      organizationName: "A19999",
+      nominatedPerformer: "FU123"
     }
 
     // Map the extracted data to MedicationRequest objects

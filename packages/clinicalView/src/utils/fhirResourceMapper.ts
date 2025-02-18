@@ -27,7 +27,19 @@ export function mapRequestGroup(extractedData: FhirResponseParams): RequestGroup
           display: "Prescription Type"
         }
       ]
-    }
+    },
+    /**
+     * Maps the author of the request group (Practitioner or Device)
+     */
+    author: extractedData.nominatedPerformer
+      ? {
+        reference: `Practitioner/${extractedData.nominatedPerformer}`, // Reference to Practitioner
+        identifier: {
+          system: "https://fhir.nhs.uk/Id/Practitioner",
+          value: extractedData.nominatedPerformer
+        }
+      }
+      : undefined // If no author is available, omit the field
   }
 }
 

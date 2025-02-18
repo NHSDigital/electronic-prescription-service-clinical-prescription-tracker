@@ -35,11 +35,13 @@ export interface FhirResponseParams {
   newStatusCode: string // 	Task.businessStatus for current Task
   organizationName: string //Task.owner(.reference).identifier
 
+  // Nominated Dispenser Information
+  nominatedPerformer: string // RequestGroup.author
 }
 
 /**
  * Extracts prescription data from the Spine SOAP response
-*/
+ */
 export function extractPrescriptionData(spineResponseData: string) {
   const parser = new DOMParser()
   const soap_response = parser.parseFromString(spineResponseData, "text/xml")
@@ -73,7 +75,7 @@ export function extractPrescriptionData(spineResponseData: string) {
     return lineItems
   })
 
-  // Extract filteredHistory items
+  // Extract filteredHistory elements (Message History)
   const filteredHistoryItems = Array.from(soap_response.getElementsByTagName("filteredHistory")).map(item => ({
     SCN: parseInt(item.getElementsByTagName("SCN")?.item(0)?.textContent || "0", 10),
     message: item.getElementsByTagName("message")?.item(0)?.textContent || "",
@@ -88,6 +90,11 @@ export function extractPrescriptionData(spineResponseData: string) {
   }, filteredHistoryItems[0] || {})
 
   return {
+    /* eslint-disable max-len */
+    /**
+     * Elements are grouped in line with the documentation on the Confluence
+     * https://nhsd-confluence.digital.nhs.uk/display/APIMC/%27To-be%27+Clinical+Prescription+Tracker+Data+Items+with+EPS+FHIR+Translation
+     */
     // The acknowledgement element's typeCode
     acknowledgementTypeCode: acknowledgementTypeCode || "",
 
@@ -111,10 +118,14 @@ export function extractPrescriptionData(spineResponseData: string) {
     // Prescriber Information
     prescriptionType: soap_response.getElementsByTagName("prescriptionType").item(0)?.textContent || "",
 
-    // Task Details
+    // Message History (Task Details)
     message: latestHistory.message,
     sentDateTime: latestHistory.sentDateTime,
     newStatusCode: latestHistory.newStatusCode,
-    organizationName: latestHistory.organizationName
+    organizationName: latestHistory.organizationName,
+
+    // Nominated Dispenser Information
+    nominatedPerformer: soap_response.getElementsByTagName("nominatedPerformer").item(0)?.textContent || ""
+
   }
 }

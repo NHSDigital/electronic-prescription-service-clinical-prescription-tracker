@@ -25,6 +25,13 @@ export const expectedFhirResponse = {
               display: "Prescription Type"
             }
           ]
+        },
+        author: {
+          identifier: {
+            system: "https://fhir.nhs.uk/Id/Practitioner",
+            value: "VNE51"
+          },
+          reference: "Practitioner/VNE51"
         }
       }
     },
