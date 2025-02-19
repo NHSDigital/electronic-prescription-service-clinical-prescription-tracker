@@ -6,7 +6,9 @@ import {DOMParser} from "@xmldom/xmldom"
 export interface FhirResponseParams {
   acknowledgementTypeCode: string
 
-  // RequestGroup
+  /**
+   * RequestGroup
+   */
   // Prescription Information Banner
   prescriptionID: string // RequestGroup.groupIdentifier
   statusCode: string // RequestGroup.extension.businessStatus
@@ -17,7 +19,9 @@ export interface FhirResponseParams {
   // Dispenser
   organizationSummaryObjective: string //RequestGroup.action.participant
 
-  // MedicationRequest
+  /**
+   * MedicationRequest
+   */
   // Prescribed Items
   productLineItems: Array<{
     medicationName: string // MedicationRequest.medicationCodeableConcept
@@ -28,7 +32,9 @@ export interface FhirResponseParams {
   // Prescriber Information
   prescriptionType: string // MedicationRequest.courseOfTherapyType
 
-  // Task
+  /**
+   * Task
+   */
   // Message History
   message: string // Task resources referencing the prescription from Task.groupIdentifier
   sentDateTime: string // Task.authoredOn
