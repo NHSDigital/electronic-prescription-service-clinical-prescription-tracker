@@ -161,6 +161,24 @@ export const requestGroupSchema = {
       },
       required: ["system", "value"],
       additionalProperties: false
+    },
+    extension: {
+      type: "array",
+      description: "Contains additional information that is not part of the basic definition of the RequestGroup.",
+      items: {
+        type: "object",
+        description: "An extension representing additional information.",
+        properties: {
+          url: {
+            type: "string",
+            description: "The URL that defines the extension."
+          },
+          valueString: {
+            type: "string",
+            description: "The status of the prescription."
+          }
+        }
+      }
     }
   },
   required: ["resourceType", "status", "intent"],

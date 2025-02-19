@@ -39,7 +39,16 @@ export function mapRequestGroup(extractedData: FhirResponseParams): RequestGroup
           value: extractedData.nominatedPerformer
         }
       }
-      : undefined // If no author is available, omit the field
+      : undefined, // If no author is available, omit the field
+    /**
+     * Adds the business status as an extension
+     */
+    extension: [
+      {
+        url: "http://hl7.org/fhir/StructureDefinition/businessStatus",
+        valueString: extractedData.statusCode
+      }
+    ]
   }
 }
 

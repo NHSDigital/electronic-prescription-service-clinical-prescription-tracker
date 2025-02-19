@@ -32,7 +32,13 @@ export const expectedFhirResponse = {
             value: "VNE51"
           },
           reference: "Practitioner/VNE51"
-        }
+        },
+        extension: [
+          {
+            url: "http://hl7.org/fhir/StructureDefinition/businessStatus",
+            valueString: "0001"
+          }
+        ]
       }
     },
     {
