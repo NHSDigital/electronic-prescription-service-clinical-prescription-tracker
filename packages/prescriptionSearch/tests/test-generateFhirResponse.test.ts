@@ -1,5 +1,7 @@
 /* eslint-disable max-len */
 import {jest} from "@jest/globals"
+
+// Types
 import {
   Bundle,
   BundleEntry,
@@ -12,7 +14,6 @@ import {
 import {Prescription, SearchError} from "../src/types"
 
 const mockUUID = jest.fn()
-
 jest.unstable_mockModule("crypto", () => {
   return {
     randomUUID: mockUUID
@@ -767,7 +768,7 @@ describe("Test generateFhirErrorResponse", () => {
     const mockError: SearchError = {
       status: "500",
       severity: "error",
-      description: "An unknown error"
+      description: "An unknown error."
     }
 
     const expected = {
@@ -781,7 +782,7 @@ describe("Test generateFhirErrorResponse", () => {
           issue: [{
             code: "exception",
             severity: "error",
-            diagnostics: "An unknown error",
+            diagnostics: "An unknown error.",
             details: {
               coding: [{
                 system: "https://fhir.nhs.uk/CodeSystem/http-error-codes",
@@ -803,17 +804,17 @@ describe("Test generateFhirErrorResponse", () => {
       {
         status: "400",
         severity: "error",
-        description: "Header A missing"
+        description: "Header A missing."
       },
       {
         status: "400",
         severity: "error",
-        description: "Header B missing"
+        description: "Header B missing."
       },
       {
         status: "400",
         severity: "error",
-        description: "Header C missing"
+        description: "Header C missing."
       }
     ]
 
@@ -831,7 +832,7 @@ describe("Test generateFhirErrorResponse", () => {
                 {
                   code: "value",
                   severity: "error",
-                  diagnostics: "Header A missing",
+                  diagnostics: "Header A missing.",
                   details: {
                     coding: [
                       {
@@ -856,7 +857,7 @@ describe("Test generateFhirErrorResponse", () => {
                 {
                   code: "value",
                   severity: "error",
-                  diagnostics: "Header B missing",
+                  diagnostics: "Header B missing.",
                   details: {
                     coding: [
                       {
@@ -881,7 +882,7 @@ describe("Test generateFhirErrorResponse", () => {
                 {
                   code: "value",
                   severity: "error",
-                  diagnostics: "Header C missing",
+                  diagnostics: "Header C missing.",
                   details: {
                     coding: [
                       {

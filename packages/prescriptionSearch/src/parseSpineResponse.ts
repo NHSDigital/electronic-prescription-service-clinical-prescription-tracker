@@ -1,5 +1,6 @@
 import {XMLParser} from "fast-xml-parser"
 
+// Types
 import {
   XmlResponse,
   XmlSoapBody,
@@ -92,7 +93,7 @@ const convertXmlBool = (value: string): boolean => {
 const parseErrorResponse = (responseXml: XmlResponse): string => {
   const xmlSoapEnvBody: XmlSoapEnvBody | undefined = responseXml["SOAP-ENV:Envelope"]?.["SOAP-ENV:Body"]
   if (!xmlSoapEnvBody){
-    return "Unknown Error"
+    return "Unknown Error."
   }
 
   const xmlError: XmlError = xmlSoapEnvBody.prescriptionSearchResponse

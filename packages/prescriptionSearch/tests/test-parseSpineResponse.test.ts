@@ -8,9 +8,11 @@ import {
   multipleRepeat,
   multipleMixed,
   notFound,
-  error
+  error,
+  invalid
 } from "./exampleSpineResponses/examples"
 
+// TODO: types
 describe("Test parseSpineResponse", () => {
   it("returns a correctly parsed response and no error when spine returns a single acute prescription", async () => {
     const expected = [
@@ -603,12 +605,12 @@ describe("Test parseSpineResponse", () => {
   })
 
   // todo: test for not found
-  it("It returns undefined and no error when spine returns not found", async () => {
+  it("returns undefined and no error when spine returns not found", async () => {
     const result = parseSpineResponse(notFound)
     expect(result).toEqual([undefined, undefined])
   })
 
-  it("It returns undefined and an error when spine returns an error", async () => {
+  it("returns undefined and an error when spine returns an error", async () => {
     const result = parseSpineResponse(error)
     expect(result).toEqual([
       undefined,
@@ -616,6 +618,18 @@ describe("Test parseSpineResponse", () => {
         status: "500",
         severity: "error",
         description: "hl7:{interactionId}/hl7:ControlActEvent/hl7:author is missing, empty or invalid"
+      }
+    ])
+  })
+
+  it("returns undefined and an error when spine returns an invalid response", async () => {
+    const result = parseSpineResponse(invalid)
+    expect(result).toEqual([
+      undefined,
+      {
+        status: "500",
+        severity: "error",
+        description: "Unknown Error."
       }
     ])
   })

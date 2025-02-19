@@ -1,6 +1,7 @@
+// Types
 import {APIGatewayEvent, APIGatewayProxyEventHeaders, APIGatewayProxyEventQueryStringParameters} from "aws-lambda"
-import {SearchError, QueryStringSearchParameters, HeaderSearchParameters} from "./types"
 import {PrescriptionSearchParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
+import {SearchError, QueryStringSearchParameters, HeaderSearchParameters} from "./types"
 
 export const validateRequest = (event: APIGatewayEvent): [PrescriptionSearchParams, Array<SearchError>] => {
   const [queryStringSearchParameters, queryStringParameterErrors]:

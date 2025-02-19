@@ -69,7 +69,7 @@ export const apiGatewayHandler = async (
   } catch {
     // catch all error
     const errorResponseBundle: Bundle = generateFhirErrorResponse(
-      [{status: "500", severity: "fatal", description: "Unknown error."}])
+      [{status: "500", severity: "fatal", description: "Unknown Error."}])
     return {
       statusCode: 500,
       body: JSON.stringify(errorResponseBundle)

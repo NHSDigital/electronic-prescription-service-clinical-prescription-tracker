@@ -1,5 +1,6 @@
 import {randomUUID, UUID} from "crypto"
 
+// Types
 import {
   Bundle,
   BundleEntry,
@@ -9,7 +10,6 @@ import {
   RequestGroupAction,
   OperationOutcome
 } from "fhir/r4"
-
 import {
   ErrorMap,
   Prescription,
