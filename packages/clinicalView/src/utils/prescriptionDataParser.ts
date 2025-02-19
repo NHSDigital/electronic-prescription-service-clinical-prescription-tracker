@@ -13,8 +13,8 @@ export interface FhirResponseParams {
   prescriptionID: string // RequestGroup.groupIdentifier
   statusCode: string // RequestGroup.extension.businessStatus
   typeCode: string // RequestGroup.code
-  instanceNumber: string // RequestGroup.identifier
-  maxRepeats: string // RequestGroup.extension.numberOfRepeatsAllowed
+  instanceNumber: number // RequestGroup.extension.numberOfRepeatsIssued
+  maxRepeats: number // RequestGroup.extension.numberOfRepeatsAllowed
   daysSupply: string // RequestGroup.action.timing (this is a separate action from dispense)
   // Dispenser
   organizationSummaryObjective: string //RequestGroup.action.participant
@@ -110,8 +110,9 @@ export function extractPrescriptionData(spineResponseData: string) {
     typeCode: soap_response
       .getElementsByTagName("prescriptionTreatmentType")
       .item(0)?.textContent || "",
-    instanceNumber: soap_response.getElementsByTagName("instanceNumber").item(0)?.textContent || "",
-    maxRepeats: soap_response.getElementsByTagName("maxrepeats").item(0)?.textContent || "",
+    instanceNumber: parseInt(soap_response.getElementsByTagName("instanceNumber").item(0)?.textContent || "0", 10),
+    maxRepeats: parseInt(soap_response.getElementsByTagName("maxrepeats").item(0)?.textContent || "0", 10),
+
     daysSupply: soap_response.getElementsByTagName("daysSupply").item(0)?.textContent || "",
 
     // Dispenser Information

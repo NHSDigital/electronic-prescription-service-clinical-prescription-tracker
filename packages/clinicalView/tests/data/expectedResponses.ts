@@ -11,12 +11,6 @@ export const expectedFhirResponse = {
           system: "https://fhir.nhs.uk/Id/prescription-group",
           value: "9AD427-A83008-2E461K"
         },
-        identifier: [
-          {
-            system: "https://fhir.nhs.uk/Id/prescription-order-number",
-            value: "1"
-          }
-        ],
         code: {
           coding: [
             {
@@ -35,8 +29,21 @@ export const expectedFhirResponse = {
         },
         extension: [
           {
-            url: "http://hl7.org/fhir/StructureDefinition/businessStatus",
+            url: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
             valueString: "0001"
+          },
+          {
+            url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
+            extension: [
+              {
+                url: "numberOfRepeatsIssued",
+                valueInteger: 1
+              },
+              {
+                url: "numberOfRepeatsAllowed",
+                valueInteger: 0
+              }
+            ]
           }
         ]
       }

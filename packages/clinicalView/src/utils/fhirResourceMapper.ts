@@ -13,12 +13,6 @@ export function mapRequestGroup(extractedData: FhirResponseParams): RequestGroup
       system: "https://fhir.nhs.uk/Id/prescription-group",
       value: extractedData.prescriptionID
     },
-    identifier: [
-      {
-        system: "https://fhir.nhs.uk/Id/prescription-order-number",
-        value: extractedData.instanceNumber
-      }
-    ],
     code: {
       coding: [
         {
@@ -40,13 +34,32 @@ export function mapRequestGroup(extractedData: FhirResponseParams): RequestGroup
         }
       }
       : undefined, // If no author is available, omit the field
+
     /**
-     * Adds the business status as an extension
+     * Extension field for additional information not part of the basic definition.
+     * Includes custom extensions to provide specific details about the prescription.
      */
     extension: [
       {
-        url: "http://hl7.org/fhir/StructureDefinition/businessStatus",
+        // Extension representing the EPS Task Business Status
+        url: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
         valueString: extractedData.statusCode
+      },
+      {
+        // Extension representing the EPS Repeat Information
+        url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
+        extension: [
+          {
+            // Nested extension for the number of repeats issued
+            url: "numberOfRepeatsIssued",
+            valueInteger: extractedData.instanceNumber
+          },
+          {
+            // Nested extension for the number of repeats allowed
+            url: "numberOfRepeatsAllowed",
+            valueInteger: extractedData.maxRepeats
+          }
+        ]
       }
     ]
   }
