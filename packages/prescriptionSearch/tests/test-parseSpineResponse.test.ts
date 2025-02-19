@@ -1,3 +1,5 @@
+import {Logger} from "@aws-lambda-powertools/logger"
+
 import {parseSpineResponse} from "../src/parseSpineResponse"
 import {
   singleAcute,
@@ -12,10 +14,14 @@ import {
   invalid
 } from "./exampleSpineResponses/examples"
 
-// TODO: types
+// Types
+import {ParsedSpineResponse, Prescription} from "../src/types"
+
+let logger= new Logger({serviceName: "prescriptionSearch", logLevel: "DEBUG"})
+
 describe("Test parseSpineResponse", () => {
   it("returns a correctly parsed response and no error when spine returns a single acute prescription", async () => {
-    const expected = [
+    const expected: Array<Prescription> = [
       {
         nhsNumber: "5839945242",
         prefix: "MS",
@@ -32,12 +38,12 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       }
     ]
-    const result = parseSpineResponse(singleAcute)
+    const result: ParsedSpineResponse = parseSpineResponse(singleAcute, logger)
     expect(result).toEqual([expected, undefined])
   })
 
   it("returns a correctly parsed response and no error when spine returns multiple acute prescriptions", async () => {
-    const expected = [
+    const expected: Array<Prescription> = [
       {
         nhsNumber: "5839945242",
         prefix: "MS",
@@ -69,12 +75,12 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       }
     ]
-    const result = parseSpineResponse(multipleAcute)
+    const result: ParsedSpineResponse = parseSpineResponse(multipleAcute, logger)
     expect(result).toEqual([expected, undefined])
   })
 
   it("It returns a correctly parsed response and no error when spine returns a single erd prescription", async () => {
-    const expected = [
+    const expected: Array<Prescription> = [
       {
         nhsNumber: "9732730684",
         prefix: "MISS",
@@ -181,12 +187,12 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       }
     ]
-    const result = parseSpineResponse(singleErd)
+    const result: ParsedSpineResponse = parseSpineResponse(singleErd, logger)
     expect(result).toEqual([expected, undefined])
   })
 
   it("returns a correctly parsed response and no error when spine returns multiple erd prescriptions", async () => {
-    const expected = [
+    const expected: Array<Prescription> = [
       {
         nhsNumber: "4669955012",
         prefix: "MISS",
@@ -398,13 +404,12 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       }
     ]
-    const result = parseSpineResponse(multipleErd)
-    console.log(result)
+    const result: ParsedSpineResponse = parseSpineResponse(multipleErd, logger)
     expect(result).toEqual([expected, undefined])
   })
 
   it("returns a correctly parsed response and no error when spine returns a single repeat prescription", async () => {
-    const expected = [
+    const expected: Array<Prescription> = [
       {
         nhsNumber: "9732730684",
         prefix: "MISS",
@@ -421,12 +426,12 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       }
     ]
-    const result = parseSpineResponse(singleRepeat)
+    const result: ParsedSpineResponse = parseSpineResponse(singleRepeat, logger)
     expect(result).toEqual([expected, undefined])
   })
 
   it("returns a correctly parsed response and no error when spine returns multiple repeat prescriptions", async () => {
-    const expected = [
+    const expected: Array<Prescription> = [
       {
         nhsNumber: "9732730684",
         prefix: "MISS",
@@ -458,12 +463,12 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       }
     ]
-    const result = parseSpineResponse(multipleRepeat)
+    const result: ParsedSpineResponse = parseSpineResponse(multipleRepeat, logger)
     expect(result).toEqual([expected, undefined])
   })
 
   it("returns a correctly parsed response and no error when spine returns multiple mixed prescriptions", async () => {
-    const expected = [
+    const expected: Array<Prescription> = [
       {
         nhsNumber: "5839945242",
         prefix: "MS",
@@ -600,18 +605,18 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       }
     ]
-    const result = parseSpineResponse(multipleMixed)
+    const result: ParsedSpineResponse = parseSpineResponse(multipleMixed, logger)
     expect(result).toEqual([expected, undefined])
   })
 
   // todo: test for not found
   it("returns undefined and no error when spine returns not found", async () => {
-    const result = parseSpineResponse(notFound)
+    const result: ParsedSpineResponse = parseSpineResponse(notFound, logger)
     expect(result).toEqual([undefined, undefined])
   })
 
   it("returns undefined and an error when spine returns an error", async () => {
-    const result = parseSpineResponse(error)
+    const result: ParsedSpineResponse = parseSpineResponse(error, logger)
     expect(result).toEqual([
       undefined,
       {
@@ -623,7 +628,7 @@ describe("Test parseSpineResponse", () => {
   })
 
   it("returns undefined and an error when spine returns an invalid response", async () => {
-    const result = parseSpineResponse(invalid)
+    const result: ParsedSpineResponse = parseSpineResponse(invalid, logger)
     expect(result).toEqual([
       undefined,
       {

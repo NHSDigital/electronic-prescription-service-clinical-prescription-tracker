@@ -117,6 +117,7 @@ export interface IssueDetails {
 }
 
 export type Prescription = PatientDetails & PrescriptionDetails & IssueDetails
+export type ParsedSpineResponse = [prescriptions: Array<Prescription> | undefined, error: SearchError | undefined]
 
 export enum TreatmentType {
   ACUTE = "0001",

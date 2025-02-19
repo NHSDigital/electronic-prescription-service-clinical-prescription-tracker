@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+import {Logger} from "@aws-lambda-powertools/logger"
 import {validateRequest} from "../src/validateRequest"
 
 // Types
@@ -6,6 +7,7 @@ import {APIGatewayProxyEvent, APIGatewayProxyEventHeaders, APIGatewayProxyEventQ
 import {PrescriptionSearchParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
 import {SearchError} from "../src/types"
 
+let logger= new Logger({serviceName: "prescriptionSearch", logLevel: "DEBUG"})
 const mockHeaders: APIGatewayProxyEventHeaders = {
   "x-request-id": "REQ-123-456-789",
   "nhsd-organization-uuid": "ORG-123-456-789",
@@ -18,6 +20,7 @@ const mockQueryStringParameters: APIGatewayProxyEventQueryStringParameters = {
 }
 
 describe("Test validateRequest", () => {
+
   it("returns correct search parameters when called with a valid request with prescriptionId", async () => {
     const mockEvent = {
       headers: mockHeaders,
@@ -35,7 +38,7 @@ describe("Test validateRequest", () => {
       jobRoleCode: "JOB-123-456-789"
     }
 
-    const [actualParameters]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(mockEvent)
+    const [actualParameters]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(mockEvent, logger)
     expect(actualParameters).toEqual(expected)
   })
 
@@ -56,7 +59,7 @@ describe("Test validateRequest", () => {
       jobRoleCode: "JOB-123-456-789"
     }
 
-    const [actualParameters]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(mockEvent)
+    const [actualParameters]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(mockEvent, logger)
     expect(actualParameters).toEqual(expectedParameters)
   })
 
@@ -79,7 +82,7 @@ describe("Test validateRequest", () => {
       jobRoleCode: "JOB-123-456-789"
     }
 
-    const [actualParameters]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(mockEvent)
+    const [actualParameters]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(mockEvent, logger)
     expect(actualParameters).toEqual(expected)
   })
 
@@ -102,7 +105,7 @@ describe("Test validateRequest", () => {
       jobRoleCode: "JOB-123-456-789"
     }
 
-    const [actualParameters]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(mockEvent)
+    const [actualParameters]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(mockEvent, logger)
     expect(actualParameters).toEqual(expected)
   })
 
@@ -126,7 +129,7 @@ describe("Test validateRequest", () => {
       jobRoleCode: "JOB-123-456-789"
     }
 
-    const [actualParameters]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(mockEvent)
+    const [actualParameters]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(mockEvent, logger)
     expect(actualParameters).toEqual(expected)
   })
 
@@ -142,7 +145,7 @@ describe("Test validateRequest", () => {
       description: "Missing required query string parameter; either prescriptionId or nhsNumber must be included."
     }]
 
-    const [, actualError]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(mockEvent)
+    const [, actualError]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(mockEvent, logger)
     expect(actualError).toEqual(expectedErrors)
   })
 
@@ -158,7 +161,7 @@ describe("Test validateRequest", () => {
       description: "Invalid query string parameters; only prescriptionId or nhsNumber must be provided, not both."
     }]
 
-    const [, actualError]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(mockEvent)
+    const [, actualError]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(mockEvent, logger)
     expect(actualError).toEqual(expectedErrors)
   })
 
@@ -175,7 +178,7 @@ describe("Test validateRequest", () => {
       description: "Missing required header, x-request-id."
     }]
 
-    const [, actualError]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(event)
+    const [, actualError]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(event, logger)
     expect(actualError).toEqual(expectedErrors)
   })
 
@@ -192,7 +195,7 @@ describe("Test validateRequest", () => {
       description: "Missing required header, nhsd-organization-uuid."
     }]
 
-    const [, actualError]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(event)
+    const [, actualError]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(event, logger)
     expect(actualError).toEqual(expectedErrors)
   })
 
@@ -209,7 +212,7 @@ describe("Test validateRequest", () => {
       description: "Missing required header, nhsd-session-urid."
     }]
 
-    const [, actualError]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(event)
+    const [, actualError]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(event, logger)
     expect(actualError).toEqual(expectedErrors)
   })
 
@@ -226,7 +229,7 @@ describe("Test validateRequest", () => {
       description: "Missing required header, nhsd-identity-uuid."
     }]
 
-    const [, actualError]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(event)
+    const [, actualError]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(event, logger)
     expect(actualError).toEqual(expectedErrors)
   })
 
@@ -243,7 +246,7 @@ describe("Test validateRequest", () => {
       description: "Missing required header, nhsd-session-jobrole."
     }]
 
-    const [, actualError]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(event)
+    const [, actualError]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(event, logger)
     expect(actualError).toEqual(expectedErrors)
   })
 
@@ -281,7 +284,7 @@ describe("Test validateRequest", () => {
       }
     ]
 
-    const [, actualError]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(event)
+    const [, actualError]: [PrescriptionSearchParams, Array<SearchError>] = validateRequest(event, logger)
     expect(actualError).toEqual(expectedErrors)
   })
 })

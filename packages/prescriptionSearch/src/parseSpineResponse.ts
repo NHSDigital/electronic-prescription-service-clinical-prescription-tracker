@@ -1,6 +1,7 @@
 import {XMLParser} from "fast-xml-parser"
 
 // Types
+import {Logger} from "@aws-lambda-powertools/logger"
 import {
   XmlResponse,
   XmlSoapBody,
@@ -13,25 +14,25 @@ import {
   Prescription,
   XmlSoapEnvBody,
   XmlError,
-  SearchError
+  ParsedSpineResponse
 } from "./types"
 
-// TODO - logging
-
-export const parseSpineResponse = (spineResponse: string): [
-  prescriptions: Array<Prescription> | undefined, error: SearchError | undefined] => {
+export const parseSpineResponse = (spineResponse: string, logger: Logger): ParsedSpineResponse => {
   const xmlParser: XMLParser = new XMLParser({ignoreAttributes: false})
   const xmlResponse = xmlParser.parse(spineResponse) as XmlResponse
 
+  logger.info("Parsing XML SOAP body...")
   const xmlSoapBody: XmlSoapBody | undefined = xmlResponse["SOAP:Envelope"]?.["SOAP:Body"]
   if (!xmlSoapBody) {
     const error: string = parseErrorResponse(xmlResponse)
     if (error === "Prescription not found"){
+      logger.info("No prescriptions found.")
       return [undefined, undefined] // TODO: Should no results be an error response, or an empty results response?
     }
     return [undefined, {status: "500", severity: "error", description: error}]
   }
 
+  logger.info("Parsing search results...")
   const xmlSearchResults: XmlSearchResults = xmlSoapBody.prescriptionSearchResponse
     .PRESCRIPTIONSEARCHRESPONSE_SM01.ControlActEvent.subject.searchResults
   let xmlPrescriptions: XmlPrescription | Array<XmlPrescription> = xmlSearchResults.prescription
@@ -39,6 +40,7 @@ export const parseSpineResponse = (spineResponse: string): [
     xmlPrescriptions = [xmlPrescriptions]
   }
 
+  logger.info("Parsing prescriptions...")
   let parsedPrescriptions: Array<Prescription> = parsePrescriptions(xmlPrescriptions)
   return [parsedPrescriptions, undefined]
 }

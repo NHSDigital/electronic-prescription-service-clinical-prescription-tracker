@@ -10,9 +10,8 @@ import middy from "@middy/core"
 import {PrescriptionSearchParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
 import {bundleSchema, outcomeSchema} from "./schema/response"
 import {Bundle} from "fhir/r4"
-// import {badRequest} from "./utils/responses"
 import {validateRequest} from "./validateRequest"
-import {Prescription, SearchError} from "./types"
+import {ParsedSpineResponse, Prescription, SearchError} from "./types"
 import {generateFhirErrorResponse, generateFhirResponse} from "./generateFhirResponse"
 import {parseSpineResponse} from "./parseSpineResponse"
 
@@ -25,15 +24,26 @@ type HandlerParams = {
   spineClient: SpineClient
 }
 
-// TODO: logging
 // TODO: tests
 export const apiGatewayHandler = async (
   params: HandlerParams, event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
+  logger.appendKeys({
+    "nhsd-correlation-id": event.headers?.["nhsd-correlation-id"],
+    "nhsd-request-id": event.headers?.["nhsd-request-id"],
+    "x-correlation-id": event.headers?.["x-correlation-id"],
+    "apigw-request-id": event.requestContext.requestId
+  })
+
+  logger.info("Validating request...")
   const [searchParameters, validationErrors]:
-    [PrescriptionSearchParams, Array<SearchError>] = validateRequest(event)
+    [PrescriptionSearchParams, Array<SearchError>] = validateRequest(event, logger)
 
   if(validationErrors){
+    logger.error("Error validating request.")
+    logger.info("Generating FHIR error response...")
     const errorResponseBundle: Bundle = generateFhirErrorResponse(validationErrors)
+
+    logger.info("Returning FHIR error response.")
     return {
       statusCode: 400,
       body: JSON.stringify(errorResponseBundle)
@@ -41,12 +51,18 @@ export const apiGatewayHandler = async (
   }
 
   try{
+    logger.info("Calling Spine prescription search interaction...")
     const spineResponse = await params.spineClient.prescriptionSearch(event.headers, searchParameters)
-    const [prescriptions, searchError]: [Array<Prescription> | undefined,
-      SearchError | undefined] = parseSpineResponse(spineResponse.data)
+
+    logger.info("Parsing Spine Response...")
+    const [prescriptions, searchError]: ParsedSpineResponse = parseSpineResponse(spineResponse.data, logger)
 
     if (searchError){
+      logger.error("Spine response contained an error.", {error: searchError.description})
+      logger.info("Generating FHIR error response...")
       const errorResponseBundle: Bundle = generateFhirErrorResponse([searchError])
+
+      logger.info("Returning FHIR error response.")
       return {
         statusCode: 500,
         body: JSON.stringify(errorResponseBundle)
@@ -61,15 +77,22 @@ export const apiGatewayHandler = async (
       }
     }
 
+    logger.info("Generating FHIR response...")
     const responseBundle = generateFhirResponse(prescriptions as Array<Prescription>)
+
+    logger.info("Retuning FHIR response.")
     return{
       statusCode: 200,
       body: JSON.stringify(responseBundle)
     }
   } catch {
     // catch all error
+    logger.error("An unknown error occurred whilst processing the request")
+    logger.info("Generating FHIR error response...")
     const errorResponseBundle: Bundle = generateFhirErrorResponse(
       [{status: "500", severity: "fatal", description: "Unknown Error."}])
+
+    logger.info("Returning FHIR error response.")
     return {
       statusCode: 500,
       body: JSON.stringify(errorResponseBundle)
