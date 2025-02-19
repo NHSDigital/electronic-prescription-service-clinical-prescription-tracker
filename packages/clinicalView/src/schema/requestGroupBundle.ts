@@ -125,26 +125,26 @@ export const medicationRequestSchema = {
 
 export const requestGroupSchema = {
   type: "object",
-  description: "A group of related requests intended to be acted upon together.",
+  description: "A group of related requests, such as a prescription request group.",
   properties: {
     resourceType: {
       type: "string",
       enum: ["RequestGroup"],
-      description: "Indicates that this resource is a RequestGroup."
+      description: "Indicates that this resource is a RequestGroup, which groups related requests."
     },
     id: {
       type: "string",
-      description: "The unique identifier for this RequestGroup."
+      description: "A unique identifier for the RequestGroup."
     },
     status: {
       type: "string",
       enum: ["active", "completed"],
-      description: "The current status of the request group."
+      description: "The current status of the request group. 'Active' means in progress, 'completed' means finalized."
     },
     intent: {
       type: "string",
       enum: ["proposal"],
-      description: "The intent of the request group (e.g., proposal)."
+      description: "The intent of the request group, such as a 'proposal' or 'order'."
     },
     groupIdentifier: {
       type: "object",
@@ -152,11 +152,11 @@ export const requestGroupSchema = {
       properties: {
         system: {
           type: "string",
-          description: "The system that defines the identifier (e.g., FHIR URI)."
+          description: "The system that defines the identifier."
         },
         value: {
           type: "string",
-          description: "The actual identifier value."
+          description: "The identifier value, such as the prescription ID."
         }
       },
       required: ["system", "value"],
@@ -164,20 +164,43 @@ export const requestGroupSchema = {
     },
     extension: {
       type: "array",
-      description: "Contains additional information that is not part of the basic definition of the RequestGroup.",
+      description: "FHIR extensions for additional information not part of the basic definition.",
       items: {
         type: "object",
-        description: "An extension representing additional information.",
         properties: {
           url: {
             type: "string",
-            description: "The URL that defines the extension."
+            description: "Source of the definition for the extension code - a logical name or a URL."
           },
           valueString: {
             type: "string",
-            description: "The status of the prescription."
+            description: "Value of the extension when it is a simple string " +
+              "(used for ClaimMedicationDispenseReference)."
+          },
+          extension: {
+            type: "array",
+            description: "Nested extensions for complex data structures (used for EPS Repeat Information).",
+            items: {
+              type: "object",
+              properties: {
+                url: {
+                  type: "string",
+                  description: "Logical name or URL defining the extension " +
+                    "(e.g., numberOfRepeatsIssued or numberOfRepeatsAllowed)."
+                },
+                valueInteger: {
+                  type: "integer",
+                  description: "Integer value of the extension (e.g., number of repeats issued or allowed)."
+                }
+              },
+              required: ["url", "valueInteger"],
+              additionalProperties: false
+            }
           }
-        }
+        },
+        required: ["url"],
+        additionalProperties: false,
+        description: "Each extension represents additional information that supplements the base resource."
       }
     }
   },
