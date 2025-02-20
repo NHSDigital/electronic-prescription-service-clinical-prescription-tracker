@@ -4,6 +4,24 @@ export const expectedFhirResponse = {
   entry: [
     {
       resource: {
+        resourceType: "Patient",
+        identifier: [{
+          system: "https://fhir.nhs.uk/Id/nhs-number",
+          value: "9449304130"
+        }],
+        name: [{
+          prefix: ["MS"],
+          suffix: [""],
+          given: ["STACEY"],
+          family: "TWITCHETT"
+        }],
+        gender: "female",
+        birthDate: "1948-04-30"
+
+      }
+    },
+    {
+      resource: {
         resourceType: "RequestGroup",
         intent: "proposal",
         status: "active",
