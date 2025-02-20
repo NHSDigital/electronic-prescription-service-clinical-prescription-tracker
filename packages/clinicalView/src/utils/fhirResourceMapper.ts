@@ -1,30 +1,5 @@
-import {RequestGroup} from "fhir/r4"
-import {MedicationRequest} from "fhir/r4"
-import {Task} from "fhir/r4"
-import {Patient} from "fhir/r4"
+import {RequestGroup, MedicationRequest, Task} from "fhir/r4"
 import {FhirResponseParams} from "./prescriptionDataParser"
-
-/**
-* Maps the patient data
-*/
-export function mapPatient(extractedData: FhirResponseParams): Patient {
-  return {
-    resourceType: "Patient",
-    identifier: [{
-      system: "https://fhir.nhs.uk/Id/nhs-number",
-      value: extractedData.nhsNumber
-    }],
-    name: [{
-      prefix: [extractedData.prefix],
-      suffix: [extractedData.suffix],
-      given: [extractedData.given],
-      family: extractedData.family
-    }],
-    gender: extractedData.gender,
-    birthDate: extractedData.birthDate
-  }
-
-}
 
 /**
  * Maps the extracted data to the FHIR RequestGroup resource
