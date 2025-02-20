@@ -27,7 +27,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     const error: string = parseErrorResponse(xmlResponse)
     if (error === "Prescription not found"){
       logger.info("No prescriptions found.")
-      return [undefined, undefined] // TODO: Should no results be an error response, or an empty results response?
+      return [undefined, undefined] // TODO: Should no results be an error response, or an empty results response? - empty response
     }
     return [undefined, {status: "500", severity: "error", description: error}]
   }
@@ -62,7 +62,7 @@ const parsePrescriptions = (xmlPrescriptions: Array<XmlPrescription>): Array<Pre
       issueDate: xmlPrescription.prescribedDate["@_value"],
       treatmentType: xmlPrescription.prescriptionTreatmentType["@_value"],
       maxRepeats: xmlPrescription.maxRepeats["@_value"] === "None" ?
-        null : Number(xmlPrescription.maxRepeats["@_value"])
+        undefined : Number(xmlPrescription.maxRepeats["@_value"])
     }
 
     let xmlIssues: XmlIssueDetail | Array<XmlIssueDetail> = xmlPrescription.issueDetail

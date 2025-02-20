@@ -9,7 +9,7 @@ import {APIGatewayEvent, APIGatewayProxyResult} from "aws-lambda"
 import middy from "@middy/core"
 import {PrescriptionSearchParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
 import {bundleSchema, outcomeSchema} from "./schema/response"
-import {Bundle} from "fhir/r4"
+import {Bundle, OperationOutcome} from "fhir/r4"
 import {validateRequest} from "./validateRequest"
 import {ParsedSpineResponse, Prescription, SearchError} from "./types"
 import {generateFhirErrorResponse, generateFhirResponse} from "./generateFhirResponse"
@@ -41,7 +41,7 @@ export const apiGatewayHandler = async (
   if(validationErrors){
     logger.error("Error validating request.")
     logger.info("Generating FHIR error response...")
-    const errorResponseBundle: Bundle = generateFhirErrorResponse(validationErrors)
+    const errorResponseBundle: OperationOutcome = generateFhirErrorResponse(validationErrors)
 
     logger.info("Returning FHIR error response.")
     return {
@@ -60,7 +60,7 @@ export const apiGatewayHandler = async (
     if (searchError){
       logger.error("Spine response contained an error.", {error: searchError.description})
       logger.info("Generating FHIR error response...")
-      const errorResponseBundle: Bundle = generateFhirErrorResponse([searchError])
+      const errorResponseBundle: OperationOutcome = generateFhirErrorResponse([searchError])
 
       logger.info("Returning FHIR error response.")
       return {
@@ -70,7 +70,7 @@ export const apiGatewayHandler = async (
     }
 
     if (!prescriptions && !searchError){
-      // TODO: what about no results?
+      // TODO: what about no results? - empty bundle
       return {
         statusCode: 200,
         body: ""
@@ -78,7 +78,7 @@ export const apiGatewayHandler = async (
     }
 
     logger.info("Generating FHIR response...")
-    const responseBundle = generateFhirResponse(prescriptions as Array<Prescription>)
+    const responseBundle: Bundle = generateFhirResponse(prescriptions as Array<Prescription>)
 
     logger.info("Retuning FHIR response.")
     return{
@@ -89,7 +89,7 @@ export const apiGatewayHandler = async (
     // catch all error
     logger.error("An unknown error occurred whilst processing the request")
     logger.info("Generating FHIR error response...")
-    const errorResponseBundle: Bundle = generateFhirErrorResponse(
+    const errorResponseBundle: OperationOutcome = generateFhirErrorResponse(
       [{status: "500", severity: "fatal", description: "Unknown Error."}])
 
     logger.info("Returning FHIR error response.")

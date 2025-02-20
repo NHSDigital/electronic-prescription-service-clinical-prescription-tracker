@@ -1,3 +1,5 @@
+import {RequestGroup} from "fhir/r4"
+
 export interface SearchError {
   status: string,
   severity: "error" | "fatal",
@@ -105,7 +107,7 @@ export interface PrescriptionDetails {
   prescriptionId: string
   issueDate: string
   treatmentType: string
-  maxRepeats: number | null
+  maxRepeats: number | undefined
 }
 
 export interface IssueDetails {
@@ -118,6 +120,14 @@ export interface IssueDetails {
 
 export type Prescription = PatientDetails & PrescriptionDetails & IssueDetails
 export type ParsedSpineResponse = [prescriptions: Array<Prescription> | undefined, error: SearchError | undefined]
+
+export interface IntentMap {
+  [key: string]: RequestGroup["intent"]
+}
+
+export interface StatusDisplayMap {
+  [key: string]: string
+}
 
 export enum TreatmentType {
   ACUTE = "0001",
