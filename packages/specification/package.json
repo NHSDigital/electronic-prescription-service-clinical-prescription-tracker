@@ -18,8 +18,8 @@
     "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
   },
   "devDependencies": {
-    "@redocly/cli": "^1.28.2",
+    "@redocly/cli": "^1.29.0",
     "prescriptionSearch": "^1.0.0",
-    "tsx": "4.19.2"
+    "tsx": "4.19.3"
   }
 }

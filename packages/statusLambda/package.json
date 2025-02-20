@@ -15,14 +15,14 @@
   "dependencies": {
     "@aws-lambda-powertools/commons": "^2.11.0",
     "@aws-lambda-powertools/logger": "^2.13.1",
-    "@aws-lambda-powertools/parameters": "^2.13.1",
+    "@aws-lambda-powertools/parameters": "^2.14.0",
     "@middy/core": "^6.0.0",
     "@middy/input-output-logger": "^6.0.0",
-    "@nhs/fhir-middy-error-handler": "^2.1.19",
-    "@NHSDigital/eps-spine-client": "^2.1.21"
+    "@nhs/fhir-middy-error-handler": "^2.1.23",
+    "@NHSDigital/eps-spine-client": "^2.1.24"
   },
   "devDependencies": {
     "axios-mock-adapter": "^2.1.0",
-    "esbuild": "^0.24.2"
+    "esbuild": "^0.25.0"
   }
 }
