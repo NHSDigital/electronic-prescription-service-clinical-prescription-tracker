@@ -1,6 +1,7 @@
 import {randomUUID, UUID} from "crypto"
 
 // Types
+import {Logger} from "@aws-lambda-powertools/logger"
 import {
   Bundle,
   BundleEntry,
@@ -19,9 +20,6 @@ import {
   TreatmentType
 } from "./types"
 
-// TODO: logging
-// TODO: Finalize FHIR
-
 const intentMap: IntentMap = {
   [TreatmentType.ACUTE]: "order",
   [TreatmentType.REPEAT]: "instance-order",
@@ -38,8 +36,9 @@ const statusDisplayMap: StatusDisplayMap = {
   "0007": "Not Dispensed"
 }
 
-export const generateFhirResponse = (prescriptions: Array<Prescription>): Bundle => {
-  // Create the Bundle wrapper
+export const generateFhirResponse = (prescriptions: Array<Prescription>, logger: Logger): Bundle => {
+  // Generate the Bundle wrapper
+  logger.info("Generating the Bundle wrapper...")
   const responseBundle: Bundle = {
     resourceType: "Bundle",
     type: "searchset",
@@ -50,10 +49,10 @@ export const generateFhirResponse = (prescriptions: Array<Prescription>): Bundle
   // Generate UUID for Patient bundle entry for each RequestGroup to reference in subject
   const patientUuid: UUID = randomUUID()
 
-  // For each prescription/issue generate a RequestGroup entry
+  // For each prescription/issue generate a RequestGroup bundle entry
   for (const prescription of prescriptions){
-
-    // Generate Patient bundle entry when processing first prescription/issue
+    // Generate the Patient bundle entry when processing first prescription/issue
+    logger.info("Generating the Patient bundle entry...")
     if (responseBundle.entry?.length === 0){
       const patient: BundleEntry<Patient> = {
         fullUrl: `urn:uuid:${patientUuid}`,
@@ -77,7 +76,8 @@ export const generateFhirResponse = (prescriptions: Array<Prescription>): Bundle
       responseBundle.entry?.push(patient)
     }
 
-    // Generate RequestGroup bundle entry for the prescription/issue
+    // Generate the RequestGroup bundle entry for the prescription/issue
+    logger.info("Generating the RequestGroup bundle entry...", {prescriptionId: prescription.prescriptionId})
     const requestGroup:BundleEntry<RequestGroup> = {
       fullUrl: `urn:uuid:${randomUUID()}`,
       search: {
@@ -99,7 +99,9 @@ export const generateFhirResponse = (prescriptions: Array<Prescription>): Bundle
       }
     }
 
-    // Generate Prescription Status Extension
+    // Generate the PrescriptionStatus extension
+    logger.info("Generating the PrescriptionStatus extension...",
+      {prescriptionId: prescription.prescriptionId})
     const prescriptionStatus: Extension = {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
       extension: [{
@@ -113,8 +115,10 @@ export const generateFhirResponse = (prescriptions: Array<Prescription>): Bundle
     }
     requestGroup.resource?.extension?.push(prescriptionStatus)
 
-    // Generate Medication Repeat Information for non acute issue details
+    // Generate the RepeatInformation extension for non acute prescriptions/issues
     if (prescription.treatmentType !== TreatmentType.ACUTE){
+      logger.info("Generating the RepeatInformation extension for non acute prescription...",
+        {prescriptionId: prescription.prescriptionId})
       const medicationRepeatInformation: Extension = {
         url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
         extension: [
@@ -131,12 +135,13 @@ export const generateFhirResponse = (prescriptions: Array<Prescription>): Bundle
       requestGroup.resource?.extension?.push(medicationRepeatInformation)
     }
 
-    // Generate Pending Cancellation extensions
+    // Generate the PendingCancellation extension
+    logger.info("Generating the PendingCancellation extension...", {prescriptionId: prescription.prescriptionId})
     const pendingCancellation: Extension = {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PendingCancellation",
       extension: [
         {
-          url: "pendingCancellation",
+          url: "prescriptionPendingCancellation",
           valueBoolean: prescription.prescriptionPendingCancellation
         },
         {
@@ -178,7 +183,9 @@ const errorMap: ErrorMap = {
   }
 }
 
-export const generateFhirErrorResponse = (errors: Array<SearchError>): OperationOutcome => {
+export const generateFhirErrorResponse = (errors: Array<SearchError>, logger: Logger): OperationOutcome => {
+  logger.info("Generating the OperationOutcome wrapper...")
+  // Generate the OperationOutcome wrapper
   const operationOutcome: OperationOutcome = {
     resourceType: "OperationOutcome",
     meta: {
@@ -187,7 +194,9 @@ export const generateFhirErrorResponse = (errors: Array<SearchError>): Operation
     issue: []
   }
 
+  // For each error generate an issue
   for(const error of errors){
+    logger.info("Generating Issue for error...")
     const issue: OperationOutcomeIssue = {
       code: errorMap[error.status].code,
       severity: error.severity,

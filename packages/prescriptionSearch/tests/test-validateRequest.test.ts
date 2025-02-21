@@ -7,7 +7,7 @@ import {APIGatewayProxyEvent, APIGatewayProxyEventHeaders, APIGatewayProxyEventQ
 import {PrescriptionSearchParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
 import {SearchError} from "../src/types"
 
-let logger= new Logger({serviceName: "prescriptionSearch", logLevel: "DEBUG"})
+const logger: Logger = new Logger({serviceName: "prescriptionSearch", logLevel: "DEBUG"})
 const mockHeaders: APIGatewayProxyEventHeaders = {
   "x-request-id": "REQ-123-456-789",
   "nhsd-organization-uuid": "ORG-123-456-789",

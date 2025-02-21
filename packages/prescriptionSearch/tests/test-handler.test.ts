@@ -1,49 +1,81 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {expect, describe, test} from "@jest/globals"
-import {newHandler, LOG_LEVEL} from "../src/prescriptionSearch"
+import {jest} from "@jest/globals"
 import MockAdapter from "axios-mock-adapter"
 import axios from "axios"
-import {APIGatewayEvent, Context} from "aws-lambda"
 import {MiddyfiedHandler} from "@middy/core"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {createSpineClient} from "@NHSDigital/eps-spine-client"
 
-const mock = new MockAdapter(axios)
+// Types
+import {APIGatewayProxyEvent, APIGatewayProxyEventHeaders, Context} from "aws-lambda"
+import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
 
-const MOCK_EVENT: APIGatewayEvent = {
-  headers: {
-    "x-request-id": "foo",
-    "nhsd-organization-uuid": "bar",
-    "nhsd-session-urid": "baz",
-    "nhsd-identity-uuid": "foo2",
-    "nhsd-session-jobrole": "foo3"
+const prescriptionStatusUrl = `https://live/syncservice-pds/pds`
+const mockAxios = new MockAdapter(axios)
+const mockHeaders: APIGatewayProxyEventHeaders = {
+  "nhsd-correlation-id": "NHSD-COR-123-456",
+  "nhsd-request-id":  "NHSD-REQ-123-345",
+  "x-correlation-id": "COR-123-456",
+  "x-request-id": "REQ-123-456-789",
+  "nhsd-organization-uuid": "ORG-123-456-789",
+  "nhsd-session-urid": "SESS-123-456-789",
+  "nhsd-identity-uuid": "ID-123-456-789",
+  "nhsd-session-jobrole": "JOB-123-456-789"
+}
+const mockEvent = {
+  headers: mockHeaders,
+  queryStringParameters: {
+    prescriptionId : "PRES-1234-5678"
   },
-  queryStringParameters: {}
-} as unknown as APIGatewayEvent
+  requestContext: {
+    requestId: "API-GW-REQ-123"
+  }
+} as unknown as APIGatewayProxyEvent
+const mockContext = {} as unknown as Context
 
-// const prescriptionStatusUrl = `https://live/syncservice-pds/pds`
+let mockValidate = jest.fn()
+jest.unstable_mockModule("../src/validateRequest", () => {
+  return{
+    validateRequest: mockValidate
+  }
+})
 
-describe("Unit test for app handler", () => {
+const {newHandler} = await import("../src/prescriptionSearch")
+const {validateRequest} = await import("../src/validateRequest")
+
+describe("test handler", () => {
   let handler: MiddyfiedHandler
 
-  beforeEach(() => {
-    mock.reset()
+  beforeAll(() => {
     process.env.TargetSpineServer = "live"
-    const logger = new Logger({serviceName: "prescriptionSearch", logLevel: LOG_LEVEL})
-    const spineClient = createSpineClient(logger)
-    const HandlerParams = {logger, spineClient}
-    handler = newHandler(HandlerParams)
+  })
+  beforeEach(() => {
+    jest.resetAllMocks()
+    mockAxios.reset()
+    // TODO: can these be in the before all?
+    const logger: Logger = new Logger({serviceName: "prescriptionSearch", logLevel: "DEBUG"})
+    const spineClient: SpineClient = createSpineClient(logger)
+    handler = newHandler({logger, spineClient})
+  })
+
+  it("correctly configures the logger when called", async () => {})
+
+  it("validates the request when called", async () => {
+    mockValidate.mockReturnValue([{}, []])
+    mockAxios.onPost(prescriptionStatusUrl).reply(200, {data: "success"})
+
+    await handler(mockEvent, mockContext)
+    expect(validateRequest).toHaveBeenCalled()
   })
 
   // test("should successfully call the prescription search interaction", async () => {
-  //   mock.onPost(prescriptionStatusUrl).reply(200, {data: "success"})
+  //   mockAxios.onPost(prescriptionStatusUrl).reply(200, {data: "success"})
 
   //   const event = {...MOCK_EVENT, queryStringParameters: {prescriptionId: "12345"}} as unknown as APIGatewayEvent
   //   const context = {} as unknown as Context
 
   //   const response = await handler(event, context)
 
-  //   expect(mock.history.post.length).toBe(1)
+  //   expect(mockAxios.history.post.length).toBe(1)
   //   expect(response.body).toEqual({data: "success"})
   // })
 
@@ -53,7 +85,7 @@ describe("Unit test for app handler", () => {
 
   //   const response = await handler(event, context)
 
-  //   expect(mock.history.post.length).toBe(0)
+  //   expect(mockAxios.history.post.length).toBe(0)
   //   expect(response.statusCode).toEqual(400)
   //   expect(JSON.parse(response.body)).toEqual(
   //     [
@@ -73,56 +105,15 @@ describe("Unit test for app handler", () => {
   //   )
   // })
 
-  // test("should handle optional query parameters correctly", async () => {
-  //   const event = {
-  //     ...MOCK_EVENT,
-  //     queryStringParameters: {
-  //       prescriptionId: "6FC23E-A83008-FEE8BK",
-  //       nhsNumber: "9449304130",
-  //       lowDate: "2023-01-01",
-  //       highDate: "2023-12-31"
-  //     }
-  //   } as unknown as APIGatewayEvent
-
-  //   const context = {} as unknown as Context
-
-  //   mock.onPost(prescriptionStatusUrl).reply(200, {data: "success"})
-
-  //   const response = await handler(event, context)
-
-  //   expect(mock.history.post.length).toBe(1)
-  //   expect(response.body).toEqual({data: "success"})
+  // test("should initialize the logger with correct parameters", () => {
+  //   const logger = new Logger({serviceName: "prescriptionSearch", logLevel: LOG_LEVEL})
+  //   expect(logger).toBeDefined()
   // })
 
-  // test("should build creationDateRange when dates are provided", async () => {
-  //   const event = {
-  //     ...MOCK_EVENT,
-  //     queryStringParameters: {
-  //       prescriptionId: "6FC23E-A83008-FEE8BK",
-  //       lowDate: "2023-01-01",
-  //       highDate: "2023-12-31"
-  //     }
-  //   } as unknown as APIGatewayEvent
-
-  //   const context = {} as unknown as Context
-
-  //   mock.onPost(prescriptionStatusUrl).reply(200, {data: "success"})
-
-  //   const response = await handler(event, context)
-
-  //   expect(mock.history.post.length).toBe(1)
-  //   expect(response.body).toEqual({data: "success"})
+  // test("should create a spine client", () => {
+  //   const spineClient = createSpineClient(new Logger({serviceName: "prescriptionSearch", logLevel: LOG_LEVEL}))
+  //   expect(spineClient).toBeDefined()
   // })
-
-  test("should initialize the logger with correct parameters", () => {
-    const logger = new Logger({serviceName: "prescriptionSearch", logLevel: LOG_LEVEL})
-    expect(logger).toBeDefined()
-  })
-
-  test("should create a spine client", () => {
-    const spineClient = createSpineClient(new Logger({serviceName: "prescriptionSearch", logLevel: LOG_LEVEL}))
-    expect(spineClient).toBeDefined()
-  })
 
   // it("when x-request-id header is missing, expect 400 status code and relevant error message", async () => {
   //   const event = {...MOCK_EVENT, queryStringParameters: {prescriptionId: "12345"}} as unknown as APIGatewayEvent

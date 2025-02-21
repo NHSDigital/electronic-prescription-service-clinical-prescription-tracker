@@ -27,7 +27,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     const error: string = parseErrorResponse(xmlResponse)
     if (error === "Prescription not found"){
       logger.info("No prescriptions found.")
-      return [undefined, undefined] // TODO: Should no results be an error response, or an empty results response? - empty response
+      return [[], undefined]
     }
     return [undefined, {status: "500", severity: "error", description: error}]
   }

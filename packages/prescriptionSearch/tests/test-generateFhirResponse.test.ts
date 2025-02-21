@@ -1,4 +1,6 @@
 /* eslint-disable max-len */
+
+import {Logger} from "@aws-lambda-powertools/logger"
 import {jest} from "@jest/globals"
 
 // Types
@@ -7,11 +9,13 @@ import {
   BundleEntry,
   Extension,
   OperationOutcome,
+  OperationOutcomeIssue,
   Patient,
-  RequestGroup,
-  RequestGroupAction
+  RequestGroup
 } from "fhir/r4"
 import {Prescription, SearchError} from "../src/types"
+
+const logger: Logger = new Logger({serviceName: "prescriptionSearch", logLevel: "DEBUG"})
 
 const mockUUID = jest.fn()
 jest.unstable_mockModule("crypto", () => {
@@ -22,85 +26,113 @@ jest.unstable_mockModule("crypto", () => {
 
 const {generateFhirResponse, generateFhirErrorResponse} = await import("../src/generateFhirResponse")
 
+const mockAcutePrescription: Prescription = {
+  nhsNumber: "9732730684",
+  prefix: "MISS",
+  suffix: "",
+  family: "CORY",
+  given: "ETTA",
+  prescriptionId: "335C70-A83008-84058A",
+  issueDate: "20250204000000",
+  treatmentType: "0001",
+  maxRepeats: undefined,
+  issueNumber: 1,
+  status: "0001",
+  prescriptionPendingCancellation: false,
+  itemsPendingCancellation: false
+}
+
+const mockRepeatPrescription: Prescription = {
+  nhsNumber: "9732730684",
+  prefix: "MISS",
+  suffix: "",
+  family: "CORY",
+  given: "ETTA",
+  prescriptionId: "1CFAAA-A83008-BE0B3Y",
+  issueDate: "20250212122302",
+  treatmentType: "0002",
+  maxRepeats: 1,
+  issueNumber: 1,
+  status: "0001",
+  prescriptionPendingCancellation: false,
+  itemsPendingCancellation: false
+}
+
+const mockErdPrescription: Prescription = {
+  nhsNumber: "9732730684",
+  prefix: "MISS",
+  suffix: "",
+  given: "ETTA",
+  family: "CORY",
+  prescriptionId: "0131A6-A83008-DDFE5P",
+  issueDate: "20250205000000",
+  treatmentType: "0003",
+  maxRepeats: 7,
+  issueNumber: 1,
+  status: "0001",
+  prescriptionPendingCancellation: false,
+  itemsPendingCancellation: false
+}
+
 describe("Test generateFhirResponse", () => {
   beforeEach(() => {
     jest.useFakeTimers()
     jest.setSystemTime(new Date("2015-04-09T12:34:56.001Z"))
+    mockUUID.mockImplementationOnce(() => "PATIENT-123-567-890")
+      .mockImplementationOnce(() => "PRESCRIPTION-111-111-111")
+      .mockImplementationOnce(() => "PRESCRIPTION-222-222-222")
+      .mockImplementationOnce(() => "PRESCRIPTION-333-333-333")
+  })
+
+  afterEach(() => {
+    jest.resetAllMocks()
   })
 
   it("returns a searchset bundle when called", async () => {
-    const expected: Bundle = {
-      resourceType: "Bundle",
-      type: "searchset",
-      total: 0,
-      entry: []
-    }
+    const actual: Bundle = generateFhirResponse([mockAcutePrescription], logger)
 
-    const actual: Bundle = generateFhirResponse([])
-    expect(actual).toEqual(expected)
+    expect(actual.resourceType).toEqual("Bundle")
+    expect(actual.type).toEqual("searchset")
+  })
+
+  it("returns an empty bundle when called with no results", async () => {
+    const actual: Bundle = generateFhirResponse([], logger)
+
+    expect(actual.entry?.length).toEqual(0)
   })
 
   it("returns a Patient entry in the bundle when called with a prescription", async () => {
-    mockUUID.mockImplementation(() => "PATIENT-123-567-890")
-
-    const mockPrescription: Prescription = {
-      nhsNumber: "5839945242",
-      prefix: "MS",
-      suffix: "",
-      family: "TWITCHETT",
-      given: "STACEY",
-      prescriptionId: "335C70-A83008-84058A",
-      issueDate: "20250204000000",
-      treatmentType: "0001",
-      maxRepeats: null,
-      issueNumber: 1,
-      status: "0001",
-      prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false
-    }
-
     const expected: BundleEntry<Patient> = {
       fullUrl: "urn:uuid:PATIENT-123-567-890",
+      search: {
+        mode: "include"
+      },
       resource: {
         resourceType: "Patient",
         identifier: [{
           system: "https://fhir.nhs.uk/Id/nhs-number",
-          value: "5839945242"
+          value: "9732730684"
         }],
         name: [{
-          prefix: ["MS"],
+          prefix: ["MISS"],
           suffix: [""],
-          given: ["STACEY"],
-          family: "TWITCHETT"
+          given: ["ETTA"],
+          family: "CORY"
         }]
       }
     }
-    const actual = generateFhirResponse([mockPrescription]).entry as Array<BundleEntry>
+
+    const actual = generateFhirResponse([mockAcutePrescription], logger).entry as Array<BundleEntry<RequestGroup>>
+
     expect(actual[0]).toEqual(expected)
   })
 
   it("returns a RequestGroup entry in the bundle when called with a prescription", async () => {
-    mockUUID.mockImplementationOnce(() => "PATIENT-123-567-890")
-      .mockImplementationOnce(() => "PRESCRIPTION-111-111-111")
-
-    const mockPrescription: Prescription = {
-      nhsNumber: "5839945242",
-      prefix: "MS",
-      suffix: "",
-      family: "TWITCHETT",
-      given: "STACEY",
-      prescriptionId: "335C70-A83008-84058A",
-      issueDate: "20250204000000",
-      treatmentType: "0001",
-      maxRepeats: null,
-      issueNumber: 1,
-      status: "0001",
-      prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false
-    }
-
     const expected: BundleEntry<RequestGroup> = {
       fullUrl: "urn:uuid:PRESCRIPTION-111-111-111",
+      search: {
+        mode: "match"
+      },
       resource: {
         resourceType: "RequestGroup",
         identifier: [{
@@ -111,108 +143,134 @@ describe("Test generateFhirResponse", () => {
           reference: "urn:uuid:PATIENT-123-567-890"
         },
         status: "active",
-        intent: "proposal",
+        intent: "order",
+        authoredOn: "20250204000000",
         extension: [{
           url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory", // is this the right one?
           extension: [{
             url: "status",
             valueCoding : {
-              code: "0001"
+              system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+              code: "0001",
+              display: "To be Dispensed"
             }
           }]
         },
         {
-          url: "",
-          extension: [{
-            url: "pendingCancellation",
-            valueBoolean: false
-          }]
-        }],
-        action: [{
-          timingDateTime: "20250204000000",
-          cardinalityBehavior: "single",
-          precheckBehavior: "no",
-          extension: [{
-            url: "",
-            extension: [{
-              url: "pendingCancellation",
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PendingCancellation",
+          extension: [
+            {
+              url: "prescriptionPendingCancellation",
               valueBoolean: false
-            }]
-          }]
+            },
+            {
+              url: "lineItemPendingCancellation",
+              valueBoolean: false
+            }
+          ]
         }]
       }
     }
 
-    const actual = generateFhirResponse([mockPrescription]).entry as Array<BundleEntry>
+    const actual = generateFhirResponse([mockAcutePrescription], logger).entry as Array<BundleEntry<RequestGroup>>
+
     expect(actual[1]).toEqual(expected)
   })
 
-  it("includes a prescription status extension on the RequestGroup when called with a prescription", async () => {
-    mockUUID.mockImplementationOnce(() => "PATIENT-123-567-890")
-      .mockImplementationOnce(() => "PRESCRIPTION-111-111-111")
+  const intentTestCases = [
+    {treatmentType: "acute", mockPrescription: mockAcutePrescription, expectedIntent: "order"},
+    {treatmentType: "repeat", mockPrescription: mockRepeatPrescription, expectedIntent: "instance-order"},
+    {treatmentType: "erd", mockPrescription: mockErdPrescription, expectedIntent: "reflex-order"}
+  ]
+  intentTestCases.forEach(({treatmentType, mockPrescription, expectedIntent}) => {
+    it(`includes the correct intent in the RequestGroup when called with a ${treatmentType}} prescription`, async () => {
+      const actual = generateFhirResponse([mockPrescription], logger).entry as Array<BundleEntry<RequestGroup>>
 
-    const mockPrescription: Prescription = {
-      nhsNumber: "5839945242",
-      prefix: "MS",
-      suffix: "",
-      family: "TWITCHETT",
-      given: "STACEY",
-      prescriptionId: "335C70-A83008-84058A",
-      issueDate: "20250204000000",
-      treatmentType: "0001",
-      maxRepeats: null,
-      issueNumber: 1,
-      status: "0001",
-      prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false
-    }
+      expect(actual[1].resource?.intent).toEqual(expectedIntent)
+    })
+  })
 
+  it("includes a PrescriptionStatus extension on the RequestGroup when called with a prescription", async () => {
     const expected: Extension = {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory", // is this the right one?
       extension: [{
         url: "status",
         valueCoding : {
-          code: "0001"
+          system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+          code: "0001",
+          display: "To be Dispensed"
         }
       }]
     }
 
-    const actualEntries = generateFhirResponse([mockPrescription]).entry as Array<BundleEntry>
+    const actualEntries = generateFhirResponse([mockAcutePrescription], logger).entry as Array<BundleEntry>
     const actualRequestGroup = actualEntries[1] as BundleEntry<RequestGroup>
     const actualExtensions = actualRequestGroup.resource?.extension as Array<Extension>
 
     expect(actualExtensions[0]).toEqual(expected)
   })
 
-  it("includes a repeat information extension on the RequestGroup when called with a erd prescription", async () => {
-    mockUUID.mockImplementationOnce(() => "PATIENT-123-567-890")
-      .mockImplementationOnce(() => "PRESCRIPTION-111-111-111")
+  const statusDisplayTestCases = [
+    {status: "0001", expectedDisplay: "To be Dispensed"},
+    {status: "0002", expectedDisplay: "With Dispenser"},
+    {status: "0003", expectedDisplay: "With Dispenser - Active"},
+    {status: "0004", expectedDisplay: "Expired"},
+    {status: "0005", expectedDisplay: "Cancelled"},
+    {status: "0006", expectedDisplay: "Dispensed"},
+    {status: "0007", expectedDisplay: "Not Dispensed"}
+  ]
+  statusDisplayTestCases.forEach(({status, expectedDisplay}) => {
+    it(`includes the correct display in the PrescriptionStatus extension when called with a prescription of status ${status}`, async () => {
+      const mockPrescription: Prescription = {...mockAcutePrescription, ...{status}}
 
-    const mockPrescription: Prescription = {
-      nhsNumber: "9732730684",
-      prefix: "MISS",
-      suffix: "",
-      given: "ETTA",
-      family: "CORY",
-      prescriptionId: "0131A6-A83008-DDFE5P",
-      issueDate: "20250205000000",
-      treatmentType: "0003",
-      maxRepeats: 7,
-      issueNumber: 1,
-      status: "0001",
-      prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false
-    }
+      const actualEntries = generateFhirResponse([mockPrescription], logger).entry as Array<BundleEntry>
+      const actualRequestGroup = actualEntries[1] as BundleEntry<RequestGroup>
+      const actualExtensions = actualRequestGroup.resource?.extension as Array<Extension>
+      const actualStatusDisplay = actualExtensions?.[0].extension?.[0].valueCoding?.display as string
 
+      expect(actualStatusDisplay).toEqual(expectedDisplay)
+    })
+  })
+
+  it("includes a repeat information extension on the RequestGroup when called with a repeat prescription", async () => {
     const expected: Extension = {
-      url: "https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-MedicationRepeatInformation",
-      extension: [{
-        url: "numberOfPrescriptionsIssued",
-        valueUnsignedInt: 1
-      }]
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
+      extension: [
+        {
+          url: "numberOfRepeatsAllowed",
+          valueInteger: 1
+        },
+        {
+          url: "numberOfRepeatsIssued",
+          valueInteger: 1
+        }
+      ]
     }
 
-    const actualEntries = generateFhirResponse([mockPrescription]).entry as Array<BundleEntry>
+    const actualEntries = generateFhirResponse([mockRepeatPrescription], logger).entry as Array<BundleEntry>
+    const actualRequestGroup = actualEntries[1] as BundleEntry<RequestGroup>
+    const actualExtensions = actualRequestGroup.resource?.extension as Array<Extension>
+
+    expect(actualExtensions[1]).toEqual(expected)
+    expect(actualExtensions.length).toEqual(3)
+  })
+
+  it("includes a repeat information extension on the RequestGroup when called with a erd prescription", async () => {
+    const expected: Extension = {
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
+      extension: [
+        {
+          url: "numberOfRepeatsAllowed",
+          valueInteger: 7
+        },
+        {
+          url: "numberOfRepeatsIssued",
+          valueInteger: 1
+        }
+      ]
+    }
+
+    const actualEntries = generateFhirResponse([mockErdPrescription], logger).entry as Array<BundleEntry>
     const actualRequestGroup = actualEntries[1] as BundleEntry<RequestGroup>
     const actualExtensions = actualRequestGroup.resource?.extension as Array<Extension>
 
@@ -221,373 +279,115 @@ describe("Test generateFhirResponse", () => {
   })
 
   it("does not include a repeat information extension on the RequestGroup when called with a acute prescription", async () => {
-    mockUUID.mockImplementationOnce(() => "PATIENT-123-567-890")
-      .mockImplementationOnce(() => "PRESCRIPTION-111-111-111")
-
-    const mockPrescription: Prescription = {
-      nhsNumber: "5839945242",
-      prefix: "MS",
-      suffix: "",
-      family: "TWITCHETT",
-      given: "STACEY",
-      prescriptionId: "335C70-A83008-84058A",
-      issueDate: "20250204000000",
-      treatmentType: "0001",
-      maxRepeats: null,
-      issueNumber: 1,
-      status: "0001",
-      prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false
-    }
-
-    const actualEntries = generateFhirResponse([mockPrescription]).entry as Array<BundleEntry>
+    const actualEntries = generateFhirResponse([mockAcutePrescription], logger).entry as Array<BundleEntry>
     const actualRequestGroup = actualEntries[1] as BundleEntry<RequestGroup>
     const actualExtensions = actualRequestGroup.resource?.extension as Array<Extension>
 
     expect(actualExtensions.length).toEqual(2)
   })
 
-  it("does not include a repeat information extension on the RequestGroup when called with a repeat prescription", async () => {
-    mockUUID.mockImplementationOnce(() => "PATIENT-123-567-890")
-      .mockImplementationOnce(() => "PRESCRIPTION-111-111-111")
-
-    const mockPrescription: Prescription = {
-      nhsNumber: "9732730684",
-      prefix: "MISS",
-      suffix: "",
-      family: "CORY",
-      given: "ETTA",
-      prescriptionId: "1CFAAA-A83008-BE0B3Y",
-      issueDate: "20250212122302",
-      treatmentType: "0002",
-      maxRepeats: 1,
-      issueNumber: 1,
-      status: "0001",
-      prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false
-    }
-
-    const actualEntries = generateFhirResponse([mockPrescription]).entry as Array<BundleEntry>
-    const actualRequestGroup = actualEntries[1] as BundleEntry<RequestGroup>
-    const actualExtensions = actualRequestGroup.resource?.extension as Array<Extension>
-
-    expect(actualExtensions.length).toEqual(2)
-  })
-
-  it("includes a correct Action on the RequestGroup when called with a acute prescription", async () => {
-    mockUUID.mockImplementationOnce(() => "PATIENT-123-567-890")
-      .mockImplementationOnce(() => "PRESCRIPTION-111-111-111")
-
-    const mockPrescription: Prescription = {
-      nhsNumber: "5839945242",
-      prefix: "MS",
-      suffix: "",
-      family: "TWITCHETT",
-      given: "STACEY",
-      prescriptionId: "335C70-A83008-84058A",
-      issueDate: "20250204000000",
-      treatmentType: "0001",
-      maxRepeats: null,
-      issueNumber: 1,
-      status: "0001",
-      prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false
-    }
-
-    const expected: RequestGroupAction = {
-      timingDateTime: "20250204000000",
-      cardinalityBehavior: "single",
-      precheckBehavior: "no",
-      extension: [{
-        url: "",
-        extension: [{
-          url: "pendingCancellation",
-          valueBoolean: false
-        }]
-      }]
-    }
-
-    const actualEntries = generateFhirResponse([mockPrescription]).entry as Array<BundleEntry>
-    const actualRequestGroup = actualEntries[1] as BundleEntry<RequestGroup>
-    const actualActions = actualRequestGroup.resource?.action as Array<RequestGroupAction>
-    expect(actualActions[0]).toEqual(expected)
-  })
-
-  it("includes a correct Action on the RequestGroup when called with a erd prescription", async () => {
-    mockUUID.mockImplementationOnce(() => "PATIENT-123-567-890")
-      .mockImplementationOnce(() => "PRESCRIPTION-111-111-111")
-
-    const mockPrescription: Prescription = {
-      nhsNumber: "9732730684",
-      prefix: "MISS",
-      suffix: "",
-      given: "ETTA",
-      family: "CORY",
-      prescriptionId: "0131A6-A83008-DDFE5P",
-      issueDate: "20250205000000",
-      treatmentType: "0003",
-      maxRepeats: 7,
-      issueNumber: 1,
-      status: "0001",
-      prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false
-    }
-
-    const expected: RequestGroupAction = {
-      timingDateTime: "20250205000000",
-      cardinalityBehavior: "multiple",
-      precheckBehavior: "no",
-      extension: [{
-        url: "",
-        extension: [{
-          url: "pendingCancellation",
-          valueBoolean: false
-        }]
-      }
-      ]
-    }
-
-    const actualEntries = generateFhirResponse([mockPrescription]).entry as Array<BundleEntry>
-    const actualRequestGroup = actualEntries[1] as BundleEntry<RequestGroup>
-    const actualActions = actualRequestGroup.resource?.action as Array<RequestGroupAction>
-    expect(actualActions[0]).toEqual(expected)
-  })
-
-  it("includes a correct Action on the RequestGroup when called with a repeat prescription", async () => {
-    mockUUID.mockImplementationOnce(() => "PATIENT-123-567-890")
-      .mockImplementationOnce(() => "PRESCRIPTION-111-111-111")
-
-    const mockPrescription: Prescription = {
-      nhsNumber: "9732730684",
-      prefix: "MISS",
-      suffix: "",
-      family: "CORY",
-      given: "ETTA",
-      prescriptionId: "1CFAAA-A83008-BE0B3Y",
-      issueDate: "20250212122302",
-      treatmentType: "0002",
-      maxRepeats: 1,
-      issueNumber: 1,
-      status: "0001",
-      prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false
-    }
-
-    const expected: RequestGroupAction = {
-      timingDateTime: "20250212122302",
-      cardinalityBehavior: "multiple",
-      precheckBehavior: "yes",
-      extension: [{
-        url: "",
-        extension: [{
-          url: "pendingCancellation",
-          valueBoolean: false
-        }]
-      }
-
-      ]
-    }
-
-    const actualEntries = generateFhirResponse([mockPrescription]).entry as Array<BundleEntry>
-    const actualRequestGroup = actualEntries[1] as BundleEntry<RequestGroup>
-    const actualActions = actualRequestGroup.resource?.action as Array<RequestGroupAction>
-    expect(actualActions[0]).toEqual(expected)
-  })
-
-  it("includes a correct pending cancellation extension on the RequestGroup when called with a prescription pending cancellation", async () => {
-    mockUUID.mockImplementationOnce(() => "PATIENT-123-567-890")
-      .mockImplementationOnce(() => "PRESCRIPTION-111-111-111")
-
-    const mockPrescription: Prescription = {
-      nhsNumber: "5839945242",
-      prefix: "MS",
-      suffix: "",
-      family: "TWITCHETT",
-      given: "STACEY",
-      prescriptionId: "335C70-A83008-84058A",
-      issueDate: "20250204000000",
-      treatmentType: "0001",
-      maxRepeats: null,
-      issueNumber: 1,
-      status: "0001",
-      prescriptionPendingCancellation: true,
-      itemsPendingCancellation: false
-    }
+  it("includes a correct pending cancellation extension on the RequestGroup when called with a prescription with a pending cancellation", async () => {
+    const mockPrescription: Prescription = {...mockAcutePrescription, ...{prescriptionPendingCancellation: true}}
 
     const expected: Extension = {
-      url: "",
-      extension: [{
-        url: "pendingCancellation",
-        valueBoolean: true
-      }]
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PendingCancellation",
+      extension: [
+        {
+          url: "prescriptionPendingCancellation",
+          valueBoolean: true
+        },
+        {
+          url: "lineItemPendingCancellation",
+          valueBoolean: false
+        }
+      ]
     }
 
-    const actualEntries = generateFhirResponse([mockPrescription]).entry as Array<BundleEntry>
+    const actualEntries = generateFhirResponse([mockPrescription], logger).entry as Array<BundleEntry>
     const actualRequestGroup = actualEntries[1] as BundleEntry<RequestGroup>
     const actualExtensions = actualRequestGroup.resource?.extension as Array<Extension>
 
     expect(actualExtensions[1]).toEqual(expected)
   })
 
-  it("includes a correct pending cancellation extension on the RequestGroup when called with a prescription without a pending cancellation", async () => {
-    mockUUID.mockImplementationOnce(() => "PATIENT-123-567-890")
-      .mockImplementationOnce(() => "PRESCRIPTION-111-111-111")
-
-    const mockPrescription: Prescription = {
-      nhsNumber: "5839945242",
-      prefix: "MS",
-      suffix: "",
-      family: "TWITCHETT",
-      given: "STACEY",
-      prescriptionId: "335C70-A83008-84058A",
-      issueDate: "20250204000000",
-      treatmentType: "0001",
-      maxRepeats: null,
-      issueNumber: 1,
-      status: "0001",
-      prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false
-    }
+  it("includes a correct pending cancellation extension on the RequestGroup when called with a prescription with items pending cancellation", async () => {
+    const mockPrescription: Prescription = {...mockAcutePrescription, ...{itemsPendingCancellation: true}}
 
     const expected: Extension = {
-      url: "",
-      extension: [{
-        url: "pendingCancellation",
-        valueBoolean: false
-      }]
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PendingCancellation",
+      extension: [
+        {
+          url: "prescriptionPendingCancellation",
+          valueBoolean: false
+        },
+        {
+          url: "lineItemPendingCancellation",
+          valueBoolean: true
+        }
+      ]
     }
 
-    const actualEntries = generateFhirResponse([mockPrescription]).entry as Array<BundleEntry>
+    const actualEntries = generateFhirResponse([mockPrescription], logger).entry as Array<BundleEntry>
     const actualRequestGroup = actualEntries[1] as BundleEntry<RequestGroup>
     const actualExtensions = actualRequestGroup.resource?.extension as Array<Extension>
 
     expect(actualExtensions[1]).toEqual(expected)
   })
 
-  it("includes a correct pending cancellation extension on the Action when called with a prescription with items pending cancellation", async () => {
-    mockUUID.mockImplementationOnce(() => "PATIENT-123-567-890")
-      .mockImplementationOnce(() => "PRESCRIPTION-111-111-111")
-
+  it("includes a correct pending cancellation extension on the RequestGroup when called with a prescription and items pending cancellation", async () => {
     const mockPrescription: Prescription = {
-      nhsNumber: "5839945242",
-      prefix: "MS",
-      suffix: "",
-      family: "TWITCHETT",
-      given: "STACEY",
-      prescriptionId: "335C70-A83008-84058A",
-      issueDate: "20250204000000",
-      treatmentType: "0001",
-      maxRepeats: null,
-      issueNumber: 1,
-      status: "0001",
-      prescriptionPendingCancellation: false,
-      itemsPendingCancellation: true
+      ...mockAcutePrescription,
+      ...{prescriptionPendingCancellation: true, itemsPendingCancellation: true}
     }
 
     const expected: Extension = {
-      url: "",
-      extension: [{
-        url: "pendingCancellation",
-        valueBoolean: true
-      }]
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PendingCancellation",
+      extension: [
+        {
+          url: "prescriptionPendingCancellation",
+          valueBoolean: true
+        },
+        {
+          url: "lineItemPendingCancellation",
+          valueBoolean: true
+        }
+      ]
     }
 
-    const actualEntries = generateFhirResponse([mockPrescription]).entry as Array<BundleEntry>
+    const actualEntries = generateFhirResponse([mockPrescription], logger).entry as Array<BundleEntry>
     const actualRequestGroup = actualEntries[1] as BundleEntry<RequestGroup>
-    const actualActions = actualRequestGroup.resource?.action as Array<RequestGroupAction>
-    const actualActionExtensions = actualActions[0].extension as Array<Extension>
+    const actualExtensions = actualRequestGroup.resource?.extension as Array<Extension>
 
-    expect(actualActionExtensions[0]).toEqual(expected)
+    expect(actualExtensions[1]).toEqual(expected)
   })
 
-  it("includes a correct pending cancellation extension on the Action when called with a prescription without items pending cancellation", async () => {
-    mockUUID.mockImplementationOnce(() => "PATIENT-123-567-890")
-      .mockImplementationOnce(() => "PRESCRIPTION-111-111-111")
-
-    const mockPrescription: Prescription = {
-      nhsNumber: "5839945242",
-      prefix: "MS",
-      suffix: "",
-      family: "TWITCHETT",
-      given: "STACEY",
-      prescriptionId: "335C70-A83008-84058A",
-      issueDate: "20250204000000",
-      treatmentType: "0001",
-      maxRepeats: null,
-      issueNumber: 1,
-      status: "0001",
-      prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false
-    }
-
+  it("includes a correct pending cancellation extension on the RequestGroup when called with a prescription with no pending cancellations", async () => {
     const expected: Extension = {
-      url: "",
-      extension: [{
-        url: "pendingCancellation",
-        valueBoolean: false
-      }]
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PendingCancellation",
+      extension: [
+        {
+          url: "prescriptionPendingCancellation",
+          valueBoolean: false
+        },
+        {
+          url: "lineItemPendingCancellation",
+          valueBoolean: false
+        }
+      ]
     }
 
-    const actualEntries = generateFhirResponse([mockPrescription]).entry as Array<BundleEntry>
+    const actualEntries = generateFhirResponse([mockAcutePrescription], logger).entry as Array<BundleEntry>
     const actualRequestGroup = actualEntries[1] as BundleEntry<RequestGroup>
-    const actualActions = actualRequestGroup.resource?.action as Array<RequestGroupAction>
-    const actualActionExtensions = actualActions[0].extension as Array<Extension>
+    const actualExtensions = actualRequestGroup.resource?.extension as Array<Extension>
 
-    expect(actualActionExtensions[0]).toEqual(expected)
+    expect(actualExtensions[1]).toEqual(expected)
   })
 
   it("it returns a correct bundle of resources when called with a list of prescriptions", async () => {
-    mockUUID.mockImplementationOnce(() => "PATIENT-123-567-890")
-      .mockImplementationOnce(() => "PRESCRIPTION-111-111-111")
-      .mockImplementationOnce(() => "PRESCRIPTION-222-222-222")
-      .mockImplementationOnce(() => "PRESCRIPTION-333-333-333")
-
     const mockPrescriptions: Array<Prescription> = [
-      {
-        nhsNumber: "5839945242",
-        prefix: "MS",
-        suffix: "",
-        family: "TWITCHETT",
-        given: "STACEY",
-        prescriptionId: "335C70-A83008-84058A",
-        issueDate: "20250204000000",
-        treatmentType: "0001",
-        maxRepeats: null,
-        issueNumber: 1,
-        status: "0001",
-        prescriptionPendingCancellation: false,
-        itemsPendingCancellation: false
-      },
-      {
-        nhsNumber: "9732730684",
-        prefix: "MISS",
-        suffix: "",
-        given: "ETTA",
-        family: "CORY",
-        prescriptionId: "0131A6-A83008-DDFE5P",
-        issueDate: "20250205000000",
-        treatmentType: "0003",
-        maxRepeats: 7,
-        issueNumber: 1,
-        status: "0001",
-        prescriptionPendingCancellation: false,
-        itemsPendingCancellation: false
-      },
-      {
-        nhsNumber: "9732730684",
-        prefix: "MISS",
-        suffix: "",
-        family: "CORY",
-        given: "ETTA",
-        prescriptionId: "1CFAAA-A83008-BE0B3Y",
-        issueDate: "20250212122302",
-        treatmentType: "0002",
-        maxRepeats: 1,
-        issueNumber: 1,
-        status: "0001",
-        prescriptionPendingCancellation: false,
-        itemsPendingCancellation: false
-      }
+      mockAcutePrescription,
+      mockRepeatPrescription,
+      mockErdPrescription
     ]
 
     const expected: Bundle = {
@@ -597,26 +397,32 @@ describe("Test generateFhirResponse", () => {
       entry: [
         {
           fullUrl: "urn:uuid:PATIENT-123-567-890",
+          search: {
+            mode: "include"
+          },
           resource: {
             resourceType: "Patient",
             identifier: [
               {
                 system: "https://fhir.nhs.uk/Id/nhs-number",
-                value: "5839945242"
+                value: "9732730684"
               }
             ],
             name: [
               {
-                prefix: [ "MS" ],
+                prefix: [ "MISS" ],
                 suffix: [ "" ],
-                given: [ "STACEY" ],
-                family: "TWITCHETT"
+                given: [ "ETTA" ],
+                family: "CORY"
               }
             ]
           }
         },
         {
           fullUrl: "urn:uuid:PRESCRIPTION-111-111-111",
+          search: {
+            mode: "match"
+          },
           resource: {
             resourceType: "RequestGroup",
             identifier: [
@@ -625,28 +431,36 @@ describe("Test generateFhirResponse", () => {
                 value: "335C70-A83008-84058A"
               }
             ],
-            subject: {reference: "urn:uuid:PATIENT-123-567-890"},
+            subject: {
+              reference: "urn:uuid:PATIENT-123-567-890"
+            },
             status: "active",
-            intent: "proposal",
+            intent: "order",
+            authoredOn: "20250204000000",
             extension: [
               {
                 url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
-                extension: [ {url: "status", valueCoding: {code: "0001"}} ]
-              },
-              {
-                url: "",
-                extension: [ {url: "pendingCancellation", valueBoolean: false} ]
-              }
-            ],
-            action: [
-              {
-                timingDateTime: "20250204000000",
-                cardinalityBehavior: "single",
-                precheckBehavior: "no",
                 extension: [
                   {
-                    url: "",
-                    extension: [ {url: "pendingCancellation", valueBoolean: false} ]
+                    url: "status",
+                    valueCoding: {
+                      system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+                      code: "0001",
+                      display: "To be Dispensed"
+                    }
+                  }
+                ]
+              },
+              {
+                url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PendingCancellation",
+                extension: [
+                  {
+                    url: "prescriptionPendingCancellation",
+                    valueBoolean: false
+                  },
+                  {
+                    url: "lineItemPendingCancellation",
+                    valueBoolean: false
                   }
                 ]
               }
@@ -655,53 +469,9 @@ describe("Test generateFhirResponse", () => {
         },
         {
           fullUrl: "urn:uuid:PRESCRIPTION-222-222-222",
-          resource: {
-            resourceType: "RequestGroup",
-            identifier: [
-              {
-                system: "https://fhir.nhs.uk/Id/prescription-order-number",
-                value: "0131A6-A83008-DDFE5P"
-              }
-            ],
-            subject: {reference: "urn:uuid:PATIENT-123-567-890"},
-            status: "active",
-            intent: "proposal",
-            extension: [
-              {
-                url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
-                extension: [ {url: "status", valueCoding: {code: "0001"}} ]
-              },
-              {
-                url: "https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-MedicationRepeatInformation",
-                extension: [
-                  {
-                    url: "numberOfPrescriptionsIssued",
-                    valueUnsignedInt: 1
-                  }
-                ]
-              },
-              {
-                url: "",
-                extension: [ {url: "pendingCancellation", valueBoolean: false} ]
-              }
-            ],
-            action: [
-              {
-                timingDateTime: "20250205000000",
-                cardinalityBehavior: "multiple",
-                precheckBehavior: "no",
-                extension: [
-                  {
-                    url: "",
-                    extension: [ {url: "pendingCancellation", valueBoolean: false} ]
-                  }
-                ]
-              }
-            ]
-          }
-        },
-        {
-          fullUrl: "urn:uuid:PRESCRIPTION-333-333-333",
+          search: {
+            mode: "match"
+          },
           resource: {
             resourceType: "RequestGroup",
             identifier: [
@@ -710,28 +480,111 @@ describe("Test generateFhirResponse", () => {
                 value: "1CFAAA-A83008-BE0B3Y"
               }
             ],
-            subject: {reference: "urn:uuid:PATIENT-123-567-890"},
+            subject: {
+              reference: "urn:uuid:PATIENT-123-567-890"
+            },
             status: "active",
-            intent: "proposal",
+            intent: "instance-order",
+            authoredOn: "20250212122302",
             extension: [
               {
                 url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
-                extension: [ {url: "status", valueCoding: {code: "0001"}} ]
-              },
-              {
-                url: "",
-                extension: [ {url: "pendingCancellation", valueBoolean: false} ]
-              }
-            ],
-            action: [
-              {
-                timingDateTime: "20250212122302",
-                cardinalityBehavior: "multiple",
-                precheckBehavior: "yes",
                 extension: [
                   {
-                    url: "",
-                    extension: [ {url: "pendingCancellation", valueBoolean: false} ]
+                    url: "status",
+                    valueCoding: {
+                      system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+                      code: "0001",
+                      display: "To be Dispensed"
+                    }
+                  }
+                ]
+              },
+              {
+                url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
+                extension: [
+                  {
+                    url: "numberOfRepeatsAllowed",
+                    valueInteger: 1
+                  },
+                  {
+                    url: "numberOfRepeatsIssued",
+                    valueInteger: 1
+                  }
+                ]
+              },
+              {
+                url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PendingCancellation",
+                extension: [
+                  {
+                    url: "prescriptionPendingCancellation",
+                    valueBoolean: false
+                  },
+                  {
+                    url: "lineItemPendingCancellation",
+                    valueBoolean: false
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          fullUrl: "urn:uuid:PRESCRIPTION-333-333-333",
+          search: {
+            mode: "match"
+          },
+          resource: {
+            resourceType: "RequestGroup",
+            identifier: [
+              {
+                system: "https://fhir.nhs.uk/Id/prescription-order-number",
+                value: "0131A6-A83008-DDFE5P"
+              }
+            ],
+            subject: {
+              reference: "urn:uuid:PATIENT-123-567-890"
+            },
+            status: "active",
+            intent: "reflex-order",
+            authoredOn: "20250205000000",
+            extension: [
+              {
+                url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
+                extension: [
+                  {
+                    url: "status",
+                    valueCoding: {
+                      system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+                      code: "0001",
+                      display: "To be Dispensed"
+                    }
+                  }
+                ]
+              },
+              {
+                url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
+                extension: [
+                  {
+                    url: "numberOfRepeatsAllowed",
+                    valueInteger: 7
+                  },
+                  {
+                    url: "numberOfRepeatsIssued",
+                    valueInteger: 1
+                  }
+                ]
+              },
+              {
+                url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PendingCancellation",
+                extension: [
+                  {
+                    url: "prescriptionPendingCancellation",
+                    valueBoolean: false
+                  },
+                  {
+                    url: "lineItemPendingCancellation",
+                    valueBoolean: false
                   }
                 ]
               }
@@ -741,7 +594,7 @@ describe("Test generateFhirResponse", () => {
       ]
     }
 
-    const actual = generateFhirResponse(mockPrescriptions) as Bundle<BundleEntry>
+    const actual = generateFhirResponse(mockPrescriptions, logger) as Bundle<BundleEntry>
     expect(actual).toEqual(expected)
   })
 })
@@ -752,54 +605,45 @@ describe("Test generateFhirErrorResponse", () => {
     jest.setSystemTime(new Date("2015-04-09T12:34:56.001Z"))
   })
 
-  it("returns a searchset bundle when called", async () => {
-    const expected: Bundle = {
-      resourceType: "Bundle",
-      type: "searchset",
-      total: 0,
-      entry: []
+  it("returns a OperationOutcome when called", async () => {
+    const expected: OperationOutcome = {
+      resourceType: "OperationOutcome",
+      meta: {
+        lastUpdated: "2015-04-09T12:34:56.001Z"
+      },
+      issue: []
     }
 
-    const actual: Bundle = generateFhirResponse([])
+    const actual: OperationOutcome = generateFhirErrorResponse([], logger)
     expect(actual).toEqual(expected)
   })
 
-  it("returns a correct OperationOutcome when called with an error", async () => {
+  it("returns a correct issue on the OperationOutcome when called with an error", async () => {
     const mockError: SearchError = {
       status: "500",
       severity: "error",
       description: "An unknown error."
     }
 
-    const expected = {
-      response:{
-        status: "500 Internal Server Error",
-        outcome: {
-          resourceType: "OperationOutcome",
-          meta: {
-            lastUpdated: "2015-04-09T12:34:56.001Z"
-          },
-          issue: [{
-            code: "exception",
-            severity: "error",
-            diagnostics: "An unknown error.",
-            details: {
-              coding: [{
-                system: "https://fhir.nhs.uk/CodeSystem/http-error-codes",
-                code: "SERVER_ERROR",
-                display: "500: The Server has encountered an error processing the request."
-              }]
-            }
-          }]
-        }
+    const expected: OperationOutcomeIssue = {
+      code: "exception",
+      severity: "error",
+      diagnostics: "An unknown error.",
+      details: {
+        coding: [{
+          system: "https://fhir.nhs.uk/CodeSystem/http-error-codes",
+          code: "SERVER_ERROR",
+          display: "500: The Server has encountered an error processing the request."
+        }]
       }
     }
-    const actualEntries = generateFhirErrorResponse([mockError]).entry as Array<BundleEntry>
-    const actualOperationOutcome = actualEntries[0] as BundleEntry<OperationOutcome>
+
+    const actualIssues = generateFhirErrorResponse([mockError], logger).issue as Array<OperationOutcomeIssue>
+    const actualOperationOutcome = actualIssues[0] as BundleEntry<OperationOutcome>
     expect(actualOperationOutcome).toEqual(expected)
   })
 
-  it("it returns a correct bundle of resources when called with a list errors", async () => {
+  it("returns a correct OperationOutcome with multiple issues when called with a list errors", async () => {
     const mockErrors: Array<SearchError> = [
       {
         status: "400",
@@ -818,88 +662,51 @@ describe("Test generateFhirErrorResponse", () => {
       }
     ]
 
-    const expected = {
-      resourceType: "Bundle",
-      type: "searchset",
-      entry: [
+    const expected: OperationOutcome = {
+      resourceType: "OperationOutcome",
+      meta: {
+        lastUpdated: "2015-04-09T12:34:56.001Z"
+      },
+      issue: [
         {
-          response: {
-            status: "400 Bad Request",
-            outcome: {
-              resourceType: "OperationOutcome",
-              meta: {lastUpdated: "2015-04-09T12:34:56.001Z"},
-              issue: [
-                {
-                  code: "value",
-                  severity: "error",
-                  diagnostics: "Header A missing.",
-                  details: {
-                    coding: [
-                      {
-                        system: "https://fhir.nhs.uk/CodeSystem/http-error-codes",
-                        code: "BAD_REQUEST",
-                        display: "400: The Server was unable to process the request."
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
+          code: "value",
+          severity: "error",
+          diagnostics: "Header A missing.",
+          details: {
+            coding: [{
+              system: "https://fhir.nhs.uk/CodeSystem/http-error-codes",
+              code: "BAD_REQUEST",
+              display: "400: The Server was unable to process the request."
+            }]
           }
         },
         {
-          response: {
-            status: "400 Bad Request",
-            outcome: {
-              resourceType: "OperationOutcome",
-              meta: {lastUpdated: "2015-04-09T12:34:56.001Z"},
-              issue: [
-                {
-                  code: "value",
-                  severity: "error",
-                  diagnostics: "Header B missing.",
-                  details: {
-                    coding: [
-                      {
-                        system: "https://fhir.nhs.uk/CodeSystem/http-error-codes",
-                        code: "BAD_REQUEST",
-                        display: "400: The Server was unable to process the request."
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
+          code: "value",
+          severity: "error",
+          diagnostics: "Header B missing.",
+          details: {
+            coding: [{
+              system: "https://fhir.nhs.uk/CodeSystem/http-error-codes",
+              code: "BAD_REQUEST",
+              display: "400: The Server was unable to process the request."
+            }]
           }
         },
         {
-          response: {
-            status: "400 Bad Request",
-            outcome: {
-              resourceType: "OperationOutcome",
-              meta: {lastUpdated: "2015-04-09T12:34:56.001Z"},
-              issue: [
-                {
-                  code: "value",
-                  severity: "error",
-                  diagnostics: "Header C missing.",
-                  details: {
-                    coding: [
-                      {
-                        system: "https://fhir.nhs.uk/CodeSystem/http-error-codes",
-                        code: "BAD_REQUEST",
-                        display: "400: The Server was unable to process the request."
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
+          code: "value",
+          severity: "error",
+          diagnostics: "Header C missing.",
+          details: {
+            coding: [{
+              system: "https://fhir.nhs.uk/CodeSystem/http-error-codes",
+              code: "BAD_REQUEST",
+              display: "400: The Server was unable to process the request."
+            }]
           }
         }
       ]
     }
-    const actual = generateFhirErrorResponse(mockErrors) as Bundle
+    const actual = generateFhirErrorResponse(mockErrors, logger) as OperationOutcome
     expect(actual).toEqual(expected)
   })
 })

@@ -17,7 +17,7 @@ import {
 // Types
 import {ParsedSpineResponse, Prescription} from "../src/types"
 
-let logger= new Logger({serviceName: "prescriptionSearch", logLevel: "DEBUG"})
+const logger: Logger = new Logger({serviceName: "prescriptionSearch", logLevel: "DEBUG"})
 
 describe("Test parseSpineResponse", () => {
   it("returns a correctly parsed response and no error when spine returns a single acute prescription", async () => {
@@ -31,7 +31,7 @@ describe("Test parseSpineResponse", () => {
         prescriptionId: "335C70-A83008-84058A",
         issueDate: "20250204000000",
         treatmentType: "0001",
-        maxRepeats: null,
+        maxRepeats: undefined,
         issueNumber: 1,
         status: "0001",
         prescriptionPendingCancellation: false,
@@ -53,7 +53,7 @@ describe("Test parseSpineResponse", () => {
         prescriptionId: "335C70-A83008-84058A",
         issueDate: "20250204000000",
         treatmentType: "0001",
-        maxRepeats: null,
+        maxRepeats: undefined,
         issueNumber: 1,
         status: "0001",
         prescriptionPendingCancellation: false,
@@ -68,7 +68,7 @@ describe("Test parseSpineResponse", () => {
         prescriptionId: "5ABA40-000X26-D48018",
         issueDate: "20250204000000",
         treatmentType: "0001",
-        maxRepeats: null,
+        maxRepeats: undefined,
         issueNumber: 1,
         status: "0001",
         prescriptionPendingCancellation: false,
@@ -478,7 +478,7 @@ describe("Test parseSpineResponse", () => {
         prescriptionId: "335C70-A83008-84058A",
         issueDate: "20250204000000",
         treatmentType: "0001",
-        maxRepeats: null,
+        maxRepeats: undefined,
         issueNumber: 1,
         status: "0001",
         prescriptionPendingCancellation: false,
@@ -609,10 +609,9 @@ describe("Test parseSpineResponse", () => {
     expect(result).toEqual([expected, undefined])
   })
 
-  // todo: test for not found
-  it("returns undefined and no error when spine returns not found", async () => {
+  it("returns a correctly parsed response when spine returns not found", async () => {
     const result: ParsedSpineResponse = parseSpineResponse(notFound, logger)
-    expect(result).toEqual([undefined, undefined])
+    expect(result).toEqual([[], undefined])
   })
 
   it("returns undefined and an error when spine returns an error", async () => {

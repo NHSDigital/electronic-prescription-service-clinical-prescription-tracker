@@ -1,28 +1,33 @@
-import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
-import {LogLevel} from "@aws-lambda-powertools/logger/types"
+import middy from "@middy/core"
+import inputOutputLogger from "@middy/input-output-logger"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {injectLambdaContext} from "@aws-lambda-powertools/logger/middleware"
-import inputOutputLogger from "@middy/input-output-logger"
-import {createSpineClient} from "@NHSDigital/eps-spine-client"
 import errorHandler from "@nhs/fhir-middy-error-handler"
-import {APIGatewayEvent, APIGatewayProxyResult} from "aws-lambda"
-import middy from "@middy/core"
-import {PrescriptionSearchParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
-import {bundleSchema, outcomeSchema} from "./schema/response"
-import {Bundle, OperationOutcome} from "fhir/r4"
+
+import {createSpineClient} from "@NHSDigital/eps-spine-client"
+
 import {validateRequest} from "./validateRequest"
-import {ParsedSpineResponse, Prescription, SearchError} from "./types"
-import {generateFhirErrorResponse, generateFhirResponse} from "./generateFhirResponse"
 import {parseSpineResponse} from "./parseSpineResponse"
+import {generateFhirErrorResponse, generateFhirResponse} from "./generateFhirResponse"
+import {bundleSchema, outcomeSchema} from "./schema/response"
 
+// Types
+import {LogLevel} from "@aws-lambda-powertools/logger/types"
+import {APIGatewayEvent, APIGatewayProxyResult} from "aws-lambda"
+import {PrescriptionSearchParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
+import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
+import {Bundle, OperationOutcome} from "fhir/r4"
+import {
+  HandlerParams,
+  ParsedSpineResponse,
+  Prescription,
+  SearchError
+} from "./types"
+
+// Config
 export const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
-export const logger = new Logger({serviceName: "prescriptionSearch", logLevel: LOG_LEVEL})
-const spineClient = createSpineClient(logger)
-
-type HandlerParams = {
-  logger: Logger,
-  spineClient: SpineClient
-}
+export const logger: Logger = new Logger({serviceName: "prescriptionSearch", logLevel: LOG_LEVEL})
+const spineClient: SpineClient = createSpineClient(logger)
 
 // TODO: tests
 export const apiGatewayHandler = async (
@@ -34,19 +39,22 @@ export const apiGatewayHandler = async (
     "apigw-request-id": event.requestContext.requestId
   })
 
-  logger.info("Validating request...")
   const [searchParameters, validationErrors]:
     [PrescriptionSearchParams, Array<SearchError>] = validateRequest(event, logger)
 
-  if(validationErrors){
+  if(validationErrors.length > 0){
     logger.error("Error validating request.")
     logger.info("Generating FHIR error response...")
-    const errorResponseBundle: OperationOutcome = generateFhirErrorResponse(validationErrors)
+    const errorResponseBundle: OperationOutcome = generateFhirErrorResponse(validationErrors, logger)
 
     logger.info("Returning FHIR error response.")
     return {
       statusCode: 400,
-      body: JSON.stringify(errorResponseBundle)
+      body: JSON.stringify(errorResponseBundle),
+      headers: {
+        "Content-Type": "application/fhir+json",
+        "Cache-Control": "no-cache"
+      }
     }
   }
 
@@ -60,42 +68,48 @@ export const apiGatewayHandler = async (
     if (searchError){
       logger.error("Spine response contained an error.", {error: searchError.description})
       logger.info("Generating FHIR error response...")
-      const errorResponseBundle: OperationOutcome = generateFhirErrorResponse([searchError])
+      const errorResponseBundle: OperationOutcome = generateFhirErrorResponse([searchError], logger)
 
       logger.info("Returning FHIR error response.")
       return {
         statusCode: 500,
-        body: JSON.stringify(errorResponseBundle)
-      }
-    }
-
-    if (!prescriptions && !searchError){
-      // TODO: what about no results? - empty bundle
-      return {
-        statusCode: 200,
-        body: ""
+        body: JSON.stringify(errorResponseBundle),
+        headers: {
+          "Content-Type": "application/fhir+json",
+          "Cache-Control": "no-cache"
+        }
       }
     }
 
     logger.info("Generating FHIR response...")
-    const responseBundle: Bundle = generateFhirResponse(prescriptions as Array<Prescription>)
+    const responseBundle: Bundle = generateFhirResponse(prescriptions as Array<Prescription>, logger)
 
     logger.info("Retuning FHIR response.")
     return{
       statusCode: 200,
-      body: JSON.stringify(responseBundle)
+      body: JSON.stringify(responseBundle),
+      headers: {
+        "Content-Type": "application/fhir+json",
+        "Cache-Control": "no-cache"
+      }
     }
   } catch {
     // catch all error
     logger.error("An unknown error occurred whilst processing the request")
     logger.info("Generating FHIR error response...")
     const errorResponseBundle: OperationOutcome = generateFhirErrorResponse(
-      [{status: "500", severity: "fatal", description: "Unknown Error."}])
+      [{status: "500", severity: "fatal", description: "Unknown Error."}],
+      logger
+    )
 
     logger.info("Returning FHIR error response.")
     return {
       statusCode: 500,
-      body: JSON.stringify(errorResponseBundle)
+      body: JSON.stringify(errorResponseBundle),
+      headers: {
+        "Content-Type": "application/fhir+json",
+        "Cache-Control": "no-cache"
+      }
     }
   }
 }

@@ -111,8 +111,8 @@ const validateHeaders = (
   }
 
   const jobRoleCode: string | undefined = eventHeaders?.["nhsd-session-jobrole"]
-  logger.error("Missing required header, nhsd-session-jobrole.")
   if(!jobRoleCode) {
+    logger.error("Missing required header, nhsd-session-jobrole.")
     errors.push({
       status: "400",
       severity: "error",
