@@ -7,6 +7,17 @@ export interface FhirResponseParams {
   acknowledgementTypeCode: string
 
   /**
+   * Patient
+   */
+  birthDate: string // Patient.gender
+  gender: ("male" | "female" | "other" | "unknown") | undefined
+  given: string // Patient.name.given
+  family: string // Patient.name.family
+  prefix: string // Patient.name.prefix
+  suffix: string // Patient.name.suffix
+  nhsNumber: string // Patient.identifier.value
+
+  /**
    * RequestGroup
    */
   // Prescription Information Banner
@@ -43,6 +54,31 @@ export interface FhirResponseParams {
 
   // Nominated Dispenser Information
   nominatedPerformer: string // RequestGroup.author
+}
+
+/**
+ * Maps the integer gender code from the Spine response to a FHIR-compatible string.
+ */
+const mapGender = (genderCode: number): "male" | "female" | "other" | "unknown" => {
+  switch (genderCode) {
+    case 1:
+      return "male"
+    case 2:
+      return "female"
+    case 3:
+      return "other"
+    default:
+      return "unknown"
+  }
+}
+
+/**
+ * Converts the numeric birth date (YYYYMMDD) into a string formatted as YYYY-MM-DD.
+ */
+const formatBirthDate = (birthDate: string): string => {
+  if (!birthDate || isNaN(Number(birthDate))) return ""
+  const dateStr = birthDate.trim()
+  return `${dateStr.slice(0, 4)}-${dateStr.slice(4, 6)}-${dateStr.slice(6, 8)}`
 }
 
 /**
@@ -103,6 +139,15 @@ export function extractPrescriptionData(spineResponseData: string) {
      */
     // The acknowledgement element's typeCode
     acknowledgementTypeCode: acknowledgementTypeCode || "",
+
+    // Patient
+    prefix: soap_response.getElementsByTagName("prefix").item(0)?.textContent || "",
+    suffix: soap_response.getElementsByTagName("suffix").item(0)?.textContent || "",
+    given: soap_response.getElementsByTagName("given").item(0)?.textContent || "",
+    family: soap_response.getElementsByTagName("family").item(0)?.textContent || "",
+    nhsNumber: soap_response.getElementsByTagName("patientNhsNumber").item(0)?.textContent || "",
+    birthDate: formatBirthDate(soap_response.getElementsByTagName("birthTime").item(0)?.textContent || ""),
+    gender: mapGender(parseInt(soap_response.getElementsByTagName("administrativeGenderCode").item(0)?.textContent || "0", 10)) as "male" | "female" | "other" | "unknown",
 
     // Prescription Information Banner
     prescriptionID: soap_response.getElementsByTagName("prescriptionID").item(0)?.textContent || "",

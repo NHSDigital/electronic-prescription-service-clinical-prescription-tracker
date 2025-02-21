@@ -1,17 +1,26 @@
 import {
   Bundle,
   FhirResource,
+  Patient,
   RequestGroup,
   MedicationRequest,
   Task
 } from "fhir/r4"
-import {mapRequestGroup, mapMedicationRequest, mapTask} from "./fhirResourceMapper"
+import {
+  mapPatient,
+  mapRequestGroup,
+  mapMedicationRequest,
+  mapTask
+} from "./fhirResourceMapper"
 import {FhirResponseParams} from "./prescriptionDataParser"
 
 /**
  * Builds a FHIR Bundle from the extracted prescription data
  */
 export function buildFhirResponse(extractedData: FhirResponseParams): Bundle<FhirResource> {
+  // Map the extracted data to the Patient resource
+  const patient = mapPatient(extractedData) as Patient
+
   // Map the extracted data to the RequestGroup resource
   const requestGroup = mapRequestGroup(extractedData) as RequestGroup
 
@@ -26,6 +35,7 @@ export function buildFhirResponse(extractedData: FhirResponseParams): Bundle<Fhi
     resourceType: "Bundle",
     type: "collection", // A collection of resources
     entry: [
+      {resource: patient}, // Add the Patient resource
       {resource: requestGroup}, // Add the RequestGroup resource
       ...medicationRequests.map(medRequest => ({resource: medRequest})), // Add all MedicationRequest resources
       {resource: task} // Add the Task resource

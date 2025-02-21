@@ -30,7 +30,14 @@ describe("MedicationRequest Mapper", () => {
       sentDateTime: "20250204151017",
       newStatusCode: "0001",
       organizationName: "A19999",
-      nominatedPerformer: "FU123"
+      nominatedPerformer: "FU123",
+      birthDate: "1948-04-30",
+      gender: "male",
+      given: "Curtis",
+      family: "Rogers",
+      prefix: "MR",
+      suffix: "",
+      nhsNumber: "1234567890"
     }
 
     // Map the extracted data to MedicationRequest objects
@@ -81,7 +88,14 @@ describe("MedicationRequest Mapper", () => {
       sentDateTime: "20250204151017",
       newStatusCode: "0001",
       organizationName: "A19999",
-      nominatedPerformer: "FU123"
+      nominatedPerformer: "FU123",
+      birthDate: "1948-04-30",
+      gender: "male",
+      given: "Curtis",
+      family: "Rogers",
+      prefix: "MR",
+      suffix: "",
+      nhsNumber: "1234567890"
     }
 
     // Map the extracted data to MedicationRequest objects
