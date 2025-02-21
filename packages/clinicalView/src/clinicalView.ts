@@ -14,7 +14,7 @@ import {v4 as uuidv4} from "uuid"
 import {extractPrescriptionData, FhirResponseParams} from "./utils/prescriptionDataParser"
 import {buildFhirResponse} from "./utils/fhirResponseBuilder"
 import {prescriptionNotFoundResponse, badRequest} from "./utils/responseTemplates"
-import {requestGroupBundleSchema} from "./schema/requestGroupBundle"
+import {requestGroupBundleSchema} from "./schemas/requestGroupBundle"
 
 // Set up logger with log level from environment variables
 const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
