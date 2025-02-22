@@ -16,6 +16,9 @@ import {buildFhirResponse} from "./utils/fhirResponseBuilder"
 import {prescriptionNotFoundResponse, badRequest} from "./utils/responseTemplates"
 import {requestGroupBundleSchema} from "./schemas/requestGroupBundle"
 
+// Test the fast-xml-parser
+import {parseSpineResponse} from "./utils/parseSpineResponse"
+
 // Set up logger with log level from environment variables
 const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
 export const logger = new Logger({serviceName: "clinicalView", logLevel: LOG_LEVEL})
@@ -142,6 +145,12 @@ const handleSpineResponse = (
   const fhirResponse = buildFhirResponse(extractedData)
 
   logger.info("Generated FHIR response bundle", {fhirResponse})
+
+  // Test the fast-xml-parser
+  logger.info("Parsing Spine Response using the fast-xml-parser...")
+  const extractedDataFastXmlParser = parseSpineResponse(spineResponse.data, logger)
+  logger.info("Successfully retrieved prescription data from Spine using fast-xml-parser",
+    {"extractedDataFastXmlParser": extractedDataFastXmlParser})
 
   return fhirResponse
 }
