@@ -9,21 +9,12 @@ import {createSpineClient} from "@nhsdigital/eps-spine-client"
 import {SpineClient} from "@nhsdigital/eps-spine-client/lib/spine-client"
 import {ClinicalViewParams} from "@nhsdigital/eps-spine-client/lib/live-spine-client"
 import {AxiosResponse} from "axios"
-import {
-  Bundle,
-  BundleEntry,
-  FhirResource,
-  RequestGroup
-} from "fhir/r4"
+import {BundleEntry, RequestGroup} from "fhir/r4"
 import {v4 as uuidv4} from "uuid"
-import {extractPrescriptionData, FhirResponseParams} from "./utils/prescriptionDataParser"
-import {buildFhirResponse} from "./utils/fhirResponseBuilder"
-import {prescriptionNotFoundResponse, badRequest} from "./utils/responseTemplates"
 import {requestGroupSchema} from "./schemas/requestGroupSchema"
-
-// Test the fast-xml-parser
 import {parseSpineResponse} from "./utils/parseSpineResponse"
 import {generateFhirResponse} from "./utils/generateFhirResponse"
+import {badRequest} from "./utils/responseTemplates"
 
 // Set up logger with log level from environment variables
 const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
@@ -38,7 +29,7 @@ type HandlerParams = {
 }
 
 type HandlerResponse =
-  | Bundle<FhirResource>
+  | RequestGroup
   | {data: {prescriptionId: string; error: string}}
   | {statusCode: number; body: string}
 
@@ -130,34 +121,16 @@ const buildClinicalViewParams = (
 const handleSpineResponse = (
   spineResponse: AxiosResponse<string, unknown>
 ): HandlerResponse => {
-  logger.info("Processing Spine SOAP response", {responseData: spineResponse.data})
+  logger.info("Processing Spine SOAP response...")
 
   // Extract relevant data from SOAP response
-  const extractedData: FhirResponseParams = extractPrescriptionData(spineResponse.data)
+  const extractedData = parseSpineResponse(spineResponse.data, logger)
 
-  // Check if the response was acknowledged successfully
-  if (extractedData.acknowledgementTypeCode !== "AA") {
-    return prescriptionNotFoundResponse()
-  }
+  logger.info("Successfully retrieved prescription data from Spine", {extractedData})
 
-  // Check if prescription status is valid
-  if (!extractedData.statusCode) {
-    return prescriptionNotFoundResponse()
-  }
-
-  logger.info("Successfully retrieved prescription data from Spine", {"extractedData": extractedData})
-
-  // Test the fast-xml-parser
-  logger.info("Parsing Spine Response using the fast-xml-parser...")
-  const extractedDataFastXmlParser = parseSpineResponse(spineResponse.data, logger)
-  logger.info("Successfully retrieved prescription data from Spine using fast-xml-parser",
-    {"extractedDataFastXmlParser": extractedDataFastXmlParser})
   logger.info("Generating FHIR response...")
-  const responseBundle: RequestGroup = generateFhirResponse(extractedDataFastXmlParser, logger)
-  logger.info("Generated FHIR response bundle using fast-xml-parser", {responseBundle})
 
-  // Build the FHIR response bundle
-  const fhirResponse = buildFhirResponse(extractedData)
+  const fhirResponse: RequestGroup = generateFhirResponse(extractedData, logger)
 
   logger.info("Generated FHIR response bundle", {fhirResponse})
 
