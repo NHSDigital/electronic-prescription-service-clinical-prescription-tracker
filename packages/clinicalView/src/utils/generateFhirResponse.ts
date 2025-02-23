@@ -4,7 +4,8 @@ import {
   RequestGroup,
   Patient,
   MedicationRequest,
-  MedicationDispense
+  MedicationDispense,
+  Extension
 } from "fhir/r4"
 import {ParsedSpineResponse} from "../utils/types"
 import {mapGender} from "./fhirMappers"
@@ -78,9 +79,48 @@ export const generateFhirResponse = (prescriptions: Array<ParsedSpineResponse>, 
           }]
         },
         dispenseRequest: {quantity: {value: parseInt(item.quantity, 10)}},
-        dosageInstruction: [{text: item.dosageInstructions}]
+        dosageInstruction: [{text: item.dosageInstructions}],
+        extension: []
       }
       requestGroup.contained?.push(medicationRequest)
+
+      // Generate DispensingInformation extension
+      logger.info("Adding hardcoded DispensingInformation extension...")
+      const dispensingInformation: Extension = {
+        url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-DispensingInformation",
+        extension: [{
+          url: "dispenseStatus",
+          valueCoding: {
+            system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+            code: "0008", // Hardcoded value for now
+            display: "Item with dispenser"
+          }
+        }]
+      }
+      medicationRequest?.extension?.push(dispensingInformation)
+
+      // Generate PendingCancellations extension (only if dispenseStatus.code === "0008")
+      if (dispensingInformation.extension?.[0].valueCoding?.code === "0008") {
+        logger.info("Adding hardcoded PendingCancellations extension because dispenseStatus is 0008")
+        const pendingCancellations: Extension = {
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PendingCancellations",
+          extension: [
+            {
+              url: "lineItemPendingCancellation",
+              valueBoolean: true
+            },
+            {
+              url: "cancellationReason",
+              valueCoding: {
+                system: "https://fhir.nhs.uk/CodeSystem/medicationrequest-status-reason",
+                code: "0004",
+                display: "Clinical grounds"
+              }
+            }
+          ]
+        }
+        medicationRequest?.extension?.push(pendingCancellations)
+      }
     })
 
     // Generate MedicationDispense entries
