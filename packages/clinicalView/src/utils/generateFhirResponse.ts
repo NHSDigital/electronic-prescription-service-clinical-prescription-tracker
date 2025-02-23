@@ -8,7 +8,7 @@ import {
   Extension
 } from "fhir/r4"
 import {ParsedSpineResponse} from "../utils/types"
-import {mapGender} from "./fhirMappers"
+import {mapGender, mapMedicationDispenseType, mapMedicationRequestStatusReason} from "./fhirMappers"
 
 // Maps extracted data to FHIR RequestGroup response
 export const generateFhirResponse = (prescriptions: Array<ParsedSpineResponse>, logger: Logger): RequestGroup => {
@@ -85,23 +85,28 @@ export const generateFhirResponse = (prescriptions: Array<ParsedSpineResponse>, 
       requestGroup.contained?.push(medicationRequest)
 
       // Generate DispensingInformation extension
-      logger.info("Adding hardcoded DispensingInformation extension...")
+      logger.info("Adding DispensingInformation extension...")
+      const dispenseStatusCode = "0008" // Mocked value - replace with actual logic
       const dispensingInformation: Extension = {
         url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-DispensingInformation",
         extension: [{
           url: "dispenseStatus",
           valueCoding: {
             system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
-            code: "0008", // Hardcoded value for now
-            display: "Item with dispenser"
+            code: dispenseStatusCode,
+            display: mapMedicationDispenseType(dispenseStatusCode)
           }
         }]
       }
       medicationRequest?.extension?.push(dispensingInformation)
 
-      // Generate PendingCancellations extension (only if dispenseStatus.code === "0008")
-      if (dispensingInformation.extension?.[0].valueCoding?.code === "0008") {
-        logger.info("Adding hardcoded PendingCancellations extension because dispenseStatus is 0008")
+      // Generate PendingCancellations extension - Based on allowed dispense statuses
+      const allowedPendingCancellationStatuses = ["0008", "0007", "0002"]
+      const isPendingCancellation = allowedPendingCancellationStatuses.includes(dispenseStatusCode)
+
+      if (isPendingCancellation) {
+        logger.info(`Adding PendingCancellations extension because dispenseStatus is ${dispenseStatusCode}`)
+        const cancellationReasonCode = "0004" // Mocked value - replace with actual logic
         const pendingCancellations: Extension = {
           url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PendingCancellations",
           extension: [
@@ -113,13 +118,15 @@ export const generateFhirResponse = (prescriptions: Array<ParsedSpineResponse>, 
               url: "cancellationReason",
               valueCoding: {
                 system: "https://fhir.nhs.uk/CodeSystem/medicationrequest-status-reason",
-                code: "0004",
-                display: "Clinical grounds"
+                code: cancellationReasonCode,
+                display: mapMedicationRequestStatusReason(cancellationReasonCode)
               }
             }
           ]
         }
         medicationRequest?.extension?.push(pendingCancellations)
+      } else {
+        logger.info(`Skipping PendingCancellations extension because dispenseStatus is ${dispenseStatusCode}`)
       }
     })
 
