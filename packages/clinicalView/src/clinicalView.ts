@@ -19,7 +19,7 @@ import {v4 as uuidv4} from "uuid"
 import {extractPrescriptionData, FhirResponseParams} from "./utils/prescriptionDataParser"
 import {buildFhirResponse} from "./utils/fhirResponseBuilder"
 import {prescriptionNotFoundResponse, badRequest} from "./utils/responseTemplates"
-import {requestGroupBundleSchema} from "./schemas/requestGroupBundle"
+import {requestGroupSchema} from "./schemas/requestGroupSchema"
 
 // Test the fast-xml-parser
 import {parseSpineResponse} from "./utils/parseSpineResponse"
@@ -185,4 +185,4 @@ export const newHandler = (params: HandlerParams) => {
 const DEFAULT_HANDLER_PARAMS: HandlerParams = {logger: logger, spineClient: defaultSpineClient}
 export const handler = newHandler(DEFAULT_HANDLER_PARAMS)
 
-export {requestGroupBundleSchema}
+export {requestGroupSchema}

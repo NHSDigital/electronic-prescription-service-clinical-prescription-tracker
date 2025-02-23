@@ -3,7 +3,7 @@ import {patientSchema} from "./patientSchema"
 import {medicationRequestSchema} from "./medicationRequestSchema"
 import {medicationDispenseSchema} from "./medicationDispenseSchema"
 
-export const requestGroupBundleSchema = {
+export const requestGroupSchema = {
   type: "object",
   description: "A FHIR RequestGroup with associated contained resources.",
   properties: {
@@ -192,4 +192,4 @@ export const requestGroupBundleSchema = {
   additionalProperties: false
 } as const satisfies JSONSchema
 
-export type requestGroupBundleType = FromSchema<typeof requestGroupBundleSchema>
+export type requestGroupBundleType = FromSchema<typeof requestGroupSchema>
