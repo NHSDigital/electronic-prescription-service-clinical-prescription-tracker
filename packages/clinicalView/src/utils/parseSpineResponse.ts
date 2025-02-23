@@ -4,7 +4,6 @@ import {
   XmlResponse,
   XmlSoapBody,
   XmlPrescription,
-  XmlProductLineItem,
   XmlFilteredHistory,
   XmlError,
   PatientDetails,
@@ -14,7 +13,7 @@ import {
   ParsedSpineResponse
 } from "./types"
 
-export const parseSpineResponse = (spineResponse: string, logger: Logger): ParsedSpineResponse => {
+export const parseSpineResponse = (spineResponse: string, logger: Logger): Array<ParsedSpineResponse> => {
   const xmlParser = new XMLParser({ignoreAttributes: false})
   const xmlResponse = xmlParser.parse(spineResponse) as XmlResponse
 
@@ -25,21 +24,9 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     const error: string = parseErrorResponse(xmlResponse)
     if (error === "Prescription not found") {
       logger.info("No prescriptions found.")
-      return {
-        patientDetails: undefined,
-        prescriptionDetails: undefined,
-        productLineItems: [],
-        filteredHistory: [],
-        error: "Prescription not found"
-      }
+      return []
     }
-    return {
-      patientDetails: undefined,
-      prescriptionDetails: undefined,
-      productLineItems: [],
-      filteredHistory: [],
-      error: error || "Unknown Error"
-    }
+    throw new Error(error || "Unknown Error")
   }
 
   logger.info("Parsing prescription data...")
@@ -47,112 +34,172 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     xmlSoapBody.prescriptionClinicalViewResponse.PORX_IN000006UK98
       .ControlActEvent.subject.PrescriptionJsonQueryResponse.epsRecord
 
-  // Handle both single and multiple prescriptions
   if (!Array.isArray(xmlPrescriptions)) {
     xmlPrescriptions = [xmlPrescriptions]
   }
 
-  const parsedPrescriptions = xmlPrescriptions.map(xmlPrescription => ({
-    patientDetails: parsePatientDetails(xmlPrescription),
-    prescriptionDetails: parsePrescriptionDetails(xmlPrescription),
-    productLineItems: parseProductLineItems(xmlPrescription),
-    filteredHistory: parseFilteredHistory(xmlPrescription)
+  logger.info("Spine SOAP xmlPrescriptions data", {xmlPrescriptions})
+
+  const parsedPrescriptions = xmlPrescriptions.map((xmlPrescription) => ({
+    patientDetails: parsePatientDetails(xmlPrescription, logger),
+    prescriptionDetails: parsePrescriptionDetails(xmlPrescription, logger),
+    productLineItems: parseProductLineItems(xmlPrescription, logger),
+    filteredHistory: parseFilteredHistory(xmlPrescription, logger)
   }))
 
-  return parsedPrescriptions[0] // For now, return only the first prescription
+  return parsedPrescriptions
 }
 
 // ---------------------------- PATIENT DETAILS ------------------------------
-const parsePatientDetails = (xmlPrescription: XmlPrescription): PatientDetails => {
+const parsePatientDetails = (xmlPrescription: XmlPrescription, logger: Logger): PatientDetails => {
+  const parentPrescription = xmlPrescription.parentPrescription
+
+  if (!parentPrescription) {
+    throw new Error("Parent prescription details are missing")
+  }
+
+  if (
+    !xmlPrescription.patientNhsNumber ||
+    !parentPrescription?.given ||
+    !parentPrescription?.family ||
+    !parentPrescription?.birthTime) {
+    logger.info("Missing required patient details", {
+      patientNhsNumber: xmlPrescription.patientNhsNumber ?? "Missing",
+      nhsNumber: xmlPrescription.patientNhsNumber.toString() ?? "Missing",
+      given: parentPrescription?.given ?? "Missing",
+      family: parentPrescription?.family ?? "Missing",
+      birthTime: parentPrescription?.birthTime ?? "Missing"
+    })
+  }
+
+  logger.info("Parent details parsed successfully", {
+    patientNhsNumber: xmlPrescription.patientNhsNumber,
+    nhsNumber: xmlPrescription.patientNhsNumber.toString(),
+    given: parentPrescription?.given,
+    family: parentPrescription?.family,
+    birthTime: parentPrescription?.birthTime
+  })
+
   return {
-    nhsNumber: xmlPrescription.patientNhsNumber["@_value"],
-    prefix: xmlPrescription.prefix["@_value"],
-    given: xmlPrescription.given["@_value"],
-    family: xmlPrescription.family["@_value"],
-    suffix: xmlPrescription.suffix["@_value"] || "",
-    birthDate: formatBirthDate(xmlPrescription.patientBirthTime["@_value"]),
-    gender: mapGender(xmlPrescription.administrativeGenderCode["@_value"])
+    nhsNumber: xmlPrescription.patientNhsNumber.toString(),
+    prefix: parentPrescription.prefix ?? "",
+    given: parentPrescription.given,
+    family: parentPrescription.family,
+    suffix: parentPrescription.suffix ?? "",
+    birthDate: formatBirthDate(parentPrescription.birthTime.toString()),
+    gender: mapGender(parentPrescription.administrativeGenderCode?.toString() ?? "unknown")
   }
 }
 
 // ---------------------------- PRESCRIPTION DETAILS -------------------------
-const parsePrescriptionDetails = (xmlPrescription: XmlPrescription): PrescriptionDetails => {
+const parsePrescriptionDetails = (xmlPrescription: XmlPrescription, logger: Logger): PrescriptionDetails => {
+  if (
+    !xmlPrescription.prescriptionID ||
+    !xmlPrescription.prescriptionType.toString() ||
+    !xmlPrescription.prescriptionStatus ||
+    !xmlPrescription.instanceNumber) {
+    logger.info("Missing required prescription details", {
+      prescriptionID: xmlPrescription.prescriptionID ?? "Missing",
+      prescriptionType: xmlPrescription.prescriptionType.toString() ?? "Missing",
+      prescriptionStatus: xmlPrescription.prescriptionStatus ?? "Missing",
+      instanceNumber: xmlPrescription.instanceNumber ?? "Missing"
+    })
+  }
+
+  logger.info("Prescription details parsed successfully", {
+    prescriptionID: xmlPrescription.prescriptionID,
+    prescriptionType: xmlPrescription.prescriptionType.toString(),
+    prescriptionStatus: xmlPrescription.prescriptionStatus,
+    instanceNumber: xmlPrescription.instanceNumber
+  })
+
   return {
-    prescriptionId: xmlPrescription.prescriptionID["@_value"],
-    prescriptionType: xmlPrescription.prescriptionType["@_value"],
-    statusCode: xmlPrescription.prescriptionStatus["@_value"],
-    instanceNumber: parseInt(xmlPrescription.instanceNumber["@_value"], 10),
-    maxRepeats: xmlPrescription.maxRepeats["@_value"] === "None"
-      ? undefined
-      : parseInt(xmlPrescription.maxRepeats["@_value"], 10),
-    daysSupply: xmlPrescription.daysSupply["@_value"],
-    nominatedPerformer: xmlPrescription.nominatedPerformer["@_value"] || "",
-    organizationSummaryObjective: xmlPrescription.dispensingOrganization["@_value"] || ""
+    prescriptionId: xmlPrescription.prescriptionID,
+    prescriptionType: xmlPrescription.prescriptionType.toString(),
+    statusCode: xmlPrescription.prescriptionStatus.toString(),
+    instanceNumber: xmlPrescription.instanceNumber,
+    maxRepeats: xmlPrescription.maxRepeats !== null ? xmlPrescription.maxRepeats : undefined,
+    daysSupply: xmlPrescription.daysSupply,
+    nominatedPerformer: xmlPrescription.nominatedPerformer ?? "",
+    organizationSummaryObjective: xmlPrescription.dispensingOrganization ?? ""
   }
 }
 
 // ---------------------------- PRODUCT LINE ITEMS ---------------------------
-const parseProductLineItems = (xmlPrescription: XmlPrescription): Array<ProductLineItemDetails> => {
+const parseProductLineItems = (xmlPrescription: XmlPrescription, logger: Logger): Array<ProductLineItemDetails> => {
   const productLineItems: Array<ProductLineItemDetails> = []
+  const parentPrescription = xmlPrescription.parentPrescription
+
+  if (!parentPrescription) {
+    throw new Error("Parent prescription details are missing")
+  }
 
   for (let i = 1; i <= 5; i++) {
-    const productLineItemKey = `productLineItem${i}` as keyof XmlPrescription
-    const quantityKey = `quantityLineItem${i}` as keyof XmlPrescription
-    const dosageKey = `dosageLineItem${i}` as keyof XmlPrescription
+    const productLineItemKey = `productLineItem${i}` as keyof typeof parentPrescription
+    const quantityKey = `quantityLineItem${i}` as keyof typeof parentPrescription
+    const dosageKey = `dosageLineItem${i}` as keyof typeof parentPrescription
 
-    const productLineItem = xmlPrescription[productLineItemKey] as XmlProductLineItem | undefined
+    const productLineItem = parentPrescription[productLineItemKey] as string | undefined
 
-    if (productLineItem && productLineItem["@_value"]) {
+    if (productLineItem) {
       productLineItems.push({
-        medicationName: productLineItem["@_value"],
-        quantity: (xmlPrescription[quantityKey] as XmlProductLineItem | undefined)?.["@_value"] || "0",
-        dosageInstructions: (xmlPrescription[dosageKey] as XmlProductLineItem | undefined)?.["@_value"]
-          || "Unknown dosage"
+        medicationName: productLineItem,
+        quantity: parentPrescription[quantityKey]?.toString() ?? "0",
+        dosageInstructions: parentPrescription[dosageKey]?.toString() ?? "Unknown dosage"
       })
     }
   }
+
+  if (productLineItems.length === 0) {
+    throw new Error("At least one product line item is required")
+  }
+
+  logger.info("Product line items parsed successfully", {productLineItems})
 
   return productLineItems
 }
 
 // ---------------------------- FILTERED HISTORY -----------------------------
-const parseFilteredHistory = (xmlPrescription: XmlPrescription): Array<FilteredHistoryDetails> => {
+const parseFilteredHistory = (xmlPrescription: XmlPrescription, logger: Logger): Array<FilteredHistoryDetails> => {
   const filteredHistoryItems: XmlFilteredHistory | Array<XmlFilteredHistory> = xmlPrescription.filteredHistory
   const parsedHistory: Array<FilteredHistoryDetails> = []
 
   if (Array.isArray(filteredHistoryItems)) {
     for (const history of filteredHistoryItems) {
       parsedHistory.push({
-        SCN: parseInt(history.SCN["@_value"], 10),
-        sentDateTime: history.timestamp["@_value"],
-        fromStatus: history.fromStatus["@_value"],
-        toStatus: history.toStatus["@_value"],
-        message: history.message["@_value"],
-        organizationName: history.agentPersonOrgCode["@_value"]
+        SCN: history.SCN,
+        sentDateTime: history.timestamp.toString(),
+        fromStatus: history.fromStatus.toString(),
+        toStatus: history.toStatus.toString(),
+        message: history.message.toString(),
+        organizationName: history.agentPersonOrgCode.toString()
       })
     }
-  } else {
+  } else if (filteredHistoryItems) {
     parsedHistory.push({
-      SCN: parseInt(filteredHistoryItems.SCN["@_value"], 10),
-      sentDateTime: filteredHistoryItems.timestamp["@_value"],
-      fromStatus: filteredHistoryItems.fromStatus["@_value"],
-      toStatus: filteredHistoryItems.toStatus["@_value"],
-      message: filteredHistoryItems.message["@_value"],
-      organizationName: filteredHistoryItems.agentPersonOrgCode["@_value"]
+      SCN: filteredHistoryItems.SCN,
+      sentDateTime: filteredHistoryItems.timestamp.toString(),
+      fromStatus: filteredHistoryItems.fromStatus.toString(),
+      toStatus: filteredHistoryItems.toStatus.toString(),
+      message: filteredHistoryItems.message.toString(),
+      organizationName: filteredHistoryItems.agentPersonOrgCode.toString()
     })
   }
+
+  logger.info("Filtered history parsed successfully", {parsedHistory})
 
   return parsedHistory.sort((a, b) => b.SCN - a.SCN) // Sort by SCN in descending order
 }
 
 // ---------------------------- ERROR HANDLING -------------------------------
 const parseErrorResponse = (responseXml: XmlResponse): string => {
-  const xmlSoapEnvBody: XmlSoapBody | undefined = responseXml["SOAP:Envelope"]?.["SOAP:Body"]
+  const xmlSoapEnvBody = responseXml["SOAP:Envelope"]?.["SOAP:Body"]
   if (!xmlSoapEnvBody) return "Unknown Error."
 
-  const xmlError: XmlError = xmlSoapEnvBody.prescriptionClinicalViewResponse.MCCI_IN010000UK13!
-    .acknowledgement.acknowledgementDetail.code
-  return xmlError["@_displayName"] || "Unknown Error"
+  const xmlError: XmlError | undefined = xmlSoapEnvBody.prescriptionClinicalViewResponse?.MCCI_IN010000UK13
+    ?.acknowledgement?.acknowledgementDetail?.code
+
+  return xmlError?.["@_displayName"] ?? "Unknown Error"
 }
 
 // ---------------------------- HELPERS --------------------------------------

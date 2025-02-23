@@ -1,9 +1,9 @@
 export interface ParsedSpineResponse {
   patientDetails?: PatientDetails
   prescriptionDetails?: PrescriptionDetails
-  productLineItems: Array<ProductLineItemDetails>
-  filteredHistory: Array<FilteredHistoryDetails>
-  error?: string
+  productLineItems?: Array<ProductLineItemDetails>
+  filteredHistory?: Array<FilteredHistoryDetails>
+  error?: string // Error message if parsing fails
 }
 
 export interface PatientDetails {
@@ -22,7 +22,7 @@ export interface PrescriptionDetails {
   statusCode: string
   instanceNumber: number
   maxRepeats?: number
-  daysSupply: string
+  daysSupply: number
   nominatedPerformer: string
   organizationSummaryObjective: string
 }
@@ -71,42 +71,89 @@ export interface XmlSoapBody {
 }
 
 export interface XmlPrescription {
-  patientNhsNumber: XmlStringValue
-  prefix: XmlStringValue
-  given: XmlStringValue
-  family: XmlStringValue
-  suffix: XmlStringValue
-  patientBirthTime: XmlStringValue
-  administrativeGenderCode: XmlStringValue
+  releaseRequestMsgRef: string
+  prescriptionStatus: string
+  nominatedDownloadDate: string
+  downloadDate: number
+  completionDate: string
+  expiryDate: number
 
-  prescriptionID: XmlStringValue
-  prescriptionType: XmlStringValue
-  prescriptionStatus: XmlStringValue
-  instanceNumber: XmlStringValue
-  maxRepeats: XmlStringValue
-  daysSupply: XmlStringValue
-  nominatedPerformer: XmlStringValue
-  dispensingOrganization: XmlStringValue
+  dispenseWindow: {
+    low: XmlStringValue
+    high: XmlStringValue
+  }
 
-  productLineItem1?: XmlProductLineItem
-  productLineItem2?: XmlProductLineItem
-  productLineItem3?: XmlProductLineItem
-  productLineItem4?: XmlProductLineItem
-  productLineItem5?: XmlProductLineItem
+  instanceNumber: number
+  prescriptionID: string
+  prescriptionType: string
+  prescriptionTime: number
+  prescriptionMsgRef: string
+  prescribingOrganization: string
+  daysSupply: number
+  maxRepeats: number | null
+  eventID: string
+  lowerAgeLimit: number
+  higherAgeLimit: number
+  patientNhsNumber: number
+  patientBirthTime: number
+  nominatedPerformer: string
+  nominatedPerformerType: string
+  dispensingOrganization: string
 
-  quantityLineItem1?: XmlStringValue
-  quantityLineItem2?: XmlStringValue
-  quantityLineItem3?: XmlStringValue
-  quantityLineItem4?: XmlStringValue
-  quantityLineItem5?: XmlStringValue
+  lineItem: Array<{
+    order: XmlStringValue
+    ID: XmlStringValue
+    previousStatus: XmlStringValue
+    status: XmlStringValue
+  }>
 
-  dosageLineItem1?: XmlStringValue
-  dosageLineItem2?: XmlStringValue
-  dosageLineItem3?: XmlStringValue
-  dosageLineItem4?: XmlStringValue
-  dosageLineItem5?: XmlStringValue
+  history: Array<{
+    SCN: number
+    instance: number
+    interactionID: string
+    status: number
+    instanceStatus: number
+    agentPerson: number
+    agentSystem: number
+    agentPersonOrgCode: string
+    message: string
+    messageID: string
+    timestamp: string
+    toASID: string
+    fromASID: string
+  }>
 
   filteredHistory: XmlFilteredHistory | Array<XmlFilteredHistory>
+
+  parentPrescription?: {
+    birthTime: number
+    administrativeGenderCode: number
+    prefix: string
+    given: string
+    family: string
+    suffix: string
+
+    addrLine1: string
+    addrLine2: string
+    addrLine3: string
+    postalCode: string
+
+    productLineItem1?: string
+    quantityLineItem1?: number
+    dosageLineItem1?: string
+
+    productLineItem2?: string
+    quantityLineItem2?: number
+    dosageLineItem2?: string
+
+    productLineItem3?: string
+    quantityLineItem3?: number
+    dosageLineItem3?: string
+
+    productLineItem4?: string
+    quantityLineItem4?: number
+    dosageLineItem4?: string
+  }
 }
 
 export interface XmlProductLineItem {
@@ -114,12 +161,25 @@ export interface XmlProductLineItem {
 }
 
 export interface XmlFilteredHistory {
-  SCN: XmlStringValue
-  timestamp: XmlStringValue
-  fromStatus: XmlStringValue
-  toStatus: XmlStringValue
-  message: XmlStringValue
-  agentPersonOrgCode: XmlStringValue
+  SCN: number
+  timestamp: number
+  fromStatus: string
+  toStatus: string
+  agentPerson: number
+  agentRoleProfileCodeId: number
+  message: string
+  orgASID: number
+  agentPersonOrgCode: string
+
+  lineStatusChangeDict: {
+    line: Array<{
+      order: number
+      id: string
+      status?: string
+      fromStatus: string | number
+      toStatus: string | number
+    }>
+  }
 }
 
 export interface XmlError {

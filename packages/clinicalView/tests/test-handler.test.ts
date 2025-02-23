@@ -12,10 +12,9 @@ import {MiddyfiedHandler} from "@middy/core"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {LogLevel} from "@aws-lambda-powertools/logger/types"
 import {createSpineClient} from "@nhsdigital/eps-spine-client"
-// import prescriptionFoundResponse from "./data/prescriptionFoundResponse"
+import prescriptionFoundResponse from "./data/prescriptionFoundResponse"
 import prescriptionNotFoundResponse from "./data/prescriptionNotFoundResponse"
-// import {expectedFhirResponse, expectedPrescriptionNotFoundResponse} from "./data/expectedResponses"
-import {expectedPrescriptionNotFoundResponse} from "./data/expectedResponses"
+import {expectedFhirResponse, expectedPrescriptionNotFoundResponse} from "./data/expectedResponses"
 
 const mock = new MockAdapter(axios)
 
@@ -50,17 +49,17 @@ describe("clinicalView Handler", () => {
     handler = newHandler(HandlerParams)
   })
 
-  // it("Builds FHIR Bundle from Spine prescription response", async () => {
-  //   mock.onPost(CLINICAL_VIEW_URL).reply(200, prescriptionFoundResponse)
+  it("Builds FHIR Bundle from Spine prescription response", async () => {
+    mock.onPost(CLINICAL_VIEW_URL).reply(200, prescriptionFoundResponse)
 
-  //   const event = {...MOCK_EVENT} as unknown as APIGatewayEvent
-  //   const context = {} as unknown as Context
+    const event = {...MOCK_EVENT} as unknown as APIGatewayEvent
+    const context = {} as unknown as Context
 
-  //   const response = await handler(event, context)
+    const response = await handler(event, context)
 
-  //   expect(mock.history.post[0].data).toContain("9AD427-A83008-2E461K")
-  //   expect(response).toEqual(expectedFhirResponse)
-  // })
+    expect(mock.history.post[0].data).toContain("9AD427-A83008-2E461K")
+    expect(response).toEqual(expectedFhirResponse)
+  })
 
   it("Handles a prescription not found response", async () => {
     mock.onPost(CLINICAL_VIEW_URL).reply(200, prescriptionNotFoundResponse)
