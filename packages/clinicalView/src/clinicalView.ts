@@ -9,7 +9,12 @@ import {createSpineClient} from "@nhsdigital/eps-spine-client"
 import {SpineClient} from "@nhsdigital/eps-spine-client/lib/spine-client"
 import {ClinicalViewParams} from "@nhsdigital/eps-spine-client/lib/live-spine-client"
 import {AxiosResponse} from "axios"
-import {Bundle, BundleEntry, FhirResource} from "fhir/r4"
+import {
+  Bundle,
+  BundleEntry,
+  FhirResource,
+  RequestGroup
+} from "fhir/r4"
 import {v4 as uuidv4} from "uuid"
 import {extractPrescriptionData, FhirResponseParams} from "./utils/prescriptionDataParser"
 import {buildFhirResponse} from "./utils/fhirResponseBuilder"
@@ -18,6 +23,7 @@ import {requestGroupBundleSchema} from "./schemas/requestGroupBundle"
 
 // Test the fast-xml-parser
 import {parseSpineResponse} from "./utils/parseSpineResponse"
+import {generateFhirResponse} from "./utils/generateFhirResponse"
 
 // Set up logger with log level from environment variables
 const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
@@ -141,16 +147,19 @@ const handleSpineResponse = (
 
   logger.info("Successfully retrieved prescription data from Spine", {"extractedData": extractedData})
 
-  // Build the FHIR response bundle
-  const fhirResponse = buildFhirResponse(extractedData)
-
-  logger.info("Generated FHIR response bundle", {fhirResponse})
-
   // Test the fast-xml-parser
   logger.info("Parsing Spine Response using the fast-xml-parser...")
   const extractedDataFastXmlParser = parseSpineResponse(spineResponse.data, logger)
   logger.info("Successfully retrieved prescription data from Spine using fast-xml-parser",
     {"extractedDataFastXmlParser": extractedDataFastXmlParser})
+  logger.info("Generating FHIR response...")
+  const responseBundle: RequestGroup = generateFhirResponse(extractedDataFastXmlParser, logger)
+  logger.info("Generated FHIR response bundle using fast-xml-parser", {responseBundle})
+
+  // Build the FHIR response bundle
+  const fhirResponse = buildFhirResponse(extractedData)
+
+  logger.info("Generated FHIR response bundle", {fhirResponse})
 
   return fhirResponse
 }
