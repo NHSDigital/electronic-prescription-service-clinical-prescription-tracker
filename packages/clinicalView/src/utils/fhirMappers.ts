@@ -50,3 +50,11 @@ export const mapMedicationRequestStatusReason = (code: string): string => {
 
   return medicationRequestStatusReasonMap[code] || "Unknown"
 }
+
+/**
+ * Converts the numeric birth date (YYYYMMDD) into a string formatted as YYYY-MM-DD.
+ */
+export const formatBirthDate = (birthDate: string): string => {
+  if (!birthDate || isNaN(Number(birthDate))) return ""
+  return `${birthDate.slice(0, 4)}-${birthDate.slice(4, 6)}-${birthDate.slice(6, 8)}`
+}

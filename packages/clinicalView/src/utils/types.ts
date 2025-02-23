@@ -12,7 +12,7 @@ export interface PatientDetails {
   given: string
   family: string
   suffix: string
-  birthDate: string
+  birthDate?: string
   gender?: number
 }
 

@@ -8,7 +8,12 @@ import {
   Extension
 } from "fhir/r4"
 import {ParsedSpineResponse} from "../utils/types"
-import {mapGender, mapMedicationDispenseType, mapMedicationRequestStatusReason} from "./fhirMappers"
+import {
+  mapGender,
+  mapMedicationDispenseType,
+  mapMedicationRequestStatusReason,
+  formatBirthDate
+} from "./fhirMappers"
 
 // Maps extracted data to FHIR RequestGroup response
 export const generateFhirResponse = (prescriptions: Array<ParsedSpineResponse>, logger: Logger): RequestGroup => {
@@ -56,6 +61,8 @@ export const generateFhirResponse = (prescriptions: Array<ParsedSpineResponse>, 
         }],
         gender: mapGender(prescription.patientDetails?.gender ?? 0),
         birthDate: prescription.patientDetails?.birthDate
+          ? formatBirthDate(prescription.patientDetails.birthDate)
+          : undefined
       }
 
       requestGroup.contained?.push(patient)
