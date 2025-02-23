@@ -7,6 +7,7 @@ import {
   MedicationDispense
 } from "fhir/r4"
 import {ParsedSpineResponse} from "../utils/types"
+import {mapGender} from "./fhirMappers"
 
 // Maps extracted data to FHIR RequestGroup response
 export const generateFhirResponse = (prescriptions: Array<ParsedSpineResponse>, logger: Logger): RequestGroup => {
@@ -52,7 +53,7 @@ export const generateFhirResponse = (prescriptions: Array<ParsedSpineResponse>, 
           given: [prescription.patientDetails?.given || ""],
           family: prescription.patientDetails?.family || ""
         }],
-        gender: prescription.patientDetails?.gender,
+        gender: mapGender(prescription.patientDetails?.gender ?? 0),
         birthDate: prescription.patientDetails?.birthDate
       }
 

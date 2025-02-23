@@ -87,7 +87,7 @@ const parsePatientDetails = (xmlPrescription: XmlPrescription, logger: Logger): 
     family: parentPrescription.family,
     suffix: parentPrescription.suffix ?? "",
     birthDate: formatBirthDate(parentPrescription.birthTime.toString()),
-    gender: mapGender(parentPrescription.administrativeGenderCode?.toString() ?? "unknown")
+    gender: parentPrescription.administrativeGenderCode ?? undefined
   }
 }
 
@@ -203,18 +203,18 @@ const parseErrorResponse = (responseXml: XmlResponse): string => {
 }
 
 // ---------------------------- HELPERS --------------------------------------
-const mapGender = (genderCode: string): "male" | "female" | "other" | "unknown" => {
-  switch (genderCode) {
-    case "1":
-      return "male"
-    case "2":
-      return "female"
-    case "3":
-      return "other"
-    default:
-      return "unknown"
-  }
-}
+// const mapGender = (genderCode: string): "male" | "female" | "other" | "unknown" => {
+//   switch (genderCode) {
+//     case "1":
+//       return "male"
+//     case "2":
+//       return "female"
+//     case "3":
+//       return "other"
+//     default:
+//       return "unknown"
+//   }
+// }
 
 const formatBirthDate = (birthDate: string): string => {
   if (!birthDate || isNaN(Number(birthDate))) return ""

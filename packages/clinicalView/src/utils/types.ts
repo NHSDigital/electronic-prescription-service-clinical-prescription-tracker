@@ -13,7 +13,7 @@ export interface PatientDetails {
   family: string
   suffix: string
   birthDate: string
-  gender: "male" | "female" | "other" | "unknown"
+  gender?: number
 }
 
 export interface PrescriptionDetails {
