@@ -154,7 +154,7 @@ export const generateFhirResponse = (prescriptions: Array<ParsedSpineResponse>, 
       requestGroup.contained?.push(medicationDispense)
     })
 
-    // Add extensions and actions
+    // Add hardcoded extensions
     requestGroup.extension?.push({
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
       extension: [
@@ -190,6 +190,49 @@ export const generateFhirResponse = (prescriptions: Array<ParsedSpineResponse>, 
         code: "0101", // Mocked value, map this value
         display: "Primary Care Prescriber - Medical Prescriber" // Mocked value, adjust as needed
       }
+    })
+
+    // Add a hardcoded action object
+    requestGroup.action?.push({
+      title: "Prescription status transitions",
+      action: [
+        {
+          title: "Prescription upload successful",
+          timingTiming: {
+            event: ["2025-02-24T05:30:00.494Z"],
+            repeat: {
+              frequency: 1,
+              period: 20,
+              periodUnit: "d"
+            }
+          },
+          participant: {
+            identifier: {
+              system: "https://fhir.nhs.uk/Id/ods-organization-code",
+              value: "A83008"
+            }
+          },
+          code: [{
+            coding: [{
+              system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+              code: "0001",
+              display: "To be Dispensed"
+            }]
+          }],
+          action: [
+            {
+              resource: {
+                reference: "#example-medicationrequest-1"
+              }
+            },
+            {
+              resource: {
+                reference: "#example-medicationrequest-2"
+              }
+            }
+          ]
+        }
+      ]
     })
   })
 
