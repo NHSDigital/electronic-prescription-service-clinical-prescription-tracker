@@ -5,7 +5,8 @@ import {
   Patient,
   MedicationRequest,
   MedicationDispense,
-  Extension
+  Extension,
+  Reference
 } from "fhir/r4"
 import {ParsedSpineResponse} from "../utils/types"
 import {
@@ -192,7 +193,7 @@ export const generateFhirResponse = (prescriptions: Array<ParsedSpineResponse>, 
       }
     })
 
-    // Add a hardcoded action object
+    // Add hardcoded action objects
     requestGroup.action?.push({
       title: "Prescription status transitions",
       action: [
@@ -206,12 +207,12 @@ export const generateFhirResponse = (prescriptions: Array<ParsedSpineResponse>, 
               periodUnit: "d"
             }
           },
-          participant: {
+          participant: [{
             identifier: {
               system: "https://fhir.nhs.uk/Id/ods-organization-code",
               value: "A83008"
             }
-          },
+          }] as Array<Reference>, // Corrected to Array<Reference> type
           code: [{
             coding: [{
               system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
@@ -233,6 +234,47 @@ export const generateFhirResponse = (prescriptions: Array<ParsedSpineResponse>, 
           ]
         }
       ]
+    })
+
+    requestGroup.action?.push({
+      title: "Nominated Release Request successful",
+      timingDateTime: "2025-01-29T13:00:00Z",
+      participant: [{
+        identifier: {
+          system: "https://fhir.nhs.uk/Id/ods-organization-code",
+          value: "FCG71"
+        }
+      }] as Array<Reference>, // Corrected to Array<Reference> type
+      code: [{
+        coding: [{
+          system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+          code: "0002",
+          display: "With Dispenser"
+        }]
+      }]
+    })
+
+    requestGroup.action?.push({
+      title: "Dispense notification successful",
+      timingDateTime: "2025-01-30T10:00:00Z",
+      participant: [{
+        identifier: {
+          system: "https://fhir.nhs.uk/Id/ods-organization-code",
+          value: "FCG71"
+        }
+      }] as Array<Reference>, // Corrected to Array<Reference> type
+      code: [{
+        coding: [{
+          system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+          code: "0003",
+          display: "With Dispenser - Active"
+        }]
+      }],
+      action: [{
+        resource: {
+          reference: "#example-medicationdispense"
+        }
+      }]
     })
   })
 
