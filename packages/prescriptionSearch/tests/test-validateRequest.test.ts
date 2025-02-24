@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+import {jest} from "@jest/globals"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {validateRequest} from "../src/validateRequest"
 
@@ -20,6 +21,19 @@ const mockQueryStringParameters: APIGatewayProxyEventQueryStringParameters = {
 }
 
 describe("Test validateRequest", () => {
+
+  it("updates the logger when called with a valid request", async () => {
+    const appendKeySpy = jest.spyOn(Logger.prototype, "appendKeys")
+    const mockEvent = {
+      headers: mockHeaders,
+      queryStringParameters: mockQueryStringParameters
+    } as unknown as APIGatewayProxyEvent
+
+    validateRequest(mockEvent, logger)
+    expect(appendKeySpy).toHaveBeenLastCalledWith({
+      "x-request-id": "REQ-123-456-789"
+    })
+  })
 
   it("returns correct search parameters when called with a valid request with prescriptionId", async () => {
     const mockEvent = {

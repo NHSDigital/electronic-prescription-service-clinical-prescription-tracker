@@ -29,6 +29,11 @@ export const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
 export const logger: Logger = new Logger({serviceName: "prescriptionSearch", logLevel: LOG_LEVEL})
 const spineClient: SpineClient = createSpineClient(logger)
 
+const headers = {
+  "Content-Type": "application/fhir+json",
+  "Cache-Control": "no-cache"
+}
+
 // TODO: tests
 export const apiGatewayHandler = async (
   params: HandlerParams, event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
@@ -51,10 +56,7 @@ export const apiGatewayHandler = async (
     return {
       statusCode: 400,
       body: JSON.stringify(errorResponseBundle),
-      headers: {
-        "Content-Type": "application/fhir+json",
-        "Cache-Control": "no-cache"
-      }
+      headers
     }
   }
 
@@ -74,10 +76,7 @@ export const apiGatewayHandler = async (
       return {
         statusCode: 500,
         body: JSON.stringify(errorResponseBundle),
-        headers: {
-          "Content-Type": "application/fhir+json",
-          "Cache-Control": "no-cache"
-        }
+        headers
       }
     }
 
@@ -88,10 +87,7 @@ export const apiGatewayHandler = async (
     return{
       statusCode: 200,
       body: JSON.stringify(responseBundle),
-      headers: {
-        "Content-Type": "application/fhir+json",
-        "Cache-Control": "no-cache"
-      }
+      headers
     }
   } catch {
     // catch all error
@@ -106,10 +102,7 @@ export const apiGatewayHandler = async (
     return {
       statusCode: 500,
       body: JSON.stringify(errorResponseBundle),
-      headers: {
-        "Content-Type": "application/fhir+json",
-        "Cache-Control": "no-cache"
-      }
+      headers
     }
   }
 }
