@@ -34,7 +34,6 @@ const headers = {
   "Cache-Control": "no-cache"
 }
 
-// TODO: tests
 export const apiGatewayHandler = async (
   params: HandlerParams, event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
   logger.appendKeys({

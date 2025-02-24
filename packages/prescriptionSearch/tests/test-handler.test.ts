@@ -70,7 +70,6 @@ describe("test handler", () => {
   beforeEach(() => {
     jest.resetAllMocks()
     mockAxios.reset()
-    // TODO: can these be in the before all?
     const logger: Logger = new Logger({serviceName: "prescriptionSearch", logLevel: "DEBUG"})
     const spineClient: SpineClient = createSpineClient(logger)
     handler = newHandler({logger, spineClient})
