@@ -14,10 +14,11 @@
   "author": "NHS Digital",
   "license": "MIT",
   "workspaces": [
+    "packages/cdk",
     "packages/prescriptionSearch",
     "packages/sandbox",
     "packages/specification",
-    "packages/statusLambda",
+    "packages/status",
     "packages/common/testing",
     "packages/clinicalView"
   ],

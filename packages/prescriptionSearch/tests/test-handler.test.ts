@@ -56,7 +56,7 @@ jest.unstable_mockModule("../src/generateFhirResponse", () => {
   }
 })
 
-const {newHandler} = await import("../src/prescriptionSearch")
+const {newHandler} = await import("../src/handler")
 const {validateRequest} = await import("../src/validateRequest")
 const {parseSpineResponse} = await import("../src/parseSpineResponse")
 const {generateFhirResponse, generateFhirErrorResponse} = await import("../src/generateFhirResponse")

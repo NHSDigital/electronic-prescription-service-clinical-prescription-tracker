@@ -33,3 +33,5 @@ for ruleset in "${rulesets[@]}"
 done
 
 rm -rf /tmp/ruleset
+
+# TODO: convert this to check cdk instead

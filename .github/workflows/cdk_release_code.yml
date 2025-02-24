@@ -1,0 +1,37 @@
+# TODO: complete this
+# TODO: make the pipelines use this; ci, pull_request, release
+name: cdk release code
+
+on:
+  workflow_call:
+    inputs:
+      TARGET_ENVIRONMENT:
+        required: true
+        type: string
+      VERSION_NUMBER:
+        required: true
+        type: string
+      COMMIT_ID:
+        required: true
+        type: string
+      CDK_APP_NAME:
+        required: true
+        type: string
+
+jobs:
+  release_code:
+    runs-on: ubuntu-22.04
+    environment: ${{ inputs.TARGET_ENVIRONMENT }}
+    name: deploy cdk app ${{ inputs.CDK_APP_NAME }}
+    permissions:
+      id-token: write
+      contents: write
+
+    steps:
+      - name: Checkout local github actions
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH_NAME }}
+          fetch-depth: 0
+          sparse-checkout: |
+            .github

@@ -1,8 +1,8 @@
 {
-  "name": "statusLambda",
+  "name": "status",
   "version": "1.0.0",
   "description": "Lambda of the _status endpoint",
-  "main": "statusLambda.js",
+  "main": "status.js",
   "author": "NHS Digital",
   "license": "MIT",
   "scripts": {

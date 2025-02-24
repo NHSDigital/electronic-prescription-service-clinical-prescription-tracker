@@ -120,10 +120,11 @@ sbom:
 lint: lint-node lint-samtemplates lint-python lint-githubactions lint-githubaction-scripts lint-specification
 
 lint-node: compile
+	npm run link --workspace packages/cdk
 	npm run lint --workspace packages/clinicalView
 	npm run lint --workspace packages/prescriptionSearch
 	npm run lint --workspace packages/sandbox
-	npm run lint --workspace packages/statusLambda
+	npm run lint --workspace packages/status
 	npm run lint --workspace packages/common/testing
 
 lint-samtemplates:
@@ -142,24 +143,28 @@ lint-specification: compile-specification
 	npm run lint --workspace packages/specification
 
 test: compile
+	npm run test --workspace packages/cdk
 	npm run test --workspace packages/prescriptionSearch
 	npm run test --workspace packages/sandbox
-	npm run test --workspace packages/statusLambda
+	npm run test --workspace packages/status
 	npm run test --workspace packages/clinicalView
 
 clean:
+	rm -rf packages/cdk/coverage
+	rm -rf packages/cdk/lib
 	rm -rf packages/clinicalView/coverage
 	rm -rf packages/common/testing/coverage
 	rm -rf packages/prescriptionSearch/coverage
 	rm -rf packages/sandbox/coverage
 	rm -rf packages/specification/coverage
-	rm -rf packages/statusLambda/coverage
+	rm -rf packages/status/coverage
 	rm -rf packages/clinicalView/lib
 	rm -rf packages/common/testing/lib
 	rm -rf packages/prescriptionSearch/lib
 	rm -rf packages/sandbox/lib
 	rm -rf packages/specification/lib
-	rm -rf packages/statusLambda/lib
+	rm -rf packages/status/lib
+	rm -rf cdk.out
 	rm -rf .aws-sam
 
 deep-clean: clean
@@ -170,9 +175,10 @@ check-licenses: check-licenses-node check-licenses-python
 
 check-licenses-node:
 	npm run check-licenses
+	npm run check-licenses --workspace packages/cdk
 	npm run check-licenses --workspace packages/prescriptionSearch
 	npm run check-licenses --workspace packages/sandbox
-	npm run check-licenses --workspace packages/statusLambda
+	npm run check-licenses --workspace packages/status
 	npm run check-licenses --workspace packages/clinicalView
 
 check-licenses-python:
@@ -186,3 +192,46 @@ aws-login:
 
 cfn-guard:
 	./scripts/run_cfn_guard.sh
+
+cdk-deploy:
+	REQUIRE_APPROVAL="$${REQUIRE_APPROVAL:-any-change}" && \
+	VERSION_NUMBER="$${VERSION_NUMBER:-undefined}" && \
+	COMMIT_ID="$${COMMIT_ID:-undefined}" && \
+		npx cdk deploy \
+		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/CptsApiApp.ts" \
+		--all \
+		--ci true \
+		--require-approval $${REQUIRE_APPROVAL} \
+		--context VERSION_NUMBER=$$VERSION_NUMBER \
+		--context COMMIT_ID=$$COMMIT_ID \
+		--context logRetentionInDays=30
+
+cdk-synth:
+	npx cdk synth \
+		--quiet \
+		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/CptsApiApp.ts" \
+		--context VERSION_NUMBER=undefined \
+		--context COMMIT_ID=undefined \
+		--context logRetentionInDays=30
+
+cdk-diff:
+	npx cdk diff \
+		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/CptsApiApp.ts" \
+		--context serviceName=$$service_name \
+		--context VERSION_NUMBER=$$VERSION_NUMBER \
+		--context COMMIT_ID=$$COMMIT_ID \
+		--context logRetentionInDays=$$LOG_RETENTION_IN_DAYS
+
+cdk-watch:
+	REQUIRE_APPROVAL="$${REQUIRE_APPROVAL:-any-change}" && \
+	VERSION_NUMBER="$${VERSION_NUMBER:-undefined}" && \
+	COMMIT_ID="$${COMMIT_ID:-undefined}" && \
+		npx cdk deploy \
+		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/CptsApiApp.ts" \
+		--watch \
+		--all \
+		--ci true \
+		--require-approval $${REQUIRE_APPROVAL} \
+		--context VERSION_NUMBER=$$VERSION_NUMBER \
+		--context COMMIT_ID=$$COMMIT_ID \
+		--context logRetentionInDays=$$LOG_RETENTION_IN_DAYS

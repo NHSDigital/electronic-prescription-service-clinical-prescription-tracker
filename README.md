@@ -9,7 +9,7 @@ This is the AWS layer that provides an API for Clinical Prescription Tracker.
 - `packages/prescriptionSearch` Calls the Prescription Search interaction.
 - `packages/sandbox/` Returns [static data](./packages/sandbox/examples/GetMyPrescriptions/Bundle/success.json) from the Sandbox.
 - `packages/specification/` This [Open API Specification](https://swagger.io/docs/specification/about/) describes the endpoints, methods and messages.
-- `packages/statusLambda/` Returns the status of the getMyPrescriptions endpoint.
+- `packages/status/` Returns the status of the getMyPrescriptions endpoint.
 - `SAMtemplates/` Contains the SAM templates used to define the stacks.
 - `scripts/` Utilities helpful to developers of this specification.
 - `.devcontainer` Contains a dockerfile and vscode devcontainer definition.
