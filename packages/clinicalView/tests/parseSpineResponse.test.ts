@@ -12,7 +12,7 @@ describe("parseSpineResponse", () => {
     expect(parsed).toHaveLength(1)
     expect(parsed[0].patientDetails?.nhsNumber).toBe("9449304130")
     expect(parsed[0].patientDetails?.gender).toBe(2)
-    expect(parsed[0].prescriptionDetails?.prescriptionId).toBe("9AD427-A83008-2E461K")
+    expect(parsed[0].requestGroupDetails?.prescriptionId).toBe("9AD427-A83008-2E461K")
     expect(parsed[0].productLineItems?.length).toBe(4)
   })
 

@@ -29,13 +29,13 @@ export const generateFhirResponse = (prescriptions: Array<ParsedSpineResponse>, 
     status: "active",
     identifier: [{
       system: "https://fhir.nhs.uk/Id/prescription-order-number",
-      value: prescriptions[0].prescriptionDetails?.prescriptionId || ""
+      value: prescriptions[0].requestGroupDetails?.prescriptionId || ""
     }],
     intent: "reflex-order",
     author: {
       identifier: {
         system: "https://fhir.nhs.uk/Id/ods-organization-code",
-        value: prescriptions[0].prescriptionDetails?.organizationSummaryObjective || ""
+        value: prescriptions[0].requestGroupDetails?.organizationSummaryObjective || ""
       }
     },
     authoredOn: new Date().toISOString(),
@@ -152,6 +152,44 @@ export const generateFhirResponse = (prescriptions: Array<ParsedSpineResponse>, 
       }
 
       requestGroup.contained?.push(medicationDispense)
+    })
+
+    // Add extensions and actions
+    requestGroup.extension?.push({
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
+      extension: [
+        {url: "numberOfRepeatsAllowed", valueInteger: 5}, // Adjust the logic for actual number
+        {url: "numberOfRepeatsIssued", valueInteger: 2} // Adjust the logic for actual number
+      ]
+    })
+
+    requestGroup.extension?.push({
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PendingCancellations",
+      extension: [
+        {url: "prescriptionPendingCancellation", valueBoolean: false},
+        {url: "lineItemPendingCancellation", valueBoolean: true}
+      ]
+    })
+
+    requestGroup.extension?.push({
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
+      extension: [{
+        url: "status",
+        valueCoding: {
+          system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+          code: "0003", // Mocked value, map this value
+          display: "With Dispenser - Active" // Mocked value, adjust the logic
+        }
+      }]
+    })
+
+    requestGroup.extension?.push({
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionType",
+      valueCoding: {
+        system: "https://fhir.nhs.uk/CodeSystem/prescription-type",
+        code: "0101", // Mocked value, map this value
+        display: "Primary Care Prescriber - Medical Prescriber" // Mocked value, adjust as needed
+      }
     })
   })
 

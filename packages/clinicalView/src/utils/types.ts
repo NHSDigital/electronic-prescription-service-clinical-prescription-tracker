@@ -1,6 +1,6 @@
 export interface ParsedSpineResponse {
   patientDetails?: PatientDetails
-  prescriptionDetails?: PrescriptionDetails
+  requestGroupDetails?: RequestGroupDetails
   productLineItems?: Array<ProductLineItemDetails>
   filteredHistory?: Array<FilteredHistoryDetails>
   error?: string // Error message if parsing fails
@@ -25,7 +25,7 @@ export interface PatientDetails {
   }>
 }
 
-export interface PrescriptionDetails {
+export interface RequestGroupDetails {
   prescriptionId: string
   prescriptionType: string
   statusCode: string

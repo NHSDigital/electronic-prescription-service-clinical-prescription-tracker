@@ -7,7 +7,7 @@ import {
   XmlFilteredHistory,
   XmlError,
   PatientDetails,
-  PrescriptionDetails,
+  RequestGroupDetails,
   ProductLineItemDetails,
   FilteredHistoryDetails,
   ParsedSpineResponse
@@ -42,7 +42,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Array
 
   const parsedPrescriptions = xmlPrescriptions.map((xmlPrescription) => ({
     patientDetails: parsePatientDetails(xmlPrescription, logger),
-    prescriptionDetails: parsePrescriptionDetails(xmlPrescription, logger),
+    requestGroupDetails: parsePrescriptionDetails(xmlPrescription, logger),
     productLineItems: parseProductLineItems(xmlPrescription, logger),
     filteredHistory: parseFilteredHistory(xmlPrescription, logger)
   }))
@@ -138,7 +138,7 @@ export const parsePatientAddress = (parentPrescription: XmlPrescription["parentP
 }
 
 // ---------------------------- PRESCRIPTION DETAILS -------------------------
-const parsePrescriptionDetails = (xmlPrescription: XmlPrescription, logger: Logger): PrescriptionDetails => {
+const parsePrescriptionDetails = (xmlPrescription: XmlPrescription, logger: Logger): RequestGroupDetails => {
   if (
     !xmlPrescription.prescriptionID ||
     !xmlPrescription.prescriptionType.toString() ||

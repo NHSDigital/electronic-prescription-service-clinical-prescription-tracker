@@ -16,7 +16,7 @@ const mockParsedResponse: Array<ParsedSpineResponse> = [
       birthDate: "1948-04-30",
       gender: 2
     },
-    prescriptionDetails: {
+    requestGroupDetails: {
       prescriptionId: "9AD427-A83008-2E461K",
       prescriptionType: "0101",
       statusCode: "0001",
