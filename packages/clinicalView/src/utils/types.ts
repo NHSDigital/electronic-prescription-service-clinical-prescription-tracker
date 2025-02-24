@@ -14,6 +14,15 @@ export interface PatientDetails {
   suffix: string
   birthDate?: string
   gender?: number
+  address?: Array<{
+    line?: Array<string>
+    city?: string
+    district?: string
+    postalCode?: string
+    text?: string
+    type?: "postal" | "physical" | "both"
+    use?: "home" | "work" | "temp" | "old" | "billing"
+  }>
 }
 
 export interface PrescriptionDetails {
@@ -133,10 +142,13 @@ export interface XmlPrescription {
     family: string
     suffix: string
 
-    addrLine1: string
-    addrLine2: string
-    addrLine3: string
-    postalCode: string
+    addrLine1?: string
+    addrLine2?: string
+    addrLine3?: string
+    postalCode?: string
+
+    city?: string
+    district?: string
 
     productLineItem1?: string
     quantityLineItem1?: number

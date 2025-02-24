@@ -51,7 +51,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Array
 }
 
 // ---------------------------- PATIENT DETAILS ------------------------------
-const parsePatientDetails = (xmlPrescription: XmlPrescription, logger: Logger): PatientDetails => {
+export const parsePatientDetails = (xmlPrescription: XmlPrescription, logger: Logger): PatientDetails => {
   const parentPrescription = xmlPrescription.parentPrescription
 
   if (!parentPrescription) {
@@ -62,7 +62,8 @@ const parsePatientDetails = (xmlPrescription: XmlPrescription, logger: Logger): 
     !xmlPrescription.patientNhsNumber ||
     !parentPrescription?.given ||
     !parentPrescription?.family ||
-    !parentPrescription?.birthTime) {
+    !parentPrescription?.birthTime
+  ) {
     logger.info("Missing required patient details", {
       patientNhsNumber: xmlPrescription.patientNhsNumber ?? "Missing",
       nhsNumber: xmlPrescription.patientNhsNumber.toString() ?? "Missing",
@@ -80,15 +81,60 @@ const parsePatientDetails = (xmlPrescription: XmlPrescription, logger: Logger): 
     birthTime: parentPrescription?.birthTime
   })
 
+  const patientAddress = parsePatientAddress(parentPrescription, logger)
+
   return {
     nhsNumber: xmlPrescription.patientNhsNumber.toString(),
-    prefix: parentPrescription.prefix ?? "",
-    given: parentPrescription.given,
-    family: parentPrescription.family,
-    suffix: parentPrescription.suffix ?? "",
-    gender: parentPrescription.administrativeGenderCode ?? undefined,
-    birthDate: parentPrescription.birthTime.toString()
+    prefix: parentPrescription?.prefix ?? "",
+    given: parentPrescription?.given,
+    family: parentPrescription?.family,
+    suffix: parentPrescription?.suffix ?? "",
+    gender: parentPrescription?.administrativeGenderCode ?? undefined,
+    birthDate: parentPrescription?.birthTime.toString(),
+    address: patientAddress ? [patientAddress] : undefined
   }
+}
+
+// ---------------------------- PARSE PATIENT ADDRESS ------------------------------
+export const parsePatientAddress = (parentPrescription: XmlPrescription["parentPrescription"], logger: Logger) => {
+  // Check if any address-related fields exist in the parentPrescription
+  // If all address fields are missing, consider the address as not provided.
+  if (
+    !parentPrescription?.addrLine1 &&
+    !parentPrescription?.addrLine2 &&
+    !parentPrescription?.addrLine3 &&
+    !parentPrescription?.postalCode
+  ) {
+    logger.info("No address information provided for the patient.")
+    return undefined
+  }
+
+  logger.info("Parsing patient address...")
+
+  const address = {
+    line: [
+      parentPrescription?.addrLine1,
+      parentPrescription?.addrLine2,
+      parentPrescription?.addrLine3
+    ].filter(Boolean) as Array<string>, // Filter out undefined/null values
+    city: parentPrescription?.city ?? undefined,
+    district: parentPrescription?.district ?? undefined,
+    postalCode: parentPrescription?.postalCode ?? undefined,
+    text: [
+      parentPrescription?.addrLine1,
+      parentPrescription?.addrLine2,
+      parentPrescription?.addrLine3,
+      parentPrescription?.postalCode
+    ]
+      .filter(Boolean)
+      .join(", "), // Join the address components into a single text string
+    type: "both" as const, // Default value for type
+    use: "home" as const // Default value for use
+  }
+
+  logger.info("Parsed patient address", {address})
+
+  return address
 }
 
 // ---------------------------- PRESCRIPTION DETAILS -------------------------

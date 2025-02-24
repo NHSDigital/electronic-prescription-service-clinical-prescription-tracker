@@ -62,7 +62,8 @@ export const generateFhirResponse = (prescriptions: Array<ParsedSpineResponse>, 
         gender: mapGender(prescription.patientDetails?.gender ?? 0),
         birthDate: prescription.patientDetails?.birthDate
           ? formatBirthDate(prescription.patientDetails.birthDate)
-          : undefined
+          : undefined,
+        address: prescription.patientDetails?.address
       }
 
       requestGroup.contained?.push(patient)
