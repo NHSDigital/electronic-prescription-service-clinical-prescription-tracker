@@ -17,37 +17,36 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
   const xmlParser = new XMLParser({ignoreAttributes: false})
   const xmlResponse = xmlParser.parse(spineResponse) as XmlResponse
 
-  logger.info("Parsing XML SOAP body...")
+  logger.info("Parsing XML SOAP response from Spine...")
   const xmlSoapBody: XmlSoapBody | undefined = xmlResponse["SOAP:Envelope"]?.["SOAP:Body"]
 
   if (!xmlSoapBody) {
     const error: string = parseErrorResponse(xmlResponse)
     if (error === "Prescription not found") {
-      logger.info("No prescriptions found.")
+      logger.warn("No prescriptions found.")
       return {}
     }
     throw new Error(error || "Unknown Error")
   }
 
-  logger.info("Parsing prescription data...")
-
+  // Extract prescription data from the SOAP body
   const xmlPrescription: XmlPrescription =
     xmlSoapBody.prescriptionClinicalViewResponse.PORX_IN000006UK98
       .ControlActEvent.subject.PrescriptionJsonQueryResponse.epsRecord
 
   logger.info("Spine SOAP xmlPrescription data", {xmlPrescription})
 
-  const parsedPrescriptionData = {
+  // Parse and return structured prescription data
+  return {
     patientDetails: parsePatientDetails(xmlPrescription, logger),
     requestGroupDetails: parsePrescriptionDetails(xmlPrescription, logger),
     productLineItems: parseProductLineItems(xmlPrescription, logger),
     filteredHistory: parseFilteredHistory(xmlPrescription, logger)
   }
-
-  return parsedPrescriptionData
 }
 
 // ---------------------------- PATIENT DETAILS ------------------------------
+// Parses patient details from the XML prescription
 export const parsePatientDetails = (xmlPrescription: XmlPrescription, logger: Logger): PatientDetails => {
   const parentPrescription = xmlPrescription.parentPrescription
 
@@ -93,6 +92,7 @@ export const parsePatientDetails = (xmlPrescription: XmlPrescription, logger: Lo
 }
 
 // ---------------------------- PARSE PATIENT ADDRESS ------------------------------
+// Extracts and formats patient address from the XML data
 export const parsePatientAddress = (parentPrescription: XmlPrescription["parentPrescription"], logger: Logger) => {
   // Check if any address-related fields exist in the parentPrescription
   // If all address fields are missing, consider the address as not provided.
@@ -105,8 +105,6 @@ export const parsePatientAddress = (parentPrescription: XmlPrescription["parentP
     logger.info("No address information provided for the patient.")
     return undefined
   }
-
-  logger.info("Parsing patient address...")
 
   const address = {
     line: [
@@ -125,8 +123,8 @@ export const parsePatientAddress = (parentPrescription: XmlPrescription["parentP
     ]
       .filter(Boolean)
       .join(", "), // Join the address components into a single text string
-    type: "both" as const, // Default value for type
-    use: "home" as const // Default value for use
+    type: "both" as const,
+    use: "home" as const
   }
 
   logger.info("Parsed patient address", {address})
@@ -135,6 +133,7 @@ export const parsePatientAddress = (parentPrescription: XmlPrescription["parentP
 }
 
 // ---------------------------- PRESCRIPTION DETAILS -------------------------
+// Parses prescription-level details
 const parsePrescriptionDetails = (xmlPrescription: XmlPrescription, logger: Logger): RequestGroupDetails => {
   if (
     !xmlPrescription.prescriptionID ||
@@ -169,6 +168,7 @@ const parsePrescriptionDetails = (xmlPrescription: XmlPrescription, logger: Logg
 }
 
 // ---------------------------- PRODUCT LINE ITEMS ---------------------------
+// Parses product line items (medications) from the parent prescription
 const parseProductLineItems = (xmlPrescription: XmlPrescription, logger: Logger): Array<ProductLineItemDetails> => {
   const productLineItems: Array<ProductLineItemDetails> = []
   const parentPrescription = xmlPrescription.parentPrescription
@@ -177,7 +177,7 @@ const parseProductLineItems = (xmlPrescription: XmlPrescription, logger: Logger)
     throw new Error("Parent prescription details are missing")
   }
 
-  for (let i = 1; i <= 5; i++) {
+  for (let i = 1; i <= 4; i++) {
     const productLineItemKey = `productLineItem${i}` as keyof typeof parentPrescription
     const quantityKey = `quantityLineItem${i}` as keyof typeof parentPrescription
     const dosageKey = `dosageLineItem${i}` as keyof typeof parentPrescription
@@ -203,6 +203,7 @@ const parseProductLineItems = (xmlPrescription: XmlPrescription, logger: Logger)
 }
 
 // ---------------------------- FILTERED HISTORY -----------------------------
+// Parses filtered history of prescription events (sorted by SCN in descending order)
 const parseFilteredHistory = (xmlPrescription: XmlPrescription, logger: Logger): Array<FilteredHistoryDetails> => {
   const filteredHistoryItems: XmlFilteredHistory | Array<XmlFilteredHistory> = xmlPrescription.filteredHistory
   const parsedHistory: Array<FilteredHistoryDetails> = []
@@ -235,6 +236,7 @@ const parseFilteredHistory = (xmlPrescription: XmlPrescription, logger: Logger):
 }
 
 // ---------------------------- ERROR HANDLING -------------------------------
+// Parses error messages from the SOAP response
 const parseErrorResponse = (responseXml: XmlResponse): string => {
   const xmlSoapEnvBody = responseXml["SOAP:Envelope"]?.["SOAP:Body"]
   if (!xmlSoapEnvBody) return "Unknown Error."
