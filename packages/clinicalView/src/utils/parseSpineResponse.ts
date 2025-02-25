@@ -13,7 +13,7 @@ import {
   ParsedSpineResponse
 } from "./types"
 
-export const parseSpineResponse = (spineResponse: string, logger: Logger): Array<ParsedSpineResponse> => {
+export const parseSpineResponse = (spineResponse: string, logger: Logger): ParsedSpineResponse => {
   const xmlParser = new XMLParser({ignoreAttributes: false})
   const xmlResponse = xmlParser.parse(spineResponse) as XmlResponse
 
@@ -24,30 +24,27 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Array
     const error: string = parseErrorResponse(xmlResponse)
     if (error === "Prescription not found") {
       logger.info("No prescriptions found.")
-      return []
+      return {}
     }
     throw new Error(error || "Unknown Error")
   }
 
   logger.info("Parsing prescription data...")
-  let xmlPrescriptions: XmlPrescription | Array<XmlPrescription> =
+
+  const xmlPrescription: XmlPrescription =
     xmlSoapBody.prescriptionClinicalViewResponse.PORX_IN000006UK98
       .ControlActEvent.subject.PrescriptionJsonQueryResponse.epsRecord
 
-  if (!Array.isArray(xmlPrescriptions)) {
-    xmlPrescriptions = [xmlPrescriptions]
-  }
+  logger.info("Spine SOAP xmlPrescription data", {xmlPrescription})
 
-  logger.info("Spine SOAP xmlPrescriptions data", {xmlPrescriptions})
-
-  const parsedPrescriptions = xmlPrescriptions.map((xmlPrescription) => ({
+  const parsedPrescriptionData = {
     patientDetails: parsePatientDetails(xmlPrescription, logger),
     requestGroupDetails: parsePrescriptionDetails(xmlPrescription, logger),
     productLineItems: parseProductLineItems(xmlPrescription, logger),
     filteredHistory: parseFilteredHistory(xmlPrescription, logger)
-  }))
+  }
 
-  return parsedPrescriptions
+  return parsedPrescriptionData
 }
 
 // ---------------------------- PATIENT DETAILS ------------------------------
