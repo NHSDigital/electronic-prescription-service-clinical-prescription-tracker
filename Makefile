@@ -120,7 +120,7 @@ sbom:
 lint: lint-node lint-samtemplates lint-python lint-githubactions lint-githubaction-scripts lint-specification
 
 lint-node: compile
-	npm run link --workspace packages/cdk
+	npm run lint --workspace packages/cdk
 	npm run lint --workspace packages/clinicalView
 	npm run lint --workspace packages/prescriptionSearch
 	npm run lint --workspace packages/sandbox
