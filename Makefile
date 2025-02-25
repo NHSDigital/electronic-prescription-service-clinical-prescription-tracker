@@ -206,13 +206,13 @@ cdk-deploy:
 		--context COMMIT_ID=$$COMMIT_ID \
 		--context logRetentionInDays=30
 
-# cdk-synth:
-# 	npx cdk synth \
-# 		--quiet \
-# 		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/CptsApiApp.ts" \
-# 		--context VERSION_NUMBER=undefined \
-# 		--context COMMIT_ID=undefined \
-# 		--context logRetentionInDays=30
+cdk-synth:
+	npx cdk synth \
+		--quiet \
+		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/CptsApiApp.ts" \
+		--context VERSION_NUMBER=undefined \
+		--context COMMIT_ID=undefined \
+		--context logRetentionInDays=30
 
 cdk-diff:
 	npx cdk diff \

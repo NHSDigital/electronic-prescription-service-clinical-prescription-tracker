@@ -1,5 +1,6 @@
 import {App, Aspects, Tags} from "aws-cdk-lib"
 import {AwsSolutionsChecks} from "cdk-nag"
+import {CptsApiStack} from "../stacks/CptsApiStack"
 
 const app = new App()
 
@@ -16,3 +17,11 @@ Tags.of(app).add("commit", commit)
 Tags.of(app).add("cdkApp", "CptsApiApp")
 
 // TODO: add stack
+new CptsApiStack(app, "CptsApiStack", {
+  env: {
+    region: "eu-west-2"
+  },
+  stackName: `cpts-api`,
+  version: version,
+  commitId: commit
+})
