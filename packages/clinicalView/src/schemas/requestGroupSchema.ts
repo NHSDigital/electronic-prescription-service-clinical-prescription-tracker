@@ -164,18 +164,14 @@ export const requestGroupSchema = {
           patientSchema,
           {
             type: "array",
-            items: medicationRequestSchema,
-            minItems: 1,
-            maxItems: 5
+            items: medicationRequestSchema
           },
           {
             type: "array",
-            items: medicationDispenseSchema,
-            minItems: 0
+            items: medicationDispenseSchema
           }
         ]
-      },
-      minItems: 2
+      }
     }
   },
   required: [
