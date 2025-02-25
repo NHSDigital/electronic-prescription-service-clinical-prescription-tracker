@@ -2,6 +2,7 @@ import {JSONSchema} from "json-schema-to-ts"
 
 export const medicationDispenseSchema = {
   type: "object",
+  description: "The name of the medication item included in the Dispense Notification.",
   properties: {
     resourceType: {type: "string", enum: ["MedicationDispense"]},
     id: {type: "string"},
@@ -17,6 +18,7 @@ export const medicationDispenseSchema = {
       }
     },
     medicationCodeableConcept: {
+      description: "The name of the medication item included in the Dispense Notification.",
       type: "object",
       properties: {
         coding: {
@@ -36,7 +38,10 @@ export const medicationDispenseSchema = {
     quantity: {
       type: "object",
       properties: {
-        value: {type: "integer"}
+        value: {
+          description: "The quantity of medication that was actually dispensed.",
+          type: "integer"
+        }
       },
       required: ["value"]
     },
@@ -51,6 +56,8 @@ export const medicationDispenseSchema = {
     },
     type: {
       type: "object",
+      description: "The EPS status, as held within Spine, for items that do have recorded dispensing activity " +
+        "against them. Does not include the statuses made available via the PSU API.",
       properties: {
         coding: {
           type: "array",
@@ -67,6 +74,7 @@ export const medicationDispenseSchema = {
       }
     },
     extension: {
+      description: "Additional status information provided by the PSU API, if available",
       type: "array",
       items: {
         type: "object",

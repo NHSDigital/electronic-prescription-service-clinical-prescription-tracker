@@ -10,6 +10,7 @@ export const requestGroupSchema = {
     resourceType: {type: "string", enum: ["RequestGroup"]},
     id: {type: "string"},
     identifier: {
+      description: "Each prescription returned will have its own ID",
       type: "array",
       items: {
         type: "object",
@@ -20,9 +21,13 @@ export const requestGroupSchema = {
         required: ["system", "value"]
       }
     },
-    intent: {type: "string"},
+    intent: {
+      description: "Whether the prescription is an acute, repeat, or eRD.",
+      type: "string"
+    },
     extension: {
       type: "array",
+      description: "Additional information related to the prescription.",
       items: {
         type: "object",
         properties: {
@@ -76,7 +81,11 @@ export const requestGroupSchema = {
         }
       }
     },
-    authoredOn: {type: "string", format: "date-time"},
+    authoredOn: {
+      description: "The date the prescription was created.",
+      type: "string",
+      format: "date-time"
+    },
     subject: {
       type: "object",
       properties: {
