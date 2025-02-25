@@ -93,3 +93,10 @@ export const formatBirthDate = (birthDate: string): string => {
   if (!birthDate || isNaN(Number(birthDate))) return ""
   return `${birthDate.slice(0, 4)}-${birthDate.slice(4, 6)}-${birthDate.slice(6, 8)}`
 }
+
+/**
+ * Pads numeric values with leading zeros
+ */
+export const padWithZeros = (value: number | string, length = 4): string => {
+  return String(value).padStart(length, "0")
+}

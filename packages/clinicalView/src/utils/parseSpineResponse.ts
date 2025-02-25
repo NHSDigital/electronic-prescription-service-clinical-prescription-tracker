@@ -12,7 +12,9 @@ import {
   FilteredHistoryDetails,
   ParsedSpineResponse
 } from "./types"
+import {padWithZeros} from "./fhirMappers"
 
+// Parsing Function
 export const parseSpineResponse = (spineResponse: string, logger: Logger): ParsedSpineResponse => {
   const xmlParser = new XMLParser({ignoreAttributes: false})
   const xmlResponse = xmlParser.parse(spineResponse) as XmlResponse
@@ -150,15 +152,15 @@ const parsePrescriptionDetails = (xmlPrescription: XmlPrescription, logger: Logg
 
   logger.info("Prescription details parsed successfully", {
     prescriptionID: xmlPrescription.prescriptionID,
-    prescriptionType: xmlPrescription.prescriptionType.toString(),
-    prescriptionStatus: xmlPrescription.prescriptionStatus,
+    prescriptionType: padWithZeros(xmlPrescription.prescriptionType.toString(), 4),
+    statusCode: padWithZeros(xmlPrescription.prescriptionStatus.toString(), 4),
     instanceNumber: xmlPrescription.instanceNumber
   })
 
   return {
     prescriptionId: xmlPrescription.prescriptionID,
-    prescriptionType: xmlPrescription.prescriptionType.toString(),
-    statusCode: xmlPrescription.prescriptionStatus.toString(),
+    prescriptionType: padWithZeros(xmlPrescription.prescriptionType.toString(), 4),
+    statusCode: padWithZeros(xmlPrescription.prescriptionStatus.toString(), 4),
     instanceNumber: xmlPrescription.instanceNumber,
     maxRepeats: xmlPrescription.maxRepeats !== null ? xmlPrescription.maxRepeats : undefined,
     daysSupply: xmlPrescription.daysSupply,
@@ -213,8 +215,8 @@ const parseFilteredHistory = (xmlPrescription: XmlPrescription, logger: Logger):
       parsedHistory.push({
         SCN: history.SCN,
         sentDateTime: history.timestamp.toString(),
-        fromStatus: history.fromStatus.toString(),
-        toStatus: history.toStatus.toString(),
+        fromStatus: padWithZeros(history.fromStatus.toString(), 4),
+        toStatus: padWithZeros(history.toStatus.toString(), 4),
         message: history.message.toString(),
         organizationName: history.agentPersonOrgCode.toString()
       })
@@ -223,8 +225,8 @@ const parseFilteredHistory = (xmlPrescription: XmlPrescription, logger: Logger):
     parsedHistory.push({
       SCN: filteredHistoryItems.SCN,
       sentDateTime: filteredHistoryItems.timestamp.toString(),
-      fromStatus: filteredHistoryItems.fromStatus.toString(),
-      toStatus: filteredHistoryItems.toStatus.toString(),
+      fromStatus: padWithZeros(filteredHistoryItems.fromStatus.toString(), 4),
+      toStatus: padWithZeros(filteredHistoryItems.toStatus.toString(), 4),
       message: filteredHistoryItems.message.toString(),
       organizationName: filteredHistoryItems.agentPersonOrgCode.toString()
     })

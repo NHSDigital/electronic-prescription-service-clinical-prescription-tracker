@@ -1,3 +1,6 @@
+import {Address} from "fhir/r4"
+
+// Main Response Interface
 export interface ParsedSpineResponse {
   patientDetails?: PatientDetails
   requestGroupDetails?: RequestGroupDetails
@@ -6,6 +9,7 @@ export interface ParsedSpineResponse {
   error?: string // Error message if parsing fails
 }
 
+// Patient Details
 export interface PatientDetails {
   nhsNumber: string
   prefix: string
@@ -14,17 +18,10 @@ export interface PatientDetails {
   suffix: string
   birthDate?: string
   gender?: number
-  address?: Array<{
-    line?: Array<string>
-    city?: string
-    district?: string
-    postalCode?: string
-    text?: string
-    type?: "postal" | "physical" | "both"
-    use?: "home" | "work" | "temp" | "old" | "billing"
-  }>
+  address?: Array<Address>
 }
 
+// Prescription Details
 export interface RequestGroupDetails {
   prescriptionId: string
   prescriptionType: string
@@ -36,12 +33,14 @@ export interface RequestGroupDetails {
   organizationSummaryObjective: string
 }
 
+// Product Line Items
 export interface ProductLineItemDetails {
   medicationName: string
   quantity: string
   dosageInstructions: string
 }
 
+// Filtered History
 export interface FilteredHistoryDetails {
   SCN: number
   sentDateTime: string
@@ -49,15 +48,28 @@ export interface FilteredHistoryDetails {
   toStatus: string
   message: string
   organizationName: string
+  lineStatusChangeDict?: {
+    line: Array<{
+      order: number
+      id: string
+      status?: string
+      fromStatus: string | number
+      toStatus: string | number
+      cancellationReason?: string
+    }>
+  }
 }
 
-// XML Response Types
+// ------------------------ XML Types ------------------------
+
+// Top-Level XML Response
 export interface XmlResponse {
   "SOAP:Envelope"?: {
     "SOAP:Body"?: XmlSoapBody
   }
 }
 
+// SOAP Body
 export interface XmlSoapBody {
   prescriptionClinicalViewResponse: {
     PORX_IN000006UK98: {
@@ -68,7 +80,7 @@ export interface XmlSoapBody {
           }
         }
       }
-    },
+    }
     MCCI_IN010000UK13?: {
       acknowledgement: {
         acknowledgementDetail: {
@@ -79,6 +91,7 @@ export interface XmlSoapBody {
   }
 }
 
+// Prescription Object
 export interface XmlPrescription {
   releaseRequestMsgRef: string
   prescriptionStatus: string
@@ -168,10 +181,7 @@ export interface XmlPrescription {
   }
 }
 
-export interface XmlProductLineItem {
-  "@_value": string
-}
-
+// Filtered History Object
 export interface XmlFilteredHistory {
   SCN: number
   timestamp: number
@@ -194,12 +204,14 @@ export interface XmlFilteredHistory {
   }
 }
 
+// Error Object
 export interface XmlError {
   "@_codeSystem": string
   "@_code": string
   "@_displayName": string
 }
 
+// Utility Type for XML Attributes
 interface XmlStringValue {
   "@_value": string
 }
