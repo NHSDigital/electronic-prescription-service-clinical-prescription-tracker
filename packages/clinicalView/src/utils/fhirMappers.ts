@@ -52,6 +52,41 @@ export const mapMedicationRequestStatusReason = (code: string): string => {
 }
 
 /**
+ * Maps the prescription type code to its display value.
+ */
+export const mapPrescriptionType = (code: string): string => {
+  const prescriptionTypeMap: Record<string, string> = {
+    "0101": "Primary Care Prescriber - Medical Prescriber",
+    "0104": "Primary Care Prescriber - Nurse Independent/Supplementary prescriber",
+    "0105": "Primary Care Prescriber - Community Practitioner Nurse prescriber",
+    "0108": "Primary Care Prescriber - Pharmacist Independent/Supplementary prescriber",
+    "0113": "Primary Care Prescriber - Optometrist Independent/Supplementary prescriber",
+    "0114": "Primary Care Prescriber - Podiatrist/Chiropodist Independent/Supplementary prescriber",
+    "0116": "Primary Care Prescriber - Radiographer Independent/Supplementary prescriber",
+    "0117": "Primary Care Prescriber - Physiotherapist Independent/Supplementary prescriber",
+    "0124": "Primary Care Prescriber - Dietician Supplementary prescriber",
+    "0125": "Primary Care Prescriber - Paramedic Independent/Supplementary prescriber",
+    "0201": "Primary Care Prescriber - Medical Prescriber (Wales)",
+    "0204": "Primary Care Prescriber - Nurse Independent/Supplementary prescriber (Wales)",
+    "0205": "Primary Care Prescriber - Community Practitioner Nurse prescriber (Wales)",
+    "0208": "Primary Care Prescriber - Pharmacist Independent/Supplementary prescriber (Wales)",
+    "0213": "Primary Care Prescriber - Optometrist Independent/Supplementary prescriber (Wales)",
+    "0214": "Primary Care Prescriber - Podiatrist/Chiropodist Independent/Supplementary (Wales)",
+    "0216": "Primary Care Prescriber - Radiographer Independent/Supplementary prescriber (Wales)",
+    "0217": "Primary Care Prescriber - Physiotherapist Independent/Supplementary prescriber (Wales)",
+    "0224": "Primary Care Prescriber - Dietician Supplementary prescriber (Wales)",
+    "0225": "Primary Care Prescriber - Paramedic Independent/Supplementary prescriber (Wales)",
+    "0607": "Dental Prescribing - Dentist",
+    "0707": "Dental Prescribing - Dentist (Wales)",
+    "1001": "Outpatient Community Prescriber - Medical Prescriber",
+    "1101": "Outpatient Pharmacy Prescriber - Medical Prescriber",
+    "1201": "Outpatient Homecare Prescriber - Medical Prescriber"
+  }
+
+  return prescriptionTypeMap[code] || "Unknown prescription type"
+}
+
+/**
  * Converts the numeric birth date (YYYYMMDD) into a string formatted as YYYY-MM-DD.
  */
 export const formatBirthDate = (birthDate: string): string => {
