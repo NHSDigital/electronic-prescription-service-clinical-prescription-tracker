@@ -16,13 +16,7 @@ import {
   Runtime
 } from "aws-cdk-lib/aws-lambda"
 import {NodejsFunction, NodejsFunctionProps} from "aws-cdk-lib/aws-lambda-nodejs"
-import {
-  CfnLogGroup,
-  FilterPattern,
-  LogGroup,
-  SubscriptionFilter
-} from "aws-cdk-lib/aws-logs"
-import {KinesisDestination} from "aws-cdk-lib/aws-logs-destinations"
+import {CfnLogGroup, CfnSubscriptionFilter, LogGroup} from "aws-cdk-lib/aws-logs"
 import {Construct} from "constructs"
 import {join, resolve} from "path"
 
@@ -51,14 +45,14 @@ const getDefaultLambdaOptions = (packageBasePath: string):NodejsFunctionProps =>
       minify: true,
       sourceMap: true,
       tsconfig: join(baseDir, packageBasePath, "tsconfig.json"),
-      target: "es2020"
+      target: "es2022"
     }
   }
 }
 
 export class LambdaFunction extends Construct {
-  public readonly executeLambdaManagedPolicy: ManagedPolicy
-  public readonly lambda: NodejsFunction
+  public readonly executionPolicy: ManagedPolicy
+  public readonly function: NodejsFunction
 
   public constructor(scope: Construct, id: string, props: LambdaFunctionProps){
     super(scope, id)
@@ -76,7 +70,7 @@ export class LambdaFunction extends Construct {
     const lambdaInsightsLogGroupPolicy = ManagedPolicy.fromManagedPolicyArn(
       this, "lambdaInsightsLogGroupPolicy", Fn.importValue("lambda-resources:LambdaInsightsLogGroupPolicy"))
 
-    const cloudwatchEncryptionKMSPolicyArn = ManagedPolicy.fromManagedPolicyArn(
+    const cloudwatchEncryptionKMSPolicy = ManagedPolicy.fromManagedPolicyArn(
       this, "cloudwatchEncryptionKMSPolicyArn", Fn.importValue("account-resources:CloudwatchEncryptionKMSPolicyArn"))
 
     const lambdaDecryptSecretsKMSPolicy = ManagedPolicy.fromManagedPolicyArn(
@@ -102,7 +96,15 @@ export class LambdaFunction extends Construct {
       }
     }
 
-    const managedPolicy = new ManagedPolicy(this, "LambdaPutLogsManagedPolicy", {
+    new CfnSubscriptionFilter(this, "LambdaLogsSplunkSubscriptionFilter", {
+      destinationArn: splunkDeliveryStream.streamArn,
+      filterPattern: "",
+      logGroupName: logGroup.logGroupName,
+      roleArn: splunkSubscriptionFilterRole.roleArn
+
+    })
+
+    const putLogsManagedPolicy = new ManagedPolicy(this, "LambdaPutLogsManagedPolicy", {
       description: `write to ${props.functionName} logs`,
       statements: [
         new PolicyStatement({
@@ -117,20 +119,12 @@ export class LambdaFunction extends Construct {
         })]
     })
 
-    new SubscriptionFilter(this, "LambdaLogsSplunkSubscriptionFilter", {
-      logGroup: logGroup,
-      filterPattern: FilterPattern.allTerms(),
-      destination: new KinesisDestination(splunkDeliveryStream, {
-        role: splunkSubscriptionFilterRole
-      })
-    })
-
     const role = new Role(this, "LambdaRole", {
       assumedBy: new ServicePrincipal("lambda.amazonaws.com"),
       managedPolicies: [
-        managedPolicy,
+        putLogsManagedPolicy,
         lambdaInsightsLogGroupPolicy,
-        cloudwatchEncryptionKMSPolicyArn,
+        cloudwatchEncryptionKMSPolicy,
         lambdaDecryptSecretsKMSPolicy,
         ...(props.additionalPolicies ?? [])
       ]
@@ -169,7 +163,7 @@ export class LambdaFunction extends Construct {
       }
     }
 
-    const executeLambdaManagedPolicy = new ManagedPolicy(this, "ExecuteLambdaManagedPolicy", {
+    const executionManagedPolicy = new ManagedPolicy(this, "ExecuteLambdaManagedPolicy", {
       description: `execute lambda ${props.functionName}`,
       statements: [
         new PolicyStatement({
@@ -179,7 +173,7 @@ export class LambdaFunction extends Construct {
     })
 
     // Outputs
-    this.lambda = lambdaFunction
-    this.executeLambdaManagedPolicy = executeLambdaManagedPolicy
+    this.function = lambdaFunction
+    this.executionPolicy = executionManagedPolicy
   }
 }

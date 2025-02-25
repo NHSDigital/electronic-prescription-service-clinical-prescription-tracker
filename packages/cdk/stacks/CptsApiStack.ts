@@ -1,11 +1,23 @@
 // TODO: remove this temp disable
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {App, Stack, StackProps} from "aws-cdk-lib"
+
+import {
+  App,
+  Fn,
+  Stack,
+  StackProps
+} from "aws-cdk-lib"
 import {LambdaFunction} from "../resources/LambdaFunction"
+import {IManagedPolicy, ManagedPolicy} from "aws-cdk-lib/aws-iam"
+import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificatemanager"
+import {HostedZone} from "aws-cdk-lib/aws-route53"
+import {RestApiGateway} from "../resources/RestApiGateway"
+import {LambdaEndpoint} from "../resources/RestApiGateway/LambdaEndpoint"
+import {HttpMethod} from "aws-cdk-lib/aws-lambda"
 
 export interface CptsApiStackProps extends StackProps {
   readonly stackName: string
   readonly version: string
+  readonly commitId: string
 }
 
 export class CptsApiStack extends Stack {
@@ -14,38 +26,106 @@ export class CptsApiStack extends Stack {
     // Context
     const logRetentionInDays: number = Number(this.node.tryGetContext("logRetentionInDays"))
     const logLevel: string = this.node.tryGetContext("logLevel")
+    const targetSpineServer: string = this.node.tryGetContext("targetSpineServer")
+    const enableMutalTls: boolean = this.node.tryGetContext("enableMutalTls")
+    const truststoreVersion: string = this.node.tryGetContext("truststoreVersion")
 
     // Imports
+    const lambdaAccessSecretsPolicy: IManagedPolicy = ManagedPolicy.fromManagedPolicyArn(
+      this, "lambdaAccessSecretsPolicy", Fn.importValue("account-resources:LambdaAccessSecretsPolicy"))
+
+    const lambdaDefaultEnvironmentVariables: {[key: string]: string} = {
+      NODE_OPTIONS: "--enable-source-maps",
+      TargetSpineServer: targetSpineServer,
+      SpinePrivateKeyARN: Fn.importValue("account-resources:SpinePrivateKey"),
+      SpinePublicCertificateARN: Fn.importValue("account-resources:SpinePublicCertificate"),
+      SpineASIDARN: Fn.importValue("account-resources:SpineASID"),
+      SpinePartyKeyARN: Fn.importValue("account-resources:SpinePartyKey"),
+      SpineCAChainARN: Fn.importValue("account-resources:SpineCAChain"),
+      ServiceSearchApiKeyARN: Fn.importValue("account-resources:ServiceSearchApiKey"),
+      VERSION_NUMBER: props.version,
+      COMMIT_ID: props.commitId,
+      AWS_LAMBDA_EXEC_WRAPPER: "/opt/get-secrets-layer"
+    }
+    const epsDomainName: string = Fn.importValue("eps-route53-resources:EPS-domain")
+    const hostedZone = HostedZone.fromHostedZoneAttributes(this, "HostedZone", {
+      hostedZoneId: Fn.importValue("eps-route53-resources:EPS-ZoneID"),
+      zoneName: epsDomainName
+    })
+    const serviceDomainName = `${props.stackName}.${epsDomainName}`
 
     // Resources
-    const clinicalViewLambda = new LambdaFunction(this, "ClinicalView", {
-      stackName: props.stackName,
-      functionName: "ClinicalView",
-      packageBasePath: "packages/clinicalView",
-      entryPoint: "src/handler.ts",
-      environmentVariables: {},
-      logRetentionInDays: logRetentionInDays,
-      logLevel: logLevel
-    })
-
-    const prescriptionSearchLambda = new LambdaFunction(this, "PrescriptionSearch", {
+    const prescriptionSearchLambda = new LambdaFunction(this, "PrescriptionSearchLambda", {
       stackName: props.stackName,
       functionName: "PrescriptionSearch",
       packageBasePath: "packages/prescriptionSearch",
       entryPoint: "src/handler.ts",
-      environmentVariables: {},
+      environmentVariables: {...lambdaDefaultEnvironmentVariables},
+      additionalPolicies: [lambdaAccessSecretsPolicy],
       logRetentionInDays: logRetentionInDays,
       logLevel: logLevel
     })
 
-    const statusLambda = new LambdaFunction(this, "Status", {
+    const clinicalViewLambda = new LambdaFunction(this, "ClinicalViewLambda", {
+      stackName: props.stackName,
+      functionName: "ClinicalView",
+      packageBasePath: "packages/clinicalView",
+      entryPoint: "src/handler.ts",
+      environmentVariables: {...lambdaDefaultEnvironmentVariables},
+      additionalPolicies: [lambdaAccessSecretsPolicy],
+      logRetentionInDays: logRetentionInDays,
+      logLevel: logLevel
+    })
+
+    const statusLambda = new LambdaFunction(this, "StatusLambda", {
       stackName: props.stackName,
       functionName: "Status",
       packageBasePath: "packages/prescriptionSearch",
       entryPoint: "src/handler.ts",
-      environmentVariables: {},
+      environmentVariables: {...lambdaDefaultEnvironmentVariables},
+      additionalPolicies: [lambdaAccessSecretsPolicy],
       logRetentionInDays: logRetentionInDays,
       logLevel: logLevel
+    })
+
+    const certificate = new Certificate(this, "Certificate", {
+      domainName: serviceDomainName,
+      validation: CertificateValidation.fromDns(hostedZone)
+    })
+
+    const apiGw = new RestApiGateway(this, "ApiGw", {
+      stackName: props.stackName,
+      domainName: serviceDomainName,
+      certificate: certificate,
+      logRetentionInDays: logRetentionInDays,
+      enableMutualTls: enableMutalTls,
+      trustStoreKey: "cpts-api.pem", // TODO: use clinical-tracker-truststore.pem after testing
+      truststoreVersion: truststoreVersion
+    })
+    const rootResource = apiGw.api.root
+
+    const prescriptionSearchEndpoint = new LambdaEndpoint(this, "PrescriptionSearchEndpoint", {
+      parentResource: rootResource,
+      resourceName: "RequestGroup",
+      method: HttpMethod.GET,
+      restApiGatewayRole: apiGw.role,
+      lambdaExecutionPolicy: prescriptionSearchLambda.executionPolicy
+    })
+
+    new LambdaEndpoint(this, "ClinicalViewEndpoint", {
+      parentResource: prescriptionSearchEndpoint.resource,
+      resourceName: "{prescriptionId}",
+      method: HttpMethod.GET,
+      restApiGatewayRole: apiGw.role,
+      lambdaExecutionPolicy: clinicalViewLambda.executionPolicy
+    })
+
+    new LambdaEndpoint(this, "StatusEndpoint", {
+      parentResource: rootResource,
+      resourceName: "_status",
+      method: HttpMethod.GET,
+      restApiGatewayRole: apiGw.role,
+      lambdaExecutionPolicy: statusLambda.executionPolicy
     })
 
     // Outputs
