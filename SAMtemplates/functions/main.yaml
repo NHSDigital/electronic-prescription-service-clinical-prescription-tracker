@@ -127,7 +127,7 @@ Resources:
     Properties:
       FunctionName: !Sub "${StackName}-PrescriptionSearch"
       CodeUri: ../../packages
-      Handler: prescriptionSearch.handler
+      Handler: handler.handler
       Role: !GetAtt PrescriptionSearchResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
@@ -157,7 +157,7 @@ Resources:
         tsconfig: prescriptionSearch/tsconfig.json
         packages: bundle
         EntryPoints:
-          - prescriptionSearch/src/prescriptionSearch.ts
+          - prescriptionSearch/src/handler.ts
 
   PrescriptionSearchResources:
     Type: AWS::Serverless::Application
@@ -182,7 +182,7 @@ Resources:
     Properties:
       FunctionName: !Sub "${StackName}-status"
       CodeUri: ../../packages
-      Handler: statusLambda.handler
+      Handler: handler.handler
       Role: !GetAtt StatusResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
@@ -209,10 +209,10 @@ Resources:
         Minify: true
         Target: "es2020"
         Sourcemap: true
-        tsconfig: statusLambda/tsconfig.json
+        tsconfig: status/tsconfig.json
         packages: bundle
         EntryPoints:
-          - statusLambda/src/statusLambda.ts
+          - status/src/handler.ts
 
   StatusResources:
     Type: AWS::Serverless::Application
