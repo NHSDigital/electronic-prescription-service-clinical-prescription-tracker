@@ -12,10 +12,11 @@ export interface LineStatusChange {
 
 // Main Response Interface
 export interface ParsedSpineResponse {
-  patientDetails?: PatientDetails
   requestGroupDetails?: RequestGroupDetails
+  patientDetails?: PatientDetails
   productLineItems?: Array<ProductLineItemDetails>
   filteredHistory?: FilteredHistoryDetails
+  dispenseNotificationItems?: Array<DispenseNotificationItems>
   error?: string // Error message if parsing fails
 }
 
@@ -49,6 +50,14 @@ export interface ProductLineItemDetails {
   medicationName: string
   quantity: string
   dosageInstructions: string
+}
+
+// Dispense Notification Items
+export interface DispenseNotificationItems {
+  order: number
+  medicationName: string
+  quantity: string
+  status: string
 }
 
 // Filtered History
@@ -182,6 +191,34 @@ export interface XmlPrescription {
     productLineItem4?: string
     quantityLineItem4?: number
     dosageLineItem4?: string
+  }
+
+  dispenseNotification?: {
+    dispNotifDocumentKey: string
+    dispNotifFromStatus: string
+    dispNotifToStatus: string
+    dispenseNotifDateTime: string
+
+    productLineItem1: string
+    quantityLineItem1: string
+    narrativeLineItem1: string
+    statusLineItem1: string
+
+    productLineItem2: string
+    quantityLineItem2: string
+    narrativeLineItem2: string
+    statusLineItem2: string
+
+    productLineItem3: string
+    quantityLineItem3: string
+    narrativeLineItem3: string
+    statusLineItem3: string
+    productLineItem4: string
+
+    quantityLineItem4: string
+    narrativeLineItem4: string
+    statusLineItem4: string
+    statusPrescription: string
   }
 }
 

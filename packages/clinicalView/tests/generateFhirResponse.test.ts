@@ -63,9 +63,15 @@ describe("generateFhirResponse", () => {
     const response = generateFhirResponse(mockParsedResponse, logger)
 
     expect(response.resourceType).toBe("RequestGroup")
-    expect(response.subject?.reference).toBe("#example-patient")
+
+    // Extract the generated patient UUID from the response
+    const patientResource = response.contained?.find((r) => r.resourceType === "Patient")
+    expect(patientResource).toBeDefined()
+
+    // Ensure the subject reference matches the generated patient UUID
+    expect(response.subject?.reference).toBe(`#${patientResource?.id}`)
+
     expect(response.contained?.length).toBeGreaterThan(0)
-    expect(response.contained?.find((r) => r.resourceType === "Patient")).toBeDefined()
     expect(response.contained?.find((r) => r.resourceType === "MedicationRequest")).toBeDefined()
   })
 })

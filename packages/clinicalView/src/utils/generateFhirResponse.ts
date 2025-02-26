@@ -19,19 +19,21 @@ import {
 
 // Maps extracted data to FHIR RequestGroup response
 export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: Logger): RequestGroup => {
-
-  // Generate UUID for Patient
-  const patientUuid = "example-patient"
+  // Generate unique UUIDs for Patient and MedicationRequests
+  const patientUuid = randomUUID()
+  const medicationRequestMap = new Map<string, string>() // Maps medication name to MedicationRequest ID
 
   // Generate the RequestGroup root resource
   const requestGroup: RequestGroup = {
     resourceType: "RequestGroup",
     id: "example-requestgroup",
     status: "active",
-    identifier: [{
-      system: "https://fhir.nhs.uk/Id/prescription-order-number",
-      value: prescription.requestGroupDetails?.prescriptionId || ""
-    }],
+    identifier: [
+      {
+        system: "https://fhir.nhs.uk/Id/prescription-order-number",
+        value: prescription.requestGroupDetails?.prescriptionId || ""
+      }
+    ],
     intent: "reflex-order",
     author: {
       identifier: {
@@ -47,21 +49,25 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   }
 
   // Generate Patient entry
-  if (!requestGroup.contained?.some(entry => entry.resourceType === "Patient")) {
+  if (!requestGroup.contained?.some((entry) => entry.resourceType === "Patient")) {
     logger.info("Adding Patient resource...")
 
     const patient: Patient = {
       resourceType: "Patient",
       id: patientUuid,
-      identifier: [{
-        system: "https://fhir.nhs.uk/Id/nhs-number",
-        value: prescription.patientDetails?.nhsNumber
-      }],
-      name: [{
-        prefix: [prescription.patientDetails?.prefix || ""],
-        given: [prescription.patientDetails?.given || ""],
-        family: prescription.patientDetails?.family || ""
-      }],
+      identifier: [
+        {
+          system: "https://fhir.nhs.uk/Id/nhs-number",
+          value: prescription.patientDetails?.nhsNumber
+        }
+      ],
+      name: [
+        {
+          prefix: [prescription.patientDetails?.prefix || ""],
+          given: [prescription.patientDetails?.given || ""],
+          family: prescription.patientDetails?.family || ""
+        }
+      ],
       gender: mapGender(prescription.patientDetails?.gender ?? 0),
       birthDate: prescription.patientDetails?.birthDate
         ? formatBirthDate(prescription.patientDetails.birthDate)
@@ -79,42 +85,49 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
     ?.some((line: {cancellationReason?: string}) => line.cancellationReason) ?? false
 
   // Generate MedicationRequest entries
-  prescription.productLineItems?.forEach(item => {
-    const lineItem = latestHistory?.lineStatusChangeDict?.line?.find(
-      (line) => line.order === item.order // Match by order
-    )
+  prescription.productLineItems?.forEach((item) => {
+    const lineItem = latestHistory?.lineStatusChangeDict?.line?.find((line) => line.order === item.order)
 
     if (lineItem) {
+      const medicationRequestId = `${randomUUID()}`
+
       const medicationRequest: MedicationRequest = {
         resourceType: "MedicationRequest",
-        id: `example-medicationrequest-${randomUUID()}`,
+        id: medicationRequestId,
         status: lineItem.toStatus === "0005" ? "cancelled" : "active",
         intent: "order",
         subject: {reference: `#${patientUuid}`},
         medicationCodeableConcept: {
-          coding: [{
-            system: "https://fhir.nhs.uk/CodeSystem/medication",
-            code: item.medicationName,
-            display: item.medicationName
-          }]
+          coding: [
+            {
+              system: "https://fhir.nhs.uk/CodeSystem/medication",
+              code: item.medicationName,
+              display: item.medicationName
+            }
+          ]
         },
         dispenseRequest: {quantity: {value: parseInt(item.quantity, 10)}},
         dosageInstruction: [{text: item.dosageInstructions}],
         extension: []
       }
 
+      // Store MedicationRequest ID for linking
+      medicationRequestMap.set(item.medicationName, medicationRequestId)
+
       // DispensingInformation Extension
       if (lineItem.toStatus) {
         const dispensingInformation: Extension = {
           url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-DispensingInformation",
-          extension: [{
-            url: "dispenseStatus",
-            valueCoding: {
-              system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
-              code: lineItem.toStatus,
-              display: mapMedicationDispenseType(lineItem.toStatus)
+          extension: [
+            {
+              url: "dispenseStatus",
+              valueCoding: {
+                system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+                code: lineItem.toStatus,
+                display: mapMedicationDispenseType(lineItem.toStatus)
+              }
             }
-          }]
+          ]
         }
 
         medicationRequest?.extension?.push(dispensingInformation)
@@ -136,7 +149,8 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
                 code: mapMedicationRequestStatusReason(lineItem.cancellationReason),
                 display: lineItem.cancellationReason
               }
-            }]
+            }
+          ]
         }
         medicationRequest.extension?.push(cancellationInformation)
       }
@@ -145,18 +159,40 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
     }
   })
 
-  // Generate MedicationDispense entries
-  if (latestHistory) {
+  // Generate MedicationDispense entries from dispenseNotificationItems
+  prescription.dispenseNotificationItems?.forEach((item) => {
+    const medicationRequestId = medicationRequestMap.get(item.medicationName)
+
     const medicationDispense: MedicationDispense = {
       resourceType: "MedicationDispense",
       id: `example-medicationdispense-${randomUUID()}`,
       status: "completed",
-      authorizingPrescription: [{reference: `#${patientUuid}`}],
-      quantity: {value: 1},
-      dosageInstruction: [{text: latestHistory.message}]
+      authorizingPrescription: medicationRequestId
+        ? [{reference: `#${medicationRequestId}`}]
+        : [],
+      medicationCodeableConcept: {
+        coding: [
+          {
+            system: "https://fhir.nhs.uk/CodeSystem/medication",
+            code: item.medicationName,
+            display: item.medicationName
+          }
+        ]
+      },
+      quantity: {value: parseInt(item.quantity, 10)},
+      type: {
+        coding: [
+          {
+            system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+            code: item.status,
+            display: mapMedicationDispenseType(item.status)
+          }
+        ]
+      }
     }
+
     requestGroup.contained?.push(medicationDispense)
-  }
+  })
 
   // Add Extension-EPS-RepeatInformation
   const repeatInformation: Extension = {
@@ -228,7 +264,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
             system: "https://fhir.nhs.uk/Id/ods-organization-code",
             value: "A83008"
           }
-        }] as Array<Reference>, // Corrected to Array<Reference> type
+        }] as Array<Reference>,
         code: [{
           coding: [{
             system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",

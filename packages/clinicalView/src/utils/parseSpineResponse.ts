@@ -9,12 +9,13 @@ import {
   PatientDetails,
   RequestGroupDetails,
   ProductLineItemDetails,
+  DispenseNotificationItems,
   FilteredHistoryDetails,
   ParsedSpineResponse
 } from "./types"
 import {padWithZeros} from "./fhirMappers"
 
-// Parsing Function
+// ---------------------------- PARSE SPINE RESPONSE ------------------------------
 export const parseSpineResponse = (spineResponse: string, logger: Logger): ParsedSpineResponse => {
   const xmlParser = new XMLParser({ignoreAttributes: false})
   const xmlResponse = xmlParser.parse(spineResponse) as XmlResponse
@@ -40,10 +41,11 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
 
   // Parse and return structured prescription data
   return {
-    patientDetails: parsePatientDetails(xmlPrescription, logger),
     requestGroupDetails: parseRequestGroupDetails(xmlPrescription, logger),
+    patientDetails: parsePatientDetails(xmlPrescription, logger),
     productLineItems: parseProductLineItems(xmlPrescription, logger),
-    filteredHistory: parseFilteredHistory(xmlPrescription, logger)
+    filteredHistory: parseFilteredHistory(xmlPrescription, logger),
+    dispenseNotificationItems: parseDispenseNotificationItems(xmlPrescription, logger)
   }
 }
 
@@ -238,6 +240,43 @@ const parseFilteredHistory = (xmlPrescription: XmlPrescription, logger: Logger):
 
   logger.info("Filtered history parsed successfully", {parsedHistory})
   return parsedHistory
+}
+
+// ---------------------------- DISPENSE NOTIFICATION -----------------------------
+// Parses dispense notification for each product line item and returns the dispense data
+export const parseDispenseNotificationItems = (xmlPrescription: XmlPrescription, logger: Logger)
+  : Array<DispenseNotificationItems> => {
+  const dispenseNotification = xmlPrescription.dispenseNotification
+  const dispenseNotificationItems: Array<DispenseNotificationItems> = []
+  const parentPrescription = xmlPrescription.parentPrescription
+
+  if (!dispenseNotification || !parentPrescription) {
+    logger.info("No dispense notification or parent prescription found.")
+    return dispenseNotificationItems
+  }
+
+  // Looping over 4 product line items dynamically
+  for (let i = 1; i <= 4; i++) {
+    const productLineItemKey = `productLineItem${i}` as keyof typeof parentPrescription
+    const quantityLineItemKey = `quantityLineItem${i}` as keyof typeof parentPrescription
+    const statusLineItemKey = `statusLineItem${i}` as keyof typeof dispenseNotification
+
+    const product = parentPrescription[productLineItemKey] as string | undefined
+    const quantity = parentPrescription[quantityLineItemKey]?.toString() ?? "0"
+    const status = padWithZeros(dispenseNotification[statusLineItemKey]?.toString(), 4) ?? ""
+
+    // We don't add cancelled items
+    if (product && status !== "0005") {
+      dispenseNotificationItems.push({
+        order: i,
+        medicationName: product,
+        quantity,
+        status
+      })
+    }
+  }
+
+  return dispenseNotificationItems
 }
 
 // ---------------------------- ERROR HANDLING -------------------------------
