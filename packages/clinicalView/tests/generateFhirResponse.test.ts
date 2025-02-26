@@ -28,21 +28,34 @@ const mockParsedResponse: ParsedSpineResponse =
   },
   productLineItems: [
     {
+      order: 1,
       medicationName: "Amoxicillin 250mg capsules",
       quantity: "20",
       dosageInstructions: "2 times a day for 10 days"
     }
   ],
-  filteredHistory: [
-    {
-      SCN: 2,
-      sentDateTime: "20240213105241",
-      fromStatus: "False",
-      toStatus: "0001",
-      message: "Prescription upload successful",
-      organizationName: "A83008"
+  filteredHistory:
+  {
+    SCN: 2,
+    sentDateTime: "20240213105241",
+    fromStatus: "False",
+    toStatus: "0001",
+    message: "Prescription upload successful",
+    organizationName: "A83008",
+    lineStatusChangeDict: {
+      line: [
+        {
+          order: 1,
+          id: "DAD23C1F-71A4-473A-9273-C83C8BFC5F64",
+          status: "",
+          fromStatus: "0005",
+          toStatus: "0005",
+          cancellationReason: "Clinical grounds"
+        }
+      ]
     }
-  ]
+  }
+
 }
 
 describe("generateFhirResponse", () => {

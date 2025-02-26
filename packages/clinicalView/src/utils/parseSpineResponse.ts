@@ -129,7 +129,7 @@ export const parsePatientAddress = (parentPrescription: XmlPrescription["parentP
     use: "home" as const
   }
 
-  logger.info("Parsed patient address", {address})
+  logger.info("Patient address parsed successfully", {address})
 
   return address
 }
@@ -188,6 +188,7 @@ const parseProductLineItems = (xmlPrescription: XmlPrescription, logger: Logger)
 
     if (productLineItem) {
       productLineItems.push({
+        order: i,
         medicationName: productLineItem,
         quantity: parentPrescription[quantityKey]?.toString() ?? "0",
         dosageInstructions: parentPrescription[dosageKey]?.toString() ?? "Unknown dosage"
@@ -205,36 +206,38 @@ const parseProductLineItems = (xmlPrescription: XmlPrescription, logger: Logger)
 }
 
 // ---------------------------- FILTERED HISTORY -----------------------------
-// Parses filtered history of prescription events (sorted by SCN in descending order)
-const parseFilteredHistory = (xmlPrescription: XmlPrescription, logger: Logger): Array<FilteredHistoryDetails> => {
+// Parses filtered history of prescription events
+const parseFilteredHistory = (xmlPrescription: XmlPrescription, logger: Logger): FilteredHistoryDetails => {
   const filteredHistoryItems: XmlFilteredHistory | Array<XmlFilteredHistory> = xmlPrescription.filteredHistory
-  const parsedHistory: Array<FilteredHistoryDetails> = []
 
-  if (Array.isArray(filteredHistoryItems)) {
-    for (const history of filteredHistoryItems) {
-      parsedHistory.push({
-        SCN: history.SCN,
-        sentDateTime: history.timestamp.toString(),
-        fromStatus: padWithZeros(history.fromStatus.toString(), 4),
-        toStatus: padWithZeros(history.toStatus.toString(), 4),
-        message: history.message.toString(),
-        organizationName: history.agentPersonOrgCode.toString()
-      })
-    }
-  } else if (filteredHistoryItems) {
-    parsedHistory.push({
-      SCN: filteredHistoryItems.SCN,
-      sentDateTime: filteredHistoryItems.timestamp.toString(),
-      fromStatus: padWithZeros(filteredHistoryItems.fromStatus.toString(), 4),
-      toStatus: padWithZeros(filteredHistoryItems.toStatus.toString(), 4),
-      message: filteredHistoryItems.message.toString(),
-      organizationName: filteredHistoryItems.agentPersonOrgCode.toString()
-    })
+  // Get the latest filtered history by the highest SCN
+  const latestHistory = Array.isArray(filteredHistoryItems)
+    ? filteredHistoryItems.reduce((prev, current) => (prev.SCN > current.SCN ? prev : current), filteredHistoryItems[0])
+    : filteredHistoryItems
+
+  const parsedHistory: FilteredHistoryDetails = {
+    SCN: latestHistory.SCN,
+    sentDateTime: latestHistory.timestamp.toString(),
+    fromStatus: padWithZeros(latestHistory.fromStatus.toString(), 4),
+    toStatus: padWithZeros(latestHistory.toStatus.toString(), 4),
+    message: latestHistory.message.toString(),
+    organizationName: latestHistory.agentPersonOrgCode.toString(),
+    lineStatusChangeDict: latestHistory.lineStatusChangeDict
+      ? {
+        line: latestHistory.lineStatusChangeDict.line.map((line) => ({
+          order: line.order,
+          id: line.id,
+          status: line.status ?? "",
+          fromStatus: padWithZeros(line.fromStatus.toString(), 4),
+          toStatus: padWithZeros(line.toStatus.toString(), 4),
+          cancellationReason: line?.cancellationReason
+        }))
+      }
+      : undefined
   }
 
   logger.info("Filtered history parsed successfully", {parsedHistory})
-
-  return parsedHistory.sort((a, b) => b.SCN - a.SCN) // Sort by SCN in descending order
+  return parsedHistory
 }
 
 // ---------------------------- ERROR HANDLING -------------------------------

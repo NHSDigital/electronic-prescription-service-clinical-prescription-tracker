@@ -1,11 +1,21 @@
 import {Address} from "fhir/r4"
 
+// Shared Interface for Line Status Change
+export interface LineStatusChange {
+  order: number
+  id: string
+  status?: string
+  fromStatus: string
+  toStatus: string
+  cancellationReason?: string
+}
+
 // Main Response Interface
 export interface ParsedSpineResponse {
   patientDetails?: PatientDetails
   requestGroupDetails?: RequestGroupDetails
   productLineItems?: Array<ProductLineItemDetails>
-  filteredHistory?: Array<FilteredHistoryDetails>
+  filteredHistory?: FilteredHistoryDetails
   error?: string // Error message if parsing fails
 }
 
@@ -35,6 +45,7 @@ export interface RequestGroupDetails {
 
 // Product Line Items
 export interface ProductLineItemDetails {
+  order: number
   medicationName: string
   quantity: string
   dosageInstructions: string
@@ -49,14 +60,7 @@ export interface FilteredHistoryDetails {
   message: string
   organizationName: string
   lineStatusChangeDict?: {
-    line: Array<{
-      order: number
-      id: string
-      status?: string
-      fromStatus: string | number
-      toStatus: string | number
-      cancellationReason?: string
-    }>
+    line: Array<LineStatusChange>
   }
 }
 
@@ -192,15 +196,8 @@ export interface XmlFilteredHistory {
   message: string
   orgASID: number
   agentPersonOrgCode: string
-
   lineStatusChangeDict: {
-    line: Array<{
-      order: number
-      id: string
-      status?: string
-      fromStatus: string | number
-      toStatus: string | number
-    }>
+    line: Array<LineStatusChange>
   }
 }
 

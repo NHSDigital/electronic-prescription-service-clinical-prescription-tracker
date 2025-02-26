@@ -13,12 +13,12 @@ import {
   mapGender,
   mapMedicationDispenseType,
   mapMedicationRequestStatusReason,
+  mapPrescriptionType,
   formatBirthDate
 } from "./fhirMappers"
 
 // Maps extracted data to FHIR RequestGroup response
 export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: Logger): RequestGroup => {
-  logger.info("Generating the RequestGroup response...")
 
   // Generate UUID for Patient
   const patientUuid = "example-patient"
@@ -53,7 +53,10 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
     const patient: Patient = {
       resourceType: "Patient",
       id: patientUuid,
-      identifier: [{system: "https://fhir.nhs.uk/Id/nhs-number", value: prescription.patientDetails?.nhsNumber}],
+      identifier: [{
+        system: "https://fhir.nhs.uk/Id/nhs-number",
+        value: prescription.patientDetails?.nhsNumber
+      }],
       name: [{
         prefix: [prescription.patientDetails?.prefix || ""],
         given: [prescription.patientDetails?.given || ""],
@@ -69,128 +72,142 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
     requestGroup.contained?.push(patient)
   }
 
+  // Determine if the prescription is cancelled and if any line item is pending cancellation
+  const prescriptionCancelled = prescription.requestGroupDetails?.statusCode === "0005"
+  const latestHistory = prescription.filteredHistory
+  const lineItemPendingCancellation = latestHistory?.lineStatusChangeDict?.line
+    ?.some((line: {cancellationReason?: string}) => line.cancellationReason) ?? false
+
   // Generate MedicationRequest entries
   prescription.productLineItems?.forEach(item => {
-    logger.info("Adding MedicationRequest resource...")
+    const lineItem = latestHistory?.lineStatusChangeDict?.line?.find(
+      (line) => line.order === item.order // Match by order
+    )
 
-    const medicationRequest: MedicationRequest = {
-      resourceType: "MedicationRequest",
-      id: `example-medicationrequest-${randomUUID()}`,
-      status: "active",
-      intent: "order",
-      subject: {reference: `#${patientUuid}`},
-      medicationCodeableConcept: {
-        coding: [{
-          system: "https://fhir.nhs.uk/CodeSystem/medication",
-          code: item.medicationName,
-          display: item.medicationName
-        }]
-      },
-      dispenseRequest: {quantity: {value: parseInt(item.quantity, 10)}},
-      dosageInstruction: [{text: item.dosageInstructions}],
-      extension: []
-    }
-    requestGroup.contained?.push(medicationRequest)
-
-    // Generate DispensingInformation extension
-    logger.info("Adding DispensingInformation extension...")
-    const dispenseStatusCode = "0008" // Mocked value - replace with actual logic
-    const dispensingInformation: Extension = {
-      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-DispensingInformation",
-      extension: [{
-        url: "dispenseStatus",
-        valueCoding: {
-          system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
-          code: dispenseStatusCode,
-          display: mapMedicationDispenseType(dispenseStatusCode)
-        }
-      }]
-    }
-    medicationRequest?.extension?.push(dispensingInformation)
-
-    // Generate PendingCancellations extension - Based on allowed dispense statuses
-    const allowedPendingCancellationStatuses = ["0008", "0007", "0002"]
-    const isPendingCancellation = allowedPendingCancellationStatuses.includes(dispenseStatusCode)
-
-    if (isPendingCancellation) {
-      logger.info(`Adding PendingCancellations extension because dispenseStatus is ${dispenseStatusCode}`)
-      const cancellationReasonCode = "0004" // Mocked value - replace with actual logic
-      const pendingCancellations: Extension = {
-        url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PendingCancellations",
-        extension: [
-          {
-            url: "lineItemPendingCancellation",
-            valueBoolean: true
-          },
-          {
-            url: "cancellationReason",
-            valueCoding: {
-              system: "https://fhir.nhs.uk/CodeSystem/medicationrequest-status-reason",
-              code: cancellationReasonCode,
-              display: mapMedicationRequestStatusReason(cancellationReasonCode)
-            }
-          }
-        ]
+    if (lineItem) {
+      const medicationRequest: MedicationRequest = {
+        resourceType: "MedicationRequest",
+        id: `example-medicationrequest-${randomUUID()}`,
+        status: lineItem.toStatus === "0005" ? "cancelled" : "active",
+        intent: "order",
+        subject: {reference: `#${patientUuid}`},
+        medicationCodeableConcept: {
+          coding: [{
+            system: "https://fhir.nhs.uk/CodeSystem/medication",
+            code: item.medicationName,
+            display: item.medicationName
+          }]
+        },
+        dispenseRequest: {quantity: {value: parseInt(item.quantity, 10)}},
+        dosageInstruction: [{text: item.dosageInstructions}],
+        extension: []
       }
-      medicationRequest?.extension?.push(pendingCancellations)
-    } else {
-      logger.info(`Skipping PendingCancellations extension because dispenseStatus is ${dispenseStatusCode}`)
+
+      // DispensingInformation Extension
+      if (lineItem.toStatus) {
+        const dispensingInformation: Extension = {
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-DispensingInformation",
+          extension: [{
+            url: "dispenseStatus",
+            valueCoding: {
+              system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+              code: lineItem.toStatus,
+              display: mapMedicationDispenseType(lineItem.toStatus)
+            }
+          }]
+        }
+
+        medicationRequest?.extension?.push(dispensingInformation)
+      }
+
+      // PendingCancellations Extension
+      if (lineItem.cancellationReason) {
+        const cancellationInformation: Extension = {
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PendingCancellations",
+          extension: [
+            {
+              url: "lineItemPendingCancellation",
+              valueBoolean: true
+            },
+            {
+              url: "cancellationReason",
+              valueCoding: {
+                system: "https://fhir.nhs.uk/CodeSystem/medicationrequest-status-reason",
+                code: mapMedicationRequestStatusReason(lineItem.cancellationReason),
+                display: lineItem.cancellationReason
+              }
+            }]
+        }
+        medicationRequest.extension?.push(cancellationInformation)
+      }
+
+      requestGroup.contained?.push(medicationRequest)
     }
   })
 
   // Generate MedicationDispense entries
-  prescription.filteredHistory?.forEach(history => {
-    logger.info("Adding MedicationDispense resource...")
-
+  if (latestHistory) {
     const medicationDispense: MedicationDispense = {
       resourceType: "MedicationDispense",
       id: `example-medicationdispense-${randomUUID()}`,
       status: "completed",
       authorizingPrescription: [{reference: `#${patientUuid}`}],
       quantity: {value: 1},
-      dosageInstruction: [{text: history.message}]
+      dosageInstruction: [{text: latestHistory.message}]
     }
-
     requestGroup.contained?.push(medicationDispense)
-  })
+  }
 
-  // Add hardcoded extensions
-  requestGroup.extension?.push({
+  // Add Extension-EPS-RepeatInformation
+  const repeatInformation: Extension = {
     url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
     extension: [
-      {url: "numberOfRepeatsAllowed", valueInteger: 5}, // Adjust the logic for actual number
-      {url: "numberOfRepeatsIssued", valueInteger: 2} // Adjust the logic for actual number
+      {
+        url: "numberOfRepeatsAllowed",
+        valueInteger: prescription.requestGroupDetails?.maxRepeats || 0
+      },
+      {
+        url: "numberOfRepeatsIssued",
+        valueInteger: prescription.requestGroupDetails?.instanceNumber || 0
+      }
     ]
-  })
+  }
+  requestGroup.extension?.push(repeatInformation)
 
-  requestGroup.extension?.push({
+  // Add Extension-EPS-PendingCancellations
+  const pendingCancellations: Extension = {
     url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PendingCancellations",
     extension: [
-      {url: "prescriptionPendingCancellation", valueBoolean: false},
-      {url: "lineItemPendingCancellation", valueBoolean: true}
+      {url: "prescriptionPendingCancellation", valueBoolean: prescriptionCancelled},
+      {url: "lineItemPendingCancellation", valueBoolean: lineItemPendingCancellation}
     ]
-  })
+  }
+  requestGroup.extension?.push(pendingCancellations)
 
-  requestGroup.extension?.push({
+  // Add Extension-DM-PrescriptionStatusHistory
+  const prescriptionStatusHistory: Extension = {
     url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
     extension: [{
       url: "status",
       valueCoding: {
         system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
-        code: "0003", // Mocked value, map this value
-        display: "With Dispenser - Active" // Mocked value, adjust the logic
+        code: latestHistory?.toStatus || "", // Default to "0003" if no history is available
+        display: mapMedicationDispenseType(latestHistory?.toStatus || "")
       }
     }]
-  })
+  }
+  requestGroup.extension?.push(prescriptionStatusHistory)
 
-  requestGroup.extension?.push({
+  // Add Extension-DM-PrescriptionType
+  const prescriptionType: Extension = {
     url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionType",
     valueCoding: {
       system: "https://fhir.nhs.uk/CodeSystem/prescription-type",
-      code: "0101", // Mocked value, map this value
-      display: "Primary Care Prescriber - Medical Prescriber" // Mocked value, adjust as needed
+      code: prescription.requestGroupDetails?.prescriptionType || "",
+      display: mapPrescriptionType(prescription.requestGroupDetails?.prescriptionType || "")
     }
-  })
+  }
+  requestGroup.extension?.push(prescriptionType)
 
   // Add hardcoded action objects
   requestGroup.action?.push({
@@ -243,7 +260,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
         system: "https://fhir.nhs.uk/Id/ods-organization-code",
         value: "FCG71"
       }
-    }] as Array<Reference>, // Corrected to Array<Reference> type
+    }] as Array<Reference>,
     code: [{
       coding: [{
         system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
@@ -261,7 +278,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
         system: "https://fhir.nhs.uk/Id/ods-organization-code",
         value: "FCG71"
       }
-    }] as Array<Reference>, // Corrected to Array<Reference> type
+    }] as Array<Reference>,
     code: [{
       coding: [{
         system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
