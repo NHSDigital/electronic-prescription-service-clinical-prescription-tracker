@@ -128,8 +128,6 @@ const handleSpineResponse = (
 
   logger.info("Successfully retrieved prescription data from Spine", {extractedData})
 
-  logger.info("Generating FHIR response...")
-
   const fhirResponse: RequestGroup = generateFhirResponse(extractedData, logger)
 
   logger.info("Generated FHIR response bundle", {fhirResponse})
