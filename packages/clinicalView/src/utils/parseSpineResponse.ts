@@ -41,7 +41,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
   // Parse and return structured prescription data
   return {
     patientDetails: parsePatientDetails(xmlPrescription, logger),
-    requestGroupDetails: parsePrescriptionDetails(xmlPrescription, logger),
+    requestGroupDetails: parseRequestGroupDetails(xmlPrescription, logger),
     productLineItems: parseProductLineItems(xmlPrescription, logger),
     filteredHistory: parseFilteredHistory(xmlPrescription, logger)
   }
@@ -136,7 +136,7 @@ export const parsePatientAddress = (parentPrescription: XmlPrescription["parentP
 
 // ---------------------------- PRESCRIPTION DETAILS -------------------------
 // Parses prescription-level details
-const parsePrescriptionDetails = (xmlPrescription: XmlPrescription, logger: Logger): RequestGroupDetails => {
+const parseRequestGroupDetails = (xmlPrescription: XmlPrescription, logger: Logger): RequestGroupDetails => {
   if (
     !xmlPrescription.prescriptionID ||
     !xmlPrescription.prescriptionType.toString() ||
