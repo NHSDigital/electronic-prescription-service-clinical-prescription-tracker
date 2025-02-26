@@ -210,6 +210,8 @@ cdk-synth:
 	npx cdk synth \
 		--quiet \
 		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/CptsApiApp.ts" \
+		--context accountId=undefined \
+		--context stackName=cpt \
 		--context VERSION_NUMBER=undefined \
 		--context COMMIT_ID=undefined \
 		--context logRetentionInDays=30
@@ -217,8 +219,9 @@ cdk-synth:
 cdk-diff:
 	npx cdk diff \
 		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/CptsApiApp.ts" \
-		--context serviceName=$$service_name \
-		--context VERSION_NUMBER=$$VERSION_NUMBER \
+		--context accountId=$$ACCOUNT_ID \
+		--context stackName=$$stack_name \
+		--context VERSION_NUMBER==$$VERSION_NUMBER \
 		--context COMMIT_ID=$$COMMIT_ID \
 		--context logRetentionInDays=$$LOG_RETENTION_IN_DAYS
 
@@ -232,6 +235,8 @@ cdk-watch:
 		--all \
 		--ci true \
 		--require-approval $${REQUIRE_APPROVAL} \
-		--context VERSION_NUMBER=$$VERSION_NUMBER \
+		--context accountId=$$ACCOUNT_ID \
+		--context stackName=$$stack_name \
+		--context VERSION_NUMBER==$$VERSION_NUMBER \
 		--context COMMIT_ID=$$COMMIT_ID \
 		--context logRetentionInDays=$$LOG_RETENTION_IN_DAYS

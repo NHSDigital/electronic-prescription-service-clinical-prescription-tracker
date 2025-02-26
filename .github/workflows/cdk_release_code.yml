@@ -5,6 +5,9 @@ name: cdk release code
 on:
   workflow_call:
     inputs:
+      STACK_NAME:
+        required: true
+        type: string
       TARGET_ENVIRONMENT:
         required: true
         type: string
@@ -17,6 +20,17 @@ on:
       CDK_APP_NAME:
         required: true
         type: string
+      LOG_RETENTION_IN_DAYS:
+        required: true
+        type: string
+      LOG_LEVEL:
+        type: string
+      TARGET_SPINE_SERVER:
+        required: true
+        type: string
+      ENABLE_MUTUAL_TLS:
+        required: true
+        type: boolean
 
 jobs:
   release_code:
@@ -35,3 +49,57 @@ jobs:
           fetch-depth: 0
           sparse-checkout: |
             .github
+
+      - name: Configure AWS Credentials
+        id: connect-aws-pull-image
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-2
+          role-to-assume: ${{ secrets.CDK_PULL_IMAGE_ROLE }}
+          role-session-name: cpt-api-pull-image
+
+      - name: build_artifact download
+        uses: actions/download-artifact@v4
+        with:
+          name: build_artifact
+
+      - name: extract build_artifact
+        run: |
+          mkdir -p .build
+          tar -xf artifact.tar -C .build
+
+      - name: Retrieve AWS Account ID
+        id: retrieve-account-id
+        run: echo "ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)" >> "$GITHUB_ENV"
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        run: |
+          aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin ${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com
+
+      - name: Pull cdk-utils-build from Amazon ECR
+        run: |
+          docker pull "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:latest"
+          docker tag "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:latest" cdk-utils-build-repo:latest
+
+      - name: Configure AWS Credentials
+        id: connect-aws
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-2
+          role-to-assume: ${{ secrets.CLOUD_FORMATION_DEPLOY_ROLE }}
+          role-session-name: cpt-api-deployment
+          output-credentials: true
+
+      - name: fix cdk.json for deployment
+        run: |
+          ./.github/scripts/fix_cdk_json.sh
+        env:
+          STACK_NAME: "${{ inputs.STACK_NAME }}"
+          VERSION_NUMBER: "${{ inputs.VERSION_NUMBER }}"
+          COMMIT_ID: "${{ inputs.COMMIT_ID }}"
+          LOG_RETENTION_IN_DAYS: "${{ inputs.LOG_RETENTION_IN_DAYS }}"
+          LOG_LEVEL: "${{ inputs.LOG_LEVEL }}"
+          TARGET_SPINE_SERVER: "${{ inputs.TARGET_SPINE_SERVER }}"
+          ENABLE_MUTUAL_TLS: "${{ inputs.ENABLE_MUTUAL_TLS }}"
+      # TODO: continue

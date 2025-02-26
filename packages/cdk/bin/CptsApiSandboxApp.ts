@@ -1,6 +1,6 @@
 import {App, Aspects, Tags} from "aws-cdk-lib"
 import {AwsSolutionsChecks} from "cdk-nag"
-import {CptsApiStack} from "../stacks/CptsApiStack"
+import {CptsApiSandboxStack} from "../stacks/CptsApiSandboxStack"
 
 const app = new App()
 
@@ -26,9 +26,15 @@ Tags.of(app).add("accountId", accountId)
 Tags.of(app).add("stackName", stackName)
 Tags.of(app).add("version", version)
 Tags.of(app).add("commit", commit)
-Tags.of(app).add("cdkApp", "CptsApiApp")
+Tags.of(app).add("cdkApp", "CptsApiSandboxApp")
 
-new CptsApiStack(app, "CptsApiStack", {
+/* -- PLACEHOLDER APP FOR SANDBOX --
+  This app is not currently being built or deployed, and its stack definition contains no resources.
+
+  When this app is implemented, relevant make targets and updates to workflows will be required in addition
+  to any lambda code and cdk resources for the required endpoints.
+*/
+new CptsApiSandboxStack(app, "CptsApiSandboxStack", {
   env: {
     region: "eu-west-2",
     account: accountId

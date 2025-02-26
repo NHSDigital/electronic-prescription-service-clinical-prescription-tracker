@@ -32,7 +32,7 @@ export interface LambdaFunctionProps {
 }
 
 const insightsLayerArn = "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:55"
-const baseDir = resolve(__dirname, "../../../..")
+const baseDir = resolve(__dirname, "../../..")
 const getDefaultLambdaOptions = (packageBasePath: string):NodejsFunctionProps => {
   return {
     runtime: Runtime.NODEJS_22_X,
