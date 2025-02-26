@@ -182,7 +182,7 @@ Resources:
     Properties:
       FunctionName: !Sub "${StackName}-status"
       CodeUri: ../../packages
-      Handler: statusLambda.handler
+      Handler: handler.handler
       Role: !GetAtt StatusResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
@@ -212,7 +212,7 @@ Resources:
         tsconfig: statusLambda/tsconfig.json
         packages: bundle
         EntryPoints:
-          - statusLambda/src/statusLambda.ts
+          - status/src/handler.ts
 
   StatusResources:
     Type: AWS::Serverless::Application
