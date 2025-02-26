@@ -33,22 +33,22 @@ export const mapMedicationDispenseType = (code: string): string => {
 }
 
 /**
- * Maps the medication request status reason code to its display value.
+ * Maps the medication request status reason display value to its code.
  */
-export const mapMedicationRequestStatusReason = (code: string): string => {
+export const mapMedicationRequestStatusReason = (display: string): string => {
   const medicationRequestStatusReasonMap: Record<string, string> = {
-    "0001": "Prescribing Error",
-    "0002": "Clinical contra-indication",
-    "0003": "Change to medication treatment regime",
-    "0004": "Clinical grounds",
-    "0005": "At the Patients request",
-    "0006": "At the Pharmacists request",
-    "0007": "Notification of Death",
-    "0008": "Patient deducted - other reason",
-    "0009": "Patient deducted - registered with new practice"
+    "Prescribing Error": "0001",
+    "Clinical contra-indication": "0002",
+    "Change to medication treatment regime": "0003",
+    "Clinical grounds": "0004",
+    "At the Patients request": "0005",
+    "At the Pharmacists request": "0006",
+    "Notification of Death": "0007",
+    "Patient deducted - other reason": "0008",
+    "Patient deducted - registered with new practice": "0009"
   }
 
-  return medicationRequestStatusReasonMap[code] || "Unknown"
+  return medicationRequestStatusReasonMap[display] || "Unknown"
 }
 
 /**
