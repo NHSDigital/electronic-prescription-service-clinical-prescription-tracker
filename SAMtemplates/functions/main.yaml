@@ -157,7 +157,7 @@ Resources:
         tsconfig: prescriptionSearch/tsconfig.json
         packages: bundle
         EntryPoints:
-          - prescriptionSearch/src/prescriptionSearch.ts
+          - prescriptionSearch/src/handler.ts
 
   PrescriptionSearchResources:
     Type: AWS::Serverless::Application
