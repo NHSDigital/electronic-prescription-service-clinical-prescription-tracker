@@ -127,7 +127,7 @@ Resources:
     Properties:
       FunctionName: !Sub "${StackName}-PrescriptionSearch"
       CodeUri: ../../packages
-      Handler: prescriptionSearch.handler
+      Handler: handler.handler
       Role: !GetAtt PrescriptionSearchResources.Outputs.LambdaRoleArn
       Environment:
         Variables:
