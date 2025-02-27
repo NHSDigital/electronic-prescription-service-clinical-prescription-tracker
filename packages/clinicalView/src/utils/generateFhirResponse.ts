@@ -38,7 +38,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
     author: {
       identifier: {
         system: "https://fhir.nhs.uk/Id/ods-organization-code",
-        value: prescription.requestGroupDetails?.organizationSummaryObjective || ""
+        value: prescription.requestGroupDetails?.dispensingOrganization || ""
       }
     },
     authoredOn: new Date().toISOString(),

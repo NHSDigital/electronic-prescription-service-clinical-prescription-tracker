@@ -41,7 +41,7 @@ export interface RequestGroupDetails {
   maxRepeats?: number
   daysSupply: number
   nominatedPerformer: string
-  organizationSummaryObjective: string
+  dispensingOrganization: string
 }
 
 // Product Line Items
