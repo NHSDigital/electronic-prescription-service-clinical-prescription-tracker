@@ -167,6 +167,7 @@ const parseRequestGroupDetails = (xmlPrescription: XmlPrescription, logger: Logg
     maxRepeats: xmlPrescription.maxRepeats !== null ? xmlPrescription.maxRepeats : undefined,
     daysSupply: xmlPrescription.daysSupply,
     nominatedPerformer: xmlPrescription.nominatedPerformer ?? "",
+    prescribingOrganization: xmlPrescription.prescribingOrganization ?? "",
     dispensingOrganization: xmlPrescription.dispensingOrganization ?? ""
   }
 }

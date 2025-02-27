@@ -38,7 +38,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
     author: {
       identifier: {
         system: "https://fhir.nhs.uk/Id/ods-organization-code",
-        value: prescription.requestGroupDetails?.dispensingOrganization || ""
+        value: prescription.requestGroupDetails?.prescribingOrganization || ""
       }
     },
     authoredOn: new Date().toISOString(),
@@ -294,7 +294,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
     participant: [{
       identifier: {
         system: "https://fhir.nhs.uk/Id/ods-organization-code",
-        value: "FCG71"
+        value: prescription.requestGroupDetails?.dispensingOrganization || ""
       }
     }] as Array<Reference>,
     code: [{

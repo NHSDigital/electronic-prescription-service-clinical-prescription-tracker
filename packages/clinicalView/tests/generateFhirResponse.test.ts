@@ -24,7 +24,8 @@ const mockParsedResponse: ParsedSpineResponse =
     maxRepeats: 5,
     daysSupply: 28,
     nominatedPerformer: "VNE51",
-    dispensingOrganization: "A83008"
+    prescribingOrganization: "A83008",
+    dispensingOrganization: "Y02494"
   },
   productLineItems: [
     {

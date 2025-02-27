@@ -41,6 +41,7 @@ export interface RequestGroupDetails {
   maxRepeats?: number
   daysSupply: number
   nominatedPerformer: string
+  prescribingOrganization: string
   dispensingOrganization: string
 }
 
