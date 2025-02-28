@@ -1,4 +1,4 @@
-import {Address} from "fhir/r4"
+import {Address, RequestGroupAction} from "fhir/r4"
 
 // Shared Interface for Line Status Change
 export interface LineStatusChange {
@@ -72,6 +72,11 @@ export interface FilteredHistoryDetails {
   lineStatusChangeDict?: {
     line: Array<LineStatusChange>
   }
+}
+
+export interface PrescriptionStatusTransitions {
+  title: string
+  action: Array<RequestGroupAction>
 }
 
 // ------------------------ XML Types ------------------------

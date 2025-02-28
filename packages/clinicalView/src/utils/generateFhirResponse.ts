@@ -6,9 +6,10 @@ import {
   MedicationRequest,
   MedicationDispense,
   Extension,
-  Reference
+  Reference,
+  RequestGroupAction
 } from "fhir/r4"
-import {ParsedSpineResponse} from "../utils/types"
+import {ParsedSpineResponse, PrescriptionStatusTransitions} from "../utils/types"
 import {
   mapGender,
   mapMedicationDispenseType,
@@ -244,50 +245,54 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   }
   requestGroup.extension?.push(prescriptionType)
 
-  // Add hardcoded action objects
-  requestGroup.action?.push({
+  // Add PrescriptionStatusTransitions action
+  const prescriptionStatusTransitions: PrescriptionStatusTransitions = {
     title: "Prescription status transitions",
+    action: []
+  }
+  requestGroup.action?.push(prescriptionStatusTransitions)
+
+  // Add PrescriptionUploadSuccessful action
+  const prescriptionUploadSuccessful: RequestGroupAction = {
+    title: "Prescription upload successful",
+    timingTiming: {
+      event: ["2025-02-24T05:30:00.494Z"],
+      repeat: {
+        frequency: 1,
+        period: 20,
+        periodUnit: "d" as const
+      }
+    },
+    participant: [{
+      identifier: {
+        system: "https://fhir.nhs.uk/Id/ods-organization-code",
+        value: "A83008"
+      }
+    }] as Array<Reference>,
+    code: [{
+      coding: [{
+        system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+        code: "0001",
+        display: "To be Dispensed"
+      }]
+    }],
     action: [
       {
-        title: "Prescription upload successful",
-        timingTiming: {
-          event: ["2025-02-24T05:30:00.494Z"],
-          repeat: {
-            frequency: 1,
-            period: 20,
-            periodUnit: "d"
-          }
-        },
-        participant: [{
-          identifier: {
-            system: "https://fhir.nhs.uk/Id/ods-organization-code",
-            value: "A83008"
-          }
-        }] as Array<Reference>,
-        code: [{
-          coding: [{
-            system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
-            code: "0001",
-            display: "To be Dispensed"
-          }]
-        }],
-        action: [
-          {
-            resource: {
-              reference: "#example-medicationrequest-1"
-            }
-          },
-          {
-            resource: {
-              reference: "#example-medicationrequest-2"
-            }
-          }
-        ]
+        resource: {
+          reference: "#example-medicationrequest-1"
+        }
+      },
+      {
+        resource: {
+          reference: "#example-medicationrequest-2"
+        }
       }
     ]
-  })
+  }
+  prescriptionStatusTransitions.action?.push(prescriptionUploadSuccessful)
 
-  requestGroup.action?.push({
+  // Add NominatedReleaseRequestSuccessful action
+  const nominatedReleaseRequestSuccessful: RequestGroupAction = {
     title: "Nominated Release Request successful",
     timingDateTime: "2025-01-29T13:00:00Z",
     participant: [{
@@ -303,9 +308,11 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
         display: "With Dispenser"
       }]
     }]
-  })
+  }
+  prescriptionStatusTransitions.action?.push(nominatedReleaseRequestSuccessful)
 
-  requestGroup.action?.push({
+  // Add DispenseNotificationSuccessful action
+  const dispenseNotificationSuccessful: RequestGroupAction = {
     title: "Dispense notification successful",
     timingDateTime: "2025-01-30T10:00:00Z",
     participant: [{
@@ -326,7 +333,8 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
         reference: "#example-medicationdispense"
       }
     }]
-  })
+  }
+  prescriptionStatusTransitions.action?.push(dispenseNotificationSuccessful)
 
   logger.info("RequestGroup response generated successfully.")
   return requestGroup
