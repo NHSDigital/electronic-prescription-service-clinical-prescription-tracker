@@ -4,7 +4,7 @@ import {
   it,
   jest
 } from "@jest/globals"
-import {newHandler} from "../src/clinicalView"
+import {newHandler} from "../src/handler"
 import MockAdapter from "axios-mock-adapter"
 import axios from "axios"
 import {APIGatewayEvent, Context} from "aws-lambda"
