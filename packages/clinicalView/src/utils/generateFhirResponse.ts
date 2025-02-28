@@ -50,7 +50,6 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
 
   // Generate Patient entry
   if (!requestGroup.contained?.some((entry) => entry.resourceType === "Patient")) {
-    logger.info("Adding Patient resource...")
 
     const patient: Patient = {
       resourceType: "Patient",
