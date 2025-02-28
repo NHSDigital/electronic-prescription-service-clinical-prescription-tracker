@@ -1,5 +1,5 @@
-# TODO: complete this
 # TODO: make the pipelines use this; ci, pull_request, release
+# TODO: remember to put github pages bit somewhere
 name: cdk release code
 
 on:
@@ -31,9 +31,18 @@ on:
       ENABLE_MUTUAL_TLS:
         required: true
         type: boolean
+      DEPLOY_APIGEE:
+        type: boolean
+        default: true
+      AWS_ENVIRONMENT:
+        required: true
+        type: string
+      APIGEE_ENVIRONMENT:
+        required: true
+        type: string
 
 jobs:
-  release_code:
+  release_code_and_api:
     runs-on: ubuntu-22.04
     environment: ${{ inputs.TARGET_ENVIRONMENT }}
     name: deploy cdk app ${{ inputs.CDK_APP_NAME }}
@@ -83,7 +92,7 @@ jobs:
           docker tag "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:latest" cdk-utils-build-repo:latest
 
       - name: Configure AWS Credentials
-        id: connect-aws
+        id: connect-aws-deploy
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-west-2
@@ -102,4 +111,80 @@ jobs:
           LOG_LEVEL: "${{ inputs.LOG_LEVEL }}"
           TARGET_SPINE_SERVER: "${{ inputs.TARGET_SPINE_SERVER }}"
           ENABLE_MUTUAL_TLS: "${{ inputs.ENABLE_MUTUAL_TLS }}"
-      # TODO: continue
+
+      - name: Show diff
+        run: |
+          docker run \
+          -v "$(pwd)/.build":/home/cdkuser/workspace/ \
+          -e AWS_ACCESS_KEY_ID=${{ steps.connect-aws-deploy.outputs.aws-access-key-id }} \
+          -e AWS_SECRET_ACCESS_KEY=${{ steps.connect-aws-deploy.outputs.aws-secret-access-key }} \
+          -e AWS_SESSION_TOKEN=${{ steps.connect-aws-deploy.outputs.aws-session-token }} \
+          -e AWS_REGION="eu-west-2" \
+          -e SHOW_DIFF="true" \
+          -e DEPLOY_CODE="false" \
+          -e CDK_APP_PATH="packages/cdk/bin/PrescribeDispenseApp.ts" \
+          cdk-utils-build-repo:latest
+        shell: bash
+
+      - name: Deploy code
+        run: |
+          docker run \
+          -v "$(pwd)/.build":/home/cdkuser/workspace/ \
+          -e AWS_ACCESS_KEY_ID=${{ steps.connect-aws-deploy.outputs.aws-access-key-id }} \
+          -e AWS_SECRET_ACCESS_KEY=${{ steps.connect-aws-deploy.outputs.aws-secret-access-key }} \
+          -e AWS_SESSION_TOKEN=${{ steps.connect-aws-deploy.outputs.aws-session-token }} \
+          -e AWS_REGION="eu-west-2" \
+          -e SHOW_DIFF="false" \
+          -e DEPLOY_CODE="true" \
+          -e CDK_APP_PATH="packages/cdk/bin/CptsApiApp.ts" \
+          cdk-utils-build-repo:latest
+        shell: bash
+
+      - name: get mtls secrets
+        shell: bash
+        run: |
+          mkdir -p ~/.proxygen/tmp
+          client_private_key_arn=$(aws cloudformation list-exports --query "Exports[?Name=='account-resources:ClinicalTrackerClientKeySecret'].Value" --output text)
+          client_cert_arn=$(aws cloudformation list-exports --query "Exports[?Name=='account-resources:ClinicalTrackerClientCertSecret'].Value" --output text)
+          aws secretsmanager get-secret-value --secret-id "${client_private_key_arn}" --query SecretString --output text > ~/.proxygen/tmp/client_private_key
+          aws secretsmanager get-secret-value --secret-id "${client_cert_arn}" --query SecretString --output text > ~/.proxygen/tmp/client_cert
+
+      - name: Configure AWS Credentials for api release
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-2
+          role-to-assume: ${{ secrets.PROXYGEN_ROLE }}
+          role-session-name: cpt-api-proxygen
+
+      - name: Deploy CPT API
+        shell: bash
+        if: ${{ inputs.DEPLOY_APIGEE == true && always() && !failure() && !cancelled() }}
+        env:
+          VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}
+          SPEC_PATH: ./.build/packages/specification/dist/eps-clinical-prescription-tracker-api.resolved.json
+          STACK_NAME: ${{ inputs.STACK_NAME }}
+          AWS_ENVIRONMENT: ${{ inputs.AWS_ENVIRONMENT }}
+          APIGEE_ENVIRONMENT: ${{ inputs.APIGEE_ENVIRONMENT }}
+          PROXYGEN_PRIVATE_KEY_NAME: FhirPrescribingProxygenPrivateKey
+          PROXYGEN_KID: fhir-prescribing
+          DRY_RUN: false
+          ENABLE_MUTUAL_TLS: ${{ inputs.ENABLE_MUTUAL_TLS }}
+        run: ./.github/scripts/deploy_api.sh
+
+      - uses: actions/upload-artifact@v4
+        name: Upload specs
+        with:
+          name: ${{ inputs.APIGEE_ENVIRONMENT }}-specs
+          path: |
+            ./.build/packages/specification/dist/eps-clinical-prescription-tracker-api.resolved.json
+
+  regression_tests:
+    name: Regression Tests
+    uses: ./.github/workflows/run_regression_tests.yml
+    if: ${{ always() && !failure() && !cancelled() }}
+    needs: [release_code_and_api]
+    with:
+      ENVIRONMENT: ${{ inputs.TARGET_ENVIRONMENT }}
+      VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}
+    secrets:
+      REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
