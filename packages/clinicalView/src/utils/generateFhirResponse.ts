@@ -215,8 +215,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   const dispensingOrganization: string = prescription.dispenseNotificationDetails?.dispensingOrganization || ""
   const statusPrescription: string = prescription.dispenseNotificationDetails?.statusPrescription || ""
   const dispenseNotifDateTime: string = formatToISO8601(
-    prescription.dispenseNotificationDetails?.dispenseNotifDateTime.toString()
-  )
+    prescription.dispenseNotificationDetails?.dispenseNotifDateTime.toString() || "")
 
   const dispenseNotificationSuccessful: RequestGroupAction = {
     title: "Dispense notification successful",
