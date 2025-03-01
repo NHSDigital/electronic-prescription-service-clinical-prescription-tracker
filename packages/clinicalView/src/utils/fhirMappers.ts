@@ -52,6 +52,23 @@ export const mapMedicationRequestStatusReason = (display: string): string => {
 }
 
 /**
+ * Maps the prescription status code to its display value.
+ */
+export const mapTaskBusinessStatus = (code: string): string => {
+  const taskBusinessStatusMap: Record<string, string> = {
+    "0001": "To be Dispensed",
+    "0002": "With Dispenser",
+    "0003": "With Dispenser - Active",
+    "0004": "Expired",
+    "0005": "Cancelled",
+    "0006": "Dispensed",
+    "0007": "Not Dispensed"
+  }
+
+  return taskBusinessStatusMap[code] || "Unknown Task Business Status"
+}
+
+/**
  * Maps the prescription type code to its display value.
  */
 export const mapPrescriptionType = (code: string): string => {
