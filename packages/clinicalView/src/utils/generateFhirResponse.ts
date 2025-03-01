@@ -162,7 +162,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   requestGroup.action?.push(prescriptionStatusTransitions)
 
   // Action: Prescription Upload Successful
-  const signedTime: string = formatToISO8601(prescription.requestGroupDetails?.signedTime || "")
+  const signedTime: string = formatToISO8601(prescription.requestGroupDetails?.signedTime.toString() || "")
 
   const prescriptionUploadSuccessful: RequestGroupAction = {
     title: "Prescription upload successful",
@@ -215,7 +215,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   const dispensingOrganization: string = prescription.dispenseNotificationDetails?.dispensingOrganization || ""
   const statusPrescription: string = prescription.dispenseNotificationDetails?.statusPrescription || ""
   const dispenseNotifDateTime: string = formatToISO8601(
-    prescription.dispenseNotificationDetails?.dispenseNotifDateTime || ""
+    prescription.dispenseNotificationDetails?.dispenseNotifDateTime.toString()
   )
 
   const dispenseNotificationSuccessful: RequestGroupAction = {

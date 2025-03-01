@@ -111,7 +111,7 @@ export const mapPrescriptionType = (code: string): string => {
 export const formatToISO8601 = (dateStr: string): string => {
   if (!dateStr || dateStr.length !== 14) {
     console.warn("Invalid date format, returning current timestamp.")
-    return new Date().toISOString() // Default to current timestamp if input is invalid
+    return "" // Return empty string if input is missing or invalid
   }
 
   const year = dateStr.substring(0, 4)

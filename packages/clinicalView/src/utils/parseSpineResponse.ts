@@ -251,7 +251,7 @@ export const parseDispenseNotificationItems = (xmlPrescription: XmlPrescription,
   const dispenseNotification = xmlPrescription?.dispenseNotification
   const parentPrescription = xmlPrescription?.parentPrescription
   const dispensingOrganization = xmlPrescription?.dispensingOrganization ?? ""
-  const dispenseNotifDateTime = xmlPrescription?.dispenseNotifDateTime ?? ""
+  const dispenseNotifDateTime = xmlPrescription?.dispenseNotification?.dispenseNotifDateTime ?? ""
 
   const statusPrescription = padWithZeros(dispenseNotification?.statusPrescription ?? "", 4)
   const dispenseNotificationItems: Array<DispenseNotificationItem> = []
