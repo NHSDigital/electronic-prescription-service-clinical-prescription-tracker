@@ -23,6 +23,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   // Generate unique UUIDs for Patient and MedicationRequests
   const patientUuid = randomUUID()
   const medicationRequestMap = new Map<string, string>() // Maps medication name to MedicationRequest ID
+  const medicationDispenseMap = new Map<string, string>() // Maps medication name to MedicationDispense ID
 
   // Generate the RequestGroup root resource
   const requestGroup: RequestGroup = {
@@ -161,11 +162,12 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
 
   // Generate MedicationDispense entries from dispenseNotificationItems
   prescription.dispenseNotificationItems?.forEach((item) => {
+    const medicationDispenseId = `${randomUUID()}`
     const medicationRequestId = medicationRequestMap.get(item.medicationName)
 
     const medicationDispense: MedicationDispense = {
       resourceType: "MedicationDispense",
-      id: `example-medicationdispense-${randomUUID()}`,
+      id: medicationDispenseId,
       status: "completed",
       authorizingPrescription: medicationRequestId
         ? [{reference: `#${medicationRequestId}`}]
@@ -174,7 +176,6 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
         coding: [
           {
             system: "https://fhir.nhs.uk/CodeSystem/medication",
-            code: item.medicationName,
             display: item.medicationName
           }
         ]
@@ -190,6 +191,9 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
         ]
       }
     }
+
+    // Store MedicationDispense ID for linking
+    medicationDispenseMap.set(item.medicationName, medicationDispenseId)
 
     requestGroup.contained?.push(medicationDispense)
   })
@@ -276,19 +280,16 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
         display: "To be Dispensed"
       }]
     }],
-    action: [
-      {
-        resource: {
-          reference: "#example-medicationrequest-1"
-        }
-      },
-      {
-        resource: {
-          reference: "#example-medicationrequest-2"
-        }
-      }
-    ]
+    action: []
   }
+  // Iterate over each stored MedicationRequest ID and add it to the action array
+  medicationRequestMap.forEach((medicationRequestId) => {
+    prescriptionUploadSuccessful.action?.push({
+      resource: {
+        reference: `#${medicationRequestId}`
+      }
+    })
+  })
   prescriptionStatusTransitions.action?.push(prescriptionUploadSuccessful)
 
   // Add NominatedReleaseRequestSuccessful action
@@ -328,12 +329,16 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
         display: "With Dispenser - Active"
       }]
     }],
-    action: [{
-      resource: {
-        reference: "#example-medicationdispense"
-      }
-    }]
+    action: []
   }
+  // Iterate over each stored MedicationDispense ID and add it to the action array
+  medicationDispenseMap.forEach((medicationDispenseId) => {
+    dispenseNotificationSuccessful.action?.push({
+      resource: {
+        reference: `#${medicationDispenseId}`
+      }
+    })
+  })
   prescriptionStatusTransitions.action?.push(dispenseNotificationSuccessful)
 
   logger.info("RequestGroup response generated successfully.")
