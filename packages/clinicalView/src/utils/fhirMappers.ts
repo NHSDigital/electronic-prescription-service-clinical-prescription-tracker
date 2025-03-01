@@ -104,6 +104,27 @@ export const mapPrescriptionType = (code: string): string => {
 }
 
 /**
+ * Converts a date string in the format YYYYMMDDHHMMSS to an ISO 8601 format.
+ * @param dateStr - The input date string (e.g., "20250221000000")
+ * @returns An ISO formatted string (e.g., "2025-02-21T00:00:00.000Z")
+ */
+export const formatToISO8601 = (dateStr: string): string => {
+  if (!dateStr || dateStr.length !== 14) {
+    console.warn("Invalid date format, returning current timestamp.")
+    return new Date().toISOString() // Default to current timestamp if input is invalid
+  }
+
+  const year = dateStr.substring(0, 4)
+  const month = dateStr.substring(4, 6)
+  const day = dateStr.substring(6, 8)
+  const hour = dateStr.substring(8, 10)
+  const minute = dateStr.substring(10, 12)
+  const second = dateStr.substring(12, 14)
+
+  return new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}Z`).toISOString()
+}
+
+/**
  * Converts the numeric birth date (YYYYMMDD) into a string formatted as YYYY-MM-DD.
  */
 export const formatBirthDate = (birthDate: string): string => {
