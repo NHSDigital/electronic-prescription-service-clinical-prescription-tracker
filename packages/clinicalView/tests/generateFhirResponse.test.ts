@@ -19,13 +19,13 @@ const mockParsedResponse: ParsedSpineResponse =
   requestGroupDetails: {
     prescriptionId: "9AD427-A83008-2E461K",
     prescriptionType: "0101",
+    prescriptionTime: "20250219000000",
     statusCode: "0001",
     instanceNumber: 1,
     maxRepeats: 5,
     daysSupply: 28,
     nominatedPerformer: "VNE51",
-    prescribingOrganization: "A83008",
-    dispensingOrganization: "Y02494"
+    prescribingOrganization: "A83008"
   },
   productLineItems: [
     {
@@ -35,8 +35,7 @@ const mockParsedResponse: ParsedSpineResponse =
       dosageInstructions: "2 times a day for 10 days"
     }
   ],
-  filteredHistory:
-  {
+  filteredHistory: {
     SCN: 2,
     sentDateTime: "20240213105241",
     fromStatus: "False",
@@ -55,8 +54,12 @@ const mockParsedResponse: ParsedSpineResponse =
         }
       ]
     }
+  },
+  dispenseNotificationDetails: {
+    statusPrescription: "0003",
+    dispensingOrganization: "FA123",
+    dispenseNotificationItems: []
   }
-
 }
 
 describe("generateFhirResponse", () => {

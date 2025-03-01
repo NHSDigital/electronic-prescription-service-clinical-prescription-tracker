@@ -16,6 +16,7 @@ import {
   mapMedicationDispenseType,
   mapMedicationRequestStatusReason,
   mapPrescriptionType,
+  formatToISO8601,
   formatBirthDate
 } from "./fhirMappers"
 
@@ -160,11 +161,13 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   }
   requestGroup.action?.push(prescriptionStatusTransitions)
 
-  // PrescriptionUploadSuccessful action
+  // Action: Prescription Upload Successful
+  const prescriptionTime: string = formatToISO8601(prescription.requestGroupDetails?.prescriptionTime || "")
+
   const prescriptionUploadSuccessful: RequestGroupAction = {
     title: "Prescription upload successful",
     timingTiming: {
-      event: ["2025-02-24T05:30:00.494Z"],
+      event: [prescriptionTime],
       repeat: {
         frequency: 1,
         period: 20,
@@ -176,7 +179,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
         system: "https://fhir.nhs.uk/Id/ods-organization-code",
         value: "A83008"
       }
-    }] as Array<Reference>,
+    }],
     code: [{
       coding: [{
         system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
@@ -186,17 +189,16 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
     }],
     action: [] // Step 8 will populate this array with MedicationRequest IDs
   }
-
   prescriptionStatusTransitions.action?.push(prescriptionUploadSuccessful)
 
-  // NominatedReleaseRequestSuccessful action
+  // Action: Nominated Release Request Successful
   const nominatedReleaseRequestSuccessful: RequestGroupAction = {
     title: "Nominated Release Request successful",
     timingDateTime: "2025-01-29T13:00:00Z",
     participant: [{
       identifier: {
         system: "https://fhir.nhs.uk/Id/ods-organization-code",
-        value: prescription.requestGroupDetails?.dispensingOrganization || ""
+        value: prescription.dispenseNotificationDetails?.dispensingOrganization || ""
       }
     }] as Array<Reference>,
     code: [{
@@ -209,24 +211,32 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   }
   prescriptionStatusTransitions.action?.push(nominatedReleaseRequestSuccessful)
 
-  // DispenseNotificationSuccessful action
+  // Action: Dispense Notification Successful
+  const dispensingOrganization: string = prescription.dispenseNotificationDetails?.dispensingOrganization || ""
+  const statusPrescription: string = prescription.dispenseNotificationDetails?.statusPrescription || ""
+
   const dispenseNotificationSuccessful: RequestGroupAction = {
     title: "Dispense notification successful",
     timingDateTime: "2025-01-30T10:00:00Z",
-    participant: [{
-      identifier: {
-        system: "https://fhir.nhs.uk/Id/ods-organization-code",
-        value: "FCG71"
-      }
-    }] as Array<Reference>,
-    code: [{
-      coding: [{
-        system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
-        code: "0003",
-        display: "With Dispenser - Active"
-      }]
-    }],
-    action: [] // Step 10 will populate this array with MedicationDispense IDs
+    participant: [
+      {
+        identifier:
+        {
+          system: "https://fhir.nhs.uk/Id/ods-organization-code",
+          value: dispensingOrganization
+        }
+      }],
+    code: [
+      {
+        coding: [
+          {
+            system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+            code: statusPrescription,
+            display: mapTaskBusinessStatus(statusCode || "")
+          }
+        ]
+      }],
+    action: [] // Step 9 will populate this array with MedicationDispense IDs
   }
   prescriptionStatusTransitions.action?.push(dispenseNotificationSuccessful)
 
@@ -239,6 +249,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
     if (lineItem) {
       const medicationRequestId: string = randomUUID()
 
+      // Construct MedicationRequest
       const medicationRequest: MedicationRequest = {
         resourceType: "MedicationRequest",
         id: medicationRequestId,
@@ -322,7 +333,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   // ======================================================================================
   //  STEP 8: Generate MedicationDispense Resources
   // ======================================================================================
-  prescription.dispenseNotificationItems?.forEach((item) => {
+  prescription.dispenseNotificationDetails?.dispenseNotificationItems.forEach((item) => {
     const medicationDispenseId: string = randomUUID()
     const medicationRequestId = medicationRequestMap.get(item.medicationName)
 

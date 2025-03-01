@@ -9,7 +9,8 @@ import {
   PatientDetails,
   RequestGroupDetails,
   ProductLineItemDetails,
-  DispenseNotificationItems,
+  DispenseNotification,
+  DispenseNotificationItem,
   FilteredHistoryDetails,
   ParsedSpineResponse
 } from "./types"
@@ -45,7 +46,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     patientDetails: parsePatientDetails(xmlPrescription, logger),
     productLineItems: parseProductLineItems(xmlPrescription, logger),
     filteredHistory: parseFilteredHistory(xmlPrescription, logger),
-    dispenseNotificationItems: parseDispenseNotificationItems(xmlPrescription, logger)
+    dispenseNotificationDetails: parseDispenseNotificationItems(xmlPrescription, logger)
   }
 }
 
@@ -162,13 +163,13 @@ const parseRequestGroupDetails = (xmlPrescription: XmlPrescription, logger: Logg
   return {
     prescriptionId: xmlPrescription.prescriptionID,
     prescriptionType: padWithZeros(xmlPrescription.prescriptionType.toString(), 4),
+    prescriptionTime: xmlPrescription.prescriptionTime,
     statusCode: padWithZeros(xmlPrescription.prescriptionStatus.toString(), 4),
     instanceNumber: xmlPrescription.instanceNumber,
     maxRepeats: xmlPrescription.maxRepeats !== null ? xmlPrescription.maxRepeats : undefined,
     daysSupply: xmlPrescription.daysSupply,
     nominatedPerformer: xmlPrescription.nominatedPerformer ?? "",
-    prescribingOrganization: xmlPrescription.prescribingOrganization ?? "",
-    dispensingOrganization: xmlPrescription.dispensingOrganization ?? ""
+    prescribingOrganization: xmlPrescription.prescribingOrganization ?? ""
   }
 }
 
@@ -246,14 +247,17 @@ const parseFilteredHistory = (xmlPrescription: XmlPrescription, logger: Logger):
 // ---------------------------- DISPENSE NOTIFICATION -----------------------------
 // Parses dispense notification for each product line item and returns the dispense data
 export const parseDispenseNotificationItems = (xmlPrescription: XmlPrescription, logger: Logger)
-  : Array<DispenseNotificationItems> => {
-  const dispenseNotification = xmlPrescription.dispenseNotification
-  const dispenseNotificationItems: Array<DispenseNotificationItems> = []
-  const parentPrescription = xmlPrescription.parentPrescription
+  : DispenseNotification => {
+  const dispenseNotification = xmlPrescription?.dispenseNotification
+  const parentPrescription = xmlPrescription?.parentPrescription
+  const dispensingOrganization = xmlPrescription?.dispensingOrganization ?? ""
+
+  const statusPrescription = padWithZeros(dispenseNotification?.statusPrescription ?? "", 4)
+  const dispenseNotificationItems: Array<DispenseNotificationItem> = []
 
   if (!dispenseNotification || !parentPrescription) {
     logger.info("No dispense notification or parent prescription found.")
-    return dispenseNotificationItems
+    return {statusPrescription, dispensingOrganization, dispenseNotificationItems}
   }
 
   // Looping over 4 product line items dynamically
@@ -277,7 +281,11 @@ export const parseDispenseNotificationItems = (xmlPrescription: XmlPrescription,
     }
   }
 
-  return dispenseNotificationItems
+  return {
+    statusPrescription,
+    dispensingOrganization,
+    dispenseNotificationItems
+  }
 }
 
 // ---------------------------- ERROR HANDLING -------------------------------

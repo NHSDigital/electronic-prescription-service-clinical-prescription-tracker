@@ -16,7 +16,7 @@ export interface ParsedSpineResponse {
   patientDetails?: PatientDetails
   productLineItems?: Array<ProductLineItemDetails>
   filteredHistory?: FilteredHistoryDetails
-  dispenseNotificationItems?: Array<DispenseNotificationItems>
+  dispenseNotificationDetails?: DispenseNotification
   error?: string // Error message if parsing fails
 }
 
@@ -36,13 +36,13 @@ export interface PatientDetails {
 export interface RequestGroupDetails {
   prescriptionId: string
   prescriptionType: string
+  prescriptionTime: string
   statusCode: string
   instanceNumber: number
   maxRepeats?: number
   daysSupply: number
   nominatedPerformer: string
   prescribingOrganization: string
-  dispensingOrganization: string
 }
 
 // Product Line Items
@@ -53,8 +53,15 @@ export interface ProductLineItemDetails {
   dosageInstructions: string
 }
 
-// Dispense Notification Items
-export interface DispenseNotificationItems {
+// Dispense Notification
+export interface DispenseNotification {
+  statusPrescription: string
+  dispensingOrganization: string
+  dispenseNotificationItems: Array<DispenseNotificationItem>
+}
+
+// Dispense Notification Item
+export interface DispenseNotificationItem {
   order: number
   medicationName: string
   quantity: string
@@ -127,7 +134,7 @@ export interface XmlPrescription {
   instanceNumber: number
   prescriptionID: string
   prescriptionType: string
-  prescriptionTime: number
+  prescriptionTime: string
   prescriptionMsgRef: string
   prescribingOrganization: string
   daysSupply: number
