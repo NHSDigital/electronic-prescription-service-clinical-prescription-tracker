@@ -12,6 +12,7 @@ import {
 import {ParsedSpineResponse, PrescriptionStatusTransitions} from "../utils/types"
 import {
   mapGender,
+  mapTaskBusinessStatus,
   mapMedicationDispenseType,
   mapMedicationRequestStatusReason,
   mapPrescriptionType,
@@ -88,17 +89,10 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   }
 
   // ======================================================================================
-  //  STEP 4: Handle Prescription Cancellation Status
+  //  STEP 4: Add Extensions to RequestGroup
   // ======================================================================================
-  // Determine if the prescription is cancelled and if any line item is pending cancellation
-  const prescriptionCancelled = prescription.requestGroupDetails?.statusCode === "0005"
   const latestHistory = prescription.filteredHistory
-  const lineItemPendingCancellation = latestHistory?.lineStatusChangeDict?.line
-    ?.some((line: {cancellationReason?: string}) => line.cancellationReason) ?? false
-
-  // ======================================================================================
-  //  STEP 5: Add Extensions to RequestGroup
-  // ======================================================================================
+  const statusCode: string = prescription.requestGroupDetails?.statusCode || ""
   // Extension-EPS-RepeatInformation
   const repeatInformation: Extension = {
     url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
@@ -121,11 +115,12 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
     extension: [
       {
         url: "prescriptionPendingCancellation",
-        valueBoolean: prescriptionCancelled
+        valueBoolean: statusCode === "0005"
       },
       {
         url: "lineItemPendingCancellation",
-        valueBoolean: lineItemPendingCancellation
+        valueBoolean: latestHistory?.lineStatusChangeDict?.line
+          ?.some((line: {cancellationReason?: string}) => line.cancellationReason) ?? false
       }
     ]
   }
@@ -138,8 +133,8 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
       url: "status",
       valueCoding: {
         system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
-        code: latestHistory?.toStatus || "",
-        display: mapMedicationDispenseType(latestHistory?.toStatus || "")
+        code: statusCode || "",
+        display: mapTaskBusinessStatus(statusCode || "")
       }
     }]
   }
@@ -157,7 +152,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   requestGroup.extension?.push(prescriptionType)
 
   // ======================================================================================
-  //  STEP 6: Add Actions to RequestGroup
+  //  STEP 5: Add Actions to RequestGroup
   // ======================================================================================
   const prescriptionStatusTransitions: PrescriptionStatusTransitions = {
     title: "Prescription status transitions",
@@ -236,7 +231,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   prescriptionStatusTransitions.action?.push(dispenseNotificationSuccessful)
 
   // ======================================================================================
-  //  STEP 7: Generate MedicationRequest Resources
+  //  STEP 6: Generate MedicationRequest Resources
   // ======================================================================================
   prescription.productLineItems?.forEach((item) => {
     const lineItem = latestHistory?.lineStatusChangeDict?.line?.find((line) => line.order === item.order)
@@ -313,7 +308,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   })
 
   // ======================================================================================
-  //  STEP 8: Add MedicationRequest IDs the PrescriptionUploadSuccessful Action array
+  //  STEP 7: Add MedicationRequest IDs the PrescriptionUploadSuccessful Action array
   // ======================================================================================
   // Iterate over each stored MedicationRequest ID and add it to the action array
   medicationRequestMap.forEach((medicationRequestId) => {
@@ -325,7 +320,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   })
 
   // ======================================================================================
-  //  STEP 9: Generate MedicationDispense Resources
+  //  STEP 8: Generate MedicationDispense Resources
   // ======================================================================================
   prescription.dispenseNotificationItems?.forEach((item) => {
     const medicationDispenseId: string = randomUUID()
@@ -365,7 +360,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   })
 
   // ======================================================================================
-  //  STEP 10: Add MedicationDispense IDs the DispenseNotificationSuccessful Action array
+  //  STEP 9: Add MedicationDispense IDs the DispenseNotificationSuccessful Action array
   // ======================================================================================
   // Iterate over each stored MedicationDispense ID and add it to the action array
   medicationDispenseMap.forEach((medicationDispenseId) => {
