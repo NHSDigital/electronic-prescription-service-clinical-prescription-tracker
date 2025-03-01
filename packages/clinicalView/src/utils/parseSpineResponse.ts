@@ -251,13 +251,19 @@ export const parseDispenseNotificationItems = (xmlPrescription: XmlPrescription,
   const dispenseNotification = xmlPrescription?.dispenseNotification
   const parentPrescription = xmlPrescription?.parentPrescription
   const dispensingOrganization = xmlPrescription?.dispensingOrganization ?? ""
+  const dispenseNotifDateTime = xmlPrescription?.dispenseNotifDateTime ?? ""
 
   const statusPrescription = padWithZeros(dispenseNotification?.statusPrescription ?? "", 4)
   const dispenseNotificationItems: Array<DispenseNotificationItem> = []
 
   if (!dispenseNotification || !parentPrescription) {
     logger.info("No dispense notification or parent prescription found.")
-    return {statusPrescription, dispensingOrganization, dispenseNotificationItems}
+    return {
+      statusPrescription,
+      dispensingOrganization,
+      dispenseNotifDateTime,
+      dispenseNotificationItems
+    }
   }
 
   // Looping over 4 product line items dynamically
@@ -284,6 +290,7 @@ export const parseDispenseNotificationItems = (xmlPrescription: XmlPrescription,
   return {
     statusPrescription,
     dispensingOrganization,
+    dispenseNotifDateTime,
     dispenseNotificationItems
   }
 }

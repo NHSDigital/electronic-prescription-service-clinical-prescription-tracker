@@ -58,6 +58,7 @@ const mockParsedResponse: ParsedSpineResponse =
   dispenseNotificationDetails: {
     statusPrescription: "0003",
     dispensingOrganization: "FA123",
+    dispenseNotifDateTime: "20240213105241",
     dispenseNotificationItems: []
   }
 }

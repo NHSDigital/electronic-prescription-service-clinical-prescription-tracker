@@ -214,10 +214,13 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   // Action: Dispense Notification Successful
   const dispensingOrganization: string = prescription.dispenseNotificationDetails?.dispensingOrganization || ""
   const statusPrescription: string = prescription.dispenseNotificationDetails?.statusPrescription || ""
+  const dispenseNotifDateTime: string = formatToISO8601(
+    prescription.dispenseNotificationDetails?.dispenseNotifDateTime || ""
+  )
 
   const dispenseNotificationSuccessful: RequestGroupAction = {
     title: "Dispense notification successful",
-    timingDateTime: "2025-01-30T10:00:00Z",
+    timingDateTime: dispenseNotifDateTime,
     participant: [
       {
         identifier:

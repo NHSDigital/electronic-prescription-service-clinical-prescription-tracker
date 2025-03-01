@@ -56,7 +56,8 @@ export interface ProductLineItemDetails {
 // Dispense Notification
 export interface DispenseNotification {
   statusPrescription: string
-  dispensingOrganization: string
+  dispensingOrganization: string,
+  dispenseNotifDateTime: string,
   dispenseNotificationItems: Array<DispenseNotificationItem>
 }
 
@@ -147,6 +148,7 @@ export interface XmlPrescription {
   nominatedPerformer: string
   nominatedPerformerType: string
   dispensingOrganization: string
+  dispenseNotifDateTime: string
 
   lineItem: Array<{
     order: XmlStringValue
