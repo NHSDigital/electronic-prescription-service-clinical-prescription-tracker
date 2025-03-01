@@ -19,7 +19,7 @@ const mockParsedResponse: ParsedSpineResponse =
   requestGroupDetails: {
     prescriptionId: "9AD427-A83008-2E461K",
     prescriptionType: "0101",
-    prescriptionTime: "20250219000000",
+    signedTime: "20250219000000",
     statusCode: "0001",
     instanceNumber: 1,
     maxRepeats: 5,

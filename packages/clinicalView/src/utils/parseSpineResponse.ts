@@ -163,7 +163,7 @@ const parseRequestGroupDetails = (xmlPrescription: XmlPrescription, logger: Logg
   return {
     prescriptionId: xmlPrescription.prescriptionID,
     prescriptionType: padWithZeros(xmlPrescription.prescriptionType.toString(), 4),
-    prescriptionTime: xmlPrescription.prescriptionTime,
+    signedTime: xmlPrescription.signedTime,
     statusCode: padWithZeros(xmlPrescription.prescriptionStatus.toString(), 4),
     instanceNumber: xmlPrescription.instanceNumber,
     maxRepeats: xmlPrescription.maxRepeats !== null ? xmlPrescription.maxRepeats : undefined,

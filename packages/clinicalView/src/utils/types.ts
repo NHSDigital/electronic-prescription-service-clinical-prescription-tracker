@@ -36,7 +36,7 @@ export interface PatientDetails {
 export interface RequestGroupDetails {
   prescriptionId: string
   prescriptionType: string
-  prescriptionTime: string
+  signedTime: string
   statusCode: string
   instanceNumber: number
   maxRepeats?: number
@@ -134,7 +134,7 @@ export interface XmlPrescription {
   instanceNumber: number
   prescriptionID: string
   prescriptionType: string
-  prescriptionTime: string
+  signedTime: string
   prescriptionMsgRef: string
   prescribingOrganization: string
   daysSupply: number
