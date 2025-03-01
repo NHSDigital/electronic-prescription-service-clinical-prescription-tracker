@@ -18,14 +18,20 @@ import {
   formatBirthDate
 } from "./fhirMappers"
 
-// Maps extracted data to FHIR RequestGroup response
+/**
+ * Maps extracted prescription data into a FHIR RequestGroup response.
+ */
 export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: Logger): RequestGroup => {
-  // Generate unique UUIDs for Patient and MedicationRequests
-  const patientUuid = randomUUID()
+  // ======================================================================================
+  //  STEP 1: Generate Unique Identifiers & Initialize Data Maps
+  // ======================================================================================
+  const patientUuid: string = randomUUID()
   const medicationRequestMap = new Map<string, string>() // Maps medication name to MedicationRequest ID
   const medicationDispenseMap = new Map<string, string>() // Maps medication name to MedicationDispense ID
 
-  // Generate the RequestGroup root resource
+  // ======================================================================================
+  //  STEP 2: Construct the Root RequestGroup Resource
+  // ======================================================================================
   const requestGroup: RequestGroup = {
     resourceType: "RequestGroup",
     id: "example-requestgroup",
@@ -50,7 +56,9 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
     contained: []
   }
 
-  // Generate Patient entry
+  // ======================================================================================
+  //  STEP 3: Generate Patient Resource
+  // ======================================================================================
   if (!requestGroup.contained?.some((entry) => entry.resourceType === "Patient")) {
 
     const patient: Patient = {
@@ -79,18 +87,162 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
     requestGroup.contained?.push(patient)
   }
 
+  // ======================================================================================
+  //  STEP 4: Handle Prescription Cancellation Status
+  // ======================================================================================
   // Determine if the prescription is cancelled and if any line item is pending cancellation
   const prescriptionCancelled = prescription.requestGroupDetails?.statusCode === "0005"
   const latestHistory = prescription.filteredHistory
   const lineItemPendingCancellation = latestHistory?.lineStatusChangeDict?.line
     ?.some((line: {cancellationReason?: string}) => line.cancellationReason) ?? false
 
-  // Generate MedicationRequest entries
+  // ======================================================================================
+  //  STEP 5: Add Extensions to RequestGroup
+  // ======================================================================================
+  // Extension-EPS-RepeatInformation
+  const repeatInformation: Extension = {
+    url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
+    extension: [
+      {
+        url: "numberOfRepeatsAllowed",
+        valueInteger: prescription.requestGroupDetails?.maxRepeats || 0
+      },
+      {
+        url: "numberOfRepeatsIssued",
+        valueInteger: prescription.requestGroupDetails?.instanceNumber || 0
+      }
+    ]
+  }
+  requestGroup.extension?.push(repeatInformation)
+
+  // Extension-EPS-PendingCancellations
+  const pendingCancellations: Extension = {
+    url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PendingCancellations",
+    extension: [
+      {
+        url: "prescriptionPendingCancellation",
+        valueBoolean: prescriptionCancelled
+      },
+      {
+        url: "lineItemPendingCancellation",
+        valueBoolean: lineItemPendingCancellation
+      }
+    ]
+  }
+  requestGroup.extension?.push(pendingCancellations)
+
+  // Extension-DM-PrescriptionStatusHistory
+  const prescriptionStatusHistory: Extension = {
+    url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
+    extension: [{
+      url: "status",
+      valueCoding: {
+        system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+        code: latestHistory?.toStatus || "",
+        display: mapMedicationDispenseType(latestHistory?.toStatus || "")
+      }
+    }]
+  }
+  requestGroup.extension?.push(prescriptionStatusHistory)
+
+  // Extension-DM-PrescriptionType
+  const prescriptionType: Extension = {
+    url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionType",
+    valueCoding: {
+      system: "https://fhir.nhs.uk/CodeSystem/prescription-type",
+      code: prescription.requestGroupDetails?.prescriptionType || "",
+      display: mapPrescriptionType(prescription.requestGroupDetails?.prescriptionType || "")
+    }
+  }
+  requestGroup.extension?.push(prescriptionType)
+
+  // ======================================================================================
+  //  STEP 6: Add Actions to RequestGroup
+  // ======================================================================================
+  const prescriptionStatusTransitions: PrescriptionStatusTransitions = {
+    title: "Prescription status transitions",
+    action: []
+  }
+  requestGroup.action?.push(prescriptionStatusTransitions)
+
+  // PrescriptionUploadSuccessful action
+  const prescriptionUploadSuccessful: RequestGroupAction = {
+    title: "Prescription upload successful",
+    timingTiming: {
+      event: ["2025-02-24T05:30:00.494Z"],
+      repeat: {
+        frequency: 1,
+        period: 20,
+        periodUnit: "d" as const
+      }
+    },
+    participant: [{
+      identifier: {
+        system: "https://fhir.nhs.uk/Id/ods-organization-code",
+        value: "A83008"
+      }
+    }] as Array<Reference>,
+    code: [{
+      coding: [{
+        system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+        code: "0001",
+        display: "To be Dispensed"
+      }]
+    }],
+    action: [] // Step 8 will populate this array with MedicationRequest IDs
+  }
+
+  prescriptionStatusTransitions.action?.push(prescriptionUploadSuccessful)
+
+  // NominatedReleaseRequestSuccessful action
+  const nominatedReleaseRequestSuccessful: RequestGroupAction = {
+    title: "Nominated Release Request successful",
+    timingDateTime: "2025-01-29T13:00:00Z",
+    participant: [{
+      identifier: {
+        system: "https://fhir.nhs.uk/Id/ods-organization-code",
+        value: prescription.requestGroupDetails?.dispensingOrganization || ""
+      }
+    }] as Array<Reference>,
+    code: [{
+      coding: [{
+        system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+        code: "0002",
+        display: "With Dispenser"
+      }]
+    }]
+  }
+  prescriptionStatusTransitions.action?.push(nominatedReleaseRequestSuccessful)
+
+  // DispenseNotificationSuccessful action
+  const dispenseNotificationSuccessful: RequestGroupAction = {
+    title: "Dispense notification successful",
+    timingDateTime: "2025-01-30T10:00:00Z",
+    participant: [{
+      identifier: {
+        system: "https://fhir.nhs.uk/Id/ods-organization-code",
+        value: "FCG71"
+      }
+    }] as Array<Reference>,
+    code: [{
+      coding: [{
+        system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+        code: "0003",
+        display: "With Dispenser - Active"
+      }]
+    }],
+    action: [] // Step 10 will populate this array with MedicationDispense IDs
+  }
+  prescriptionStatusTransitions.action?.push(dispenseNotificationSuccessful)
+
+  // ======================================================================================
+  //  STEP 7: Generate MedicationRequest Resources
+  // ======================================================================================
   prescription.productLineItems?.forEach((item) => {
     const lineItem = latestHistory?.lineStatusChangeDict?.line?.find((line) => line.order === item.order)
 
     if (lineItem) {
-      const medicationRequestId = `${randomUUID()}`
+      const medicationRequestId: string = randomUUID()
 
       const medicationRequest: MedicationRequest = {
         resourceType: "MedicationRequest",
@@ -160,9 +312,23 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
     }
   })
 
-  // Generate MedicationDispense entries from dispenseNotificationItems
+  // ======================================================================================
+  //  STEP 8: Add MedicationRequest IDs the PrescriptionUploadSuccessful Action array
+  // ======================================================================================
+  // Iterate over each stored MedicationRequest ID and add it to the action array
+  medicationRequestMap.forEach((medicationRequestId) => {
+    prescriptionUploadSuccessful.action?.push({
+      resource: {
+        reference: `#${medicationRequestId}`
+      }
+    })
+  })
+
+  // ======================================================================================
+  //  STEP 9: Generate MedicationDispense Resources
+  // ======================================================================================
   prescription.dispenseNotificationItems?.forEach((item) => {
-    const medicationDispenseId = `${randomUUID()}`
+    const medicationDispenseId: string = randomUUID()
     const medicationRequestId = medicationRequestMap.get(item.medicationName)
 
     const medicationDispense: MedicationDispense = {
@@ -198,139 +364,9 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
     requestGroup.contained?.push(medicationDispense)
   })
 
-  // Add Extension-EPS-RepeatInformation
-  const repeatInformation: Extension = {
-    url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
-    extension: [
-      {
-        url: "numberOfRepeatsAllowed",
-        valueInteger: prescription.requestGroupDetails?.maxRepeats || 0
-      },
-      {
-        url: "numberOfRepeatsIssued",
-        valueInteger: prescription.requestGroupDetails?.instanceNumber || 0
-      }
-    ]
-  }
-  requestGroup.extension?.push(repeatInformation)
-
-  // Add Extension-EPS-PendingCancellations
-  const pendingCancellations: Extension = {
-    url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PendingCancellations",
-    extension: [
-      {url: "prescriptionPendingCancellation", valueBoolean: prescriptionCancelled},
-      {url: "lineItemPendingCancellation", valueBoolean: lineItemPendingCancellation}
-    ]
-  }
-  requestGroup.extension?.push(pendingCancellations)
-
-  // Add Extension-DM-PrescriptionStatusHistory
-  const prescriptionStatusHistory: Extension = {
-    url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
-    extension: [{
-      url: "status",
-      valueCoding: {
-        system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
-        code: latestHistory?.toStatus || "", // Default to "0003" if no history is available
-        display: mapMedicationDispenseType(latestHistory?.toStatus || "")
-      }
-    }]
-  }
-  requestGroup.extension?.push(prescriptionStatusHistory)
-
-  // Add Extension-DM-PrescriptionType
-  const prescriptionType: Extension = {
-    url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionType",
-    valueCoding: {
-      system: "https://fhir.nhs.uk/CodeSystem/prescription-type",
-      code: prescription.requestGroupDetails?.prescriptionType || "",
-      display: mapPrescriptionType(prescription.requestGroupDetails?.prescriptionType || "")
-    }
-  }
-  requestGroup.extension?.push(prescriptionType)
-
-  // Add PrescriptionStatusTransitions action
-  const prescriptionStatusTransitions: PrescriptionStatusTransitions = {
-    title: "Prescription status transitions",
-    action: []
-  }
-  requestGroup.action?.push(prescriptionStatusTransitions)
-
-  // Add PrescriptionUploadSuccessful action
-  const prescriptionUploadSuccessful: RequestGroupAction = {
-    title: "Prescription upload successful",
-    timingTiming: {
-      event: ["2025-02-24T05:30:00.494Z"],
-      repeat: {
-        frequency: 1,
-        period: 20,
-        periodUnit: "d" as const
-      }
-    },
-    participant: [{
-      identifier: {
-        system: "https://fhir.nhs.uk/Id/ods-organization-code",
-        value: "A83008"
-      }
-    }] as Array<Reference>,
-    code: [{
-      coding: [{
-        system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
-        code: "0001",
-        display: "To be Dispensed"
-      }]
-    }],
-    action: []
-  }
-  // Iterate over each stored MedicationRequest ID and add it to the action array
-  medicationRequestMap.forEach((medicationRequestId) => {
-    prescriptionUploadSuccessful.action?.push({
-      resource: {
-        reference: `#${medicationRequestId}`
-      }
-    })
-  })
-  prescriptionStatusTransitions.action?.push(prescriptionUploadSuccessful)
-
-  // Add NominatedReleaseRequestSuccessful action
-  const nominatedReleaseRequestSuccessful: RequestGroupAction = {
-    title: "Nominated Release Request successful",
-    timingDateTime: "2025-01-29T13:00:00Z",
-    participant: [{
-      identifier: {
-        system: "https://fhir.nhs.uk/Id/ods-organization-code",
-        value: prescription.requestGroupDetails?.dispensingOrganization || ""
-      }
-    }] as Array<Reference>,
-    code: [{
-      coding: [{
-        system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
-        code: "0002",
-        display: "With Dispenser"
-      }]
-    }]
-  }
-  prescriptionStatusTransitions.action?.push(nominatedReleaseRequestSuccessful)
-
-  // Add DispenseNotificationSuccessful action
-  const dispenseNotificationSuccessful: RequestGroupAction = {
-    title: "Dispense notification successful",
-    timingDateTime: "2025-01-30T10:00:00Z",
-    participant: [{
-      identifier: {
-        system: "https://fhir.nhs.uk/Id/ods-organization-code",
-        value: "FCG71"
-      }
-    }] as Array<Reference>,
-    code: [{
-      coding: [{
-        system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
-        code: "0003",
-        display: "With Dispenser - Active"
-      }]
-    }],
-    action: []
-  }
+  // ======================================================================================
+  //  STEP 10: Add MedicationDispense IDs the DispenseNotificationSuccessful Action array
+  // ======================================================================================
   // Iterate over each stored MedicationDispense ID and add it to the action array
   medicationDispenseMap.forEach((medicationDispenseId) => {
     dispenseNotificationSuccessful.action?.push({
@@ -339,8 +375,10 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
       }
     })
   })
-  prescriptionStatusTransitions.action?.push(dispenseNotificationSuccessful)
 
+  // ======================================================================================
+  //  FINAL STEP: Return Constructed RequestGroup
+  // ======================================================================================
   logger.info("RequestGroup response generated successfully.")
   return requestGroup
 }
