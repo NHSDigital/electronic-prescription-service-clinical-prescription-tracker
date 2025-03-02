@@ -31,12 +31,6 @@ const headers = {
  */
 export const apiGatewayHandler = async (
   params: HandlerParams, event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
-  logger.appendKeys({
-    "nhsd-correlation-id": event.headers?.["nhsd-correlation-id"],
-    "nhsd-request-id": event.headers?.["nhsd-request-id"],
-    "x-correlation-id": event.headers?.["x-correlation-id"],
-    "apigw-request-id": event.requestContext.requestId
-  })
   logger.info("Received API request", {event})
 
   const [searchParameters, validationErrors]:
