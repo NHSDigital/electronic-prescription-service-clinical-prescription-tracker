@@ -24,7 +24,7 @@ export interface SearchError {
 }
 
 export interface PathParameters {
-  prescriptionID?: string | undefined
+  prescriptionId?: string | undefined
 }
 
 export interface HeaderSearchParameters {

@@ -1,7 +1,7 @@
 import {LogLevel} from "@aws-lambda-powertools/logger/types"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {injectLambdaContext} from "@aws-lambda-powertools/logger/middleware"
-import {APIGatewayEvent, APIGatewayProxyEventHeaders, APIGatewayProxyResult} from "aws-lambda"
+import {APIGatewayEvent, APIGatewayProxyResult} from "aws-lambda"
 import middy from "@middy/core"
 import inputOutputLogger from "@middy/input-output-logger"
 import errorHandler from "@nhs/fhir-middy-error-handler"
@@ -10,7 +10,6 @@ import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
 import {ClinicalViewParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
 import {AxiosResponse} from "axios"
 import {RequestGroup, OperationOutcome} from "fhir/r4"
-import {v4 as uuidv4} from "uuid"
 import {requestGroupSchema} from "./schemas/requestGroupSchema"
 import {parseSpineResponse} from "./utils/parseSpineResponse"
 import {generateFhirResponse} from "./utils/generateFhirResponse"
@@ -63,57 +62,13 @@ export const apiGatewayHandler = async (
     }
   }
 
-  logger.info("searchParameters", {searchParameters})
-  logger.info("validationErrors", {validationErrors})
-
-  // Build parameters required for Spine API request
-  const clinicalViewParams = buildClinicalViewParams(inboundHeaders, prescriptionId)
-
-  logger.info("Built clinicalViewParams for Spine request", {clinicalViewParams})
-
   // Call the Spine API to fetch prescription details
-  let spineResponse
-  spineResponse = await params.spineClient.clinicalView(inboundHeaders, clinicalViewParams)
+  const spineResponse = await params.spineClient.clinicalView(event.headers, searchParameters)
 
   logger.info("Received response from Spine", {status: spineResponse.status, entry: spineResponse.data})
 
   // Process the response from Spine
   return handleSpineResponse(spineResponse)
-}
-
-/**
- * Builds the parameters required for the Spine clinical view request.
- */
-const buildClinicalViewParams = (
-  inboundHeaders: APIGatewayProxyEventHeaders,
-  prescriptionId: string
-): ClinicalViewParams => {
-  // Generate a unique request ID if not provided
-  const requestId = inboundHeaders["apigw-request-id"] ?? uuidv4()
-
-  // Extract necessary values from headers
-  const organizationId = inboundHeaders["nhsd-organization-uuid"] ?? ""
-  const sdsRoleProfileId = inboundHeaders["nhsd-session-urid"] ?? ""
-  const sdsId = inboundHeaders["nhsd-identity-uuid"] ?? ""
-  const jobRoleCode = inboundHeaders["nhsd-session-jobrole"] ?? ""
-
-  logger.info("Constructed ClinicalViewParams", {
-    requestId,
-    prescriptionId,
-    organizationId,
-    sdsRoleProfileId,
-    sdsId,
-    jobRoleCode
-  })
-
-  return {
-    requestId,
-    prescriptionId,
-    organizationId,
-    sdsRoleProfileId,
-    sdsId,
-    jobRoleCode
-  }
 }
 
 /**

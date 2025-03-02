@@ -41,7 +41,7 @@ const validatePathParameters = (
     })
   }
 
-  const searchParameters: PathParameters = {prescriptionID: prescriptionId}
+  const searchParameters: PathParameters = {prescriptionId: prescriptionId}
 
   return [searchParameters, errors]
 }
