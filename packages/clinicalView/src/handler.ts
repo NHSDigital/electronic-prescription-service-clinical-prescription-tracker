@@ -127,7 +127,7 @@ const handleSpineResponse = (
   // Extract relevant data from SOAP response
   const extractedData = parseSpineResponse(spineResponse.data, logger)
 
-  logger.info("Successfully retrieved prescription data from Spine", {extractedData})
+  logger.info("Parsed data form Spine response", {extractedData})
 
   // Generate FHIR response
   const fhirResponse: RequestGroup = generateFhirResponse(extractedData, logger)
