@@ -22,7 +22,8 @@ const MOCK_EVENT: APIGatewayEvent = {
     "nhsd-organization-uuid": "A83008",
     "nhsd-session-urid": "123456123456",
     "nhsd-identity-uuid": "123456123456",
-    "nhsd-session-jobrole": "123456123456"
+    "nhsd-session-jobrole": "123456123456",
+    "x-request-id": "123456123456"
   },
   pathParameters: {
     prescriptionId: "9AD427-A83008-2E461K"
@@ -55,37 +56,63 @@ describe("clinicalView Handler", () => {
 
     const response = await handler(event, context)
 
+    // Parse the FHIR response from the API Gateway response body
+    const parsedResponse = JSON.parse(response.body)
+
     expect(mock.history.post[0].data).toContain("9AD427-A83008-2E461K")
-    expect(response.resourceType).toBe("RequestGroup")
-    expect(response.id).toBe("example-requestgroup")
+    expect(parsedResponse.resourceType).toBe("RequestGroup")
+    expect(parsedResponse.id).toBe("example-requestgroup")
   })
 
-  it("Handles a missing prescriptionId request", async () => {
-    const event = {...MOCK_EVENT, pathParameters: {}} as unknown as APIGatewayEvent
+  it("Returns an error when prescriptionId and x-request-id are missing", async () => {
+    const event = {
+      ...MOCK_EVENT,
+      pathParameters: {}, // Remove prescriptionId
+      headers: {
+        ...MOCK_EVENT.headers,
+        "x-request-id": undefined // Remove x-request-id
+      }
+    } as unknown as APIGatewayEvent
     const context = {} as unknown as Context
 
     const response = await handler(event, context)
 
     expect(response.statusCode).toBe(400)
-    expect(JSON.parse(response.body)).toMatchObject([
-      {
-        response: {
-          status: "400 Bad Request",
-          outcome: {
-            resourceType: "OperationOutcome",
-            meta: {
-              lastUpdated: expect.any(String)
-            },
-            issue: [
+    expect(JSON.parse(response.body)).toMatchObject({
+      issue: [
+        {
+          code: "value",
+          details: {
+            coding: [
               {
-                code: "value",
-                severity: "error",
-                diagnostics: "Missing required query parameter: prescriptionId"
+                code: "BAD_REQUEST",
+                display: "400: The request could not be understood or was missing required parameters.",
+                system: "https://fhir.nhs.uk/CodeSystem/http-error-codes"
               }
             ]
-          }
+          },
+          diagnostics: "Missing required path parameter: prescriptionId.",
+          severity: "error"
+        },
+        {
+          code: "value",
+          details: {
+            coding: [
+              {
+                code: "BAD_REQUEST",
+                display: "400: The request could not be understood or was missing required parameters.",
+                system: "https://fhir.nhs.uk/CodeSystem/http-error-codes"
+              }
+            ]
+          },
+          diagnostics: "Missing required header, x-request-id.",
+          severity: "error"
         }
-      }
-    ])
+      ],
+      meta: {
+        lastUpdated: expect.any(String)
+      },
+      resourceType: "OperationOutcome"
+    })
   })
 })
