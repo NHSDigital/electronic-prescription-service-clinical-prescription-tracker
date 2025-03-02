@@ -15,12 +15,18 @@ import {requestGroupSchema} from "./schemas/requestGroupSchema"
 import {parseSpineResponse} from "./utils/parseSpineResponse"
 import {generateFhirResponse} from "./utils/generateFhirResponse"
 import {generateFhirErrorResponse} from "./utils/errorHandling"
-import {HandlerParams} from "./utils/types"
+import {validateRequest} from "./utils/validateRequest"
+import {HandlerParams, SearchError} from "./utils/types"
 
 // Set up logger with log level from environment variables
 const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
 export const logger = new Logger({serviceName: "clinicalView", logLevel: LOG_LEVEL})
 const spineClient: SpineClient = createSpineClient(logger)
+
+const headers = {
+  "Content-Type": "application/fhir+json",
+  "Cache-Control": "no-cache"
+}
 
 /**
  * Handles API Gateway requests and calls Spine to fetch prescription details.
@@ -40,19 +46,25 @@ export const apiGatewayHandler = async (
     pathParameters: pathParameters
   })
 
+  const [searchParameters, validationErrors]:
+    [ClinicalViewParams, Array<SearchError>] = validateRequest(event, logger)
+
   // Check if the prescriptionId is missing from the request
-  if (!prescriptionId) {
-    logger.error("Missing required path parameter: prescriptionId")
+  if (validationErrors.length > 0) {
+    logger.error("Error validating request.")
+    logger.info("Generating FHIR error response...")
+    const errorResponseBundle: OperationOutcome = generateFhirErrorResponse(validationErrors, logger)
 
-    const errorResponse: OperationOutcome = generateFhirErrorResponse([
-      {status: 400, severity: "error", description: "Missing required path parameter: prescriptionId"}
-    ], logger)
-
+    logger.info("Returning FHIR error response.")
     return {
       statusCode: 400,
-      body: JSON.stringify(errorResponse)
+      body: JSON.stringify(errorResponseBundle),
+      headers
     }
   }
+
+  logger.info("searchParameters", {searchParameters})
+  logger.info("validationErrors", {validationErrors})
 
   // Build parameters required for Spine API request
   const clinicalViewParams = buildClinicalViewParams(inboundHeaders, prescriptionId)
@@ -108,7 +120,8 @@ const buildClinicalViewParams = (
  * Processes the response received from Spine and extracts relevant information.
  */
 const handleSpineResponse = (
-  spineResponse: AxiosResponse<string, unknown>) => {
+  spineResponse: AxiosResponse<string, unknown>
+): APIGatewayProxyResult => { // Ensure the return type matches API Gateway expectations
   logger.info("Processing Spine SOAP response...")
 
   // Extract relevant data from SOAP response
@@ -121,7 +134,11 @@ const handleSpineResponse = (
 
   logger.info("Generated FHIR response bundle", {fhirResponse})
 
-  return fhirResponse
+  return {
+    statusCode: 200, // API Gateway expects a status code
+    body: JSON.stringify(fhirResponse), // Wrap the response in a stringified JSON
+    headers
+  }
 }
 
 /**

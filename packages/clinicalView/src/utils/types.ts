@@ -2,6 +2,16 @@ import {Logger} from "@aws-lambda-powertools/logger"
 import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
 import {Address, RequestGroupAction} from "fhir/r4"
 
+interface FhirErrorDetails {
+  status: string
+  code: string
+  detailsCode: string
+  detailsDisplay: string
+}
+export interface ErrorMap {
+  [key: string]: FhirErrorDetails
+}
+
 export interface HandlerParams {
   logger: Logger,
   spineClient: SpineClient
@@ -9,12 +19,21 @@ export interface HandlerParams {
 
 export interface SearchError {
   status: string,
-  severity: "error" | "fatal",
+  severity: "fatal" | "error" | "warning" | "information"
   description: string
 }
 
 export interface PathParameters {
-  prescriptionID?: string
+  prescriptionID?: string | undefined
+}
+
+export interface HeaderSearchParameters {
+  requestId?: string
+  correlationId?: string
+  organizationId?: string
+  sdsRoleProfileId?: string
+  sdsId?: string
+  jobRoleCode?: string
 }
 
 // Shared Interface for Line Status Change
@@ -34,7 +53,7 @@ export interface ParsedSpineResponse {
   productLineItems?: Array<ProductLineItemDetails>
   filteredHistory?: FilteredHistoryDetails
   dispenseNotificationDetails?: DispenseNotification
-  error?: string // Error message if parsing fails
+  error?: SearchError | undefined
 }
 
 // Patient Details
