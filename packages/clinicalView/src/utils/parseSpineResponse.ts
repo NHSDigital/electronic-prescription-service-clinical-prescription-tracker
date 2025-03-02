@@ -12,7 +12,8 @@ import {
   DispenseNotification,
   DispenseNotificationItem,
   FilteredHistoryDetails,
-  ParsedSpineResponse
+  ParsedSpineResponse,
+  SearchError
 } from "./types"
 import {padWithZeros} from "./fhirMappers"
 
@@ -25,12 +26,21 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
   const xmlSoapBody: XmlSoapBody | undefined = xmlResponse["SOAP:Envelope"]?.["SOAP:Body"]
 
   if (!xmlSoapBody) {
-    const error: string = parseErrorResponse(xmlResponse)
-    if (error === "Prescription not found") {
-      logger.warn("No prescriptions found.")
+    const errorMessage: string = parseErrorResponse(xmlResponse)
+    if (errorMessage === "Prescription not found") {
+      logger.info("No prescriptions found.")
       return {}
     }
-    throw new Error(error || "Unknown Error")
+
+    logger.error("Error parsing Spine response", {errorMessage})
+
+    const error: SearchError = {
+      status: "500",
+      severity: "error",
+      description: errorMessage
+    }
+
+    return {error}
   }
 
   // Extract prescription data from the SOAP body

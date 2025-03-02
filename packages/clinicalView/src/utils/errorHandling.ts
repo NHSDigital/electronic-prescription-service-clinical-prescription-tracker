@@ -32,6 +32,12 @@ const errorMap: ErrorMap = {
     code: "exception",
     detailsCode: "SERVER_ERROR",
     detailsDisplay: "500: The server encountered an unexpected condition."
+  },
+  504: {
+    status: "504 Gateway Timeout",
+    code: "timeout",
+    detailsCode: "TIMEOUT",
+    detailsDisplay: "504: The server has timed out whilst processing the request."
   }
 }
 

@@ -61,6 +61,19 @@ export const apiGatewayHandler = async (
 
   logger.info("Parsed data form Spine response.", {extractedData})
 
+  if (extractedData.error) {
+    logger.error("Spine response contained an error.", {error: extractedData.error.description})
+    logger.info("Generating FHIR error response...")
+    const errorResponseBundle: OperationOutcome = generateFhirErrorResponse([extractedData.error], logger)
+
+    logger.info("Returning FHIR error response.")
+    return {
+      statusCode: 400,
+      body: JSON.stringify(errorResponseBundle),
+      headers
+    }
+  }
+
   // Generate FHIR response
   const fhirResponse: RequestGroup = generateFhirResponse(extractedData, logger)
 

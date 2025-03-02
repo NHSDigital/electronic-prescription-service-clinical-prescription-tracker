@@ -15,8 +15,4 @@ describe("parseSpineResponse", () => {
     expect(parsed.requestGroupDetails?.prescriptionId).toBe("9AD427-A83008-2E461K")
     expect(parsed.productLineItems?.length).toBe(4)
   })
-
-  it("should throw an error for unknown errors", () => {
-    expect(() => parseSpineResponse("<invalid-xml>", logger)).toThrowError("Unknown Error")
-  })
 })
