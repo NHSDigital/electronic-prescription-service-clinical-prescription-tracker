@@ -8,7 +8,6 @@ import errorHandler from "@nhs/fhir-middy-error-handler"
 import {createSpineClient} from "@NHSDigital/eps-spine-client"
 import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
 import {ClinicalViewParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
-import {AxiosResponse} from "axios"
 import {RequestGroup, OperationOutcome} from "fhir/r4"
 import {requestGroupSchema} from "./schemas/requestGroupSchema"
 import {parseSpineResponse} from "./utils/parseSpineResponse"
@@ -32,18 +31,13 @@ const headers = {
  */
 export const apiGatewayHandler = async (
   params: HandlerParams, event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
-  logger.info("Received API request", {event})
-
-  // Extract headers and the path parameters from the event
-  const inboundHeaders = event.headers
-  const pathParameters = event.pathParameters ?? {}
-  const prescriptionId = event.pathParameters?.prescriptionId ?? ""
-
-  logger.info("Extracted parameters", {
-    prescriptionId,
-    headers: inboundHeaders,
-    pathParameters: pathParameters
+  logger.appendKeys({
+    "nhsd-correlation-id": event.headers?.["nhsd-correlation-id"],
+    "nhsd-request-id": event.headers?.["nhsd-request-id"],
+    "x-correlation-id": event.headers?.["x-correlation-id"],
+    "apigw-request-id": event.requestContext.requestId
   })
+  logger.info("Received API request", {event})
 
   const [searchParameters, validationErrors]:
     [ClinicalViewParams, Array<SearchError>] = validateRequest(event, logger)
@@ -63,31 +57,20 @@ export const apiGatewayHandler = async (
   }
 
   // Call the Spine API to fetch prescription details
+  logger.info("Calling Spine ClinicalView interaction...")
   const spineResponse = await params.spineClient.clinicalView(event.headers, searchParameters)
 
-  logger.info("Received response from Spine", {status: spineResponse.status, entry: spineResponse.data})
-
-  // Process the response from Spine
-  return handleSpineResponse(spineResponse)
-}
-
-/**
- * Processes the response received from Spine and extracts relevant information.
- */
-const handleSpineResponse = (
-  spineResponse: AxiosResponse<string, unknown>
-): APIGatewayProxyResult => { // Ensure the return type matches API Gateway expectations
-  logger.info("Processing Spine SOAP response...")
+  logger.info("Received response from Spine.", {status: spineResponse.status, entry: spineResponse.data})
 
   // Extract relevant data from SOAP response
   const extractedData = parseSpineResponse(spineResponse.data, logger)
 
-  logger.info("Parsed data form Spine response", {extractedData})
+  logger.info("Parsed data form Spine response.", {extractedData})
 
   // Generate FHIR response
   const fhirResponse: RequestGroup = generateFhirResponse(extractedData, logger)
 
-  logger.info("Generated FHIR response bundle", {fhirResponse})
+  logger.info("Generated FHIR response.", {fhirResponse})
 
   return {
     statusCode: 200, // API Gateway expects a status code
