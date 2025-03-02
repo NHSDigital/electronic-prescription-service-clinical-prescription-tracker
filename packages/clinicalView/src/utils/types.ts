@@ -1,4 +1,21 @@
+import {Logger} from "@aws-lambda-powertools/logger"
+import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
 import {Address, RequestGroupAction} from "fhir/r4"
+
+export interface HandlerParams {
+  logger: Logger,
+  spineClient: SpineClient
+}
+
+export interface SearchError {
+  status: string,
+  severity: "error" | "fatal",
+  description: string
+}
+
+export interface PathParameters {
+  prescriptionID?: string
+}
 
 // Shared Interface for Line Status Change
 export interface LineStatusChange {

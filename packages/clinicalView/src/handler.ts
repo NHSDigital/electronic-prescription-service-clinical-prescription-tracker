@@ -1,7 +1,7 @@
 import {LogLevel} from "@aws-lambda-powertools/logger/types"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {injectLambdaContext} from "@aws-lambda-powertools/logger/middleware"
-import {APIGatewayEvent, APIGatewayProxyEventHeaders} from "aws-lambda"
+import {APIGatewayEvent, APIGatewayProxyEventHeaders, APIGatewayProxyResult} from "aws-lambda"
 import middy from "@middy/core"
 import inputOutputLogger from "@middy/input-output-logger"
 import errorHandler from "@nhs/fhir-middy-error-handler"
@@ -9,34 +9,24 @@ import {createSpineClient} from "@NHSDigital/eps-spine-client"
 import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
 import {ClinicalViewParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
 import {AxiosResponse} from "axios"
-import {BundleEntry, RequestGroup} from "fhir/r4"
+import {RequestGroup, OperationOutcome} from "fhir/r4"
 import {v4 as uuidv4} from "uuid"
 import {requestGroupSchema} from "./schemas/requestGroupSchema"
 import {parseSpineResponse} from "./utils/parseSpineResponse"
 import {generateFhirResponse} from "./utils/generateFhirResponse"
-import {badRequest} from "./utils/responseTemplates"
+import {generateFhirErrorResponse} from "./utils/errorHandling"
+import {HandlerParams, HandlerResponse} from "./utils/types"
 
 // Set up logger with log level from environment variables
 const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
 export const logger = new Logger({serviceName: "clinicalView", logLevel: LOG_LEVEL})
-
-// Create the default Spine client instance
-const defaultSpineClient = createSpineClient(logger)
-
-type HandlerParams = {
-  logger: Logger,
-  spineClient: SpineClient
-}
-
-type HandlerResponse =
-  | RequestGroup
-  | {data: {prescriptionId: string; error: string}}
-  | {statusCode: number; body: string}
+const spineClient: SpineClient = createSpineClient(logger)
 
 /**
  * Handles API Gateway requests and calls Spine to fetch prescription details.
  */
-export const apiGatewayHandler = async (params: HandlerParams, event: APIGatewayEvent): Promise<HandlerResponse> => {
+export const apiGatewayHandler = async (
+  params: HandlerParams, event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
   logger.info("Received API request", {event})
 
   // Extract headers and the path parameters from the event
@@ -50,18 +40,17 @@ export const apiGatewayHandler = async (params: HandlerParams, event: APIGateway
     pathParameters: pathParameters
   })
 
-  // Handle missing prescriptionId by collecting error response entries
-  let responseEntries: Array<BundleEntry> = []
+  // Check if the prescriptionId is missing from the request
   if (!prescriptionId) {
-    const errorMessage = "Missing required query parameter: prescriptionId"
-    logger.error(errorMessage)
-    responseEntries.push(badRequest(errorMessage))
-  }
+    logger.error("Missing required path parameter: prescriptionId")
 
-  if (responseEntries.length > 0) {
+    const errorResponse: OperationOutcome = generateFhirErrorResponse([
+      {status: 400, severity: "error", description: "Missing required path parameter: prescriptionId"}
+    ], logger)
+
     return {
       statusCode: 400,
-      body: JSON.stringify(responseEntries)
+      body: JSON.stringify(errorResponse)
     }
   }
 
@@ -119,8 +108,7 @@ const buildClinicalViewParams = (
  * Processes the response received from Spine and extracts relevant information.
  */
 const handleSpineResponse = (
-  spineResponse: AxiosResponse<string, unknown>
-): HandlerResponse => {
+  spineResponse: AxiosResponse<string, unknown>): HandlerResponse => {
   logger.info("Processing Spine SOAP response...")
 
   // Extract relevant data from SOAP response
@@ -128,6 +116,7 @@ const handleSpineResponse = (
 
   logger.info("Successfully retrieved prescription data from Spine", {extractedData})
 
+  // Generate FHIR response
   const fhirResponse: RequestGroup = generateFhirResponse(extractedData, logger)
 
   logger.info("Generated FHIR response bundle", {fhirResponse})
@@ -153,7 +142,7 @@ export const newHandler = (params: HandlerParams) => {
 }
 
 // Default handler configuration
-const DEFAULT_HANDLER_PARAMS: HandlerParams = {logger: logger, spineClient: defaultSpineClient}
+const DEFAULT_HANDLER_PARAMS: HandlerParams = {logger, spineClient}
 export const handler = newHandler(DEFAULT_HANDLER_PARAMS)
 
 export {requestGroupSchema}
