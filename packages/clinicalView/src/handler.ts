@@ -15,7 +15,7 @@ import {requestGroupSchema} from "./schemas/requestGroupSchema"
 import {parseSpineResponse} from "./utils/parseSpineResponse"
 import {generateFhirResponse} from "./utils/generateFhirResponse"
 import {generateFhirErrorResponse} from "./utils/errorHandling"
-import {HandlerParams, HandlerResponse} from "./utils/types"
+import {HandlerParams} from "./utils/types"
 
 // Set up logger with log level from environment variables
 const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
@@ -108,7 +108,7 @@ const buildClinicalViewParams = (
  * Processes the response received from Spine and extracts relevant information.
  */
 const handleSpineResponse = (
-  spineResponse: AxiosResponse<string, unknown>): HandlerResponse => {
+  spineResponse: AxiosResponse<string, unknown>) => {
   logger.info("Processing Spine SOAP response...")
 
   // Extract relevant data from SOAP response
