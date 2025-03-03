@@ -408,7 +408,9 @@ export const extractMaxDosageFrequency = (parentPrescription: XmlPrescription["p
 }
 
 // ---------------------------- ERROR HANDLING -------------------------------
-// Parses error messages from the SOAP response
+/**
+ * Parses error messages from the SOAP response
+ */
 const parseErrorResponse = (responseXml: XmlResponse): string => {
   const xmlSoapEnvBody: XmlSoapBody | undefined =
     responseXml["SOAP:Envelope"]?.["SOAP:Body"] || responseXml["SOAP-ENV:Envelope"]?.["SOAP-ENV:Body"]
