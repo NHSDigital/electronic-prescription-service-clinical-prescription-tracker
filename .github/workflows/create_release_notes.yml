@@ -53,7 +53,7 @@ jobs:
         with:
           TARGET_ENVIRONMENT: int
           RELEASE_TAG: ${{ inputs.VERSION_NUMBER }}
-          CONFLUENCE_PAGE_ID: "899319592"
+          CONFLUENCE_PAGE_ID: "768067994"
           CREATE_RC_RELEASE_NOTES: true
           DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
           TARGET_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
@@ -64,7 +64,7 @@ jobs:
         if: ${{ inputs.CREATE_INT_RELEASE_NOTES == true && always() && !failure() && !cancelled() }}
         with:
           TARGET_ENVIRONMENT: int
-          CONFLUENCE_PAGE_ID: "899319595"
+          CONFLUENCE_PAGE_ID: "768067990"
           CREATE_RC_RELEASE_NOTES: false
           DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
           TARGET_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
@@ -75,7 +75,7 @@ jobs:
         if: ${{ inputs.CREATE_PROD_RELEASE_NOTES == true && always() && !failure() && !cancelled() }}
         with:
           TARGET_ENVIRONMENT: prod
-          CONFLUENCE_PAGE_ID: "899319597"
+          CONFLUENCE_PAGE_ID: "768067992"
           CREATE_RC_RELEASE_NOTES: false
           DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
           TARGET_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}

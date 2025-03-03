@@ -27,6 +27,7 @@ export class CptsApiStack extends Stack {
     const logLevel: string = this.node.tryGetContext("logLevel")
     const targetSpineServer: string = this.node.tryGetContext("targetSpineServer")
     const enableMutalTls: boolean = this.node.tryGetContext("enableMutalTls")
+    const trustStoreFile: string = this.node.tryGetContext("trustStoreFile")
     const truststoreVersion: string = this.node.tryGetContext("truststoreVersion")
 
     // Imports
@@ -99,7 +100,7 @@ export class CptsApiStack extends Stack {
       certificate: certificate,
       logRetentionInDays: logRetentionInDays,
       enableMutualTls: enableMutalTls,
-      trustStoreKey: "cpts-api.pem", // TODO: use clinical-tracker-truststore.pem after testing
+      trustStoreKey: trustStoreFile,
       truststoreVersion: truststoreVersion
     })
     const rootResource = apiGateway.api.root
