@@ -17,8 +17,8 @@ const app = new App()
 
 const accountId = app.node.tryGetContext("accountId")
 const stackName = app.node.tryGetContext("stackName")
-const version = app.node.tryGetContext("VERSION_NUMBER")
-const commit = app.node.tryGetContext("COMMIT_ID")
+const version = app.node.tryGetContext("versionNumber")
+const commit = app.node.tryGetContext("commitId")
 
 Aspects.of(app).add(new AwsSolutionsChecks({verbose: true}))
 
