@@ -206,7 +206,7 @@ const parseRequestGroupDetails = (xmlPrescription: XmlPrescription, logger: Logg
     prescriptionTime: xmlPrescription.prescriptionTime,
     prescriptionStatus: padWithZeros(xmlPrescription.prescriptionStatus.toString(), 4),
     instanceNumber: xmlPrescription.instanceNumber,
-    maxRepeats: xmlPrescription.maxRepeats !== null ? xmlPrescription.maxRepeats : undefined,
+    maxRepeats: xmlPrescription.maxRepeats ?? undefined,
     daysSupply: xmlPrescription.daysSupply,
     nominatedPerformer: xmlPrescription.nominatedPerformer ?? "",
     prescribingOrganization: xmlPrescription.prescribingOrganization ?? ""
