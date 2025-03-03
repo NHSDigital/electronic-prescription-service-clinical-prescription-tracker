@@ -13,12 +13,12 @@ export interface ErrorMap {
 }
 
 export interface HandlerParams {
-  logger: Logger,
+  logger: Logger
   spineClient: SpineClient
 }
 
 export interface SearchError {
-  status: string,
+  status: string
   severity: "fatal" | "error" | "warning" | "information"
   description: string
 }
