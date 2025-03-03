@@ -37,9 +37,20 @@ const testCases = [
       },
       patientDetails: {
         nhsNumber: "5839945242",
+        prefix: "MS",
         given: "STACEY",
         family: "TWITCHETT",
-        birthDate: "19480430"
+        suffix: "",
+        administrativeGenderCode: 2,
+        birthDate: "19480430",
+        patientAddress: {
+          line: [
+            "10 HEATHFIELD",
+            "COBHAM",
+            "SURREY"
+          ],
+          postalCode: "KT11 2QY"
+        }
       },
       productLineItems: [
         {
@@ -211,9 +222,18 @@ describe("Test parseSpineResponse", () => {
         // Patient Details
         if (expected.patientDetails) {
           expect(result.patientDetails?.nhsNumber).toBe(expected.patientDetails.nhsNumber)
+          expect(result.patientDetails?.prefix).toBe(expected.patientDetails.prefix)
           expect(result.patientDetails?.given).toBe(expected.patientDetails.given)
           expect(result.patientDetails?.family).toBe(expected.patientDetails.family)
+          expect(result.patientDetails?.suffix).toBe(expected.patientDetails.suffix)
+          expect(result.patientDetails?.gender).toBe(expected.patientDetails.administrativeGenderCode)
           expect(result.patientDetails?.birthDate).toBe(expected.patientDetails.birthDate)
+        }
+
+        // Address
+        if (expected.patientDetails?.patientAddress) {
+          expect(result.patientDetails?.address?.[0].line).toEqual(expected.patientDetails.patientAddress.line)
+          expect(result.patientDetails?.address?.[0].postalCode).toBe(expected.patientDetails.patientAddress.postalCode)
         }
 
         // Product Line Items
