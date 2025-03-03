@@ -42,7 +42,7 @@ const mockParsedResponse: ParsedSpineResponse =
     fromStatus: "False",
     toStatus: "0001",
     message: "Prescription upload successful",
-    organizationName: "A83008",
+    agentPersonOrgCode: "A83008",
     lineStatusChangeDict: {
       line: [
         {

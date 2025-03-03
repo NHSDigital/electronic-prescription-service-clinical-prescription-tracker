@@ -114,7 +114,7 @@ export interface FilteredHistoryDetails {
   fromStatus: string
   toStatus: string
   message: string
-  organizationName: string
+  agentPersonOrgCode: string
   lineStatusChangeDict?: {
     line: Array<LineStatusChange>
   }

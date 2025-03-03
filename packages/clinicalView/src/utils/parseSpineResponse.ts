@@ -269,7 +269,7 @@ const parseFilteredHistory = (xmlPrescription: XmlPrescription, logger: Logger):
     fromStatus: padWithZeros(latestHistory.fromStatus.toString(), 4),
     toStatus: padWithZeros(latestHistory.toStatus.toString(), 4),
     message: latestHistory.message.toString(),
-    organizationName: latestHistory.agentPersonOrgCode.toString(),
+    agentPersonOrgCode: latestHistory.agentPersonOrgCode.toString(),
     lineStatusChangeDict: latestHistory.lineStatusChangeDict
       ? {
         line: latestHistory.lineStatusChangeDict.line.map((line) => ({
