@@ -188,7 +188,7 @@ jobs:
             ./.build/packages/specification/dist/eps-clinical-prescription-tracker-api.resolved.json
 
       - name: Update release tag in github pages
-        if: ${{ !startsWith(inputs.STACK_NAME, 'clinical-tracker-pr-') }}
+        if: ${{ !startsWith(inputs.STACK_NAME, 'cpt-pr-') }}
         run: |
           cd gh-pages
           NOW=$(date +'%Y-%m-%dT%H:%M:%S')
