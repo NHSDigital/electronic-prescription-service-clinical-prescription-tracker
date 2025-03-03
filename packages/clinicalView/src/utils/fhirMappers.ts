@@ -133,7 +133,7 @@ export const formatBirthDate = (birthDate: string): string => {
 }
 
 /**
- * Pads numeric values with leading zeros
+ * Pads numeric values with leading zeros.
  */
 export const padWithZeros = (value: number | string, length = 4): string => {
   return String(value).padStart(length, "0")

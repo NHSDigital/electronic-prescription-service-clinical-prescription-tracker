@@ -18,7 +18,7 @@ import {padWithZeros} from "./fhirMappers"
 
 // ---------------------------- PARSE SPINE RESPONSE ------------------------------
 /**
- * Parses the SOAP XML response from the Spine service
+ * Parses the SOAP XML response from the Spine service.
  */
 export const parseSpineResponse = (spineResponse: string, logger: Logger): ParsedSpineResponse => {
   const xmlParser = new XMLParser({ignoreAttributes: false})
@@ -85,7 +85,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
 
 // ---------------------------- PATIENT DETAILS ------------------------------
 /**
- * Parses patient details from the XML prescription
+ * Parses patient details from the XML prescription.
  */
 export const parsePatientDetails = (xmlPrescription: XmlPrescription, logger: Logger): PatientDetails => {
   const parentPrescription = xmlPrescription.parentPrescription
@@ -133,7 +133,7 @@ export const parsePatientDetails = (xmlPrescription: XmlPrescription, logger: Lo
 
 // ---------------------------- PARSE PATIENT ADDRESS ------------------------------
 /**
- * Extracts and formats patient address from the XML data
+ * Extracts and formats patient address from the XML data.
  */
 export const parsePatientAddress = (parentPrescription: XmlPrescription["parentPrescription"], logger: Logger) => {
   // Check if any address-related fields exist in the parentPrescription
@@ -176,7 +176,7 @@ export const parsePatientAddress = (parentPrescription: XmlPrescription["parentP
 
 // ---------------------------- PRESCRIPTION DETAILS -------------------------
 /**
- * Parses prescription-level details from the XML data
+ * Parses prescription-level details from the XML data.
  */
 const parseRequestGroupDetails = (xmlPrescription: XmlPrescription, logger: Logger): RequestGroupDetails => {
   if (
@@ -220,7 +220,7 @@ const parseRequestGroupDetails = (xmlPrescription: XmlPrescription, logger: Logg
 
 // ---------------------------- PRODUCT LINE ITEMS ---------------------------
 /**
- * Parses product line items (medications) from the parent prescription
+ * Parses product line items (medications) from the parent prescription.
  */
 const parseProductLineItems = (xmlPrescription: XmlPrescription, logger: Logger): Array<ProductLineItemDetails> => {
   const productLineItems: Array<ProductLineItemDetails> = []
@@ -258,7 +258,7 @@ const parseProductLineItems = (xmlPrescription: XmlPrescription, logger: Logger)
 
 // ---------------------------- FILTERED HISTORY -----------------------------
 /**
- * Parses filtered history of prescription events and returns the latest event details
+ * Parses filtered history of prescription events and returns the latest event details.
  */
 const parseFilteredHistory = (xmlPrescription: XmlPrescription, logger: Logger): FilteredHistoryDetails => {
   const filteredHistoryItems: XmlFilteredHistory | Array<XmlFilteredHistory> = xmlPrescription.filteredHistory
@@ -295,7 +295,7 @@ const parseFilteredHistory = (xmlPrescription: XmlPrescription, logger: Logger):
 
 // ---------------------------- DISPENSE NOTIFICATION -----------------------------
 /**
- * Parses dispense notification for each product line item and returns the dispense data
+ * Parses dispense notification for each product line item and returns the dispense data.
  */
 export const parseDispenseNotificationItems = (xmlPrescription: XmlPrescription, logger: Logger)
   : DispenseNotification => {
@@ -351,7 +351,7 @@ export const parseDispenseNotificationItems = (xmlPrescription: XmlPrescription,
 
 // ---------------------------- EXTRACT FREQUENCY & PERIOD UNIT ------------------------------
 /**
- * Extracts the highest dosage frequency and associated period unit from dosageLineItemX fields
+ * Extracts the highest dosage frequency and associated period unit from dosageLineItemX fields.
  */
 export const extractMaxDosageFrequency = (parentPrescription: XmlPrescription["parentPrescription"], logger: Logger)
   : {frequency: number; periodUnit: ("s" | "min" | "h" | "d" | "wk" | "mo" | "a")} => {
@@ -409,7 +409,7 @@ export const extractMaxDosageFrequency = (parentPrescription: XmlPrescription["p
 
 // ---------------------------- ERROR HANDLING -------------------------------
 /**
- * Parses error messages from the SOAP response
+ * Parses error messages from the SOAP response.
  */
 const parseErrorResponse = (responseXml: XmlResponse): string => {
   const xmlSoapEnvBody: XmlSoapBody | undefined =
