@@ -4,7 +4,7 @@ set -eu pipefail
 echo "Specification path: ${SPEC_PATH}"
 echo "Specification version: ${VERSION_NUMBER}"
 echo "Stack name: ${STACK_NAME}"
-echo "AWS environment: ${TARGET_ENVIRONMENT}"
+echo "AWS environment: ${AWS_ENVIRONMENT}"
 echo "Apigee environment: ${APIGEE_ENVIRONMENT}"
 echo "Proxygen private key name: ${PROXYGEN_PRIVATE_KEY_NAME}"
 echo "Proxygen KID: ${PROXYGEN_KID}"
@@ -65,7 +65,7 @@ fi
 jq --arg version "${VERSION_NUMBER}" '.info.version = $version' "${SPEC_PATH}" > temp.json && mv temp.json "${SPEC_PATH}"
 
 # Find and replace the x-nhsd-apim.target.url value
-jq --arg stack_name "${STACK_NAME}" --arg aws_env "${TARGET_ENVIRONMENT}" '.["x-nhsd-apim"].target.url = "https://\($stack_name).\($aws_env).eps.national.nhs.uk"' "${SPEC_PATH}" > temp.json && mv temp.json "${SPEC_PATH}"
+jq --arg stack_name "${STACK_NAME}" --arg aws_env "${AWS_ENVIRONMENT}" '.["x-nhsd-apim"].target.url = "https://\($stack_name).\($aws_env).eps.national.nhs.uk"' "${SPEC_PATH}" > temp.json && mv temp.json "${SPEC_PATH}"
 
 # Find and replace the servers object
 if [[ "${APIGEE_ENVIRONMENT}" == "prod" ]]; then
