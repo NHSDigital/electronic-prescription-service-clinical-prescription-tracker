@@ -168,13 +168,14 @@ jobs:
         shell: bash
         if: ${{ inputs.DEPLOY_APIGEE == true && always() && !failure() && !cancelled() }}
         env:
+          API_TYPE: standard
           VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}
           SPEC_PATH: ./.build/packages/specification/dist/eps-clinical-prescription-tracker-api.resolved.json
           STACK_NAME: ${{ inputs.STACK_NAME }}
           AWS_ENVIRONMENT: ${{ inputs.AWS_ENVIRONMENT }}
           APIGEE_ENVIRONMENT: ${{ inputs.APIGEE_ENVIRONMENT }}
-          PROXYGEN_PRIVATE_KEY_NAME: FhirPrescribingProxygenPrivateKey
-          PROXYGEN_KID: fhir-prescribing
+          PROXYGEN_PRIVATE_KEY_NAME: ClinicalTrackerProxygenPrivateKey
+          PROXYGEN_KID: eps-clinical-tracker
           DRY_RUN: false
           ENABLE_MUTUAL_TLS: ${{ inputs.ENABLE_MUTUAL_TLS }}
         run: ./.github/scripts/deploy_api.sh
