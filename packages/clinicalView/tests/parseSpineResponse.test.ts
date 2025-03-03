@@ -31,52 +31,109 @@ const testCases = [
     name: "acute released prescription",
     data: acuteReleased,
     expected: {
-      prescriptionId: "F20764-A83008-EEA31D",
-      prescriptionStatus: "0002"
+      requestGroupDetails: {
+        prescriptionId: "F20764-A83008-EEA31D",
+        prescriptionStatus: "0002"
+      },
+      patientDetails: {
+        nhsNumber: "5839945242",
+        given: "STACEY",
+        family: "TWITCHETT",
+        birthDate: "19480430"
+      },
+      productLineItems: [
+        {
+          order: 1,
+          medicationName: "Amoxicillin 250mg capsules",
+          quantity: "20",
+          dosageInstructions: "2 times a day for 10 days"
+        }
+      ]
     }
   },
   {
     name: "acute dispensed prescription",
     data: acuteDispensed,
     expected: {
-      prescriptionId: "D1419E-A83008-A3641P",
-      prescriptionStatus: "0006",
-      dispensingOrganization: "FA565"
+      requestGroupDetails: {
+        prescriptionId: "D1419E-A83008-A3641P",
+        prescriptionStatus: "0006"
+      },
+      dispenseNotification: {
+        dispensingOrganization: "FA565"
+      }
     }
   },
   {
     name: "acute cancelled prescription",
     data: acuteCancelled,
     expected: {
-      prescriptionId: "D76B46-A83008-D600EO",
-      prescriptionStatus: "0005"
+      requestGroupDetails: {
+        prescriptionId: "D76B46-A83008-D600EO",
+        prescriptionStatus: "0005"
+      }
     }
   },
   {
     name: "acute prescription with a dispenser",
     data: acuteWithDispenser,
     expected: {
-      prescriptionId: "9D4C80-A83008-5EA4D3",
-      prescriptionStatus: "0006",
-      dispensingOrganization: "FA565"
+      requestGroupDetails: {
+        prescriptionId: "9D4C80-A83008-5EA4D3",
+        prescriptionStatus: "0006"
+      },
+      dispenseNotification: {
+        dispensingOrganization: "FA565"
+      }
     }
   },
   {
     name: "eRD dispensed prescription",
     data: erdDispensed,
     expected: {
-      prescriptionId: "A68248-A83008-08350Z",
-      prescriptionStatus: "0006",
-      maxRepeats: 7,
-      dispensingOrganization: "FA565"
+      requestGroupDetails: {
+        prescriptionId: "A68248-A83008-08350Z",
+        prescriptionStatus: "0006"
+      },
+      dispenseNotification: {
+        dispensingOrganization: "FA565"
+      },
+      productLineItems: [
+        {
+          order: 1,
+          medicationName: "Amoxicillin 250mg capsules",
+          quantity: "20",
+          dosageInstructions: "2 times a day for 10 days"
+        },
+        {
+          order: 2,
+          medicationName: "Co-codamol 30mg/500mg tablets",
+          quantity: "20",
+          dosageInstructions: "2 times a day for 10 days"
+        },
+        {
+          order: 3,
+          medicationName: "Pseudoephedrine hydrochloride 60mg tablets",
+          quantity: "30",
+          dosageInstructions: "3 times a day for 10 days"
+        },
+        {
+          order: 4,
+          medicationName: "Azithromycin 250mg capsules",
+          quantity: "30",
+          dosageInstructions: "3 times a day for 10 days"
+        }
+      ]
     }
   },
   {
     name: "eRD line item cancelled prescription",
     data: erdLineItemCancelled,
     expected: {
-      prescriptionId: "EC5ACF-A83008-733FD3",
-      prescriptionStatus: "0002",
+      requestGroupDetails: {
+        prescriptionId: "EC5ACF-A83008-733FD3",
+        prescriptionStatus: "0002"
+      },
       latestSCN: 4,
       latestLineItem: {
         toStatus: "0005",
@@ -89,8 +146,10 @@ const testCases = [
     name: "eRD line item pending cancellation",
     data: erdLineItemPendingCancellation,
     expected: {
-      prescriptionId: "ECD9BE-A83008-753A71",
-      prescriptionStatus: "0002",
+      requestGroupDetails: {
+        prescriptionId: "ECD9BE-A83008-753A71",
+        prescriptionStatus: "0002"
+      },
       latestSCN: 7,
       latestLineItem: {
         toStatus: "0008",
@@ -103,8 +162,10 @@ const testCases = [
     name: "acute subsequent cancellation",
     data: acuteSubsequentCancellation,
     expected: {
-      prescriptionId: "4EABC3-A83008-91927K",
-      prescriptionStatus: "0001",
+      requestGroupDetails: {
+        prescriptionId: "4EABC3-A83008-91927K",
+        prescriptionStatus: "0001"
+      },
       latestSCN: 6,
       latestLineItem: {
         fromStatus: "0008",
@@ -112,7 +173,9 @@ const testCases = [
         cancellationReason: "Clinical grounds",
         order: 1
       },
-      agentPersonOrgCode: "VNE51"
+      filteredHistory: {
+        agentPersonOrgCode: "VNE51"
+      }
     }
   },
   {
@@ -121,8 +184,7 @@ const testCases = [
     expected: {
       error: {
         status: "404",
-        code: "0001",
-        detailsDisplay: "The requested prescription resource could not be found."
+        description: "The requested prescription resource could not be found."
       }
     }
   }
@@ -136,20 +198,41 @@ describe("Test parseSpineResponse", () => {
       if (expected.error) {
         expect(result.error).toBeDefined()
         expect(result.error?.status).toBe(expected.error.status)
-        expect(result.error?.description).toBe(expected.error.detailsDisplay)
+        expect(result.error?.description).toBe(expected.error.description)
       } else {
         expect(result.error).toBeUndefined()
-        expect(result.requestGroupDetails?.prescriptionId).toBe(expected.prescriptionId)
-        expect(result.requestGroupDetails?.prescriptionStatus).toBe(expected.prescriptionStatus)
 
-        if (expected.maxRepeats !== undefined) {
-          expect(result.requestGroupDetails?.maxRepeats).toBe(expected.maxRepeats)
+        // Request Group Details
+        if (expected.requestGroupDetails) {
+          expect(result.requestGroupDetails?.prescriptionId).toBe(expected.requestGroupDetails.prescriptionId)
+          expect(result.requestGroupDetails?.prescriptionStatus).toBe(expected.requestGroupDetails.prescriptionStatus)
         }
 
-        if (expected.dispensingOrganization) {
-          expect(result.dispenseNotificationDetails?.dispensingOrganization).toBe(expected.dispensingOrganization)
+        // Patient Details
+        if (expected.patientDetails) {
+          expect(result.patientDetails?.nhsNumber).toBe(expected.patientDetails.nhsNumber)
+          expect(result.patientDetails?.given).toBe(expected.patientDetails.given)
+          expect(result.patientDetails?.family).toBe(expected.patientDetails.family)
+          expect(result.patientDetails?.birthDate).toBe(expected.patientDetails.birthDate)
         }
 
+        // Product Line Items
+        if (expected.productLineItems) {
+          expected.productLineItems.forEach((item, index) => {
+            expect(result.productLineItems?.[index].order).toBe(item.order)
+            expect(result.productLineItems?.[index].medicationName).toBe(item.medicationName)
+            expect(result.productLineItems?.[index].quantity).toBe(item.quantity)
+            expect(result.productLineItems?.[index].dosageInstructions).toBe(item.dosageInstructions)
+          })
+        }
+
+        // Dispense Notification
+        if (expected.dispenseNotification) {
+          expect(result.dispenseNotificationDetails?.dispensingOrganization)
+            .toBe(expected.dispenseNotification.dispensingOrganization)
+        }
+
+        // Filtered History
         if (expected.latestSCN !== undefined) {
           const latestHistory = getLatestFilteredHistory(result.filteredHistory ?? [])
           expect(latestHistory?.SCN).toBe(expected.latestSCN)
@@ -162,8 +245,8 @@ describe("Test parseSpineResponse", () => {
           expect(expectedLine?.toStatus).toBe(expected.latestLineItem.toStatus)
           expect(expectedLine?.cancellationReason).toBe(expected.latestLineItem.cancellationReason)
 
-          if (expected.agentPersonOrgCode) {
-            expect(latestHistory?.agentPersonOrgCode).toBe(expected.agentPersonOrgCode)
+          if (expected.filteredHistory?.agentPersonOrgCode) {
+            expect(latestHistory?.agentPersonOrgCode).toBe(expected.filteredHistory.agentPersonOrgCode)
           }
         }
       }
