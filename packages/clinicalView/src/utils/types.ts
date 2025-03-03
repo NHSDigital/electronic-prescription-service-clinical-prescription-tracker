@@ -24,7 +24,7 @@ export interface SearchError {
 }
 
 export interface PathParameters {
-  prescriptionId?: string | undefined
+  prescriptionId?: string
 }
 
 export interface HeaderSearchParameters {
@@ -53,7 +53,7 @@ export interface ParsedSpineResponse {
   productLineItems?: Array<ProductLineItemDetails>
   filteredHistory?: FilteredHistoryDetails
   dispenseNotificationDetails?: DispenseNotification
-  error?: SearchError | undefined
+  error?: SearchError
 }
 
 // Patient Details
