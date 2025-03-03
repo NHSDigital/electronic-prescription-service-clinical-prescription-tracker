@@ -202,9 +202,12 @@ cdk-deploy:
 		--all \
 		--ci true \
 		--require-approval $${REQUIRE_APPROVAL} \
-		--context VERSION_NUMBER=$$VERSION_NUMBER \
-		--context COMMIT_ID=$$COMMIT_ID \
-		--context logRetentionInDays=30
+		--context accountId=$$ACCOUNT_ID \
+		--context stackName=$$stack_name \
+		--context versionNumber==$$VERSION_NUMBER \
+		--context commitId=$$COMMIT_ID \
+		--context logRetentionInDays=$$LOG_RETENTION_IN_DAYS
+
 
 cdk-synth: download-get-secrets-layer
 	npx cdk synth \
@@ -212,8 +215,8 @@ cdk-synth: download-get-secrets-layer
 		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/CptsApiApp.ts" \
 		--context accountId=undefined \
 		--context stackName=cpt \
-		--context VERSION_NUMBER=undefined \
-		--context COMMIT_ID=undefined \
+		--context versionNumber=undefined \
+		--context commitId=undefined \
 		--context logRetentionInDays=30
 
 cdk-diff:
@@ -221,8 +224,8 @@ cdk-diff:
 		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/CptsApiApp.ts" \
 		--context accountId=$$ACCOUNT_ID \
 		--context stackName=$$stack_name \
-		--context VERSION_NUMBER==$$VERSION_NUMBER \
-		--context COMMIT_ID=$$COMMIT_ID \
+		--context versionNumber==$$VERSION_NUMBER \
+		--context commitId=$$COMMIT_ID \
 		--context logRetentionInDays=$$LOG_RETENTION_IN_DAYS
 
 cdk-watch:
@@ -237,6 +240,6 @@ cdk-watch:
 		--require-approval $${REQUIRE_APPROVAL} \
 		--context accountId=$$ACCOUNT_ID \
 		--context stackName=$$stack_name \
-		--context VERSION_NUMBER==$$VERSION_NUMBER \
-		--context COMMIT_ID=$$COMMIT_ID \
+		--context versionNumber==$$VERSION_NUMBER \
+		--context commitId=$$COMMIT_ID \
 		--context logRetentionInDays=$$LOG_RETENTION_IN_DAYS
