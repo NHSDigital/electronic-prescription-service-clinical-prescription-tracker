@@ -21,6 +21,7 @@ const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
 export const logger = new Logger({serviceName: "clinicalView", logLevel: LOG_LEVEL})
 const spineClient: SpineClient = createSpineClient(logger)
 
+// Default HTTP headers for FHIR responses
 const headers = {
   "Content-Type": "application/fhir+json",
   "Cache-Control": "no-cache"
@@ -33,10 +34,11 @@ export const apiGatewayHandler = async (
   params: HandlerParams, event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
   logger.info("Received API request", {event})
 
+  // Validate request parameters and headers
   const [searchParameters, validationErrors]:
     [ClinicalViewParams, Array<SearchError>] = validateRequest(event, logger)
 
-  // Check if the prescriptionId is missing from the request
+  // If validation fails, return a FHIR-compliant error response
   if (validationErrors.length > 0) {
     logger.error("Error validating request.")
     logger.info("Generating FHIR error response...")
@@ -50,39 +52,54 @@ export const apiGatewayHandler = async (
     }
   }
 
-  // Call the Spine API to fetch prescription details
-  logger.info("Calling Spine ClinicalView interaction...")
-  const spineResponse = await params.spineClient.clinicalView(event.headers, searchParameters)
+  try {
+    // Make a request to Spine API to retrieve prescription details
+    logger.info("Calling Spine ClinicalView interaction...")
+    const spineResponse = await params.spineClient.clinicalView(event.headers, searchParameters)
 
-  logger.info("Received response from Spine.", {status: spineResponse.status, entry: spineResponse.data})
+    logger.info("Received response from Spine.", {status: spineResponse.status, entry: spineResponse.data})
 
-  // Extract relevant data from SOAP response
-  const extractedData = parseSpineResponse(spineResponse.data, logger)
+    // Parse the SOAP response from Spine
+    const extractedData = parseSpineResponse(spineResponse.data, logger)
+    logger.info("Extracted data from Spine response.", {extractedData})
 
-  logger.info("Parsed data form Spine response.", {extractedData})
+    /// If an error was detected in the parsed response, return an appropriate FHIR error
+    if (extractedData.error) {
+      logger.error("Spine response contained an error.", {error: extractedData.error.description})
+      logger.info("Generating FHIR error response...")
+      const errorResponseBundle: OperationOutcome = generateFhirErrorResponse([extractedData.error], logger)
 
-  if (extractedData.error) {
-    logger.error("Spine response contained an error.", {error: extractedData.error.description})
+      logger.info("Returning FHIR error response.")
+      return {
+        statusCode: parseInt(extractedData.error.status, 10), // Convert error status to integer HTTP code
+        body: JSON.stringify(errorResponseBundle),
+        headers
+      }
+    }
+
+    // Generate a valid FHIR response from the extracted data
+    const fhirResponse: RequestGroup = generateFhirResponse(extractedData, logger)
+    logger.info("Generated FHIR response.", {fhirResponse})
+
+    return {
+      statusCode: 200, // Successful response
+      body: JSON.stringify(fhirResponse),
+      headers
+    }
+  } catch {
+    // Catch all errors and return a generic FHIR error response
+    logger.error("An unknown error occurred whilst processing the request")
     logger.info("Generating FHIR error response...")
-    const errorResponseBundle: OperationOutcome = generateFhirErrorResponse([extractedData.error], logger)
+    const errorResponseBundle: OperationOutcome = generateFhirErrorResponse(
+      [{status: "500", severity: "fatal", description: "Unknown Error."}], logger
+    )
 
     logger.info("Returning FHIR error response.")
     return {
-      statusCode: 400,
+      statusCode: 500,
       body: JSON.stringify(errorResponseBundle),
       headers
     }
-  }
-
-  // Generate FHIR response
-  const fhirResponse: RequestGroup = generateFhirResponse(extractedData, logger)
-
-  logger.info("Generated FHIR response.", {fhirResponse})
-
-  return {
-    statusCode: 200, // API Gateway expects a status code
-    body: JSON.stringify(fhirResponse), // Wrap the response in a stringified JSON
-    headers
   }
 }
 
@@ -92,19 +109,14 @@ export const apiGatewayHandler = async (
 export const newHandler = (params: HandlerParams) => {
   const newHandler = middy((event: APIGatewayEvent) => apiGatewayHandler(params, event))
     .use(injectLambdaContext(logger, {clearState: true}))
-    .use(
-      inputOutputLogger({
-        logger: (request) => {
-          logger.info(request)
-        }
-      })
-    )
-    .use(errorHandler({logger: logger}))
+    .use(inputOutputLogger({logger: (request) => logger.info(request)}))
+    .use(errorHandler({logger}))
   return newHandler
 }
 
-// Default handler configuration
+// Configure the default handler parameters
 const DEFAULT_HANDLER_PARAMS: HandlerParams = {logger, spineClient}
 export const handler = newHandler(DEFAULT_HANDLER_PARAMS)
 
+// Export schema definitions for validation
 export {requestGroupSchema}

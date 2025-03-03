@@ -12,8 +12,7 @@ import {
   DispenseNotification,
   DispenseNotificationItem,
   FilteredHistoryDetails,
-  ParsedSpineResponse,
-  SearchError
+  ParsedSpineResponse
 } from "./types"
 import {padWithZeros} from "./fhirMappers"
 
@@ -22,35 +21,56 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
   const xmlParser = new XMLParser({ignoreAttributes: false})
   const xmlResponse = xmlParser.parse(spineResponse) as XmlResponse
 
-  logger.info("Parsing XML SOAP response from Spine...")
-  const xmlSoapBody: XmlSoapBody | undefined = xmlResponse["SOAP:Envelope"]?.["SOAP:Body"]
+  logger.info("Parsing XML SOAP response from Spine...", {xmlResponse})
+
+  // Handle potential variations in SOAP envelope naming
+  const xmlSoapBody: XmlSoapBody | undefined =
+    xmlResponse["SOAP:Envelope"]?.["SOAP:Body"] || xmlResponse["SOAP-ENV:Envelope"]?.["SOAP-ENV:Body"]
 
   if (!xmlSoapBody) {
-    const errorMessage: string = parseErrorResponse(xmlResponse)
-    if (errorMessage === "Prescription not found") {
-      logger.info("No prescriptions found.")
-      return {}
+    logger.error("Invalid SOAP response: No SOAP Body found.")
+    return {
+      error: {
+        status: "500",
+        severity: "fatal",
+        description: "Invalid SOAP response format from Spine."
+      }
     }
-
-    logger.error("Error parsing Spine response", {errorMessage})
-
-    const error: SearchError = {
-      status: "500",
-      severity: "error",
-      description: errorMessage
-    }
-
-    return {error}
   }
 
-  // Extract prescription data from the SOAP body
+  // Check for error response structure (MCCI_IN010000UK13 indicates an error)
+  if (xmlSoapBody.prescriptionClinicalViewResponse?.MCCI_IN010000UK13) {
+    const errorMessage: string = parseErrorResponse(xmlResponse)
+
+    if (errorMessage === "Prescription not found") {
+      logger.info("No prescriptions found.")
+      return {
+        error: {
+          status: "404",
+          severity: "error",
+          description: "The requested prescription resource could not be found."
+        }
+      }
+    }
+
+    logger.error("Spine SOAP error detected", {errorMessage})
+
+    return {
+      error: {
+        status: "500",
+        severity: "error",
+        description: errorMessage || "Unknown error occurred."
+      }
+    }
+  }
+
+  // Process successful prescription response (PORX_IN000006UK98)
   const xmlPrescription: XmlPrescription =
     xmlSoapBody.prescriptionClinicalViewResponse.PORX_IN000006UK98
       .ControlActEvent.subject.PrescriptionJsonQueryResponse.epsRecord
 
-  logger.info("Spine SOAP xmlPrescription data", {xmlPrescription})
+  logger.info("Successfully parsed Spine SOAP prescription data", {xmlPrescription})
 
-  // Parse and return structured prescription data
   return {
     requestGroupDetails: parseRequestGroupDetails(xmlPrescription, logger),
     patientDetails: parsePatientDetails(xmlPrescription, logger),
@@ -308,7 +328,8 @@ export const parseDispenseNotificationItems = (xmlPrescription: XmlPrescription,
 // ---------------------------- ERROR HANDLING -------------------------------
 // Parses error messages from the SOAP response
 const parseErrorResponse = (responseXml: XmlResponse): string => {
-  const xmlSoapEnvBody = responseXml["SOAP:Envelope"]?.["SOAP:Body"]
+  const xmlSoapEnvBody: XmlSoapBody | undefined =
+    responseXml["SOAP:Envelope"]?.["SOAP:Body"] || responseXml["SOAP-ENV:Envelope"]?.["SOAP-ENV:Body"]
   if (!xmlSoapEnvBody) return "Unknown Error."
 
   const xmlError: XmlError | undefined = xmlSoapEnvBody.prescriptionClinicalViewResponse?.MCCI_IN010000UK13

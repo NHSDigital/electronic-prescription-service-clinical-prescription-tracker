@@ -7,7 +7,7 @@ const errorMap: ErrorMap = {
     status: "400 Bad Request",
     code: "value",
     detailsCode: "BAD_REQUEST",
-    detailsDisplay: "400: The request could not be understood or was missing required parameters."
+    detailsDisplay: "400: The Server was unable to process the request."
   },
   401: {
     status: "401 Unauthorized",
@@ -19,19 +19,19 @@ const errorMap: ErrorMap = {
     status: "403 Forbidden",
     code: "forbidden",
     detailsCode: "FORBIDDEN",
-    detailsDisplay: "403: The server understood the request, but access is forbidden."
+    detailsDisplay: "403: The Server understood the request, but access is forbidden."
   },
   404: {
     status: "404 Not Found",
     code: "not-found",
     detailsCode: "NOT_FOUND",
-    detailsDisplay: "404: The requested prescription resource could not be found."
+    detailsDisplay: "404: The Server was unable to find the specified resource."
   },
   500: {
     status: "500 Internal Server Error",
     code: "exception",
     detailsCode: "SERVER_ERROR",
-    detailsDisplay: "500: The server encountered an unexpected condition."
+    detailsDisplay: "500: The Server has encountered an error processing the request."
   },
   504: {
     status: "504 Gateway Timeout",

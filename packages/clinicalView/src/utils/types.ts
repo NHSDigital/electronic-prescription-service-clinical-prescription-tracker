@@ -130,6 +130,9 @@ export interface XmlResponse {
   "SOAP:Envelope"?: {
     "SOAP:Body"?: XmlSoapBody
   }
+  "SOAP-ENV:Envelope"?: {
+    "SOAP-ENV:Body"?: XmlSoapBody
+  }
 }
 
 // SOAP Body

@@ -86,7 +86,7 @@ describe("clinicalView Handler", () => {
             coding: [
               {
                 code: "BAD_REQUEST",
-                display: "400: The request could not be understood or was missing required parameters.",
+                display: "400: The Server was unable to process the request.",
                 system: "https://fhir.nhs.uk/CodeSystem/http-error-codes"
               }
             ]
@@ -100,7 +100,7 @@ describe("clinicalView Handler", () => {
             coding: [
               {
                 code: "BAD_REQUEST",
-                display: "400: The request could not be understood or was missing required parameters.",
+                display: "400: The Server was unable to process the request.",
                 system: "https://fhir.nhs.uk/CodeSystem/http-error-codes"
               }
             ]
