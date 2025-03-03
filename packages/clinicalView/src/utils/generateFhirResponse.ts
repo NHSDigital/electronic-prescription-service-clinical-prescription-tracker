@@ -34,7 +34,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   // ======================================================================================
   //  STEP 2: Construct the Root RequestGroup Resource
   // ======================================================================================
-  const prescribingOrganization: string = prescription.requestGroupDetails?.prescribingOrganization || ""
+  const prescribingOrganization: string = prescription.requestGroupDetails?.prescribingOrganization ?? ""
 
   const requestGroup: RequestGroup = {
     resourceType: "RequestGroup",
@@ -43,7 +43,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
     identifier: [
       {
         system: "https://fhir.nhs.uk/Id/prescription-order-number",
-        value: prescription.requestGroupDetails?.prescriptionId || ""
+        value: prescription.requestGroupDetails?.prescriptionId ?? ""
       }
     ],
     intent: "reflex-order",
@@ -76,9 +76,9 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
       ],
       name: [
         {
-          prefix: [prescription.patientDetails?.prefix || ""],
-          given: [prescription.patientDetails?.given || ""],
-          family: prescription.patientDetails?.family || ""
+          prefix: [prescription.patientDetails?.prefix ?? ""],
+          given: [prescription.patientDetails?.given ?? ""],
+          family: prescription.patientDetails?.family ?? ""
         }
       ],
       gender: mapGender(prescription.patientDetails?.gender ?? 0),
@@ -96,8 +96,8 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   // ======================================================================================
 
   // Extension-EPS-RepeatInformation
-  const numberOfRepeatsAllowed: number = prescription.requestGroupDetails?.maxRepeats || 0
-  const numberOfRepeatsIssued: number = prescription.requestGroupDetails?.instanceNumber || 0
+  const numberOfRepeatsAllowed: number = prescription.requestGroupDetails?.maxRepeats ?? 0
+  const numberOfRepeatsIssued: number = prescription.requestGroupDetails?.instanceNumber ?? 0
 
   const repeatInformation: Extension = {
     url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
@@ -115,7 +115,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   requestGroup.extension?.push(repeatInformation)
 
   // Extension-EPS-PendingCancellations
-  const prescriptionStatus: string = prescription.requestGroupDetails?.prescriptionStatus || ""
+  const prescriptionStatus: string = prescription.requestGroupDetails?.prescriptionStatus ?? ""
   const latestHistory = prescription.filteredHistory
 
   const pendingCancellations: Extension = {
@@ -149,7 +149,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   requestGroup.extension?.push(prescriptionStatusHistory)
 
   // Extension-DM-PrescriptionType
-  const prescriptionTypeCode: string = prescription.requestGroupDetails?.prescriptionType || ""
+  const prescriptionTypeCode: string = prescription.requestGroupDetails?.prescriptionType ?? ""
 
   const prescriptionType: Extension = {
     url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionType",
@@ -171,8 +171,8 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   requestGroup.action?.push(prescriptionStatusTransitions)
 
   // Action: Prescription Upload Successful
-  const signedTime: string = formatToISO8601(prescription.requestGroupDetails?.signedTime.toString() || "")
-  const period: number = prescription.requestGroupDetails?.daysSupply || 0
+  const signedTime: string = formatToISO8601(prescription.requestGroupDetails?.signedTime.toString() ?? "")
+  const period: number = prescription.requestGroupDetails?.daysSupply ?? 0
 
   const prescriptionUploadSuccessful: RequestGroupAction = {
     title: "Prescription upload successful",
@@ -202,8 +202,8 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   prescriptionStatusTransitions.action?.push(prescriptionUploadSuccessful)
 
   // Action: Nominated Release Request Successful
-  const prescriptionTime: string = formatToISO8601(prescription.requestGroupDetails?.prescriptionTime.toString() || "")
-  const nominatedPerformer: string = prescription.requestGroupDetails?.nominatedPerformer || ""
+  const prescriptionTime: string = formatToISO8601(prescription.requestGroupDetails?.prescriptionTime.toString() ?? "")
+  const nominatedPerformer: string = prescription.requestGroupDetails?.nominatedPerformer ?? ""
 
   const nominatedReleaseRequestSuccessful: RequestGroupAction = {
     title: "Nominated Release Request successful",
@@ -226,11 +226,11 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   prescriptionStatusTransitions.action?.push(nominatedReleaseRequestSuccessful)
 
   // Action: Dispense Notification Successful
-  const dispensingOrganization: string = prescription.dispenseNotificationDetails?.dispensingOrganization || ""
-  const statusPrescription: string = prescription.dispenseNotificationDetails?.statusPrescription || ""
-  const dispNotifToStatus: string = prescription.dispenseNotificationDetails?.dispNotifToStatus || ""
+  const dispensingOrganization: string = prescription.dispenseNotificationDetails?.dispensingOrganization ?? ""
+  const statusPrescription: string = prescription.dispenseNotificationDetails?.statusPrescription ?? ""
+  const dispNotifToStatus: string = prescription.dispenseNotificationDetails?.dispNotifToStatus ?? ""
   const dispenseNotifDateTime: string = formatToISO8601(
-    prescription.dispenseNotificationDetails?.dispenseNotifDateTime.toString() || "")
+    prescription.dispenseNotificationDetails?.dispenseNotifDateTime.toString() ?? "")
 
   const dispenseNotificationSuccessful: RequestGroupAction = {
     title: "Dispense notification successful",
