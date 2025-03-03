@@ -173,18 +173,15 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   // Action: Prescription Upload Successful
   const signedTime: string = formatToISO8601(prescription.requestGroupDetails?.signedTime.toString() || "")
   const period: number = prescription.requestGroupDetails?.daysSupply || 0
-  const frequency: number = prescription.requestGroupDetails?.frequency || 1
-  const periodUnit: "s" | "min" | "h" | "d" | "wk" | "mo" | "a" =
-    (prescription.requestGroupDetails?.periodUnit as "s" | "min" | "h" | "d" | "wk" | "mo" | "a") || "d"
 
   const prescriptionUploadSuccessful: RequestGroupAction = {
     title: "Prescription upload successful",
     timingTiming: {
       event: [signedTime],
       repeat: {
-        frequency: frequency,
+        frequency: 1,
         period: period,
-        periodUnit: periodUnit
+        periodUnit: "d"
       }
     },
     participant: [{

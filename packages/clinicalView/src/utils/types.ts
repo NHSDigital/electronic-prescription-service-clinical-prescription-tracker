@@ -80,8 +80,6 @@ export interface RequestGroupDetails {
   daysSupply: number
   nominatedPerformer: string
   prescribingOrganization: string
-  frequency?: number
-  periodUnit?: string
 }
 
 // Product Line Items
