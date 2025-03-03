@@ -17,6 +17,9 @@ import {
 import {padWithZeros} from "./fhirMappers"
 
 // ---------------------------- PARSE SPINE RESPONSE ------------------------------
+/**
+ * Parses the SOAP XML response from the Spine service
+ */
 export const parseSpineResponse = (spineResponse: string, logger: Logger): ParsedSpineResponse => {
   const xmlParser = new XMLParser({ignoreAttributes: false})
   const xmlResponse = xmlParser.parse(spineResponse) as XmlResponse
@@ -81,7 +84,9 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
 }
 
 // ---------------------------- PATIENT DETAILS ------------------------------
-// Parses patient details from the XML prescription
+/**
+ * Parses patient details from the XML prescription
+ */
 export const parsePatientDetails = (xmlPrescription: XmlPrescription, logger: Logger): PatientDetails => {
   const parentPrescription = xmlPrescription.parentPrescription
 
@@ -127,7 +132,9 @@ export const parsePatientDetails = (xmlPrescription: XmlPrescription, logger: Lo
 }
 
 // ---------------------------- PARSE PATIENT ADDRESS ------------------------------
-// Extracts and formats patient address from the XML data
+/**
+ * Extracts and formats patient address from the XML data
+ */
 export const parsePatientAddress = (parentPrescription: XmlPrescription["parentPrescription"], logger: Logger) => {
   // Check if any address-related fields exist in the parentPrescription
   // If all address fields are missing, consider the address as not provided.
@@ -168,7 +175,9 @@ export const parsePatientAddress = (parentPrescription: XmlPrescription["parentP
 }
 
 // ---------------------------- PRESCRIPTION DETAILS -------------------------
-// Parses prescription-level details
+/**
+ * Parses prescription-level details from the XML data
+ */
 const parseRequestGroupDetails = (xmlPrescription: XmlPrescription, logger: Logger): RequestGroupDetails => {
   if (
     !xmlPrescription.prescriptionID ||
@@ -190,6 +199,9 @@ const parseRequestGroupDetails = (xmlPrescription: XmlPrescription, logger: Logg
     instanceNumber: xmlPrescription.instanceNumber
   })
 
+  // Extract max dosage frequency and period unit
+  const {frequency, periodUnit} = extractMaxDosageFrequency(xmlPrescription.parentPrescription, logger)
+
   return {
     prescriptionId: xmlPrescription.prescriptionID,
     prescriptionType: padWithZeros(xmlPrescription.prescriptionType.toString(), 4),
@@ -200,12 +212,16 @@ const parseRequestGroupDetails = (xmlPrescription: XmlPrescription, logger: Logg
     maxRepeats: xmlPrescription.maxRepeats !== null ? xmlPrescription.maxRepeats : undefined,
     daysSupply: xmlPrescription.daysSupply,
     nominatedPerformer: xmlPrescription.nominatedPerformer ?? "",
-    prescribingOrganization: xmlPrescription.prescribingOrganization ?? ""
+    prescribingOrganization: xmlPrescription.prescribingOrganization ?? "",
+    frequency: frequency,
+    periodUnit: periodUnit
   }
 }
 
 // ---------------------------- PRODUCT LINE ITEMS ---------------------------
-// Parses product line items (medications) from the parent prescription
+/**
+ * Parses product line items (medications) from the parent prescription
+ */
 const parseProductLineItems = (xmlPrescription: XmlPrescription, logger: Logger): Array<ProductLineItemDetails> => {
   const productLineItems: Array<ProductLineItemDetails> = []
   const parentPrescription = xmlPrescription.parentPrescription
@@ -241,7 +257,9 @@ const parseProductLineItems = (xmlPrescription: XmlPrescription, logger: Logger)
 }
 
 // ---------------------------- FILTERED HISTORY -----------------------------
-// Parses filtered history of prescription events
+/**
+ * Parses filtered history of prescription events and returns the latest event details
+ */
 const parseFilteredHistory = (xmlPrescription: XmlPrescription, logger: Logger): FilteredHistoryDetails => {
   const filteredHistoryItems: XmlFilteredHistory | Array<XmlFilteredHistory> = xmlPrescription.filteredHistory
 
@@ -276,7 +294,9 @@ const parseFilteredHistory = (xmlPrescription: XmlPrescription, logger: Logger):
 }
 
 // ---------------------------- DISPENSE NOTIFICATION -----------------------------
-// Parses dispense notification for each product line item and returns the dispense data
+/**
+ * Parses dispense notification for each product line item and returns the dispense data
+ */
 export const parseDispenseNotificationItems = (xmlPrescription: XmlPrescription, logger: Logger)
   : DispenseNotification => {
   const dispenseNotification = xmlPrescription?.dispenseNotification
@@ -327,6 +347,64 @@ export const parseDispenseNotificationItems = (xmlPrescription: XmlPrescription,
     dispenseNotifDateTime,
     dispenseNotificationItems
   }
+}
+
+// ---------------------------- EXTRACT FREQUENCY & PERIOD UNIT ------------------------------
+/**
+ * Extracts the highest dosage frequency and associated period unit from dosageLineItemX fields
+ */
+export const extractMaxDosageFrequency = (parentPrescription: XmlPrescription["parentPrescription"], logger: Logger)
+  : {frequency: number; periodUnit: ("s" | "min" | "h" | "d" | "wk" | "mo" | "a")} => {
+
+  if (!parentPrescription) {
+    logger.warn("Parent prescription missing. Defaulting frequency to 1 and periodUnit to 'd' (days).")
+    return {frequency: 1, periodUnit: "d"}
+  }
+
+  const frequencies: Array<number> = []
+  let periodUnit: ("s" | "min" | "h" | "d" | "wk" | "mo" | "a") = "d" // Default to 'd' (days)
+
+  // Loop through all possible dosageLineItem fields (1-4)
+  for (let i = 1; i <= 4; i++) {
+    const dosageKey = `dosageLineItem${i}` as keyof typeof parentPrescription
+    const dosageText = parentPrescription[dosageKey] as string | undefined
+
+    if (dosageText) {
+      // Extract frequency (number before "times")
+      const frequencyMatch = dosageText.match(/(\d+)\s+times/i)
+      if (frequencyMatch) {
+        const frequency = parseInt(frequencyMatch[1], 10)
+        frequencies.push(frequency)
+      }
+
+      // Extract period unit (e.g., "day", "hour", "week", etc.)
+      const periodUnitMatch = dosageText.match(/(?:per|for)\s+(\d*)?\s*(second|minute|hour|day|week|month|year)s?/i)
+      if (periodUnitMatch) {
+        const unitString = periodUnitMatch[2].toLowerCase()
+
+        // Convert extracted text to FHIR-compliant periodUnit values
+        const unitMap: Record<string, ("s" | "min" | "h" | "d" | "wk" | "mo" | "a")> = {
+          "second": "s",
+          "minute": "min",
+          "hour": "h",
+          "day": "d",
+          "week": "wk",
+          "month": "mo",
+          "year": "a"
+        }
+
+        if (unitMap[unitString]) {
+          periodUnit = unitMap[unitString]
+        }
+      }
+    }
+  }
+
+  // Determine the highest frequency found, defaulting to 1 if none are found
+  const maxFrequency = frequencies.length > 0 ? Math.max(...frequencies) : 1
+  logger.info("Extracted max dosage frequency and period unit.", {maxFrequency, periodUnit})
+
+  return {frequency: maxFrequency, periodUnit}
 }
 
 // ---------------------------- ERROR HANDLING -------------------------------
