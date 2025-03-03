@@ -186,7 +186,7 @@ const parseRequestGroupDetails = (xmlPrescription: XmlPrescription, logger: Logg
   logger.info("Prescription details parsed successfully", {
     prescriptionID: xmlPrescription.prescriptionID,
     prescriptionType: padWithZeros(xmlPrescription.prescriptionType.toString(), 4),
-    statusCode: padWithZeros(xmlPrescription.prescriptionStatus.toString(), 4),
+    prescriptionStatus: padWithZeros(xmlPrescription.prescriptionStatus.toString(), 4),
     instanceNumber: xmlPrescription.instanceNumber
   })
 
@@ -194,7 +194,8 @@ const parseRequestGroupDetails = (xmlPrescription: XmlPrescription, logger: Logg
     prescriptionId: xmlPrescription.prescriptionID,
     prescriptionType: padWithZeros(xmlPrescription.prescriptionType.toString(), 4),
     signedTime: xmlPrescription.signedTime,
-    statusCode: padWithZeros(xmlPrescription.prescriptionStatus.toString(), 4),
+    prescriptionTime: xmlPrescription.prescriptionTime,
+    prescriptionStatus: padWithZeros(xmlPrescription.prescriptionStatus.toString(), 4),
     instanceNumber: xmlPrescription.instanceNumber,
     maxRepeats: xmlPrescription.maxRepeats !== null ? xmlPrescription.maxRepeats : undefined,
     daysSupply: xmlPrescription.daysSupply,
@@ -281,6 +282,7 @@ export const parseDispenseNotificationItems = (xmlPrescription: XmlPrescription,
   const dispenseNotification = xmlPrescription?.dispenseNotification
   const parentPrescription = xmlPrescription?.parentPrescription
   const dispensingOrganization = xmlPrescription?.dispensingOrganization ?? ""
+  const dispNotifToStatus = padWithZeros(xmlPrescription?.dispenseNotification?.dispNotifToStatus ?? "", 4)
   const dispenseNotifDateTime = xmlPrescription?.dispenseNotification?.dispenseNotifDateTime ?? ""
 
   const statusPrescription = padWithZeros(dispenseNotification?.statusPrescription ?? "", 4)
@@ -291,6 +293,7 @@ export const parseDispenseNotificationItems = (xmlPrescription: XmlPrescription,
     return {
       statusPrescription,
       dispensingOrganization,
+      dispNotifToStatus,
       dispenseNotifDateTime,
       dispenseNotificationItems
     }
@@ -320,6 +323,7 @@ export const parseDispenseNotificationItems = (xmlPrescription: XmlPrescription,
   return {
     statusPrescription,
     dispensingOrganization,
+    dispNotifToStatus,
     dispenseNotifDateTime,
     dispenseNotificationItems
   }

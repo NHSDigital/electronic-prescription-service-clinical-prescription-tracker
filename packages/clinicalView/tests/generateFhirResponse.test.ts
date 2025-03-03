@@ -19,8 +19,9 @@ const mockParsedResponse: ParsedSpineResponse =
   requestGroupDetails: {
     prescriptionId: "9AD427-A83008-2E461K",
     prescriptionType: "0101",
-    signedTime: "20250219000000",
-    statusCode: "0001",
+    signedTime: "20250226044948",
+    prescriptionTime: "20250226000000",
+    prescriptionStatus: "0001",
     instanceNumber: 1,
     maxRepeats: 5,
     daysSupply: 28,
@@ -58,6 +59,7 @@ const mockParsedResponse: ParsedSpineResponse =
   dispenseNotificationDetails: {
     statusPrescription: "0003",
     dispensingOrganization: "FA123",
+    dispNotifToStatus: "0006",
     dispenseNotifDateTime: "20240213105241",
     dispenseNotificationItems: []
   }

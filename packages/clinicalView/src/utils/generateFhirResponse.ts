@@ -34,6 +34,8 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   // ======================================================================================
   //  STEP 2: Construct the Root RequestGroup Resource
   // ======================================================================================
+  const prescribingOrganization: string = prescription.requestGroupDetails?.prescribingOrganization || ""
+
   const requestGroup: RequestGroup = {
     resourceType: "RequestGroup",
     id: "example-requestgroup",
@@ -48,7 +50,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
     author: {
       identifier: {
         system: "https://fhir.nhs.uk/Id/ods-organization-code",
-        value: prescription.requestGroupDetails?.prescribingOrganization || ""
+        value: prescribingOrganization
       }
     },
     authoredOn: new Date().toISOString(),
@@ -92,31 +94,36 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   // ======================================================================================
   //  STEP 4: Add Extensions to RequestGroup
   // ======================================================================================
-  const latestHistory = prescription.filteredHistory
-  const statusCode: string = prescription.requestGroupDetails?.statusCode || ""
+
   // Extension-EPS-RepeatInformation
+  const numberOfRepeatsAllowed: number = prescription.requestGroupDetails?.maxRepeats || 0
+  const numberOfRepeatsIssued: number = prescription.requestGroupDetails?.instanceNumber || 0
+
   const repeatInformation: Extension = {
     url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
     extension: [
       {
         url: "numberOfRepeatsAllowed",
-        valueInteger: prescription.requestGroupDetails?.maxRepeats || 0
+        valueInteger: numberOfRepeatsAllowed
       },
       {
         url: "numberOfRepeatsIssued",
-        valueInteger: prescription.requestGroupDetails?.instanceNumber || 0
+        valueInteger: numberOfRepeatsIssued
       }
     ]
   }
   requestGroup.extension?.push(repeatInformation)
 
   // Extension-EPS-PendingCancellations
+  const prescriptionStatus: string = prescription.requestGroupDetails?.prescriptionStatus || ""
+  const latestHistory = prescription.filteredHistory
+
   const pendingCancellations: Extension = {
     url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PendingCancellations",
     extension: [
       {
         url: "prescriptionPendingCancellation",
-        valueBoolean: statusCode === "0005"
+        valueBoolean: prescriptionStatus === "0005"
       },
       {
         url: "lineItemPendingCancellation",
@@ -134,20 +141,22 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
       url: "status",
       valueCoding: {
         system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
-        code: statusCode || "",
-        display: mapTaskBusinessStatus(statusCode || "")
+        code: prescriptionStatus || "",
+        display: mapTaskBusinessStatus(prescriptionStatus || "")
       }
     }]
   }
   requestGroup.extension?.push(prescriptionStatusHistory)
 
   // Extension-DM-PrescriptionType
+  const prescriptionTypeCode: string = prescription.requestGroupDetails?.prescriptionType || ""
+
   const prescriptionType: Extension = {
     url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionType",
     valueCoding: {
       system: "https://fhir.nhs.uk/CodeSystem/prescription-type",
-      code: prescription.requestGroupDetails?.prescriptionType || "",
-      display: mapPrescriptionType(prescription.requestGroupDetails?.prescriptionType || "")
+      code: prescriptionTypeCode,
+      display: mapPrescriptionType(prescriptionTypeCode)
     }
   }
   requestGroup.extension?.push(prescriptionType)
@@ -163,6 +172,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
 
   // Action: Prescription Upload Successful
   const signedTime: string = formatToISO8601(prescription.requestGroupDetails?.signedTime.toString() || "")
+  const period: number = prescription.requestGroupDetails?.daysSupply || 0
 
   const prescriptionUploadSuccessful: RequestGroupAction = {
     title: "Prescription upload successful",
@@ -170,21 +180,21 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
       event: [signedTime],
       repeat: {
         frequency: 1,
-        period: 20,
+        period: period,
         periodUnit: "d" as const
       }
     },
     participant: [{
       identifier: {
         system: "https://fhir.nhs.uk/Id/ods-organization-code",
-        value: "A83008"
+        value: prescribingOrganization
       }
     }],
     code: [{
       coding: [{
         system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
-        code: "0001",
-        display: "To be Dispensed"
+        code: prescriptionStatus || "",
+        display: mapTaskBusinessStatus(prescriptionStatus || "")
       }]
     }],
     action: [] // Step 8 will populate this array with MedicationRequest IDs
@@ -192,15 +202,19 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   prescriptionStatusTransitions.action?.push(prescriptionUploadSuccessful)
 
   // Action: Nominated Release Request Successful
+  const prescriptionTime: string = formatToISO8601(prescription.requestGroupDetails?.prescriptionTime.toString() || "")
+  const nominatedPerformer: string = prescription.requestGroupDetails?.nominatedPerformer || ""
+
   const nominatedReleaseRequestSuccessful: RequestGroupAction = {
     title: "Nominated Release Request successful",
-    timingDateTime: "2025-01-29T13:00:00Z",
-    participant: [{
-      identifier: {
-        system: "https://fhir.nhs.uk/Id/ods-organization-code",
-        value: prescription.dispenseNotificationDetails?.dispensingOrganization || ""
-      }
-    }] as Array<Reference>,
+    timingDateTime: prescriptionTime,
+    participant: [
+      {
+        identifier: {
+          system: "https://fhir.nhs.uk/Id/ods-organization-code",
+          value: nominatedPerformer
+        }
+      }] as Array<Reference>,
     code: [{
       coding: [{
         system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
@@ -214,6 +228,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   // Action: Dispense Notification Successful
   const dispensingOrganization: string = prescription.dispenseNotificationDetails?.dispensingOrganization || ""
   const statusPrescription: string = prescription.dispenseNotificationDetails?.statusPrescription || ""
+  const dispNotifToStatus: string = prescription.dispenseNotificationDetails?.dispNotifToStatus || ""
   const dispenseNotifDateTime: string = formatToISO8601(
     prescription.dispenseNotificationDetails?.dispenseNotifDateTime.toString() || "")
 
@@ -234,7 +249,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
           {
             system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
             code: statusPrescription,
-            display: mapTaskBusinessStatus(statusCode || "")
+            display: mapTaskBusinessStatus(dispNotifToStatus || "")
           }
         ]
       }],

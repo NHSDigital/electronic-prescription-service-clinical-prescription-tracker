@@ -73,7 +73,8 @@ export interface RequestGroupDetails {
   prescriptionId: string
   prescriptionType: string
   signedTime: string
-  statusCode: string
+  prescriptionTime: string
+  prescriptionStatus: string
   instanceNumber: number
   maxRepeats?: number
   daysSupply: number
@@ -93,6 +94,7 @@ export interface ProductLineItemDetails {
 export interface DispenseNotification {
   statusPrescription: string
   dispensingOrganization: string,
+  dispNotifToStatus: string,
   dispenseNotifDateTime: string,
   dispenseNotificationItems: Array<DispenseNotificationItem>
 }
@@ -175,6 +177,7 @@ export interface XmlPrescription {
   prescriptionID: string
   prescriptionType: string
   signedTime: string
+  prescriptionTime: string
   prescriptionMsgRef: string
   prescribingOrganization: string
   daysSupply: number
@@ -187,6 +190,7 @@ export interface XmlPrescription {
   nominatedPerformer: string
   nominatedPerformerType: string
   dispensingOrganization: string
+  dispNotifToStatus: string
   dispenseNotifDateTime: string
 
   lineItem: Array<{
