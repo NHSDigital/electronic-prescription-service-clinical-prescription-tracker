@@ -57,7 +57,7 @@ jobs:
       - name: make install
         run: |
           make install
-          make compile-node
+          make compile
 
       - name: download the get secrets lambda layer
         run: |
