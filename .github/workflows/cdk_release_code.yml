@@ -130,7 +130,7 @@ jobs:
           -e AWS_REGION="eu-west-2" \
           -e SHOW_DIFF="true" \
           -e DEPLOY_CODE="false" \
-          -e CDK_APP_PATH="packages/cdk/bin/PrescribeDispenseApp.ts" \
+          -e CDK_APP_PATH="packages/cdk/bin/CptsApiApp.ts" \
           cdk-utils-build-repo:latest
         shell: bash
 
