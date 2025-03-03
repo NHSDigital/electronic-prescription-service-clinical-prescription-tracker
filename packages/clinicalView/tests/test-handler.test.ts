@@ -12,7 +12,7 @@ import {MiddyfiedHandler} from "@middy/core"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {LogLevel} from "@aws-lambda-powertools/logger/types"
 import {createSpineClient} from "@NHSDigital/eps-spine-client"
-import prescriptionFoundResponse from "./data/prescriptionFoundResponse"
+import acuteDispensed from "./data/acuteDispensed"
 
 const mock = new MockAdapter(axios)
 
@@ -49,7 +49,7 @@ describe("clinicalView Handler", () => {
   })
 
   it("Builds FHIR RequestGroup from Spine prescription response", async () => {
-    mock.onPost(CLINICAL_VIEW_URL).reply(200, prescriptionFoundResponse)
+    mock.onPost(CLINICAL_VIEW_URL).reply(200, acuteDispensed)
 
     const event = {...MOCK_EVENT} as unknown as APIGatewayEvent
     const context = {} as unknown as Context
