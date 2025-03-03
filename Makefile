@@ -206,7 +206,7 @@ cdk-deploy:
 		--context COMMIT_ID=$$COMMIT_ID \
 		--context logRetentionInDays=30
 
-cdk-synth:
+cdk-synth: download-get-secrets-layer
 	npx cdk synth \
 		--quiet \
 		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/CptsApiApp.ts" \
