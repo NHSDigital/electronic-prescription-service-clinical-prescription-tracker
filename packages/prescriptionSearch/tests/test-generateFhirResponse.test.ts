@@ -217,7 +217,12 @@ describe("Test generateFhirResponse", () => {
     {status: "0004", expectedDisplay: "Expired"},
     {status: "0005", expectedDisplay: "Cancelled"},
     {status: "0006", expectedDisplay: "Dispensed"},
-    {status: "0007", expectedDisplay: "Not Dispensed"}
+    {status: "0007", expectedDisplay: "Not Dispensed"},
+    {status: "0008", expectedDisplay: "Claimed"},
+    {status: "0009", expectedDisplay: "No-Claimed"},
+    {status: "9000", expectedDisplay: "Repeat Dispense future instance"},
+    {status: "9001", expectedDisplay: "Prescription future instance"},
+    {status: "9005", expectedDisplay: "Cancelled future instance"}
   ]
   statusDisplayTestCases.forEach(({status, expectedDisplay}) => {
     it(`includes the correct display in the PrescriptionStatus extension when called with a prescription of status ${status}`, async () => {

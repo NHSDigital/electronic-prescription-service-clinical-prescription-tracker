@@ -33,7 +33,12 @@ const statusDisplayMap: StatusDisplayMap = {
   "0004": "Expired",
   "0005": "Cancelled",
   "0006": "Dispensed",
-  "0007": "Not Dispensed"
+  "0007": "Not Dispensed",
+  "0008": "Claimed",
+  "0009": "No-Claimed",
+  "9000": "Repeat Dispense future instance",
+  "9001": "Prescription future instance",
+  "9005": "Cancelled future instance"
 }
 
 export const generateFhirResponse = (prescriptions: Array<Prescription>, logger: Logger): Bundle => {
