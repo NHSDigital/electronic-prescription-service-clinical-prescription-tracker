@@ -172,7 +172,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
 
   // Action: Prescription Upload Successful
   const signedTime: string = formatToISO8601(prescription.requestGroupDetails?.signedTime.toString() ?? "")
-  const period: number = prescription.requestGroupDetails?.daysSupply ?? 0
+  const daysSupply: number = prescription.requestGroupDetails?.daysSupply ?? 0
 
   const prescriptionUploadSuccessful: RequestGroupAction = {
     title: "Prescription upload successful",
@@ -180,7 +180,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
       event: [signedTime],
       repeat: {
         frequency: 1,
-        period: period,
+        period: daysSupply,
         periodUnit: "d"
       }
     },
