@@ -114,7 +114,7 @@ servers:
     description: Production
 
 paths:
-  /:
+  /RequestGroup:
     get:
       operationId: clinical-prescription-tracker-bundle
       summary: Get prescriptions
