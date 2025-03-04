@@ -110,7 +110,7 @@ export class CptsApiStack extends Stack {
       resourceName: "RequestGroup",
       method: HttpMethod.GET,
       restApiGatewayRole: apiGateway.role,
-      lambdaExecutionPolicy: prescriptionSearchLambda.executionPolicy
+      lambdaFunction: prescriptionSearchLambda
     })
 
     new LambdaEndpoint(this, "ClinicalViewEndpoint", {
@@ -118,7 +118,7 @@ export class CptsApiStack extends Stack {
       resourceName: "{prescriptionId}",
       method: HttpMethod.GET,
       restApiGatewayRole: apiGateway.role,
-      lambdaExecutionPolicy: clinicalViewLambda.executionPolicy
+      lambdaFunction: clinicalViewLambda
     })
 
     new LambdaEndpoint(this, "StatusEndpoint", {
@@ -126,7 +126,7 @@ export class CptsApiStack extends Stack {
       resourceName: "_status",
       method: HttpMethod.GET,
       restApiGatewayRole: apiGateway.role,
-      lambdaExecutionPolicy: statusLambda.executionPolicy
+      lambdaFunction: statusLambda
     })
 
     nagSuppressions(this)
