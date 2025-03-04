@@ -71,6 +71,7 @@ export interface PatientDetails {
 // Prescription Details
 export interface RequestGroupDetails {
   prescriptionId: string
+  prescriptionTreatmentType: string
   prescriptionType: string
   signedTime: string
   prescriptionTime: string
@@ -175,6 +176,7 @@ export interface XmlPrescription {
 
   instanceNumber: number
   prescriptionID: string
+  prescriptionTreatmentType: string
   prescriptionType: string
   signedTime: string
   prescriptionTime: string

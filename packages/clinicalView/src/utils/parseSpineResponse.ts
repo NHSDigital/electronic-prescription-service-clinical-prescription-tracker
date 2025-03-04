@@ -201,6 +201,7 @@ const parseRequestGroupDetails = (xmlPrescription: XmlPrescription, logger: Logg
 
   return {
     prescriptionId: xmlPrescription.prescriptionID,
+    prescriptionTreatmentType: padWithZeros(xmlPrescription.prescriptionTreatmentType.toString(), 4),
     prescriptionType: padWithZeros(xmlPrescription.prescriptionType.toString(), 4),
     signedTime: xmlPrescription.signedTime,
     prescriptionTime: xmlPrescription.prescriptionTime,

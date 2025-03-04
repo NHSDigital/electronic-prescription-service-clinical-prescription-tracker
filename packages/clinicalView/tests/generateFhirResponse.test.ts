@@ -18,6 +18,7 @@ const mockParsedResponse: ParsedSpineResponse =
   },
   requestGroupDetails: {
     prescriptionId: "9AD427-A83008-2E461K",
+    prescriptionTreatmentType: "0001",
     prescriptionType: "0101",
     signedTime: "20250226044948",
     prescriptionTime: "20250226000000",
