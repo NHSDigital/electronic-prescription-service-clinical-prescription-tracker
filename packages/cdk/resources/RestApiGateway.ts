@@ -1,7 +1,9 @@
 import {Fn, RemovalPolicy} from "aws-cdk-lib"
 import {
+  BasePathMapping,
   CfnStage,
   EndpointType,
+  IDomainName,
   LogGroupLogDestination,
   MethodLoggingLevel,
   MTLSConfig,
@@ -16,9 +18,17 @@ import {Construct} from "constructs"
 import {accessLogFormat} from "./RestApiGateway/accessLogFormat"
 import {ICertificate} from "aws-cdk-lib/aws-certificatemanager"
 import {Bucket} from "aws-cdk-lib/aws-s3"
+import {
+  IHostedZone,
+  RecordSet,
+  RecordTarget,
+  RecordType
+} from "aws-cdk-lib/aws-route53"
+import {ApiGateway as ApiGatewayTarget} from "aws-cdk-lib/aws-route53-targets"
 
 export interface RestApiGatewayProps {
   readonly stackName: string
+  readonly hostedZone: IHostedZone
   readonly domainName: string
   readonly certificate: ICertificate
   readonly logRetentionInDays: number
@@ -94,6 +104,18 @@ export class RestApiGateway extends Construct {
     const role = new Role(this, "ApiGatewayRole", {
       assumedBy: new ServicePrincipal("apigateway.amazonaws.com"),
       managedPolicies: []
+    })
+
+    new RecordSet(this, "RecordSet", {
+      recordType: RecordType.A,
+      target: RecordTarget.fromAlias(new ApiGatewayTarget(apiGateway)),
+      zone: props.hostedZone
+    })
+
+    new BasePathMapping(this, "BasePathMapping", {
+      domainName: apiGateway.domainName as unknown as IDomainName,
+      restApi: apiGateway,
+      stage: apiGateway.deploymentStage
     })
 
     const cfnStage = apiGateway.deploymentStage.node.defaultChild as CfnStage
