@@ -100,6 +100,7 @@ export class RestApiGateway extends Construct {
     })
 
     new ARecord(this, "ARecord", {
+      recordName: props.stackName,
       target: RecordTarget.fromAlias(new ApiGatewayTarget(apiGateway)),
       zone: props.hostedZone
     })
