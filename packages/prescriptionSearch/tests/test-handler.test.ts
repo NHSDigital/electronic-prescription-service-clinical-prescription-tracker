@@ -56,19 +56,21 @@ describe("Unit test for app handler", () => {
     expect(response.statusCode).toEqual(400)
     expect(JSON.parse(response.body)).toEqual(
       [
-        {"response": {
-          "outcome": {
-            "issue": [{
-              "code": "value",
-              "diagnostics": "Missing required query parameter: prescriptionId",
-              "severity": "error"
-            }],
-            "meta": {
-              "lastUpdated": expect.any(String)
-            },
-            "resourceType": "OperationOutcome"
-          }, "status": "400 Bad Request"
-        }}]
+        {
+          "response": {
+            "outcome": {
+              "issue": [{
+                "code": "value",
+                "diagnostics": "Missing required query parameter: prescriptionId",
+                "severity": "error"
+              }],
+              "meta": {
+                "lastUpdated": expect.any(String)
+              },
+              "resourceType": "OperationOutcome"
+            }, "status": "400 Bad Request"
+          }
+        }]
     )
   })
 
@@ -132,19 +134,21 @@ describe("Unit test for app handler", () => {
     expect(response.statusCode).toEqual(400)
     expect(JSON.parse(response.body)).toEqual(
       [
-        {"response": {
-          "outcome": {
-            "issue": [{
-              "code": "value",
-              "diagnostics": "Missing or empty x-request-id header",
-              "severity": "error"
-            }],
-            "meta": {
-              "lastUpdated": expect.any(String)
-            },
-            "resourceType": "OperationOutcome"
-          }, "status": "400 Bad Request"
-        }}]
+        {
+          "response": {
+            "outcome": {
+              "issue": [{
+                "code": "value",
+                "diagnostics": "Missing or empty x-request-id header",
+                "severity": "error"
+              }],
+              "meta": {
+                "lastUpdated": expect.any(String)
+              },
+              "resourceType": "OperationOutcome"
+            }, "status": "400 Bad Request"
+          }
+        }]
     )
 
   })
