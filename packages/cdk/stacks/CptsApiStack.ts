@@ -6,12 +6,18 @@ import {
 } from "aws-cdk-lib"
 import {IManagedPolicy, ManagedPolicy} from "aws-cdk-lib/aws-iam"
 import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificatemanager"
-import {HostedZone} from "aws-cdk-lib/aws-route53"
+import {
+  HostedZone,
+  RecordSet,
+  RecordTarget,
+  RecordType
+} from "aws-cdk-lib/aws-route53"
 import {HttpMethod} from "aws-cdk-lib/aws-lambda"
 import {LambdaFunction} from "../resources/LambdaFunction"
 import {RestApiGateway} from "../resources/RestApiGateway"
 import {LambdaEndpoint} from "../resources/RestApiGateway/LambdaEndpoint"
 import {nagSuppressions} from "../nagSuppressions"
+import {ApiGateway as ApiGatewayTarget} from "aws-cdk-lib/aws-route53-targets"
 
 export interface CptsApiStackProps extends StackProps {
   readonly stackName: string
@@ -104,6 +110,12 @@ export class CptsApiStack extends Stack {
       truststoreVersion: truststoreVersion
     })
     const rootResource = apiGateway.api.root
+
+    new RecordSet(this, "RecordSet", {
+      recordType: RecordType.A,
+      target: RecordTarget.fromAlias(new ApiGatewayTarget(apiGateway.api)),
+      zone: hostedZone
+    })
 
     const prescriptionSearchEndpoint = new LambdaEndpoint(this, "PrescriptionSearchEndpoint", {
       parentResource: rootResource,
