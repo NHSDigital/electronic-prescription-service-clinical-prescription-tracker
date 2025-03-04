@@ -1,9 +1,7 @@
 import {Fn, RemovalPolicy} from "aws-cdk-lib"
 import {
-  BasePathMapping,
   CfnStage,
   EndpointType,
-  IDomainName,
   LogGroupLogDestination,
   MethodLoggingLevel,
   MTLSConfig,
@@ -110,12 +108,6 @@ export class RestApiGateway extends Construct {
       recordType: RecordType.A,
       target: RecordTarget.fromAlias(new ApiGatewayTarget(apiGateway)),
       zone: props.hostedZone
-    })
-
-    new BasePathMapping(this, "BasePathMapping", {
-      domainName: apiGateway.domainName as unknown as IDomainName,
-      restApi: apiGateway,
-      stage: apiGateway.deploymentStage
     })
 
     const cfnStage = apiGateway.deploymentStage.node.defaultChild as CfnStage
