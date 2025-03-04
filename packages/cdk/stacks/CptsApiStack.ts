@@ -81,7 +81,7 @@ export class CptsApiStack extends Stack {
     const statusLambda = new LambdaFunction(this, "StatusLambda", {
       stackName: props.stackName,
       functionName: "Status",
-      packageBasePath: "packages/prescriptionSearch",
+      packageBasePath: "packages/status",
       entryPoint: "src/handler.ts",
       environmentVariables: {...lambdaDefaultEnvironmentVariables},
       additionalPolicies: [lambdaAccessSecretsPolicy],
