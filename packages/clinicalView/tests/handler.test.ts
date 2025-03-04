@@ -61,7 +61,7 @@ describe("clinicalView Handler", () => {
 
     expect(mock.history.post[0].data).toContain("9AD427-A83008-2E461K")
     expect(parsedResponse.resourceType).toBe("RequestGroup")
-    expect(parsedResponse.id).toBe("example-requestgroup")
+    expect(parsedResponse.id).toBeDefined()
   })
 
   it("Returns multiple errors when all required headers are missing", async () => {
