@@ -16,12 +16,7 @@ import {Construct} from "constructs"
 import {accessLogFormat} from "./RestApiGateway/accessLogFormat"
 import {ICertificate} from "aws-cdk-lib/aws-certificatemanager"
 import {Bucket} from "aws-cdk-lib/aws-s3"
-import {
-  IHostedZone,
-  RecordSet,
-  RecordTarget,
-  RecordType
-} from "aws-cdk-lib/aws-route53"
+import {ARecord, IHostedZone, RecordTarget} from "aws-cdk-lib/aws-route53"
 import {ApiGateway as ApiGatewayTarget} from "aws-cdk-lib/aws-route53-targets"
 
 export interface RestApiGatewayProps {
@@ -104,8 +99,7 @@ export class RestApiGateway extends Construct {
       managedPolicies: []
     })
 
-    new RecordSet(this, "RecordSet", {
-      recordType: RecordType.A,
+    new ARecord(this, "ARecord", {
       target: RecordTarget.fromAlias(new ApiGatewayTarget(apiGateway)),
       zone: props.hostedZone
     })
