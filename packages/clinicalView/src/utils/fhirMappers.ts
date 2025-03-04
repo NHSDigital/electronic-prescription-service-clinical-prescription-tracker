@@ -1,3 +1,5 @@
+import {RequestGroup} from "fhir/r4"
+
 /**
  * Maps the integer gender code from the Spine response to a FHIR-compatible string.
  */
@@ -12,6 +14,20 @@ export const mapGender = (genderCode: number): "male" | "female" | "other" | "un
     default:
       return "unknown"
   }
+}
+
+/**
+ * Maps the prescription treatment type code to a valid FHIR intent.
+ * Since FHIR does not allow arbitrary strings, we must convert the numeric treatment type.
+ */
+export const mapPrescriptionTreatmentTypeToIntent = (code: string): RequestGroup["intent"] => {
+  const treatmentTypeToIntentMap: Record<string, RequestGroup["intent"]> = {
+    "0001": "order", // Acute prescription → Standard "order"
+    "0002": "instance-order", // Repeat Prescribing → "instance-order" (a sub-order)
+    "0003": "reflex-order" // Repeat Dispensing → "reflex-order" (self-repeating order)
+  }
+
+  return treatmentTypeToIntentMap[code] || "order" // Default to "order" if unknown
 }
 
 /**

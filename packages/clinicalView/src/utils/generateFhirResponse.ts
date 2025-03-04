@@ -16,6 +16,7 @@ import {
   mapMedicationDispenseType,
   mapMedicationRequestStatusReason,
   mapPrescriptionType,
+  mapPrescriptionTreatmentTypeToIntent,
   formatToISO8601,
   formatBirthDate
 } from "./fhirMappers"
@@ -27,6 +28,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   // ======================================================================================
   //  STEP 1: Generate Unique Identifiers & Initialize Data Maps
   // ======================================================================================
+  const requestGroupid: string = randomUUID()
   const patientUuid: string = randomUUID()
   const medicationRequestMap = new Map<string, string>() // Maps medication name to MedicationRequest ID
   const medicationDispenseMap = new Map<string, string>() // Maps medication name to MedicationDispense ID
@@ -34,19 +36,21 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   // ======================================================================================
   //  STEP 2: Construct the Root RequestGroup Resource
   // ======================================================================================
+  const prescriptionId: string = prescription.requestGroupDetails?.prescriptionId ?? ""
   const prescribingOrganization: string = prescription.requestGroupDetails?.prescribingOrganization ?? ""
+  const prescriptionTreatmentType: string = prescription.requestGroupDetails?.prescriptionTreatmentType ?? ""
 
   const requestGroup: RequestGroup = {
     resourceType: "RequestGroup",
-    id: "example-requestgroup",
+    id: requestGroupid,
     status: "active",
     identifier: [
       {
         system: "https://fhir.nhs.uk/Id/prescription-order-number",
-        value: prescription.requestGroupDetails?.prescriptionId ?? ""
+        value: prescriptionId
       }
     ],
-    intent: "reflex-order",
+    intent: mapPrescriptionTreatmentTypeToIntent(prescriptionTreatmentType),
     author: {
       identifier: {
         system: "https://fhir.nhs.uk/Id/ods-organization-code",
