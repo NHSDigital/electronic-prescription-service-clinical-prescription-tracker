@@ -9,7 +9,7 @@ import {createSpineClient} from "@NHSDigital/eps-spine-client"
 import {validateRequest} from "./validateRequest"
 import {parseSpineResponse} from "./parseSpineResponse"
 import {generateFhirErrorResponse, generateFhirResponse} from "./generateFhirResponse"
-import {bundleSchema, outcomeSchema} from "./schema/response"
+import {bundleSchema, operationOutcomeSchema} from "./schema/response"
 
 // Types
 import {LogLevel} from "@aws-lambda-powertools/logger/types"
@@ -123,4 +123,4 @@ export const newHandler = (params: HandlerParams) => {
 const DEFAULT_HANDLER_PARAMS: HandlerParams = {logger, spineClient}
 export const handler = newHandler(DEFAULT_HANDLER_PARAMS)
 
-export {bundleSchema, outcomeSchema}
+export {bundleSchema, operationOutcomeSchema}

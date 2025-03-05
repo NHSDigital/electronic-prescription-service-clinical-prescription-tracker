@@ -88,7 +88,7 @@ export class CptsApiStack extends Stack {
       logRetentionInDays: logRetentionInDays,
       logLevel: logLevel
     })
-
+    // TODO: move this into the gw construct?
     const certificate = new Certificate(this, "Certificate", {
       domainName: serviceDomainName,
       validation: CertificateValidation.fromDns(hostedZone)

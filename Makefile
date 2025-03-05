@@ -20,82 +20,6 @@ install-python:
 install-hooks: install-python
 	poetry run pre-commit install --install-hooks --overwrite
 
-sam-build: sam-validate compile download-get-secrets-layer
-	sam build --template-file SAMtemplates/main_template.yaml --region eu-west-2
-
-sam-build-sandbox: sam-validate-sandbox compile download-get-secrets-layer
-	sam build --template-file SAMtemplates/sandbox_template.yaml --region eu-west-2
-
-sam-run-local: sam-build
-	sam local start-api
-
-sam-sync: guard-AWS_DEFAULT_PROFILE guard-stack_name compile download-get-secrets-layer
-	sam sync \
-		--stack-name $$stack_name \
-		--watch \
-		--template-file SAMtemplates/main_template.yaml \
-		--parameter-overrides \
-			  EnableSplunk=false
-
-sam-sync-sandbox: guard-stack_name compile download-get-secrets-layer
-	sam sync \
-		--stack-name $$stack_name-sandbox \
-		--watch \
-		--template-file SAMtemplates/sandbox_template.yaml \
-		--parameter-overrides \
-			  EnableSplunk=false
-
-sam-deploy: guard-AWS_DEFAULT_PROFILE guard-stack_name
-	sam deploy \
-		--stack-name $$stack_name \
-		--parameter-overrides \
-			  EnableSplunk=false
-
-sam-delete: guard-AWS_DEFAULT_PROFILE guard-stack_name
-	sam delete --stack-name $$stack_name
-
-sam-list-endpoints: guard-AWS_DEFAULT_PROFILE guard-stack_name
-	sam list endpoints --stack-name $$stack_name
-
-sam-list-resources: guard-AWS_DEFAULT_PROFILE guard-stack_name
-	sam list resources --stack-name $$stack_name
-
-sam-list-outputs: guard-AWS_DEFAULT_PROFILE guard-stack_name
-	sam list stack-outputs --stack-name $$stack_name
-
-sam-validate: 
-	sam validate --template-file SAMtemplates/main_template.yaml --region eu-west-2
-	sam validate --template-file SAMtemplates/functions/main.yaml --region eu-west-2
-	sam validate --template-file SAMtemplates/functions/lambda_resources.yaml --region eu-west-2
-
-sam-validate-sandbox: 
-	sam validate --template-file SAMtemplates/sandbox_template.yaml --region eu-west-2
-
-sam-deploy-package: guard-artifact_bucket guard-artifact_bucket_prefix guard-stack_name guard-template_file guard-cloud_formation_execution_role guard-LATEST_TRUSTSTORE_VERSION guard-enable_mutual_tls guard-VERSION_NUMBER guard-COMMIT_ID guard-LOG_LEVEL guard-LOG_RETENTION_DAYS guard-TARGET_ENVIRONMENT
-	sam deploy \
-		--template-file $$template_file \
-		--stack-name $$stack_name \
-		--capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
-		--region eu-west-2 \
-		--s3-bucket $$artifact_bucket \
-		--s3-prefix $$artifact_bucket_prefix \
-		--config-file samconfig_package_and_deploy.toml \
-		--no-fail-on-empty-changeset \
-		--role-arn $$cloud_formation_execution_role \
-		--no-confirm-changeset \
-		--force-upload \
-		--tags "version=$$VERSION_NUMBER" \
-		--parameter-overrides \
-			  TruststoreVersion=$$LATEST_TRUSTSTORE_VERSION \
-			  EnableMutualTLS=$$enable_mutual_tls \
-			  TargetSpineServer=$$target_spine_server \
-			  EnableSplunk=true \
-			  VersionNumber=$$VERSION_NUMBER \
-			  CommitId=$$COMMIT_ID \
-			  LogLevel=$$LOG_LEVEL \
-			  LogRetentionInDays=$$LOG_RETENTION_DAYS \
-			  Env=$$TARGET_ENVIRONMENT
-
 compile: compile-node compile-packages compile-specification
 
 compile-node:
@@ -117,7 +41,7 @@ sbom:
 	docker build -t eps-sbom -f ~/git_actions/eps-actions-sbom/Dockerfile ~/git_actions/eps-actions-sbom/
 	docker run -it --rm -v $${LOCAL_WORKSPACE_FOLDER:-.}:/github/workspace eps-sbom
 
-lint: lint-node lint-samtemplates lint-python lint-githubactions lint-githubaction-scripts lint-specification
+lint: lint-node lint-python lint-githubactions lint-githubaction-scripts lint-specification
 
 lint-node: compile
 	npm run lint --workspace packages/cdk
@@ -126,9 +50,6 @@ lint-node: compile
 	npm run lint --workspace packages/sandbox
 	npm run lint --workspace packages/status
 	npm run lint --workspace packages/common/testing
-
-lint-samtemplates:
-	poetry run cfn-lint -I "SAMtemplates/**/*.y*ml" 2>&1 | awk '/Run scan/ { print } /^[EW][0-9]/ { print; getline; print }'
 
 lint-python:
 #	poetry run flake8 scripts/*.py --config .flake8
@@ -165,7 +86,6 @@ clean:
 	rm -rf packages/specification/lib
 	rm -rf packages/status/lib
 	rm -rf cdk.out
-	rm -rf .aws-sam
 
 deep-clean: clean
 	rm -rf .venv
