@@ -28,7 +28,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   // ======================================================================================
   //  STEP 1: Generate Unique Identifiers & Initialize Data Maps
   // ======================================================================================
-  const requestGroupid: string = randomUUID()
+  const requestGroupId: string = randomUUID()
   const patientUuid: string = randomUUID()
   const medicationRequestMap = new Map<string, string>() // Maps medication name to MedicationRequest ID
   const medicationDispenseMap = new Map<string, string>() // Maps medication name to MedicationDispense ID
@@ -42,7 +42,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
 
   const requestGroup: RequestGroup = {
     resourceType: "RequestGroup",
-    id: requestGroupid,
+    id: requestGroupId,
     status: "active",
     identifier: [
       {
