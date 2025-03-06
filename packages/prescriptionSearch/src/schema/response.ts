@@ -8,7 +8,7 @@ export const operationOutcomeSchema = {
     resourceType: {
       type: "string",
       description: "The resource type.",
-      const: "OperationOutcome"
+      enum: ["OperationOutcome"]
     },
     meta: {
       type: "object",
@@ -64,7 +64,7 @@ export const operationOutcomeSchema = {
                     system: {
                       type: "string",
                       description: "Identity of the terminology system.",
-                      const: "https://fhir.nhs.uk/CodeSystem/http-error-codes"
+                      enum: ["https://fhir.nhs.uk/CodeSystem/http-error-codes"]
                     },
                     code: {
                       type: "string",
@@ -117,7 +117,7 @@ const patientBundleEntrySchema = {
         mode: {
           type: "string",
           description: "Why this entry is in the result set.",
-          const: "include"
+          enum: ["include"]
         }
       }
     },
@@ -128,7 +128,7 @@ const patientBundleEntrySchema = {
         resourceType: {
           type: "string",
           description: "The resource type.",
-          const: "Patient"
+          enum: ["Patient"]
         },
         identifier: {
           type: "array",
@@ -140,7 +140,7 @@ const patientBundleEntrySchema = {
               system: {
                 type: "string",
                 description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
-                const: "https://fhir.nhs.uk/Id/nhs-number"
+                enum: ["https://fhir.nhs.uk/Id/nhs-number"]
               },
               value: {
                 type: "string",
@@ -188,7 +188,7 @@ const prescriptionStatusExtensionSchema = {
     url: {
       type: "string",
       description: "Source of the definition for the extension code - a logical name or a URL.",
-      const: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory"
+      enum: ["https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory"]
     },
     extension: {
       type: "array",
@@ -199,7 +199,7 @@ const prescriptionStatusExtensionSchema = {
           url: {
             type: "string",
             description: "Source of the definition for the extension code - a logical name or a URL.",
-            const: "status"
+            enum: ["status"]
           },
           valueCoding: {
             type: "object",
@@ -208,7 +208,7 @@ const prescriptionStatusExtensionSchema = {
               system: {
                 type: "string",
                 description: "Identity of the terminology system.",
-                const: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status"
+                enum: ["https://fhir.nhs.uk/CodeSystem/EPS-task-business-status"]
               },
               code: {
                 type: "string",
@@ -264,7 +264,7 @@ const medicationRepeatInformationExtensionSchema = {
     url: {
       type: "string",
       description: "Source of the definition for the extension code - a logical name or a URL.",
-      const: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation"
+      enum: ["https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation"]
     },
     extension: {
       type: "array",
@@ -299,7 +299,7 @@ const pendingCancellationExtensionSchema = {
     url: {
       type: "string",
       description: "Source of the definition for the extension code - a logical name or a URL.",
-      const: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PendingCancellation"
+      enum: ["https://fhir.nhs.uk/StructureDefinition/Extension-DM-PendingCancellation"]
     },
     extension: {
       type: "array",
@@ -342,7 +342,7 @@ const requestGroupBundleEntrySchema = {
         mode: {
           type: "string",
           description: "Why this entry is in the result set.",
-          const: "match"
+          enum: ["match"]
         }
       }
     },
@@ -353,7 +353,7 @@ const requestGroupBundleEntrySchema = {
         resourceType: {
           type: "string",
           description: "The resource type.",
-          const: "RequestGroup"
+          enum: ["RequestGroup"]
         },
         identifier: {
           type: "array",
@@ -365,7 +365,7 @@ const requestGroupBundleEntrySchema = {
               system: {
                 type: "string",
                 description: "A coded type for the identifier that can be used to determine which identifier to use for a specific purpose.",
-                const: "https://fhir.nhs.uk/Id/prescription-order-number"
+                enum: ["https://fhir.nhs.uk/Id/prescription-order-number"]
               },
               value: {
                 type: "string",
@@ -388,7 +388,7 @@ const requestGroupBundleEntrySchema = {
         status: {
           type: "string",
           description: "The current state of the request. For request groups, the status reflects the status of all the requests in the group.",
-          const: "active"
+          enum: ["active"]
         },
         intent: {
           type: "string",
@@ -430,12 +430,12 @@ export const requestGroupBundleSchema = {
     resourceType: {
       type: "string",
       description: "The resource type.",
-      const: "Bundle"
+      enum: ["Bundle"]
     },
     type: {
       type: "string",
       description: "Indicates the purpose of this bundle - how it is intended to be used.",
-      const: "searchset"
+      enum: ["searchset"]
     },
     total: {
       type: "integer",

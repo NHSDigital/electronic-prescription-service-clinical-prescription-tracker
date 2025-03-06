@@ -135,6 +135,12 @@ paths:
           schema:
             type: string
           description: The NHS Number to search prescriptions for.
+        - $ref: "#/components/parameters/BearerAuthorization"
+        - $ref: "#/components/parameters/RoleId"
+        - $ref: "#/components/parameters/OrganizationId"
+        - $ref: "#/components/parameters/JobRoleCode"
+        - $ref: "#/components/parameters/RequestID"
+        - $ref: "#/components/parameters/CorrelationID"
       responses:
         "200":
           description: Successful search.
