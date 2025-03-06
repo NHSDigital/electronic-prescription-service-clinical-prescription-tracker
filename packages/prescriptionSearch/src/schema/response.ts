@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable max-len */
 import {FromSchema, JSONSchema} from "json-schema-to-ts"
 
@@ -182,9 +181,150 @@ const patientBundleEntrySchema = {
   }
 } satisfies JSONSchema
 
-// TODO: the request group extensions
 const prescriptionStatusExtensionSchema = {
-  type: "object"
+  type: "object",
+  description: "The prescription status.",
+  properties: {
+    url: {
+      type: "string",
+      description: "Source of the definition for the extension code - a logical name or a URL.",
+      const: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory"
+    },
+    extension: {
+      type: "array",
+      description: "Additional content defined by implementations.",
+      items:{
+        type: "object",
+        properties: {
+          url: {
+            type: "string",
+            description: "Source of the definition for the extension code - a logical name or a URL.",
+            const: "status"
+          },
+          valueCoding: {
+            type: "object",
+            description: "A reference to a code defined by a terminology system.",
+            properties: {
+              system: {
+                type: "string",
+                description: "Identity of the terminology system.",
+                const: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status"
+              },
+              code: {
+                type: "string",
+                description: "Symbol in syntax defined by the system.",
+                enum: [
+                  "0001",
+                  "0002",
+                  "0003",
+                  "0004",
+                  "0005",
+                  "0006",
+                  "0007",
+                  "0008",
+                  "0009",
+                  "9000",
+                  "9001",
+                  "9005"
+                ]
+              },
+              display: {
+                type: "string",
+                description: "Representation defined by the system.",
+                enum: [
+                  "To be Dispensed",
+                  "With Dispenser",
+                  "With Dispenser - Active",
+                  "Expired",
+                  "Cancelled",
+                  "Dispensed",
+                  "Not Dispensed",
+                  "Claimed",
+                  "No-Claimed",
+                  "Repeat Dispense future instance",
+                  "Prescription future instance",
+                  "Cancelled future instance"
+                ]
+              }
+            },
+            required: ["system", "code"]
+          }
+        },
+        required: ["url"]
+      }
+    }
+  },
+  required: ["url"]
+} satisfies JSONSchema
+
+const medicationRepeatInformationExtensionSchema = {
+  type: "object",
+  description: "Medication repeat information.",
+  properties: {
+    url: {
+      type: "string",
+      description: "Source of the definition for the extension code - a logical name or a URL.",
+      const: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation"
+    },
+    extension: {
+      type: "array",
+      description: "Additional content defined by implementations.",
+      items: {
+        type: "object",
+        properties: {
+          url: {
+            type: "string",
+            description: "Source of the definition for the extension code - a logical name or a URL.",
+            enum: [
+              "numberOfRepeatsAllowed",
+              "numberOfRepeatsIssued"
+            ]
+          },
+          valueInteger: {
+            type: "integer",
+            description: "A whole number."
+          }
+        },
+        required: ["url"]
+      }
+    }
+  },
+  required: ["url"]
+} satisfies JSONSchema
+
+const pendingCancellationExtensionSchema = {
+  type: "object",
+  description: "Pending cancellation information.",
+  properties: {
+    url: {
+      type: "string",
+      description: "Source of the definition for the extension code - a logical name or a URL.",
+      const: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PendingCancellation"
+    },
+    extension: {
+      type: "array",
+      description: "Additional content defined by implementations.",
+      items: {
+        type: "object",
+        properties: {
+          url: {
+            type: "string",
+            description: "Source of the definition for the extension code - a logical name or a URL.",
+            enum: [
+              "prescriptionPendingCancellation",
+              "lineItemPendingCancellation"
+            ]
+          },
+          valueBoolean: {
+            type: "boolean",
+            description: "Value of 'true' or 'false'."
+          }
+        },
+        required: ["url"]
+      }
+    }
+  },
+  required: ["url"]
 } satisfies JSONSchema
 
 const requestGroupBundleEntrySchema = {
@@ -268,7 +408,9 @@ const requestGroupBundleEntrySchema = {
           description: "Additional content defined by implementations.",
           items: {
             oneOf: [
-              prescriptionStatusExtensionSchema
+              prescriptionStatusExtensionSchema,
+              medicationRepeatInformationExtensionSchema,
+              pendingCancellationExtensionSchema
             ]
           }
         }
@@ -281,80 +423,39 @@ const requestGroupBundleEntrySchema = {
   }
 } satisfies JSONSchema
 
-// TODO: the bundle schema
 export const requestGroupBundleSchema = {
-
+  type: "object",
+  description: "A container for a collection of resources.",
+  properties: {
+    resourceType: {
+      type: "string",
+      description: "The resource type.",
+      const: "Bundle"
+    },
+    type: {
+      type: "string",
+      description: "Indicates the purpose of this bundle - how it is intended to be used.",
+      const: "searchset"
+    },
+    total: {
+      type: "integer",
+      description: "If search, the total number of matches."
+    },
+    entry: {
+      type: "array",
+      description: "Entry in the bundle - will have a resource or information.",
+      items: {
+        oneOf: [
+          patientBundleEntrySchema,
+          requestGroupBundleEntrySchema
+        ]
+      }
+    }
+  },
+  required: ["resourceType", "type"]
 } satisfies JSONSchema
 
-const bundleEntrySchema = {
-  "type": "object",
-  "required": [
-    "response"
-  ],
-  "properties": {
-    "response": {
-      "type": "object",
-      "required": [
-        "status",
-        "outcome"
-      ],
-      "description": "Contains the response details for the transaction.",
-      "properties": {
-        "status": {
-          "type": "string",
-          "description": "HTTP status code and reason.",
-          "examples": ["400 Bad Request"]
-        },
-        "location": {
-          "type": "string",
-          "description": "The virtual location of the resource within the bundle."
-        }
-        // "outcome": outcomeSchema
-      }
-    },
-    "fullUrl": {
-      "type": "string",
-      "description": "A URL or UUID that identifies the full location of the resource.",
-      "examples": ["urn:uuid:3b2d36a9-3cff-45e4-93a7-d1f70f911496"]
-    }
-  }
-} as const satisfies JSONSchema
-
-export const bundleSchema = {
-  "type": "object",
-  "required": [
-    "resourceType",
-    "type",
-    "entry"
-  ],
-  "description":
-    "Outcome of an operation that does not result in a resource or bundle being returned." +
-    "\nFor example - error, async/batch submission.\n",
-  "properties": {
-    "resourceType": {
-      "type": "string",
-      "enum": [
-        "Bundle"
-      ],
-      "description": "The type of resource."
-    },
-    "type": {
-      "type": "string",
-      "enum": [
-        "transaction-response"
-      ],
-      "description": "The type of bundle."
-    },
-    "entry": {
-      "type": "array",
-      "description":
-        "An array of entry objects, " +
-        "each representing a single response in the transaction-response bundle.",
-      "items": bundleEntrySchema
-    }
-  }
-} as const satisfies JSONSchema
-
-export type outcomeType = FromSchema<typeof operationOutcomeSchema>
-export type bundleEntryType = FromSchema<typeof bundleEntrySchema>
-export type bundleType = FromSchema<typeof bundleSchema>
+export type OperationOutcomeSchema = FromSchema<typeof operationOutcomeSchema>
+export type PatientBundleEntrySchema = FromSchema<typeof patientBundleEntrySchema>
+export type RequestGroupBundleEntrySchema = FromSchema<typeof requestGroupBundleEntrySchema>
+export type BundleSchema = FromSchema<typeof requestGroupBundleSchema>

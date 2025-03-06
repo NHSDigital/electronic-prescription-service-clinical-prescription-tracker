@@ -1,6 +1,9 @@
 import fs from "fs"
 import path from "path"
-import {bundleSchema as ResponseBundle, operationOutcomeSchema as OperationOutcome} from "prescriptionSearch"
+import {
+  requestGroupBundleSchema as ResponseBundle,
+  operationOutcomeSchema as OperationOutcome
+} from "prescriptionSearch"
 import {JSONSchema} from "json-schema-to-ts"
 
 const schemas: Record<string, JSONSchema> = {ResponseBundle, OperationOutcome}

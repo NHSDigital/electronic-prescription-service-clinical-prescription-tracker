@@ -9,7 +9,7 @@ import {createSpineClient} from "@NHSDigital/eps-spine-client"
 import {validateRequest} from "./validateRequest"
 import {parseSpineResponse} from "./parseSpineResponse"
 import {generateFhirErrorResponse, generateFhirResponse} from "./generateFhirResponse"
-import {bundleSchema, operationOutcomeSchema} from "./schema/response"
+import {requestGroupBundleSchema, operationOutcomeSchema} from "./schema/response"
 
 // Types
 import {LogLevel} from "@aws-lambda-powertools/logger/types"
@@ -29,7 +29,7 @@ export const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
 export const logger: Logger = new Logger({serviceName: "prescriptionSearch", logLevel: LOG_LEVEL})
 const spineClient: SpineClient = createSpineClient(logger)
 
-const headers = {
+const commonHeaders = {
   "Content-Type": "application/fhir+json",
   "Cache-Control": "no-cache"
 }
@@ -46,6 +46,12 @@ export const apiGatewayHandler = async (
   const [searchParameters, validationErrors]:
     [PrescriptionSearchParams, Array<SearchError>] = validateRequest(event, logger)
 
+  const responseHeaders = {
+    ...commonHeaders,
+    "x-request-id": searchParameters.requestId,
+    "x-correlation-id": event.headers?.["x-correlation-id"] ?? ""
+  }
+
   if(validationErrors.length > 0){
     logger.error("Error validating request.")
     logger.info("Generating FHIR error response...")
@@ -55,7 +61,7 @@ export const apiGatewayHandler = async (
     return {
       statusCode: 400,
       body: JSON.stringify(errorResponseBundle),
-      headers
+      headers: responseHeaders
     }
   }
 
@@ -75,7 +81,7 @@ export const apiGatewayHandler = async (
       return {
         statusCode: 500,
         body: JSON.stringify(errorResponseBundle),
-        headers
+        headers: responseHeaders
       }
     }
 
@@ -86,7 +92,7 @@ export const apiGatewayHandler = async (
     return{
       statusCode: 200,
       body: JSON.stringify(responseBundle),
-      headers
+      headers: responseHeaders
     }
   } catch {
     // catch all error
@@ -101,7 +107,7 @@ export const apiGatewayHandler = async (
     return {
       statusCode: 500,
       body: JSON.stringify(errorResponseBundle),
-      headers
+      headers: responseHeaders
     }
   }
 }
@@ -123,4 +129,4 @@ export const newHandler = (params: HandlerParams) => {
 const DEFAULT_HANDLER_PARAMS: HandlerParams = {logger, spineClient}
 export const handler = newHandler(DEFAULT_HANDLER_PARAMS)
 
-export {bundleSchema, operationOutcomeSchema}
+export {requestGroupBundleSchema, operationOutcomeSchema}
