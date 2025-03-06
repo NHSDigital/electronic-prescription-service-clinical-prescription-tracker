@@ -267,5 +267,5 @@ x-nhsd-apim:
   target-identity:
     - name: cis2-uuid
       header: "nhsd-identity-uuid"
-    - name: cis2-urid
-      header: "nhsd-session-urid"
+    # - name: cis2-urid
+    #   header: "nhsd-session-urid"
