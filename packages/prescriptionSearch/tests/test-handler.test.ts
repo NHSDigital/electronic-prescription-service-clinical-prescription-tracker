@@ -134,7 +134,7 @@ describe("test handler", () => {
   })
 
   it("returns the FHIR bundle and a 200 response when pine returns a successful response", async () => {
-    mockValidate.mockReturnValue([{}, []])
+    mockValidate.mockReturnValue([{requestId: "REQ-123-456-789"}, []])
     mockAxios.onPost(prescriptionStatusUrl).reply(200, {data: "success"})
     mockParseSpineResponse.mockReturnValue([{}, undefined])
     mockGenerateFhirResponse.mockReturnValue({
@@ -149,7 +149,9 @@ describe("test handler", () => {
       body: "{\"resourceType\":\"Bundle\",\"type\":\"searchset\",\"total\":0,\"entry\":[]}",
       headers: {
         "Content-Type": "application/fhir+json",
-        "Cache-Control": "no-cache"
+        "Cache-Control": "no-cache",
+        "x-correlation-id": "COR-123-456",
+        "x-request-id": "REQ-123-456-789"
       }
     }
 
@@ -158,7 +160,7 @@ describe("test handler", () => {
   })
 
   it("generates a OperationOutcome and returns it and a 400 response when there is an error validating the request", async () => {
-    mockValidate.mockReturnValue([{}, [{
+    mockValidate.mockReturnValue([{requestId: "REQ-123-456-789"}, [{
       status: "400",
       severity: "error",
       description: "Missing required query string parameter; either prescriptionId or nhsNumber must be included."
@@ -188,7 +190,9 @@ describe("test handler", () => {
       body: JSON.stringify(mockOperationOutcome),
       headers: {
         "Content-Type": "application/fhir+json",
-        "Cache-Control": "no-cache"
+        "Cache-Control": "no-cache",
+        "x-correlation-id": "COR-123-456",
+        "x-request-id": "REQ-123-456-789"
       }
     }
 
@@ -198,7 +202,7 @@ describe("test handler", () => {
   })
 
   it("generates a OperationOutcome and returns it and a 500 response when spine returns an error", async () => {
-    mockValidate.mockReturnValue([{}, []])
+    mockValidate.mockReturnValue([{requestId: "REQ-123-456-789"}, []])
     mockAxios.onPost(prescriptionStatusUrl).reply(200, {data: "success"})
     mockParseSpineResponse.mockReturnValue([undefined, {
       status: "500",
@@ -230,7 +234,9 @@ describe("test handler", () => {
       body: JSON.stringify(mockOperationOutcome),
       headers: {
         "Content-Type": "application/fhir+json",
-        "Cache-Control": "no-cache"
+        "Cache-Control": "no-cache",
+        "x-correlation-id": "COR-123-456",
+        "x-request-id": "REQ-123-456-789"
       }
     }
 
@@ -240,7 +246,7 @@ describe("test handler", () => {
   })
 
   it("generates a OperationOutcome and returns it and a 500 response when there is an unknown error processing the request", async () => {
-    mockValidate.mockReturnValue([{}, []])
+    mockValidate.mockReturnValue([{requestId: "REQ-123-456-789"}, []])
     mockAxios.onPost(prescriptionStatusUrl).reply(500, {data: "error"})
     mockParseSpineResponse.mockImplementation(() => {
       throw new Error
@@ -271,7 +277,9 @@ describe("test handler", () => {
       body: JSON.stringify(mockOperationOutcome),
       headers: {
         "Content-Type": "application/fhir+json",
-        "Cache-Control": "no-cache"
+        "Cache-Control": "no-cache",
+        "x-correlation-id": "COR-123-456",
+        "x-request-id": "REQ-123-456-789"
       }
     }
 
