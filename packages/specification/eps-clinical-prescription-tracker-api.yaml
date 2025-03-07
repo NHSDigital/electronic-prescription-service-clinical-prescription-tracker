@@ -2,7 +2,6 @@
 # for the Clinical Prescription Tracker API
 # owned by NHS Digital (https://digital.nhs.uk/)
 
-# TODO: go through and check this is all correct
 openapi: 3.0.3
 info:
   title: Clinical Prescription Tracker API
@@ -267,5 +266,5 @@ x-nhsd-apim:
   target-identity:
     - name: cis2-uuid
       header: "nhsd-identity-uuid"
-    # - name: cis2-urid
-    #   header: "nhsd-session-urid"
+    - name: cis2-urid
+      header: "nhsd-session-urid"
