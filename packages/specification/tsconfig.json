@@ -5,9 +5,8 @@
     "outDir": "lib"
   },
   "references": [
-    {
-      "path": "../prescriptionSearch"
-    }
+    { "path": "../clinicalView" },
+    { "path": "../prescriptionSearch" }
   ],
   "include": ["scripts/**/*", "tests/**/*"],
   "exclude": ["node_modules"]
