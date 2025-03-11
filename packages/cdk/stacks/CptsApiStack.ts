@@ -5,8 +5,6 @@ import {
   StackProps
 } from "aws-cdk-lib"
 import {IManagedPolicy, ManagedPolicy} from "aws-cdk-lib/aws-iam"
-import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificatemanager"
-import {HostedZone} from "aws-cdk-lib/aws-route53"
 import {HttpMethod} from "aws-cdk-lib/aws-lambda"
 import {LambdaFunction} from "../resources/LambdaFunction"
 import {RestApiGateway} from "../resources/RestApiGateway"
@@ -48,13 +46,6 @@ export class CptsApiStack extends Stack {
       AWS_LAMBDA_EXEC_WRAPPER: "/opt/get-secrets-layer"
     }
 
-    const epsDomainName: string = Fn.importValue("eps-route53-resources:EPS-domain")
-    const hostedZone = HostedZone.fromHostedZoneAttributes(this, "HostedZone", {
-      hostedZoneId: Fn.importValue("eps-route53-resources:EPS-ZoneID"),
-      zoneName: epsDomainName
-    })
-    const serviceDomainName = `${props.stackName}.${epsDomainName}`
-
     // Resources
     const prescriptionSearchLambda = new LambdaFunction(this, "PrescriptionSearchLambda", {
       stackName: props.stackName,
@@ -88,17 +79,9 @@ export class CptsApiStack extends Stack {
       logRetentionInDays: logRetentionInDays,
       logLevel: logLevel
     })
-    // TODO: move this into the gw construct?
-    const certificate = new Certificate(this, "Certificate", {
-      domainName: serviceDomainName,
-      validation: CertificateValidation.fromDns(hostedZone)
-    })
 
     const apiGateway = new RestApiGateway(this, "ApiGateway", {
       stackName: props.stackName,
-      hostedZone: hostedZone,
-      domainName: serviceDomainName,
-      certificate: certificate,
       logRetentionInDays: logRetentionInDays,
       enableMutualTls: enableMutalTls,
       trustStoreKey: trustStoreFile,

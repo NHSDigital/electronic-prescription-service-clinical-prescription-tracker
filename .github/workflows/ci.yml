@@ -114,7 +114,7 @@ jobs:
       LOG_RETENTION_IN_DAYS: 30
       LOG_LEVEL: DEBUG
       ENABLE_MUTUAL_TLS: false
-      TRUSTSTORE_FILE: cpt-api.pem # TODO: use clinical-tracker-truststore.pem after testing
+      TRUSTSTORE_FILE: clinical-tracker-truststore.pem
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}
@@ -171,7 +171,7 @@ jobs:
       LOG_RETENTION_IN_DAYS: 30
       LOG_LEVEL: DEBUG
       ENABLE_MUTUAL_TLS: false
-      TRUSTSTORE_FILE: cpt-api.pem # TODO: use clinical-tracker-truststore.pem after testing
+      TRUSTSTORE_FILE: clinical-tracker-truststore.pem
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}

@@ -14,16 +14,13 @@ import {Key} from "aws-cdk-lib/aws-kms"
 import {CfnSubscriptionFilter, LogGroup} from "aws-cdk-lib/aws-logs"
 import {Construct} from "constructs"
 import {accessLogFormat} from "./RestApiGateway/accessLogFormat"
-import {ICertificate} from "aws-cdk-lib/aws-certificatemanager"
+import {Certificate, CertificateValidation} from "aws-cdk-lib/aws-certificatemanager"
 import {Bucket} from "aws-cdk-lib/aws-s3"
-import {ARecord, IHostedZone, RecordTarget} from "aws-cdk-lib/aws-route53"
+import {ARecord, HostedZone, RecordTarget} from "aws-cdk-lib/aws-route53"
 import {ApiGateway as ApiGatewayTarget} from "aws-cdk-lib/aws-route53-targets"
 
 export interface RestApiGatewayProps {
   readonly stackName: string
-  readonly hostedZone: IHostedZone
-  readonly domainName: string
-  readonly certificate: ICertificate
   readonly logRetentionInDays: number
   readonly enableMutualTls: boolean
   readonly trustStoreKey: string
@@ -50,6 +47,13 @@ export class RestApiGateway extends Construct {
     const truststoreBucket = Bucket.fromBucketArn(
       this, "TrustStoreBucket", Fn.importValue("account-resources:TrustStoreBucket"))
 
+    const epsDomainName: string = Fn.importValue("eps-route53-resources:EPS-domain")
+    const hostedZone = HostedZone.fromHostedZoneAttributes(this, "HostedZone", {
+      hostedZoneId: Fn.importValue("eps-route53-resources:EPS-ZoneID"),
+      zoneName: epsDomainName
+    })
+    const serviceDomainName = `${props.stackName}.${epsDomainName}`
+
     // Resources
     const logGroup = new LogGroup(this, "ApiGatewayAccessLogGroup", {
       encryptionKey: cloudWatchLogsKmsKey,
@@ -66,6 +70,11 @@ export class RestApiGateway extends Construct {
 
     })
 
+    const certificate = new Certificate(this, "Certificate", {
+      domainName: serviceDomainName,
+      validation: CertificateValidation.fromDns(hostedZone)
+    })
+
     const mtlsConfig: MTLSConfig | undefined = props.enableMutualTls ? {
       bucket: truststoreBucket,
       key: props.trustStoreKey,
@@ -75,8 +84,8 @@ export class RestApiGateway extends Construct {
     const apiGateway = new RestApi(this, "ApiGateway", {
       restApiName: `${props.stackName}-apigw`,
       domainName: {
-        domainName: props.domainName,
-        certificate: props.certificate,
+        domainName: serviceDomainName,
+        certificate: certificate,
         securityPolicy: SecurityPolicy.TLS_1_2,
         endpointType: EndpointType.REGIONAL,
         mtls: mtlsConfig
@@ -102,7 +111,7 @@ export class RestApiGateway extends Construct {
     new ARecord(this, "ARecord", {
       recordName: props.stackName,
       target: RecordTarget.fromAlias(new ApiGatewayTarget(apiGateway)),
-      zone: props.hostedZone
+      zone: hostedZone
     })
 
     const cfnStage = apiGateway.deploymentStage.node.defaultChild as CfnStage
