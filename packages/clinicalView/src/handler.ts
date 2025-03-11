@@ -86,9 +86,9 @@ export const apiGatewayHandler = async (
       body: JSON.stringify(fhirResponse),
       headers
     }
-  } catch {
+  } catch(err) {
     // Catch all errors and return a generic FHIR error response
-    logger.error("An unknown error occurred whilst processing the request")
+    logger.error("An unknown error occurred whilst processing the request", {error: err})
     logger.info("Generating FHIR error response...")
     const errorResponseBundle: OperationOutcome = generateFhirErrorResponse(
       [{status: "500", severity: "fatal", description: "Unknown Error."}], logger
