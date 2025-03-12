@@ -49,7 +49,7 @@ export class CptsApiStack extends Stack {
     // Resources
     const prescriptionSearchLambda = new LambdaFunction(this, "PrescriptionSearchLambda", {
       stackName: props.stackName,
-      functionName: "PrescriptionSearch",
+      functionName: `${props.stackName}-PrescriptionSearch`,
       packageBasePath: "packages/prescriptionSearch",
       entryPoint: "src/handler.ts",
       environmentVariables: {...lambdaDefaultEnvironmentVariables},
@@ -60,7 +60,7 @@ export class CptsApiStack extends Stack {
 
     const clinicalViewLambda = new LambdaFunction(this, "ClinicalViewLambda", {
       stackName: props.stackName,
-      functionName: "ClinicalView",
+      functionName: `${props.stackName}-ClinicalView`,
       packageBasePath: "packages/clinicalView",
       entryPoint: "src/handler.ts",
       environmentVariables: {...lambdaDefaultEnvironmentVariables},
@@ -71,7 +71,7 @@ export class CptsApiStack extends Stack {
 
     const statusLambda = new LambdaFunction(this, "StatusLambda", {
       stackName: props.stackName,
-      functionName: "Status",
+      functionName: `${props.stackName}-Status`,
       packageBasePath: "packages/status",
       entryPoint: "src/handler.ts",
       environmentVariables: {...lambdaDefaultEnvironmentVariables},

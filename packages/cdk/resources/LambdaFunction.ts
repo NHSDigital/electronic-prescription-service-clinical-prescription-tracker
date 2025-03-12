@@ -138,7 +138,7 @@ export class LambdaFunction extends Construct {
 
     const lambdaFunction = new NodejsFunction(this, props.functionName, {
       ...getDefaultLambdaOptions(props.packageBasePath),
-      functionName: `${props.stackName}-${props.functionName}`,
+      functionName: `${props.functionName}`,
       entry: join(baseDir, props.packageBasePath, props.entryPoint),
       role,
       environment: {
