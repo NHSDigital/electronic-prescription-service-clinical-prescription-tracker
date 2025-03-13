@@ -15,11 +15,11 @@
         "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
     },
     "dependencies": {
-        "@NHSDigital/eps-spine-client": "^2.1.26",
-        "@nhs/fhir-middy-error-handler": "^2.1.25",
+        "@NHSDigital/eps-spine-client": "^2.1.27",
+        "@nhs/fhir-middy-error-handler": "^2.1.26",
         "@types/xmldom": "^0.1.34",
         "@xmldom/xmldom": "^0.9.8",
-        "axios": "^1.8.2",
+        "axios": "^1.8.3",
         "json-schema-to-ts": "^3.1.0",
         "fast-xml-parser": "^4.5.1"
     },
