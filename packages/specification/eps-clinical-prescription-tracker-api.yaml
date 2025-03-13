@@ -12,7 +12,9 @@ info:
     email: api.management@nhs.net
   description: |
     ## Overview
-    The Clinical Prescription Tracker API
+    The Clinical Prescription Tracker API provides real-time tracking of prescriptions within the Electronic Prescription Service (EPS). It enables authorized users to retrieve details about prescription status, dispensation progress, and other essential prescription lifecycle information.
+
+    This API is designed to be used by healthcare providers, dispensers, and authorized NHS applications to track prescriptions from issuance to fulfillment.
 
     ## Who can use this API
     The Clinical Prescription Tracker query API is intended for NHS England internal use only.
@@ -127,7 +129,7 @@ paths:
           content:
             application/fhir+json:
               schema:
-                $ref: schemas/resources/ResponseBundle.json
+                $ref: schemas/resources/bundleSchema.json
         "4XX":
           description: |
             An error occurred as follows:
@@ -142,9 +144,49 @@ paths:
           content:
             application/fhir+json:
               schema:
-                $ref: schemas/resources/OperationOutcome.json
+                $ref: schemas/resources/outcomeSchema.json
       security:
         - nhs-cis2-aal3: []
+  /RequestGroup/{prescriptionId}:
+    get:
+      operationId: prescription-details-bundle
+      summary: Retrieve prescription details
+      description: |
+        ## Overview
+        Use this endpoint to retrieve prescription details for a given prescription ID.
+      parameters:
+        - name: prescriptionId
+          in: path
+          required: true
+          description: The EPS Prescription ID.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful retrieval.
+          content:
+            application/fhir+json:
+              schema:
+                $ref: schemas/resources/requestGroupSchema.json
+        "4XX":
+          description: |
+            An error occurred as follows:
+
+            | HTTP status | Error code          | Description                                                                                               |
+            | ----------- | ------------------- | ----------------------------------------------------------------------------------------------------------|
+            | 400         | `value`             | Missing values or invalid JSON in request                                                                 |
+            | 401         | `processing`        | Missing or invalid OAuth 2.0 bearer token in request                                                      |
+            | 404         | `not-found`         | Prescription not found                                                                                    |
+            | 408         | `timeout`           | Request timed out                                                                                         |
+
+            The error code will be included in the returned OperationOutcome (below).
+          content:
+            application/fhir+json:
+              schema:
+                $ref: schemas/resources/outcomeSchema.json
+      security:
+        - nhs-cis2-aal3: []
+
 components:
   securitySchemes:
     nhs-cis2-aal3:
