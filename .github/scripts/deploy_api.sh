@@ -4,11 +4,12 @@ set -eu pipefail
 echo "Specification path: ${SPEC_PATH}"
 echo "Specification version: ${VERSION_NUMBER}"
 echo "Stack name: ${STACK_NAME}"
-echo "AWS environment: ${TARGET_ENVIRONMENT}"
+echo "AWS environment: ${AWS_ENVIRONMENT}"
 echo "Apigee environment: ${APIGEE_ENVIRONMENT}"
 echo "Proxygen private key name: ${PROXYGEN_PRIVATE_KEY_NAME}"
 echo "Proxygen KID: ${PROXYGEN_KID}"
 echo "Dry run: ${DRY_RUN}"
+echo "ENABLE_MUTUAL_TLS: ${ENABLE_MUTUAL_TLS}"
 
 client_private_key=$(cat ~/.proxygen/tmp/client_private_key)
 client_cert=$(cat ~/.proxygen/tmp/client_cert)
@@ -34,10 +35,10 @@ fi
 
 is_pull_request=false
 instance_suffix=""
-if [[ ${STACK_NAME} == cpt-pr-* ]]; then
+if [[ ${STACK_NAME} =~ ^cpt-(sandbox-)?pr-.* ]]; then
     is_pull_request=true
     # Extracting the PR ID from $STACK_NAME
-    pr_id=$(echo "${STACK_NAME}" | cut -d'-' -f3)
+    pr_id=$(echo "$STACK_NAME" | awk -F'-' '{print $NF}')
     instance_suffix=-"pr-${pr_id}"
 fi
 
@@ -64,7 +65,7 @@ fi
 jq --arg version "${VERSION_NUMBER}" '.info.version = $version' "${SPEC_PATH}" > temp.json && mv temp.json "${SPEC_PATH}"
 
 # Find and replace the x-nhsd-apim.target.url value
-jq --arg stack_name "${STACK_NAME}" --arg aws_env "${TARGET_ENVIRONMENT}" '.["x-nhsd-apim"].target.url = "https://\($stack_name).\($aws_env).eps.national.nhs.uk"' "${SPEC_PATH}" > temp.json && mv temp.json "${SPEC_PATH}"
+jq --arg stack_name "${STACK_NAME}" --arg aws_env "${AWS_ENVIRONMENT}" '.["x-nhsd-apim"].target.url = "https://\($stack_name).\($aws_env).eps.national.nhs.uk"' "${SPEC_PATH}" > temp.json && mv temp.json "${SPEC_PATH}"
 
 # Find and replace the servers object
 if [[ "${APIGEE_ENVIRONMENT}" == "prod" ]]; then
@@ -94,7 +95,7 @@ echo "Retrieving proxygen credentials"
 # Retrieve the proxygen private key and client private key and cert from AWS Secrets Manager
 proxygen_private_key_arn=$(aws cloudformation list-exports --query "Exports[?Name=='account-resources:${PROXYGEN_PRIVATE_KEY_NAME}'].Value" --output text)
 
-if [[ "${is_pull_request}" == "false" ]]; then
+if [[ "${ENABLE_MUTUAL_TLS}" == "true" ]]; then
     echo
     echo "Store the secret used for mutual TLS to AWS using Proxygen proxy lambda"
     if [[ "${DRY_RUN}" == "false" ]]; then

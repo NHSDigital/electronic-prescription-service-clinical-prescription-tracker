@@ -9,8 +9,8 @@ This is the AWS layer that provides an API for Clinical Prescription Tracker.
 - `packages/prescriptionSearch` Calls the Prescription Search interaction.
 - `packages/sandbox/` Returns [static data](./packages/sandbox/examples/GetMyPrescriptions/Bundle/success.json) from the Sandbox.
 - `packages/specification/` This [Open API Specification](https://swagger.io/docs/specification/about/) describes the endpoints, methods and messages.
-- `packages/statusLambda/` Returns the status of the getMyPrescriptions endpoint.
-- `SAMtemplates/` Contains the SAM templates used to define the stacks.
+- `packages/status/` Returns the status of the getMyPrescriptions endpoint.
+- `packages/cdk` Contains the CDK AWS resource definitions
 - `scripts/` Utilities helpful to developers of this specification.
 - `.devcontainer` Contains a dockerfile and vscode devcontainer definition.
 - `.github` Contains github workflows that are used for building and deploying from pull requests and releases.
@@ -33,7 +33,7 @@ The contents of this repository are protected by Crown Copyright (C).
 It is recommended that you use visual studio code and a devcontainer as this will install all necessary components and correct versions of tools and languages.  
 See https://code.visualstudio.com/docs/devcontainers/containers for details on how to set this up on your host machine.  
 There is also a workspace file in .vscode that should be opened once you have started the devcontainer. The workspace file can also be opened outside of a devcontainer if you wish.  
-The project uses [SAM](https://aws.amazon.com/serverless/sam/) to develop and deploy the APIs and associated resources.
+The project uses [CDK](https://docs.aws.amazon.com/cdk/) to develop and deploy the APIs and associated resources.
 
 All commits must be made using [signed commits](https://docs.github.com/en/authentication/managing-commit-signature-verification/signing-commits)
 
@@ -89,7 +89,7 @@ SSO registration scopes [sso:account:access]:
 This will then open a browser window and you should authenticate with your hscic credentials
 You should then select the development account and set default region to be eu-west-2.
 
-You will now be able to use AWS and SAM CLI commands to access the dev account. You can also use the AWS extension to view resources.
+You will now be able to use AWS CLI commands to access the dev account. You can also use the AWS extension to view resources.
 
 When the token expires, you may need to reauthorise using `make aws-login`
 
@@ -125,42 +125,7 @@ $ npm login --scope=@nhsdigital --auth-type=legacy --registry=https://npm.pkg.gi
 ```
 
 ### Continuous deployment for testing
-
-You can run the following command to deploy the code to AWS for testing
-
-```
-make sam-sync
-```
-
-This will take a few minutes to deploy - you will see something like this when deployment finishes
-
-```
-......
-CloudFormation events from stack operations (refresh every 0.5 seconds)
----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-ResourceStatus                            ResourceType                              LogicalResourceId                         ResourceStatusReason
----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-.....
-CREATE_IN_PROGRESS                        AWS::ApiGatewayV2::ApiMapping             HttpApiGatewayApiMapping                  -
-CREATE_IN_PROGRESS                        AWS::ApiGatewayV2::ApiMapping             HttpApiGatewayApiMapping                  Resource creation Initiated
-CREATE_COMPLETE                           AWS::ApiGatewayV2::ApiMapping             HttpApiGatewayApiMapping                  -
-CREATE_COMPLETE                           AWS::CloudFormation::Stack                ab-1                                      -
----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-Stack creation succeeded. Sync infra completed.
-```
-
-Note - the command will keep running and should not be stopped.
-You can now call this api.
-
-```
-curl https://${stack_name}.dev.eps.national.nhs.uk/_status
-```
-
-You can also use the AWS vscode extension to invoke the API or lambda directly
-
-Any code changes you make are automatically uploaded to AWS while `make sam-sync` is running allowing you to quickly test any changes you make
+TBC for cdk
 
 ### Pre-commit hooks
 
@@ -179,29 +144,16 @@ There are `make` commands that are run as part of the CI pipeline and help alias
 - `install-hooks` Installs git pre commit hooks.
 - `install` Runs all install targets.
 
-#### SAM targets
+#### CDK targets
+These are used to do common commands related to cdk
 
-These are used to do common commands
+- `cdk-deploy` Builds and deploys the code to AWS
+- `cdk-synth` Converts the CDK code to cloudformation templates
+- `cdk-diff` Runs cdk diff comparing the deployed stack with local CDK code to see differences
+- `cdk-watch` Syncs the code and CDK templates to AWS. This keeps running and automatically uploads changes to AWS
+- `build-deployment-container-image` Creates a container with all code necessary to run cdk deploy
 
-- `sam-build` Prepares the lambdas and SAM definition file to be used in subsequent steps.
-- `sam-run-local` Runs the API and lambdas locally.
-- `sam-sync` Sync the API and lambda to AWS. This keeps running and automatically uploads any changes to lambda code made locally. Needs AWS_DEFAULT_PROFILE and stack_name environment variables set.
-- `sam-sync-sandbox` Sync the API and lambda to AWS. This keeps running and automatically uploads any changes to lambda code made locally. Needs stack_name environment variables set, the path and file name where the AWS SAM template is located.
-- `sam-deploy` Deploys the compiled SAM template from sam-build to AWS. Needs AWS_DEFAULT_PROFILE and stack_name environment variables set.
-- `sam-delete` Deletes the deployed SAM cloud formation stack and associated resources. Needs AWS_DEFAULT_PROFILE and stack_name environment variables set.
-- `sam-list-endpoints` Lists endpoints created for the current stack. Needs AWS_DEFAULT_PROFILE and stack_name environment variables set.
-- `sam-list-resources` Lists resources created for the current stack. Needs AWS_DEFAULT_PROFILE and stack_name environment variables set.
-- `sam-list-outputs` Lists outputs from the current stack. Needs AWS_DEFAULT_PROFILE and stack_name environment variables set.
-- `sam-validate` Validates the main SAM template and the splunk firehose template.
-- `sam-validate-sandbox` Validates the sandbox SAM template and the splunk firehose template.
-- `sam-deploy-package` Deploys a package created by sam-build. Used in CI builds. Needs the following environment variables set.
-  - artifact_bucket - Bucket where the uploaded package files are stored.
-  - artifact_bucket_prefix - Prefix in the bucket where the uploaded package files are stored.
-  - stack_name - Name of the CloudFormation stack to deploy.
-  - template_file - Name of the template file created by `sam-package`.
-  - cloud_formation_execution_role - ARN of the role that CloudFormation assumes when applying the changeset.
-
-  #### Download secrets
+#### Download secrets
 
 - `download-get-secrets-layer` Creates the necessary directory structure and downloads the `get-secrets-layer.zip` artifact from NHSDigital's `electronic-prescription-service-get-secrets` releases.
 
@@ -213,11 +165,12 @@ These are used to do common commands
 #### Linting and testing
 
 - `lint` Runs lint for all code.
-- `lint-node` Runs lint for node code.
-- `lint-cloudformation` Runs lint for cloudformation templates.
-- `lint-samtemplates` Runs lint for SAM templates.
+- `lint-node` Runs lint for node code including cdk.
+- `lint-python` Runs lint for python code
+- `lint-githubactions` lints the repos github actions
+- `lint-specification` lints the API specification
 - `test` Runs unit tests for all code.
-- `cfn-guard` runs cfn-guard for sam and cloudformation templates.
+- `cfn-guard` runs cfn-guard for cdk resources.
 
 #### Compiling
 
@@ -257,7 +210,6 @@ Scripts are in the `.github/scripts` folder:
 - `delete_stacks.sh` Checks and deletes active CloudFormation stacks associated with closed pull requests.
 - `get_current_dev_tag.sh` Retrieves the current development tag and sets it as an environment variable.
 - `get_target_deployed_tag.sh` Retrieves the currently deployed tag and sets it as an environment variable.
-- `release_code.sh` Releases code by deploying it using AWS SAM after packaging it.
 
 Workflows are in the `.github/workflows` folder:
 
@@ -267,5 +219,5 @@ Workflows are in the `.github/workflows` folder:
 - `pr-link.yaml` This workflow template links Pull Requests to Jira tickets and runs when a pull request is opened.
 - `pull_request.yml` Called when pull request is opened or updated. Calls run_package_code_and_api and run_release_code_and_api to build and deploy the code. Deploys to dev AWS account and internal-dev and internal-dev sandbox apigee environments. The main stack deployed adopts the naming convention clinical-tracker-pr-<PULL_REQUEST_ID>, while the sandbox stack follows the pattern 
 - `release.yml` Runs on demand to create a release and deploy to all environments.
-- `run_package_code_and_api.yml` Packages code and api and uploads to a github artifact for later deployment.
-- `run_release_code_and_api.yml` Release code and api built by run_package_code_and_api.yml to an environment.
+- `cdk_package_code.yml` Packages code into a docker image and uploads to a github artifact for later deployment.
+- `cdk_release_code.yml` Release code built by cdk_package_code.yml to an environment.

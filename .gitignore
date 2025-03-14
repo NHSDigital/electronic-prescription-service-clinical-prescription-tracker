@@ -19,7 +19,6 @@ junit.xml
 release_notes
 /ecs-*.yml
 .venv
-.aws-sam
 lib/
 *.tsbuildinfo
 cfn_guard_output/
@@ -28,3 +27,5 @@ _site/
 .jekyll-cache
 .jekyll-metadata
 vendor
+.npmrc
+cdk.out

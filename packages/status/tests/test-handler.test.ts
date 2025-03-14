@@ -1,5 +1,5 @@
 import {APIGatewayProxyResult} from "aws-lambda"
-import {handler} from "../src/statusLambda"
+import {handler} from "../src/handler"
 import {
   jest,
   expect,
