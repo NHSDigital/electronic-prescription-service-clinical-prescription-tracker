@@ -11,17 +11,13 @@ import {Stream} from "aws-cdk-lib/aws-kinesis"
 import {Key} from "aws-cdk-lib/aws-kms"
 import {CfnLogGroup, CfnSubscriptionFilter, LogGroup} from "aws-cdk-lib/aws-logs"
 import {
-  Chain,
   DefinitionBody,
   IChainable,
   LogLevel,
-  Pass,
   QueryLanguage,
-  Result,
   StateMachine,
   StateMachineType
 } from "aws-cdk-lib/aws-stepfunctions"
-import {LambdaInvoke} from "aws-cdk-lib/aws-stepfunctions-tasks"
 import {Construct} from "constructs"
 
 export interface StateMachineProps {
@@ -146,58 +142,3 @@ export class ExpressStateMachine extends Construct {
     this.stateMachine = stateMachine
   }
 }
-
-// place holder location
-const definition = Chain
-  .start("Invoke clinical view")
-  .next("Choice - did CV error")
-  .next("invoke gsul")
-  .next("combine results")
-  .next("return results")
-
-//states
-const severErrorOperationOutcome = {
-  ResourceType: "OperationOutcome",
-  meta: {
-    lastUpdated: "{% $timestamp %}"
-  },
-  issue: [
-    {
-      code: "exception",
-      severity: "fatal",
-      diagnostics: "Unknown Error.",
-      details: {
-        coding: [
-          {
-            system: "https://fhir.nhs.uk/CodeSystem/http-error-codes",
-            code: "SERVER_ERROR",
-            display: "500: The Server has encountered an error processing the request."
-          }
-        ]
-      }
-    }
-  ]
-}
-
-const catchAllError = new Pass(this, "Catch All Error", {
-  assign: {
-    timestamp: "{% $now() %}",
-    bodyTemplate: `${JSON.stringify(severErrorOperationOutcome)}`
-  },
-  outputs: {
-    Payload: {
-      statusCode: 500,
-      headers: {
-        "Content-Type": "application/fhir+json",
-        "Cache-Control": "co-cache"
-      },
-      body: "{% $bodyTemplate %}"
-    }
-  }
-})
-
-const invokeClinicalView = new LambdaInvoke(this, "Invoke Clinical View", {
-  lambdaFunction: "function"
-})
-
-invokeClinicalView.addCatch(catchAllError)
