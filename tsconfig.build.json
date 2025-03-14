@@ -4,6 +4,7 @@
   "files": [],
   // Building this project will build all of the following:
   "references": [
+    { "path": "packages/cdk"},
     { "path": "packages/clinicalView" },
     { "path": "packages/common/testing" },
     { "path": "packages/prescriptionSearch" },
