@@ -15,7 +15,8 @@ import {
 } from "./exampleSpineResponses/examples"
 
 // Types
-import {ParsedSpineResponse, Prescription} from "../src/types"
+import {ParsedSpineResponse} from "../src/parseSpineResponse"
+import {Prescription} from "../src/parseSpineResponse"
 
 const logger: Logger = new Logger({serviceName: "prescriptionSearch", logLevel: "DEBUG"})
 
@@ -39,7 +40,7 @@ describe("Test parseSpineResponse", () => {
       }
     ]
     const result: ParsedSpineResponse = parseSpineResponse(singleAcute, logger)
-    expect(result).toEqual([expected, undefined])
+    expect(result).toEqual({prescriptions: expected})
   })
 
   it("returns a correctly parsed response and no error when spine returns multiple acute prescriptions", async () => {
@@ -76,7 +77,7 @@ describe("Test parseSpineResponse", () => {
       }
     ]
     const result: ParsedSpineResponse = parseSpineResponse(multipleAcute, logger)
-    expect(result).toEqual([expected, undefined])
+    expect(result).toEqual({prescriptions: expected})
   })
 
   it("It returns a correctly parsed response and no error when spine returns a single erd prescription", async () => {
@@ -188,7 +189,7 @@ describe("Test parseSpineResponse", () => {
       }
     ]
     const result: ParsedSpineResponse = parseSpineResponse(singleErd, logger)
-    expect(result).toEqual([expected, undefined])
+    expect(result).toEqual({prescriptions: expected})
   })
 
   it("returns a correctly parsed response and no error when spine returns multiple erd prescriptions", async () => {
@@ -405,7 +406,7 @@ describe("Test parseSpineResponse", () => {
       }
     ]
     const result: ParsedSpineResponse = parseSpineResponse(multipleErd, logger)
-    expect(result).toEqual([expected, undefined])
+    expect(result).toEqual({prescriptions: expected})
   })
 
   it("returns a correctly parsed response and no error when spine returns a single repeat prescription", async () => {
@@ -427,7 +428,7 @@ describe("Test parseSpineResponse", () => {
       }
     ]
     const result: ParsedSpineResponse = parseSpineResponse(singleRepeat, logger)
-    expect(result).toEqual([expected, undefined])
+    expect(result).toEqual({prescriptions: expected})
   })
 
   it("returns a correctly parsed response and no error when spine returns multiple repeat prescriptions", async () => {
@@ -464,7 +465,7 @@ describe("Test parseSpineResponse", () => {
       }
     ]
     const result: ParsedSpineResponse = parseSpineResponse(multipleRepeat, logger)
-    expect(result).toEqual([expected, undefined])
+    expect(result).toEqual({prescriptions: expected})
   })
 
   it("returns a correctly parsed response and no error when spine returns multiple mixed prescriptions", async () => {
@@ -606,35 +607,33 @@ describe("Test parseSpineResponse", () => {
       }
     ]
     const result: ParsedSpineResponse = parseSpineResponse(multipleMixed, logger)
-    expect(result).toEqual([expected, undefined])
+    expect(result).toEqual({prescriptions: expected})
   })
 
   it("returns a correctly parsed response when spine returns not found", async () => {
     const result: ParsedSpineResponse = parseSpineResponse(notFound, logger)
-    expect(result).toEqual([[], undefined])
+    expect(result).toEqual({prescriptions: []})
   })
 
   it("returns undefined and an error when spine returns an error", async () => {
     const result: ParsedSpineResponse = parseSpineResponse(error, logger)
-    expect(result).toEqual([
-      undefined,
-      {
+    expect(result).toEqual({
+      searchError: {
         status: "500",
         severity: "error",
         description: "hl7:{interactionId}/hl7:ControlActEvent/hl7:author is missing, empty or invalid"
       }
-    ])
+    })
   })
 
   it("returns undefined and an error when spine returns an invalid response", async () => {
     const result: ParsedSpineResponse = parseSpineResponse(invalid, logger)
-    expect(result).toEqual([
-      undefined,
-      {
+    expect(result).toEqual({
+      searchError: {
         status: "500",
         severity: "error",
         description: "Unknown Error."
       }
-    ])
+    })
   })
 })

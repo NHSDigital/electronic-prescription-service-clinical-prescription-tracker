@@ -79,7 +79,7 @@ describe("test handler", () => {
     const appendKeySpy = jest.spyOn(Logger.prototype, "appendKeys")
     mockValidate.mockReturnValue([{}, []])
     mockAxios.onPost(prescriptionStatusUrl).reply(200, {data: "success"})
-    mockParseSpineResponse.mockReturnValue([{}, undefined])
+    mockParseSpineResponse.mockReturnValue({})
     mockGenerateFhirResponse.mockReturnValue({})
 
     await handler(mockEvent, mockContext)
@@ -94,7 +94,7 @@ describe("test handler", () => {
   it("validates the request when called", async () => {
     mockValidate.mockReturnValue([{}, []])
     mockAxios.onPost(prescriptionStatusUrl).reply(200, {data: "success"})
-    mockParseSpineResponse.mockReturnValue([{}, undefined])
+    mockParseSpineResponse.mockReturnValue({})
     mockGenerateFhirResponse.mockReturnValue({})
 
     await handler(mockEvent, mockContext)
@@ -104,7 +104,7 @@ describe("test handler", () => {
   it("calls the spine prescription search interaction when called", async () => {
     mockValidate.mockReturnValue([{}, []])
     mockAxios.onPost(prescriptionStatusUrl).reply(200, {data: "success"})
-    mockParseSpineResponse.mockReturnValue([{}, undefined])
+    mockParseSpineResponse.mockReturnValue({})
     mockGenerateFhirResponse.mockReturnValue({})
 
     await handler(mockEvent, mockContext)
@@ -116,7 +116,7 @@ describe("test handler", () => {
   it("parses the spine response when spine returns a successful response", async () => {
     mockValidate.mockReturnValue([{}, []])
     mockAxios.onPost(prescriptionStatusUrl).reply(200, {data: "success"})
-    mockParseSpineResponse.mockReturnValue([{}, undefined])
+    mockParseSpineResponse.mockReturnValue({})
     mockGenerateFhirResponse.mockReturnValue({})
 
     await handler(mockEvent, mockContext)
@@ -126,7 +126,7 @@ describe("test handler", () => {
   it("generates the FHIR bundle when spine returns a successful response", async () => {
     mockValidate.mockReturnValue([{}, []])
     mockAxios.onPost(prescriptionStatusUrl).reply(200, {data: "success"})
-    mockParseSpineResponse.mockReturnValue([{}, undefined])
+    mockParseSpineResponse.mockReturnValue({})
     mockGenerateFhirResponse.mockReturnValue({})
 
     await handler(mockEvent, mockContext)
@@ -136,7 +136,7 @@ describe("test handler", () => {
   it("returns the FHIR bundle and a 200 response when pine returns a successful response", async () => {
     mockValidate.mockReturnValue([{requestId: "REQ-123-456-789"}, []])
     mockAxios.onPost(prescriptionStatusUrl).reply(200, {data: "success"})
-    mockParseSpineResponse.mockReturnValue([{}, undefined])
+    mockParseSpineResponse.mockReturnValue({})
     mockGenerateFhirResponse.mockReturnValue({
       resourceType: "Bundle",
       type: "searchset",
@@ -204,11 +204,11 @@ describe("test handler", () => {
   it("generates a OperationOutcome and returns it and a 500 response when spine returns an error", async () => {
     mockValidate.mockReturnValue([{requestId: "REQ-123-456-789"}, []])
     mockAxios.onPost(prescriptionStatusUrl).reply(200, {data: "success"})
-    mockParseSpineResponse.mockReturnValue([undefined, {
+    mockParseSpineResponse.mockReturnValue({searchError: {
       status: "500",
       severity: "error",
       description: "Unknown Error."}
-    ])
+    })
     const mockOperationOutcome = {
       resourceType: "OperationOutcome",
       meta: {

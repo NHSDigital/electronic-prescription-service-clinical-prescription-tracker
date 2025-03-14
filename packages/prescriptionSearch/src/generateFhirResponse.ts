@@ -1,6 +1,4 @@
-import {randomUUID, UUID} from "crypto"
-
-// Types
+import {randomUUID} from "crypto"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {
   Bundle,
@@ -11,14 +9,17 @@ import {
   OperationOutcome,
   OperationOutcomeIssue
 } from "fhir/r4"
-import {
-  ErrorMap,
-  IntentMap,
-  Prescription,
-  SearchError,
-  StatusDisplayMap,
-  TreatmentType
-} from "./types"
+import {Prescription, SearchError} from "./parseSpineResponse"
+
+export interface IntentMap {
+  [key: string]: RequestGroup["intent"]
+}
+
+export enum TreatmentType {
+  ACUTE = "0001",
+  REPEAT = "0002",
+  ERD = "0003"
+}
 
 const intentMap: IntentMap = {
   [TreatmentType.ACUTE]: "order",
@@ -26,6 +27,9 @@ const intentMap: IntentMap = {
   [TreatmentType.ERD] : "reflex-order"
 }
 
+export interface StatusDisplayMap {
+  [key: string]: string
+}
 const statusDisplayMap: StatusDisplayMap = {
   "0001": "To be Dispensed",
   "0002": "With Dispenser",
@@ -51,12 +55,10 @@ export const generateFhirResponse = (prescriptions: Array<Prescription>, logger:
     entry: []
   }
 
-  // Generate UUID for Patient bundle entry for each RequestGroup to reference in subject
-  const patientUuid: UUID = randomUUID()
-
-  // For each prescription/issue generate a RequestGroup bundle entry
-  for (const prescription of prescriptions){
-    // Generate the Patient bundle entry when processing first prescription/issue
+  // Generate UUID for the Patient bundle entry for each RequestGroup to reference in subject
+  const patientUuid = randomUUID()
+  if (prescriptions.length > 0){
+    // Generate the Patient bundle entry if there are prescriptions to process
     logger.info("Generating the Patient bundle entry...")
     if (responseBundle.entry?.length === 0){
       const patient: BundleEntry<Patient> = {
@@ -68,19 +70,22 @@ export const generateFhirResponse = (prescriptions: Array<Prescription>, logger:
           resourceType: "Patient",
           identifier: [{
             system: "https://fhir.nhs.uk/Id/nhs-number",
-            value: prescription.nhsNumber
+            value: prescriptions[0].nhsNumber
           }],
           name: [{
-            prefix: [prescription.prefix],
-            suffix: [prescription.suffix],
-            given: [prescription.given],
-            family: prescription.family
+            prefix: [prescriptions[0].prefix],
+            suffix: [prescriptions[0].suffix],
+            given: [prescriptions[0].given],
+            family: prescriptions[0].family
           }]
         }
       }
       responseBundle.entry?.push(patient)
     }
+  }
 
+  // For each prescription/issue generate a RequestGroup bundle entry
+  for (const prescription of prescriptions){
     // Generate the RequestGroup bundle entry for the prescription/issue
     logger.info("Generating the RequestGroup bundle entry...", {prescriptionId: prescription.prescriptionId})
     const requestGroup:BundleEntry<RequestGroup> = {
@@ -159,6 +164,17 @@ export const generateFhirResponse = (prescriptions: Array<Prescription>, logger:
   }
 
   return responseBundle
+}
+
+export interface FhirErrorDetails {
+  status: string
+  code: string
+  detailsCode: string
+  detailsDisplay: string
+}
+
+export interface ErrorMap {
+  [key: string]: FhirErrorDetails
 }
 
 const errorMap: ErrorMap = {

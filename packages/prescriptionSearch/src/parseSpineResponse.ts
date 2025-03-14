@@ -1,24 +1,114 @@
 import {XMLParser} from "fast-xml-parser"
-
-// Types
 import {Logger} from "@aws-lambda-powertools/logger"
-import {
-  XmlResponse,
-  XmlSoapBody,
-  XmlSearchResults,
-  XmlPrescription,
-  XmlIssueDetail,
-  PatientDetails,
-  PrescriptionDetails,
-  IssueDetails,
-  Prescription,
-  XmlSoapEnvBody,
-  XmlError,
-  ParsedSpineResponse
-} from "./types"
+
+export type XmlStringValue = {
+  "@_value": string
+}
+
+export interface XmlIssueDetail {
+  instanceNumber: XmlStringValue
+  prescriptionStatus: XmlStringValue
+  prescCancPending: XmlStringValue
+  liCancPending: XmlStringValue
+}
+
+export interface XmlPrescription {
+  id: XmlStringValue
+  patientId: XmlStringValue
+  prefix: XmlStringValue
+  suffix: XmlStringValue
+  given: XmlStringValue
+  family: XmlStringValue
+  issueDetail: XmlIssueDetail | Array<XmlIssueDetail>
+  prescribedDate: XmlStringValue
+  prescriptionTreatmentType: XmlStringValue
+  maxRepeats: XmlStringValue
+}
+
+export interface XmlSearchResults {
+  prescription: XmlPrescription | Array<XmlPrescription>
+}
+
+export interface XmlSoapBody {
+  prescriptionSearchResponse: {
+    PRESCRIPTIONSEARCHRESPONSE_SM01: {
+      ControlActEvent: {
+        subject: {
+          searchResults: XmlSearchResults
+        }
+      }
+    }
+  }
+}
+
+interface XmlSoapEnvelope {
+  "SOAP:Body": XmlSoapBody
+}
+
+export interface XmlError {
+  "@_codeSystem": string
+  "@_code": string
+  "@_displayName": string
+}
+
+export interface XmlSoapEnvBody {
+  prescriptionSearchResponse: {
+    MCCI_IN010000UK13: {
+      acknowledgement: {
+        acknowledgementDetail: {
+          code: XmlError
+        }
+      }
+    }
+  }
+}
+interface XmlSoapEnvEnvelope {
+  "SOAP-ENV:Body": XmlSoapEnvBody
+}
+
+export interface XmlResponse {
+  "SOAP:Envelope"?: XmlSoapEnvelope
+  "SOAP-ENV:Envelope"?: XmlSoapEnvEnvelope
+}
+
+export interface PatientDetails {
+  nhsNumber: string
+  prefix: string
+  suffix: string
+  given: string
+  family: string
+}
+
+export interface PrescriptionDetails {
+  prescriptionId: string
+  issueDate: string
+  treatmentType: string
+  maxRepeats: number | undefined
+}
+
+export interface IssueDetails {
+  issueNumber: number
+  status: string
+  prescriptionPendingCancellation: boolean
+  itemsPendingCancellation: boolean
+
+}
+
+export type Prescription = PatientDetails & PrescriptionDetails & IssueDetails
+
+export interface SearchError {
+  status: string
+  severity: "error" | "fatal"
+  description: string
+}
+
+export interface ParsedSpineResponse {
+  prescriptions?: Array<Prescription> | undefined
+  searchError?: SearchError | undefined
+}
 
 export const parseSpineResponse = (spineResponse: string, logger: Logger): ParsedSpineResponse => {
-  const xmlParser: XMLParser = new XMLParser({ignoreAttributes: false})
+  const xmlParser = new XMLParser({ignoreAttributes: false})
   const xmlResponse = xmlParser.parse(spineResponse) as XmlResponse
 
   logger.info("Parsing XML SOAP body...")
@@ -27,9 +117,9 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     const error: string = parseErrorResponse(xmlResponse)
     if (error === "Prescription not found"){
       logger.info("No prescriptions found.")
-      return [[], undefined]
+      return {prescriptions: []}
     }
-    return [undefined, {status: "500", severity: "error", description: error}]
+    return {searchError: {status: "500", severity: "error", description: error}}
   }
 
   logger.info("Parsing search results...")
@@ -42,7 +132,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
 
   logger.info("Parsing prescriptions...")
   let parsedPrescriptions: Array<Prescription> = parsePrescriptions(xmlPrescriptions)
-  return [parsedPrescriptions, undefined]
+  return {prescriptions: parsedPrescriptions}
 }
 
 const parsePrescriptions = (xmlPrescriptions: Array<XmlPrescription>): Array<Prescription> => {

@@ -15,23 +15,25 @@ import {requestGroupBundleSchema, operationOutcomeSchema} from "./schema/respons
 import {LogLevel} from "@aws-lambda-powertools/logger/types"
 import {APIGatewayEvent, APIGatewayProxyResult} from "aws-lambda"
 import {PrescriptionSearchParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
-import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
 import {Bundle, OperationOutcome} from "fhir/r4"
-import {
-  HandlerParams,
-  ParsedSpineResponse,
-  Prescription,
-  SearchError
-} from "./types"
+import {ParsedSpineResponse, SearchError} from "./parseSpineResponse"
+import {Prescription} from "./parseSpineResponse"
+import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
 
 // Config
 export const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
-export const logger: Logger = new Logger({serviceName: "prescriptionSearch", logLevel: LOG_LEVEL})
-const spineClient: SpineClient = createSpineClient(logger)
+export const logger = new Logger({serviceName: "prescriptionSearch", logLevel: LOG_LEVEL})
+const spineClient = createSpineClient(logger)
 
 const commonHeaders = {
   "Content-Type": "application/fhir+json",
   "Cache-Control": "no-cache"
+}
+
+// Types
+export interface HandlerParams {
+  logger: Logger
+  spineClient: SpineClient
 }
 
 export const apiGatewayHandler = async (
@@ -70,7 +72,7 @@ export const apiGatewayHandler = async (
     const spineResponse = await params.spineClient.prescriptionSearch(event.headers, searchParameters)
 
     logger.info("Parsing Spine Response...")
-    const [prescriptions, searchError]: ParsedSpineResponse = parseSpineResponse(spineResponse.data, logger)
+    const {prescriptions, searchError}: ParsedSpineResponse = parseSpineResponse(spineResponse.data, logger)
 
     if (searchError){
       logger.error("Spine response contained an error.", {error: searchError.description})

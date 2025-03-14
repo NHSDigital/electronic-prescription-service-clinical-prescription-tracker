@@ -2,7 +2,25 @@
 import {APIGatewayEvent, APIGatewayProxyEventHeaders, APIGatewayProxyEventQueryStringParameters} from "aws-lambda"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {PrescriptionSearchParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
-import {SearchError, QueryStringSearchParameters, HeaderSearchParameters} from "./types"
+import {SearchError} from "./parseSpineResponse"
+
+export interface QueryStringSearchParameters {
+  prescriptionID?: string
+  nhsNumber?: string
+  creationDateRange?: {
+    lowDate?: string
+    highDate?: string
+  }
+}
+
+export interface HeaderSearchParameters {
+  requestId?: string
+  correlationId?: string
+  organizationId?: string
+  sdsRoleProfileId?: string
+  sdsId?: string
+  jobRoleCode?: string
+}
 
 export const validateRequest = (
   event: APIGatewayEvent, logger: Logger):[PrescriptionSearchParams, Array<SearchError>] => {

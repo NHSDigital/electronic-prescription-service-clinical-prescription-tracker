@@ -6,7 +6,7 @@ import {validateRequest} from "../src/validateRequest"
 // Types
 import {APIGatewayProxyEvent, APIGatewayProxyEventHeaders, APIGatewayProxyEventQueryStringParameters} from "aws-lambda"
 import {PrescriptionSearchParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
-import {SearchError} from "../src/types"
+import {SearchError} from "../src/parseSpineResponse"
 
 const logger: Logger = new Logger({serviceName: "prescriptionSearch", logLevel: "DEBUG"})
 const mockHeaders: APIGatewayProxyEventHeaders = {

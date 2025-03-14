@@ -13,7 +13,8 @@ import {
   Patient,
   RequestGroup
 } from "fhir/r4"
-import {Prescription, SearchError} from "../src/types"
+import {SearchError} from "../src/parseSpineResponse"
+import {Prescription} from "../src/parseSpineResponse"
 
 const logger: Logger = new Logger({serviceName: "prescriptionSearch", logLevel: "DEBUG"})
 
