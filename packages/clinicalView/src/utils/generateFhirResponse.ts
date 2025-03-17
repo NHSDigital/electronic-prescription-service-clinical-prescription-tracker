@@ -209,57 +209,66 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   const prescriptionTime: string = formatToISO8601(prescription.requestGroupDetails?.prescriptionTime.toString() ?? "")
   const nominatedPerformer: string = prescription.requestGroupDetails?.nominatedPerformer ?? ""
 
-  const nominatedReleaseRequestSuccessful: RequestGroupAction = {
-    title: "Nominated Release Request successful",
-    timingDateTime: prescriptionTime,
-    participant: [
-      {
-        identifier: {
-          system: "https://fhir.nhs.uk/Id/ods-organization-code",
-          value: nominatedPerformer
-        }
-      }] as Array<Reference>,
-    code: [{
-      coding: [{
-        system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
-        code: "0002",
-        display: "With Dispenser"
+  if (prescriptionTime) {
+    const nominatedReleaseRequestSuccessful: RequestGroupAction = {
+      title: "Nominated Release Request successful",
+      timingDateTime: prescriptionTime,
+      participant: [
+        {
+          identifier: {
+            system: "https://fhir.nhs.uk/Id/ods-organization-code",
+            value: nominatedPerformer
+          }
+        }] as Array<Reference>,
+      code: [{
+        coding: [{
+          system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+          code: "0002",
+          display: "With Dispenser"
+        }]
       }]
-    }]
+    }
+    prescriptionStatusTransitions.action?.push(nominatedReleaseRequestSuccessful)
   }
-  prescriptionStatusTransitions.action?.push(nominatedReleaseRequestSuccessful)
 
   // Action: Dispense Notification Successful
+  let dispenseNotificationSuccessful: RequestGroupAction | null = null
   const dispensingOrganization: string = prescription.dispenseNotificationDetails?.dispensingOrganization ?? ""
   const statusPrescription: string = prescription.dispenseNotificationDetails?.statusPrescription ?? ""
   const dispNotifToStatus: string = prescription.dispenseNotificationDetails?.dispNotifToStatus ?? ""
   const dispenseNotifDateTime: string = formatToISO8601(
-    prescription.dispenseNotificationDetails?.dispenseNotifDateTime.toString() ?? "")
+    prescription.dispenseNotificationDetails?.dispenseNotifDateTime?.toString() ?? ""
+  )
 
-  const dispenseNotificationSuccessful: RequestGroupAction = {
-    title: "Dispense notification successful",
-    timingDateTime: dispenseNotifDateTime,
-    participant: [
-      {
-        identifier:
+  // Only create and push the action if dispenseNotifDateTime is not empty
+  if (dispenseNotifDateTime) {
+    dispenseNotificationSuccessful = {
+      title: "Dispense notification successful",
+      timingDateTime: dispenseNotifDateTime,
+      participant: [
         {
-          system: "https://fhir.nhs.uk/Id/ods-organization-code",
-          value: dispensingOrganization
-        }
-      }],
-    code: [
-      {
-        coding: [
-          {
-            system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
-            code: statusPrescription,
-            display: mapTaskBusinessStatus(dispNotifToStatus || "")
+          identifier: {
+            system: "https://fhir.nhs.uk/Id/ods-organization-code",
+            value: dispensingOrganization
           }
-        ]
-      }],
-    action: [] // Step 9 will populate this array with MedicationDispense IDs
+        }
+      ],
+      code: [
+        {
+          coding: [
+            {
+              system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+              code: statusPrescription,
+              display: mapTaskBusinessStatus(dispNotifToStatus || "")
+            }
+          ]
+        }
+      ],
+      action: [] // Step 9 will populate this array with MedicationDispense IDs
+    }
+
+    prescriptionStatusTransitions.action?.push(dispenseNotificationSuccessful)
   }
-  prescriptionStatusTransitions.action?.push(dispenseNotificationSuccessful)
 
   // ======================================================================================
   //  STEP 6: Generate MedicationRequest Resources
@@ -395,13 +404,15 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   //  STEP 9: Add MedicationDispense IDs the DispenseNotificationSuccessful Action array
   // ======================================================================================
   // Iterate over each stored MedicationDispense ID and add it to the action array
-  medicationDispenseMap.forEach((medicationDispenseId) => {
-    dispenseNotificationSuccessful.action?.push({
-      resource: {
-        reference: `#${medicationDispenseId}`
-      }
+  if (dispenseNotificationSuccessful) {
+    medicationDispenseMap.forEach((medicationDispenseId) => {
+      dispenseNotificationSuccessful!.action?.push({
+        resource: {
+          reference: `#${medicationDispenseId}`
+        }
+      })
     })
-  })
+  }
 
   // ======================================================================================
   //  FINAL STEP: Return Constructed RequestGroup
