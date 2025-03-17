@@ -232,24 +232,30 @@ const parseProductLineItems = (xmlPrescription: XmlPrescription, logger: Logger)
     const dosageKey = `dosageLineItem${i}` as keyof typeof parentPrescription
 
     const productLineItem = parentPrescription[productLineItemKey] as string | undefined
+    const quantity = parentPrescription[quantityKey]?.toString() ?? ""
+    const dosage = parentPrescription[dosageKey]?.toString() ?? ""
 
-    if (productLineItem) {
-      productLineItems.push({
-        order: i,
-        medicationName: productLineItem,
-        quantity: parentPrescription[quantityKey]?.toString() ?? "0",
-        dosageInstructions: parentPrescription[dosageKey]?.toString() ?? "Unknown dosage"
-      })
-    }
+    // First, push everything (even if empty) into the array
+    productLineItems.push({
+      order: i,
+      medicationName: productLineItem?.trim() ?? "",
+      quantity: quantity.trim(),
+      dosageInstructions: dosage.trim()
+    })
   }
 
-  if (productLineItems.length === 0) {
-    throw new Error("At least one product line item is required")
+  // Filter out any product line items where all values are empty strings
+  const filteredProductLineItems = productLineItems.filter(
+    (item) => !(item.medicationName === "" && item.quantity === "" && item.dosageInstructions === "")
+  )
+
+  if (filteredProductLineItems.length === 0) {
+    throw new Error("At least one valid product line item is required")
   }
 
-  logger.info("Product line items parsed successfully", {productLineItems})
+  logger.info("Product line items parsed successfully", {productLineItems: filteredProductLineItems})
 
-  return productLineItems
+  return filteredProductLineItems
 }
 
 // ---------------------------- FILTERED HISTORY -----------------------------
@@ -259,30 +265,65 @@ const parseProductLineItems = (xmlPrescription: XmlPrescription, logger: Logger)
 const parseFilteredHistory = (xmlPrescription: XmlPrescription, logger: Logger): FilteredHistoryDetails => {
   const filteredHistoryItems: XmlFilteredHistory | Array<XmlFilteredHistory> = xmlPrescription.filteredHistory
 
+  if (!filteredHistoryItems) {
+    logger.warn("No filtered history found in prescription.")
+    return {
+      SCN: 0,
+      sentDateTime: "",
+      fromStatus: "",
+      toStatus: "",
+      message: "",
+      agentPersonOrgCode: "",
+      lineStatusChangeDict: undefined
+    }
+  }
+
   // Get the latest filtered history by the highest SCN
   const latestHistory = Array.isArray(filteredHistoryItems)
     ? filteredHistoryItems.reduce((prev, current) => (prev.SCN > current.SCN ? prev : current), filteredHistoryItems[0])
     : filteredHistoryItems
 
+  // Ensure fields are valid (handle cases like "False" values)
+  const fromStatus =
+    latestHistory.fromStatus && latestHistory.fromStatus !== "False"
+      ? padWithZeros(latestHistory.fromStatus.toString(), 4)
+      : ""
+
+  const toStatus =
+    latestHistory.toStatus && typeof latestHistory.toStatus !== "boolean" // Ensure it's not `False`
+      ? padWithZeros(latestHistory.toStatus.toString(), 4)
+      : ""
+
+  const message = latestHistory.message ? latestHistory.message.toString() : ""
+  const agentPersonOrgCode = latestHistory.agentPersonOrgCode ? latestHistory.agentPersonOrgCode.toString() : ""
+
+  // Ensure lineStatusChangeDict.line is always an array
+  let lineStatusChangeDict
+  if (latestHistory.lineStatusChangeDict && latestHistory.lineStatusChangeDict.line) {
+    const lineItems = Array.isArray(latestHistory.lineStatusChangeDict.line)
+      ? latestHistory.lineStatusChangeDict.line
+      : [latestHistory.lineStatusChangeDict.line] // Wrap it in an array if it's an object
+
+    lineStatusChangeDict = {
+      line: lineItems.map((line) => ({
+        order: line?.order ?? 0,
+        id: line?.id ?? "",
+        status: line?.status ?? "",
+        fromStatus: line?.fromStatus ? padWithZeros(line.fromStatus.toString(), 4) : "",
+        toStatus: line?.toStatus ? padWithZeros(line.toStatus.toString(), 4) : "",
+        cancellationReason: line?.cancellationReason ?? undefined
+      }))
+    }
+  }
+
   const parsedHistory: FilteredHistoryDetails = {
-    SCN: latestHistory.SCN,
-    sentDateTime: latestHistory.timestamp.toString(),
-    fromStatus: padWithZeros(latestHistory.fromStatus.toString(), 4),
-    toStatus: padWithZeros(latestHistory.toStatus.toString(), 4),
-    message: latestHistory.message.toString(),
-    agentPersonOrgCode: latestHistory.agentPersonOrgCode.toString(),
-    lineStatusChangeDict: latestHistory.lineStatusChangeDict
-      ? {
-        line: latestHistory.lineStatusChangeDict.line.map((line) => ({
-          order: line.order,
-          id: line.id,
-          status: line.status ?? "",
-          fromStatus: padWithZeros(line.fromStatus.toString(), 4),
-          toStatus: padWithZeros(line.toStatus.toString(), 4),
-          cancellationReason: line?.cancellationReason
-        }))
-      }
-      : undefined
+    SCN: latestHistory.SCN ?? 0,
+    sentDateTime: latestHistory.timestamp ? latestHistory.timestamp.toString() : "",
+    fromStatus,
+    toStatus,
+    message,
+    agentPersonOrgCode,
+    lineStatusChangeDict
   }
 
   logger.info("Filtered history parsed successfully", {parsedHistory})
