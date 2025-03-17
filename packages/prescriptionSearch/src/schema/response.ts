@@ -100,7 +100,7 @@ export const operationOutcomeSchema = {
     }
   },
   required: ["resourceType", "issue"]
-} satisfies JSONSchema
+} as const satisfies JSONSchema
 
 const patientBundleEntrySchema = {
   type: "object",
@@ -179,7 +179,7 @@ const patientBundleEntrySchema = {
       }
     }
   }
-} satisfies JSONSchema
+} as const satisfies JSONSchema
 
 const prescriptionStatusExtensionSchema = {
   type: "object",
@@ -255,7 +255,7 @@ const prescriptionStatusExtensionSchema = {
     }
   },
   required: ["url"]
-} satisfies JSONSchema
+} as const satisfies JSONSchema
 
 const medicationRepeatInformationExtensionSchema = {
   type: "object",
@@ -290,7 +290,7 @@ const medicationRepeatInformationExtensionSchema = {
     }
   },
   required: ["url"]
-} satisfies JSONSchema
+} as const satisfies JSONSchema
 
 const pendingCancellationExtensionSchema = {
   type: "object",
@@ -325,7 +325,7 @@ const pendingCancellationExtensionSchema = {
     }
   },
   required: ["url"]
-} satisfies JSONSchema
+} as const satisfies JSONSchema
 
 const requestGroupBundleEntrySchema = {
   type: "object",
@@ -421,7 +421,7 @@ const requestGroupBundleEntrySchema = {
       ]
     }
   }
-} satisfies JSONSchema
+} as const satisfies JSONSchema
 
 export const requestGroupBundleSchema = {
   type: "object",
@@ -453,9 +453,9 @@ export const requestGroupBundleSchema = {
     }
   },
   required: ["resourceType", "type"]
-} satisfies JSONSchema
+} as const satisfies JSONSchema
 
-export type OperationOutcomeSchema = FromSchema<typeof operationOutcomeSchema>
-export type PatientBundleEntrySchema = FromSchema<typeof patientBundleEntrySchema>
-export type RequestGroupBundleEntrySchema = FromSchema<typeof requestGroupBundleEntrySchema>
-export type BundleSchema = FromSchema<typeof requestGroupBundleSchema>
+export type OperationOutcomeType = FromSchema<typeof operationOutcomeSchema>
+export type PatientBundleEntryType = FromSchema<typeof patientBundleEntrySchema>
+export type RequestGroupBundleEntryType = FromSchema<typeof requestGroupBundleEntrySchema>
+export type BundleType = FromSchema<typeof requestGroupBundleSchema>
