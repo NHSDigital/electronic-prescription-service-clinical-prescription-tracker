@@ -40,7 +40,7 @@ export class ExpressStateMachine extends Construct {
       this, "CloudWatchLogsKmsKey", Fn.importValue("account-resources:CloudwatchLogsKmsKeyArn"))
 
     const cloudwatchEncryptionKMSPolicy = ManagedPolicy.fromManagedPolicyArn(
-      this, "cloudwatchEncryptionKMSPolicyArn", Fn.importValue("account-resources:CloudwatchEncryptionKMSPolicyArn"))
+      this, "cloudwatchEncryptionKMSPolicy", Fn.importValue("account-resources:CloudwatchEncryptionKMSPolicyArn"))
 
     const splunkDeliveryStream = Stream.fromStreamArn(
       this, "SplunkDeliveryStream", Fn.importValue("lambda-resources:SplunkDeliveryStream"))
