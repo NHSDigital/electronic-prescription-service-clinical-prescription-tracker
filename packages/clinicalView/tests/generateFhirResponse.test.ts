@@ -248,6 +248,34 @@ describe("generateFhirResponse", () => {
     expect(medicationDispenseMissing).toBe(false)
   })
 
+  it("should include correct participant information in actions", () => {
+    const response = generateFhirResponse(mockParsedResponseWithDispense, logger)
+
+    // Check prescription upload action
+    const prescriptionUploadAction = response.action?.[0].action?.find(
+      (action) => action.title === "Prescription upload successful"
+    )
+
+    expect(prescriptionUploadAction).toBeDefined()
+    expect(
+      prescriptionUploadAction?.participant?.[0].identifier?.value
+    ).toBe(
+      mockParsedResponseWithDispense.requestGroupDetails?.prescribingOrganization
+    )
+
+    // Check dispense notification action
+    const dispenseNotificationAction = response.action?.[0].action?.find(
+      (action) => action.title === "Dispense notification successful"
+    )
+
+    expect(dispenseNotificationAction).toBeDefined()
+    expect(
+      dispenseNotificationAction?.participant?.[0].identifier?.value
+    ).toBe(
+      mockParsedResponseWithDispense.dispenseNotificationDetails?.dispensingOrganization
+    )
+  })
+
   it("should correctly handle multiple product line items", () => {
     const response = generateFhirResponse(mockParsedResponseWithMultipleItems, logger)
 
@@ -313,6 +341,66 @@ describe("generateFhirResponse", () => {
       )
       expect(referencedInDispenseNotification).toBe(true)
     })
+  })
+
+  it("should correctly map prescription status to FHIR response", () => {
+    const response = generateFhirResponse(mockParsedResponse, logger)
+
+    const prescriptionStatusExtension = response.extension?.find(
+      (ext) => ext.url === "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory"
+    )
+
+    expect(prescriptionStatusExtension).toBeDefined()
+    expect(prescriptionStatusExtension?.extension?.[0].valueCoding?.code)
+      .toBe(mockParsedResponse.requestGroupDetails?.prescriptionStatus)
+  })
+
+  it("should correctly mark cancelled medications", () => {
+    const response = generateFhirResponse(mockParsedResponseWithMultipleItems, logger)
+
+    const cancelledMedications = response.contained?.filter(
+      (r) => r.resourceType === "MedicationRequest" && r.status === "cancelled"
+    )
+
+    const expectedCancelledItems = mockParsedResponseWithMultipleItems.filteredHistory
+      ?.lineStatusChangeDict?.line?.filter(
+        (line) => line.toStatus === "0005"
+      )
+
+    expect(cancelledMedications?.length).toBe(expectedCancelledItems?.length)
+  })
+
+  it("should handle dispense notifications without dispense items correctly", () => {
+    const response = generateFhirResponse(
+      {
+        ...mockParsedResponseWithDispense,
+        dispenseNotificationDetails: {
+          ...mockParsedResponseWithDispense.dispenseNotificationDetails,
+          dispenseNotificationItems: [],
+          statusPrescription:
+            mockParsedResponseWithDispense.dispenseNotificationDetails?.statusPrescription ?? "0006",
+          dispensingOrganization:
+            mockParsedResponseWithDispense.dispenseNotificationDetails?.dispensingOrganization ?? "UNKNOWN",
+          dispNotifToStatus:
+            mockParsedResponseWithDispense.dispenseNotificationDetails?.dispNotifToStatus ?? "0006",
+          dispenseNotifDateTime:
+            mockParsedResponseWithDispense.dispenseNotificationDetails?.dispenseNotifDateTime ?? "20240213105241"
+        }
+      },
+      logger
+    )
+
+    // Ensure MedicationDispense is NOT present
+    const medicationDispenseExists = response.contained?.some((r) => r.resourceType === "MedicationDispense")
+    expect(medicationDispenseExists).toBe(false)
+
+    // Ensure dispense notification action exists but does not reference any dispense items
+    const dispenseNotificationAction = response.action?.[0].action?.find(
+      (action) => action.title === "Dispense notification successful"
+    )
+
+    expect(dispenseNotificationAction).toBeDefined()
+    expect(dispenseNotificationAction?.action?.length).toBe(0)
   })
 
   it("should handle missing prescription details gracefully", () => {
