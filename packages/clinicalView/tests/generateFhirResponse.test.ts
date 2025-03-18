@@ -123,6 +123,36 @@ const mockParsedResponseWithMultipleItems: ParsedSpineResponse = {
   ]
 }
 
+const mockParsedResponseWithMultipleDispenseItems: ParsedSpineResponse = {
+  ...mockParsedResponseWithMultipleItems,
+  dispenseNotificationDetails: {
+    statusPrescription: "0006",
+    dispensingOrganization: "FA123",
+    dispNotifToStatus: "0006",
+    dispenseNotifDateTime: "20240213105241",
+    dispenseNotificationItems: [
+      {
+        order: 1,
+        medicationName: "Amoxicillin 250mg capsules",
+        quantity: "20",
+        status: "0006"
+      },
+      {
+        order: 2,
+        medicationName: "Co-codamol 30mg/500mg tablets",
+        quantity: "30",
+        status: "0008"
+      },
+      {
+        order: 3,
+        medicationName: "Pseudoephedrine hydrochloride 60mg tablets",
+        quantity: "15",
+        status: "0007"
+      }
+    ]
+  }
+}
+
 describe("generateFhirResponse", () => {
 
   it("should generate a valid FHIR RequestGroup", () => {
@@ -236,6 +266,52 @@ describe("generateFhirResponse", () => {
       expect(matchingMedicationRequest).toBeDefined()
       expect(matchingMedicationRequest?.dispenseRequest?.quantity?.value).toBe(parseInt(item.quantity, 10))
       expect(matchingMedicationRequest?.dosageInstruction?.[0]?.text).toBe(item.dosageInstructions)
+    })
+  })
+
+  it("should correctly link MedicationRequest to MedicationDispense and actions", () => {
+    const response = generateFhirResponse(mockParsedResponseWithMultipleDispenseItems, logger)
+
+    // Extract MedicationRequest and MedicationDispense entries
+    const medicationRequests = response.contained?.filter((r) => r.resourceType === "MedicationRequest")
+    const medicationDispenses = response.contained?.filter((r) => r.resourceType === "MedicationDispense")
+
+    // Ensure all expected dispense items are present
+    expect(medicationRequests?.length).toBe(3)
+    expect(medicationDispenses?.length).toBe(3)
+
+    // Verify links between MedicationRequest and MedicationDispense
+    medicationRequests?.forEach((medReq) => {
+      const correspondingDispense = medicationDispenses?.find((disp) =>
+        disp.authorizingPrescription?.some((ref) => ref.reference === `#${medReq.id}`)
+      )
+
+      expect(correspondingDispense).toBeDefined()
+    })
+
+    // Verify that actions correctly reference MedicationRequests and MedicationDispenses
+    const prescriptionUploadAction = response.action?.[0].action?.find(
+      (action) => action.title === "Prescription upload successful"
+    )
+
+    const dispenseNotificationAction = response.action?.[0].action?.find(
+      (action) => action.title === "Dispense notification successful"
+    )
+
+    // Check that MedicationRequests are referenced in prescription upload
+    medicationRequests?.forEach((medReq) => {
+      const referencedInUpload = prescriptionUploadAction?.action?.some(
+        (act) => act.resource?.reference === `#${medReq.id}`
+      )
+      expect(referencedInUpload).toBe(true)
+    })
+
+    // Check that MedicationDispenses are referenced in dispense notification
+    medicationDispenses?.forEach((medDisp) => {
+      const referencedInDispenseNotification = dispenseNotificationAction?.action?.some(
+        (act) => act.resource?.reference === `#${medDisp.id}`
+      )
+      expect(referencedInDispenseNotification).toBe(true)
     })
   })
 
