@@ -33,7 +33,8 @@ export class ClinicalViewStateMachineDefinition extends Construct {
     const invokeClinicalView = new LambdaInvoke(this, "Invoke Clinical View", {
       lambdaFunction: props.clinicalViewFunction,
       assign: {
-        clinicalViewResponse: "{% $parse($states.result.Payload.body) %}"
+        clinicalViewResponseBody: "{% $parse($states.result.Payload.body) %}",
+        responseHeaders: "{% $states.result.Payload.headers %}"
       }
     })
     invokeClinicalView.addCatch(catchAllError.state)
@@ -43,30 +44,64 @@ export class ClinicalViewStateMachineDefinition extends Construct {
       payload: TaskInput.fromObject({
         schemaVersion: 2,
         prescriptions: [{
-          prescriptionID: "{% $clinicalViewResponse.identifier[0].value %}",
-          odsCode: "{% $clinicalViewResponse.author.identifier.value %}"
+          prescriptionID: "{% $clinicalViewResponseBody.identifier[0].value %}",
+          odsCode: "{% $clinicalViewResponseBody.author.identifier.value %}"
         }]
       }),
       assign: {
-        getStatusUpdatesResponse: "{% states.result.Payload %}"
+        getStatusUpdatesResponse: "{% $states.result.Payload %}"
       }
     })
     invokeGetStatusUpdates.addCatch(catchAllError.state)
 
     const enrichResponse = new Pass(this, "Enrich Response", {
       outputs: {
-
+        Payload:{
+          statusCode: 200,
+          headers: "{% $responseHeaders %}",
+          body: `{% $string(
+          $clinicalViewResponseBody ~> | contained[resourceType="MedicationRequest"]) |
+          id@$id
+          {
+            "extension": [
+                extension,
+                {
+                  "url": "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
+                  "extension": [
+                    {
+                      "url": "status",
+                      "valueCoding: {
+                        "system": "https://fhir.nhs.uk/ValueSet/DM-prescription-task-status-reason",
+                        "code": "$getStatusUpdatesResponse.items[itemId=$id].latestStatus,
+                      }
+                    },
+                    {
+                      "url": "statusDate",
+                      "valueDateTime": $getStatusUpdatesResponse.items[itemId=$id].lastUpdatedDateTime
+                    }
+                  ]
+                }
+              ]
+          }|) %}`
+        }
       }
     })
+
+    const statusOK = Condition.jsonata("{% $state.input.Payload.statusCode = 200 %}")
+    const checkClinicalViewResult = new Choice(this, "Check Clinical View Result")
+    const checkGetStatusUpdatesResult = new Choice(this, "Check Get Status Updates Result")
+    const returnResponse = new Pass(this, "Return response")
 
     // Definition Chain
     const definition = Chain
       .start(invokeClinicalView)
-      .next(new Choice(this, "Clinical View Result")
-        .when(Condition.jsonata("{% $state.input.Payload.statusCode = 200 %}"), invokeGetStatusUpdates
-          .next(enrichResponse))
+      .next(checkClinicalViewResult
+        .when(statusOK, invokeGetStatusUpdates
+          .next(checkGetStatusUpdatesResult
+            .when(statusOK, enrichResponse)
+            .afterwards()))
         .afterwards())
-      .next(new Pass(this, "Return response"))
+      .next(returnResponse)
 
     this.definition = definition
   }

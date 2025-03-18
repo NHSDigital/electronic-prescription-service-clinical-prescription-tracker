@@ -4,7 +4,7 @@ import {Construct} from "constructs"
 const severErrorOperationOutcome = {
   ResourceType: "OperationOutcome",
   meta: {
-    lastUpdated: "{% $timestamp %}"
+    lastUpdated: "{% $now() %}"
   },
   issue: [
     {
@@ -32,8 +32,7 @@ export class CatchAllErrorPass extends Construct {
 
     const state = new Pass(this, "Catch All Error", {
       assign: {
-        timestamp: "{% $now() %}",
-        bodyTemplate: `${JSON.stringify(severErrorOperationOutcome)}`
+        bodyTemplate: severErrorOperationOutcome
       },
       outputs: {
         Payload: {
@@ -42,7 +41,7 @@ export class CatchAllErrorPass extends Construct {
             "Content-Type": "application/fhir+json",
             "Cache-Control": "co-cache"
           },
-          body: "{% $bodyTemplate %}"
+          body: "{% $string($bodyTemplate) %}"
         }
       }
     })
