@@ -72,7 +72,7 @@ export class ClinicalViewStateMachineDefinition extends Construct {
                       "url": "status",
                       "valueCoding: {
                         "system": "https://fhir.nhs.uk/ValueSet/DM-prescription-task-status-reason",
-                        "code": "$getStatusUpdatesResponse.items[itemId=$id].latestStatus,
+                        "code": $getStatusUpdatesResponse.items[itemId=$id].latestStatus,
                       }
                     },
                     {
