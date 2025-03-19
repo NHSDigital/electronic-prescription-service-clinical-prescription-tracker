@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {IResource, StepFunctionsIntegration} from "aws-cdk-lib/aws-apigateway"
+
+import {IResource, PassthroughBehavior, StepFunctionsIntegration} from "aws-cdk-lib/aws-apigateway"
 import {IRole} from "aws-cdk-lib/aws-iam"
 import {HttpMethod} from "aws-cdk-lib/aws-lambda"
 import {StateMachine} from "aws-cdk-lib/aws-stepfunctions"
@@ -20,7 +20,10 @@ export class StateMachineEndpoint extends Construct{
     super(scope, id)
 
     const resource = props.parentResource.addResource(props.resourceName)
-    // resource.addMethod(props.method, new StepFunctionsIntegration(props.stateMachine, {
-    // }))
+    resource.addMethod(props.method, StepFunctionsIntegration.startExecution(props.stateMachine, {
+      credentialsRole: props.restApiGatewayRole,
+      passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
+      requestTemplates: {}
+    }))
   }
 }

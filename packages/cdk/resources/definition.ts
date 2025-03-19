@@ -1,7 +1,6 @@
 import {Function, IFunction} from "aws-cdk-lib/aws-lambda"
 import {LambdaInvoke} from "aws-cdk-lib/aws-stepfunctions-tasks"
 import {Construct} from "constructs"
-import {CatchAllErrorPass} from "../constructs/StateMachine/CatchAllErrorPass"
 import {
   Chain,
   Choice,
@@ -11,6 +10,7 @@ import {
   TaskInput
 } from "aws-cdk-lib/aws-stepfunctions"
 import {Fn} from "aws-cdk-lib"
+import {CatchAllErrorPass} from "../constructs/StateMachine/CatchAllErrorPass"
 
 export interface DefinitionProps {
   readonly clinicalViewFunction: IFunction
