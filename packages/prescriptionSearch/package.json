@@ -2,8 +2,7 @@
   "name": "prescriptionSearch",
   "version": "1.0.0",
   "description": "Call the Prescription Search interaction",
-  "main": "lib/src/prescriptionSearch.js",
-  "types": "lib/src/prescriptionSearch.d.ts",
+  "main": "lib/src/handler.js",
   "author": "NHS Digital",
   "license": "MIT",
   "type": "module",
@@ -17,6 +16,7 @@
   "dependencies": {
     "@middy/http-header-normalizer": "^6.1.5",
     "@NHSDigital/eps-spine-client": "^2.1.27",
+    "fast-xml-parser": "^4.5.1",
     "json-schema-to-ts": "^3.1.0"
   },
   "devDependencies": {

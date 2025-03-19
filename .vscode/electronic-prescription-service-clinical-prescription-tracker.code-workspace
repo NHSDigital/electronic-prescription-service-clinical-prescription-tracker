@@ -29,8 +29,8 @@
       "path": "../packages/specification"
     },
 		{
-			"name": "packages/statusLambda",
-			"path": "../packages/statusLambda"
+			"name": "packages/status",
+			"path": "../packages/status"
 		}
 	],
 	"settings": {

@@ -10,6 +10,6 @@
     { "path": "packages/prescriptionSearch" },
     { "path": "packages/sandbox" },
     { "path": "packages/specification" },
-    { "path": "packages/statusLambda" }
+    { "path": "packages/status" }
   ]
 }
