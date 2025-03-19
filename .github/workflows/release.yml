@@ -192,10 +192,10 @@ jobs:
       ENABLE_MUTUAL_TLS: false
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
     secrets:
-      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-      CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}
+      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
+      CDK_PULL_IMAGE_ROLE: ${{ secrets.REF_CDK_PULL_IMAGE_ROLE }}
       PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
-      TARGET_SPINE_SERVER: ${{ secrets.DEV_TARGET_SPINE_SERVER }}
+      TARGET_SPINE_SERVER: ${{ secrets.REF_TARGET_SPINE_SERVER }}
       REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
 
   release_qa:
@@ -213,10 +213,10 @@ jobs:
       ENABLE_MUTUAL_TLS: false
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
     secrets:
-      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-      CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}
+      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
+      CDK_PULL_IMAGE_ROLE: ${{ secrets.QA_CDK_PULL_IMAGE_ROLE }}
       PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
-      TARGET_SPINE_SERVER: ${{ secrets.DEV_TARGET_SPINE_SERVER }}
+      TARGET_SPINE_SERVER: ${{ secrets.QA_TARGET_SPINE_SERVER }}
       REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
 
   release_int:
@@ -234,10 +234,10 @@ jobs:
       ENABLE_MUTUAL_TLS: false
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
     secrets:
-      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-      CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}
+      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
+      CDK_PULL_IMAGE_ROLE: ${{ secrets.INT_CDK_PULL_IMAGE_ROLE }}
       PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
-      TARGET_SPINE_SERVER: ${{ secrets.DEV_TARGET_SPINE_SERVER }}
+      TARGET_SPINE_SERVER: ${{ secrets.INT_TARGET_SPINE_SERVER }}
       REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
 
     # release_sandbox:
@@ -255,8 +255,8 @@ jobs:
   #     ENABLE_MUTUAL_TLS: false
   #     TRUSTSTORE_FILE: clinical-tracker-sandbox-truststore.pem
   #   secrets:
-  #     CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-  #     CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}
+  #     CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
+  #     CDK_PULL_IMAGE_ROLE: ${{ secrets.INT_CDK_PULL_IMAGE_ROLE }}
   #     PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
   #     TARGET_SPINE_SERVER: sandbox
   #     REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
@@ -276,8 +276,8 @@ jobs:
       ENABLE_MUTUAL_TLS: false
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
     secrets:
-      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-      CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}
+      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_DEPLOY_ROLE }}
+      CDK_PULL_IMAGE_ROLE: ${{ secrets.PROD_CDK_PULL_IMAGE_ROLE }}
       PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
-      TARGET_SPINE_SERVER: ${{ secrets.DEV_TARGET_SPINE_SERVER }}
+      TARGET_SPINE_SERVER: ${{ secrets.PROD_TARGET_SPINE_SERVER }}
       REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
