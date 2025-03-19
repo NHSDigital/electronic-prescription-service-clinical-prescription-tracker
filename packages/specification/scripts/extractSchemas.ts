@@ -1,8 +1,8 @@
 import fs from "fs"
 import path from "path"
 import {
-  bundleSchema as ResponseBundle,
-  outcomeSchema as OperationOutcome,
+  requestGroupBundleSchema as ResponseBundle,
+  operationOutcomeSchema as OperationOutcome
 } from "prescriptionSearch"
 import {JSONSchema} from "json-schema-to-ts"
 
