@@ -1,7 +1,7 @@
 import {Function, IFunction} from "aws-cdk-lib/aws-lambda"
 import {LambdaInvoke} from "aws-cdk-lib/aws-stepfunctions-tasks"
 import {Construct} from "constructs"
-import {CatchAllErrorPass} from "./StateMachine/CatchAllErrorPass"
+import {CatchAllErrorPass} from "../constructs/StateMachine/CatchAllErrorPass"
 import {
   Chain,
   Choice,
@@ -16,7 +16,6 @@ export interface DefinitionProps {
   readonly clinicalViewFunction: IFunction
 }
 
-//states
 export class ClinicalViewStateMachineDefinition extends Construct {
   public readonly definition: IChainable
 
@@ -61,7 +60,7 @@ export class ClinicalViewStateMachineDefinition extends Construct {
           headers: "{% $responseHeaders %}",
           body: `{% $string(
           $clinicalViewResponseBody ~> | contained[resourceType="MedicationRequest"]) |
-          id@$id
+          identifier[0].value@$id
           {
             "extension": [
                 extension,

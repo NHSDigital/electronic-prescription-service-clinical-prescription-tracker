@@ -1,5 +1,4 @@
 import {Fn, RemovalPolicy} from "aws-cdk-lib"
-import {ResourceType} from "aws-cdk-lib/aws-config"
 import {
   IManagedPolicy,
   ManagedPolicy,
