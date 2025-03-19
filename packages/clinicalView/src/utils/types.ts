@@ -51,7 +51,7 @@ export interface ParsedSpineResponse {
   requestGroupDetails?: RequestGroupDetails
   patientDetails?: PatientDetails
   productLineItems?: Array<ProductLineItemDetails>
-  filteredHistory?: FilteredHistoryDetails
+  filteredHistory?: Array<FilteredHistoryDetails>
   dispenseNotificationDetails?: DispenseNotification
   error?: SearchError
 }

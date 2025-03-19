@@ -12,7 +12,8 @@ import {
   DispenseNotification,
   DispenseNotificationItem,
   FilteredHistoryDetails,
-  ParsedSpineResponse
+  ParsedSpineResponse,
+  LineStatusChange
 } from "./types"
 import {padWithZeros} from "./fhirMappers"
 
@@ -262,72 +263,61 @@ const parseProductLineItems = (xmlPrescription: XmlPrescription, logger: Logger)
 /**
  * Parses filtered history of prescription events and returns the latest event details.
  */
-const parseFilteredHistory = (xmlPrescription: XmlPrescription, logger: Logger): FilteredHistoryDetails => {
+const parseFilteredHistory = (xmlPrescription: XmlPrescription, logger: Logger): Array<FilteredHistoryDetails> => {
   const filteredHistoryItems: XmlFilteredHistory | Array<XmlFilteredHistory> = xmlPrescription.filteredHistory
 
   if (!filteredHistoryItems) {
     logger.warn("No filtered history found in prescription.")
+    return []
+  }
+
+  // If only one history event exists, wrap it in an array
+  const filteredHistoryArray = Array.isArray(filteredHistoryItems) ? filteredHistoryItems : [filteredHistoryItems]
+
+  // Convert each filtered history entry into a standard object
+  const parsedHistories: Array<FilteredHistoryDetails> = filteredHistoryArray.map((history) => {
     return {
-      SCN: 0,
-      sentDateTime: "",
-      fromStatus: "",
-      toStatus: "",
-      message: "",
-      agentPersonOrgCode: "",
-      lineStatusChangeDict: undefined
+      SCN: history.SCN ?? 0,
+      sentDateTime: history.timestamp ? history.timestamp.toString() : "",
+      fromStatus: history.fromStatus ? padWithZeros(history.fromStatus.toString(), 4) : "",
+      toStatus: history.toStatus ? padWithZeros(history.toStatus.toString(), 4) : "",
+      message: history.message ? history.message.toString() : "",
+      agentPersonOrgCode: history.agentPersonOrgCode ? history.agentPersonOrgCode.toString() : "",
+      lineStatusChangeDict: history.lineStatusChangeDict
+        ? {
+          line: Array.isArray(history.lineStatusChangeDict.line)
+            ? history.lineStatusChangeDict.line.map((line) => ({
+              order: line.order ?? 0,
+              id: line.id ?? "",
+              status: line.status ?? "",
+              fromStatus: line.fromStatus ? padWithZeros(line.fromStatus.toString(), 4) : "",
+              toStatus: line.toStatus ? padWithZeros(line.toStatus.toString(), 4) : "",
+              cancellationReason: line.cancellationReason ?? undefined
+            }))
+            : history.lineStatusChangeDict.line
+              ? [
+                {
+                  order: (history.lineStatusChangeDict.line as LineStatusChange).order ?? 0,
+                  id: (history.lineStatusChangeDict.line as LineStatusChange).id ?? "",
+                  status: (history.lineStatusChangeDict.line as LineStatusChange).status ?? "",
+                  fromStatus: (history.lineStatusChangeDict.line as LineStatusChange).fromStatus
+                    ? padWithZeros((history.lineStatusChangeDict.line as LineStatusChange).fromStatus.toString(), 4)
+                    : "",
+                  toStatus: (history.lineStatusChangeDict.line as LineStatusChange).toStatus
+                    ? padWithZeros((history.lineStatusChangeDict.line as LineStatusChange).toStatus.toString(), 4)
+                    : "",
+                  cancellationReason: (history.lineStatusChangeDict.line as LineStatusChange).cancellationReason
+                    ?? undefined
+                }
+              ]
+              : [] // Return an empty array if no valid line exists
+        }
+        : undefined
     }
-  }
+  })
 
-  // Get the latest filtered history by the highest SCN
-  const latestHistory = Array.isArray(filteredHistoryItems)
-    ? filteredHistoryItems.reduce((prev, current) => (prev.SCN > current.SCN ? prev : current), filteredHistoryItems[0])
-    : filteredHistoryItems
-
-  // Ensure fields are valid (handle cases like "False" values)
-  const fromStatus =
-    latestHistory.fromStatus && latestHistory.fromStatus !== "False"
-      ? padWithZeros(latestHistory.fromStatus.toString(), 4)
-      : ""
-
-  const toStatus =
-    latestHistory.toStatus && typeof latestHistory.toStatus !== "boolean" // Ensure it's not `False`
-      ? padWithZeros(latestHistory.toStatus.toString(), 4)
-      : ""
-
-  const message = latestHistory.message ? latestHistory.message.toString() : ""
-  const agentPersonOrgCode = latestHistory.agentPersonOrgCode ? latestHistory.agentPersonOrgCode.toString() : ""
-
-  // Ensure lineStatusChangeDict.line is always an array
-  let lineStatusChangeDict
-  if (latestHistory.lineStatusChangeDict && latestHistory.lineStatusChangeDict.line) {
-    const lineItems = Array.isArray(latestHistory.lineStatusChangeDict.line)
-      ? latestHistory.lineStatusChangeDict.line
-      : [latestHistory.lineStatusChangeDict.line] // Wrap it in an array if it's an object
-
-    lineStatusChangeDict = {
-      line: lineItems.map((line) => ({
-        order: line?.order ?? 0,
-        id: line?.id ?? "",
-        status: line?.status ?? "",
-        fromStatus: line?.fromStatus ? padWithZeros(line.fromStatus.toString(), 4) : "",
-        toStatus: line?.toStatus ? padWithZeros(line.toStatus.toString(), 4) : "",
-        cancellationReason: line?.cancellationReason ?? undefined
-      }))
-    }
-  }
-
-  const parsedHistory: FilteredHistoryDetails = {
-    SCN: latestHistory.SCN ?? 0,
-    sentDateTime: latestHistory.timestamp ? latestHistory.timestamp.toString() : "",
-    fromStatus,
-    toStatus,
-    message,
-    agentPersonOrgCode,
-    lineStatusChangeDict
-  }
-
-  logger.info("Filtered history parsed successfully", {parsedHistory})
-  return parsedHistory
+  logger.info("Filtered history parsed successfully", {parsedHistories})
+  return parsedHistories
 }
 
 // ---------------------------- DISPENSE NOTIFICATION -----------------------------

@@ -38,40 +38,110 @@ const mockParsedResponse: ParsedSpineResponse = {
       dosageInstructions: "2 times a day for 10 days"
     }
   ],
-  filteredHistory: {
-    SCN: 2,
-    sentDateTime: "20240213105241",
-    fromStatus: "False",
-    toStatus: "0001",
-    message: "Prescription upload successful",
-    agentPersonOrgCode: "A83008",
-    lineStatusChangeDict: {
-      line: [
-        {
-          order: 1,
-          id: "DAD23C1F-71A4-473A-9273-C83C8BFC5F64",
-          status: "",
-          fromStatus: "0005",
-          toStatus: "0005",
-          cancellationReason: "Clinical grounds"
-        },
-        {
-          order: 2,
-          id: "9F737A38-F80C-4AD0-96FC-CB5A796D254B",
-          status: "",
-          fromStatus: "0008",
-          toStatus: "0001"
-        },
-        {
-          order: 3,
-          id: "FDB4258F-BB6B-4217-A001-382BD4035123",
-          status: "",
-          fromStatus: "0007",
-          toStatus: "0008"
-        }
-      ]
+  filteredHistory: [
+    {
+      SCN: 2,
+      sentDateTime: "20240213105241",
+      fromStatus: "False",
+      toStatus: "0001",
+      message: "Prescription upload successful",
+      agentPersonOrgCode: "A83008",
+      lineStatusChangeDict: {
+        line: [
+          {
+            order: 1,
+            id: "DAD23C1F-71A4-473A-9273-C83C8BFC5F64",
+            status: "",
+            fromStatus: "0005",
+            toStatus: "0005",
+            cancellationReason: "Clinical grounds"
+          },
+          {
+            order: 2,
+            id: "9F737A38-F80C-4AD0-96FC-CB5A796D254B",
+            status: "",
+            fromStatus: "0008",
+            toStatus: "0001"
+          },
+          {
+            order: 3,
+            id: "FDB4258F-BB6B-4217-A001-382BD4035123",
+            status: "",
+            fromStatus: "0007",
+            toStatus: "0008"
+          }
+        ]
+      }
+    },
+    {
+      SCN: 3,
+      sentDateTime: "20240213105241",
+      fromStatus: "0001",
+      toStatus: "0002",
+      message: "Release Request successful",
+      agentPersonOrgCode: "YGM1E",
+      lineStatusChangeDict: {
+        line: [
+          {
+            order: 1,
+            id: "DAD23C1F-71A4-473A-9273-C83C8BFC5F64",
+            status: "",
+            fromStatus: "0007",
+            toStatus: "0008",
+            cancellationReason: "Clinical grounds"
+          },
+          {
+            order: 2,
+            id: "9F737A38-F80C-4AD0-96FC-CB5A796D254B",
+            status: "",
+            fromStatus: "0007",
+            toStatus: "0008"
+          },
+          {
+            order: 3,
+            id: "FDB4258F-BB6B-4217-A001-382BD4035123",
+            status: "",
+            fromStatus: "0007",
+            toStatus: "0008"
+          }
+        ]
+      }
+    },
+    {
+      SCN: 4,
+      sentDateTime: "20240213105241",
+      fromStatus: "0002",
+      toStatus: "0006",
+      message: "Dispense notification successful; Update applied to issue=1",
+      agentPersonOrgCode: "FA123",
+      lineStatusChangeDict: {
+        line: [
+          {
+            order: 1,
+            id: "DAD23C1F-71A4-473A-9273-C83C8BFC5F64",
+            status: "",
+            fromStatus: "0008",
+            toStatus: "0001",
+            cancellationReason: "Clinical grounds"
+          },
+          {
+            order: 2,
+            id: "9F737A38-F80C-4AD0-96FC-CB5A796D254B",
+            status: "",
+            fromStatus: "0008",
+            toStatus: "0001"
+          },
+          {
+            order: 3,
+            id: "FDB4258F-BB6B-4217-A001-382BD4035123",
+            status: "",
+            fromStatus: "0008",
+            toStatus: "0001"
+          }
+        ]
+      }
     }
-  },
+  ],
   dispenseNotificationDetails: {
     statusPrescription: "0003",
     dispensingOrganization: "FA123",
@@ -151,6 +221,66 @@ const mockParsedResponseWithMultipleDispenseItems: ParsedSpineResponse = {
       }
     ]
   }
+}
+
+const mockParsedResponseWithCancelledItems: ParsedSpineResponse = {
+  ...mockParsedResponseWithMultipleItems,
+  filteredHistory: [
+    {
+      SCN: 3, // Older event, does not contain cancellations
+      sentDateTime: "20250225194132",
+      fromStatus: "0001",
+      toStatus: "0001",
+      message: "Prescription/item processed",
+      agentPersonOrgCode: "A83008",
+      lineStatusChangeDict: {
+        line: [
+          {
+            order: 1,
+            id: "9BB08AA9-44A9-47AA-A619-961830143AF0",
+            status: "",
+            fromStatus: "0007",
+            toStatus: "0008"
+          },
+          {
+            order: 2,
+            id: "06B9EC66-5B19-459A-A2AD-31FE8589EB6B",
+            status: "",
+            fromStatus: "0007",
+            toStatus: "0007"
+          }
+        ]
+      }
+    },
+    {
+      SCN: 4, // More recent event, contains cancelled items
+      sentDateTime: "20250225194208",
+      fromStatus: "0001",
+      toStatus: "0005", // Prescription was cancelled
+      message: "Prescription/item was cancelled",
+      agentPersonOrgCode: "A83008",
+      lineStatusChangeDict: {
+        line: [
+          {
+            order: 1,
+            id: "9BB08AA9-44A9-47AA-A619-961830143AF0",
+            status: "",
+            fromStatus: "0008",
+            toStatus: "0005", // Now marked as cancelled
+            cancellationReason: "Clinical grounds"
+          },
+          {
+            order: 2,
+            id: "06B9EC66-5B19-459A-A2AD-31FE8589EB6B",
+            status: "",
+            fromStatus: "0007",
+            toStatus: "0005", // Now marked as cancelled
+            cancellationReason: "At the Pharmacist's request"
+          }
+        ]
+      }
+    }
+  ]
 }
 
 describe("generateFhirResponse", () => {
@@ -356,18 +486,34 @@ describe("generateFhirResponse", () => {
   })
 
   it("should correctly mark cancelled medications", () => {
-    const response = generateFhirResponse(mockParsedResponseWithMultipleItems, logger)
+    const response = generateFhirResponse(mockParsedResponseWithCancelledItems, logger)
 
-    const cancelledMedications = response.contained?.filter(
-      (r) => r.resourceType === "MedicationRequest" && r.status === "cancelled"
+    // Ensure filteredHistory is an array (or use an empty array if it's undefined)
+    const filteredHistoryArray = mockParsedResponseWithCancelledItems.filteredHistory ?? []
+
+    // Ensure we have history data before reducing
+    if (filteredHistoryArray.length === 0) {
+      throw new Error("No filtered history data available for testing.")
+    }
+
+    // Extract the latest filtered history entry (highest SCN)
+    const latestHistory = filteredHistoryArray.reduce(
+      (latest, current) => (!latest || current.SCN > latest.SCN) ? current : latest,
+      filteredHistoryArray[0] // Set initial value correctly
     )
 
-    const expectedCancelledItems = mockParsedResponseWithMultipleItems.filteredHistory
-      ?.lineStatusChangeDict?.line?.filter(
-        (line) => line.toStatus === "0005"
-      )
+    // Get medications that were marked as cancelled in the latest history
+    const expectedCancelledItems = latestHistory.lineStatusChangeDict?.line?.filter(
+      (line) => line.toStatus === "0005"
+    ) ?? []
 
-    expect(cancelledMedications?.length).toBe(expectedCancelledItems?.length)
+    // Extract cancelled medications from the response
+    const cancelledMedications = response.contained?.filter(
+      (r) => r.resourceType === "MedicationRequest" && r.status === "cancelled"
+    ) ?? []
+
+    // Compare the count of expected cancelled items with the actual cancelled medications
+    expect(cancelledMedications.length).toBe(expectedCancelledItems.length)
   })
 
   it("should handle dispense notifications without dispense items correctly", () => {
