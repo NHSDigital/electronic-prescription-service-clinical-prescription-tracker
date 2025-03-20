@@ -116,3 +116,5 @@ export class CptsApiStack extends Stack {
     nagSuppressions(this)
   }
 }
+
+// TODO: refactor -> lambdas into a functions file in resources, api, state machines similar

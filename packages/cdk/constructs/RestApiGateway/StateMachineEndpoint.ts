@@ -40,12 +40,14 @@ export class StateMachineEndpoint extends Construct{
         },
         {
           statusCode: "400",
+          selectionPattern: "^4\\d{2}.*",
           responseTemplates: {
             "application/json": stateMachineErrorResponseTemplate("400")
           }
         },
         {
           statusCode: "500",
+          selectionPattern: "^5\\d{2}.*",
           responseTemplates: {
             "application/json": stateMachineErrorResponseTemplate("500")
           }
@@ -60,5 +62,3 @@ export class StateMachineEndpoint extends Construct{
     })
   }
 }
-
-// what about other possible responses, 404 etc?
