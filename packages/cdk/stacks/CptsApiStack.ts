@@ -6,9 +6,9 @@ import {
 } from "aws-cdk-lib"
 import {IManagedPolicy, ManagedPolicy} from "aws-cdk-lib/aws-iam"
 import {HttpMethod} from "aws-cdk-lib/aws-lambda"
-import {LambdaFunction} from "../resources/LambdaFunction"
-import {RestApiGateway} from "../resources/RestApiGateway"
-import {LambdaEndpoint} from "../resources/RestApiGateway/LambdaEndpoint"
+import {LambdaFunction} from "../constructs/LambdaFunction"
+import {RestApiGateway} from "../constructs/RestApiGateway"
+import {LambdaEndpoint} from "../constructs/RestApiGateway/LambdaEndpoint"
 import {nagSuppressions} from "../nagSuppressions"
 
 export interface CptsApiStackProps extends StackProps {
@@ -116,3 +116,5 @@ export class CptsApiStack extends Stack {
     nagSuppressions(this)
   }
 }
+
+// TODO: refactor -> lambdas into a functions file in resources, api, state machines similar
