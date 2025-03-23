@@ -148,7 +148,7 @@ paths:
           content:
             application/fhir+json:
               schema:
-                $ref: schemas/resources/bundleSchema.json
+                $ref: schemas/resources/ResponseBundle.json
         "4XX":
           description: |
             An error occurred as follows:
@@ -176,7 +176,7 @@ paths:
           content:
             application/fhir+json:
               schema:
-                $ref: schemas/resources/outcomeSchema.json
+                $ref: schemas/resources/OperationOutcome.json
       security:
         - nhs-cis2-aal3: []
   /RequestGroup/{prescriptionId}:
@@ -215,7 +215,7 @@ paths:
           content:
             application/fhir+json:
               schema:
-                $ref: schemas/resources/outcomeSchema.json
+                $ref: schemas/resources/OperationOutcome.json
       security:
         - nhs-cis2-aal3: []
 
