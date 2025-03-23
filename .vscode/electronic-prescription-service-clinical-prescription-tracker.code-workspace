@@ -5,6 +5,10 @@
 			"path": ".."
 		},
 		{
+			"name": "packages/cdk",
+			"path": "../packages/cdk"
+		},
+		{
 			"name": "packages/clinicalView",
 			"path": "../packages/clinicalView"
 		},
@@ -25,8 +29,8 @@
       "path": "../packages/specification"
     },
 		{
-			"name": "packages/statusLambda",
-			"path": "../packages/statusLambda"
+			"name": "packages/status",
+			"path": "../packages/status"
 		}
 	],
 	"settings": {
