@@ -2,17 +2,17 @@
 import {IResource, PassthroughBehavior, StepFunctionsIntegration} from "aws-cdk-lib/aws-apigateway"
 import {IRole} from "aws-cdk-lib/aws-iam"
 import {HttpMethod} from "aws-cdk-lib/aws-lambda"
-import {StateMachine} from "aws-cdk-lib/aws-stepfunctions"
 import {Construct} from "constructs"
 import {stateMachineRequestTemplate} from "./templates/stateMachineRequest"
 import {stateMachine200ResponseTemplate, stateMachineErrorResponseTemplate} from "./templates/stateMachineResponses"
+import {ExpressStateMachine} from "../StateMachine"
 
 export interface StateMachineEndpointProps {
   parentResource: IResource,
   readonly resourceName: string
   readonly method: HttpMethod
   restApiGatewayRole: IRole
-  stateMachine: StateMachine
+  stateMachine: ExpressStateMachine
 }
 
 export class StateMachineEndpoint extends Construct{
@@ -21,10 +21,10 @@ export class StateMachineEndpoint extends Construct{
   public constructor(scope: Construct, id: string, props: StateMachineEndpointProps){
     super(scope, id)
 
-    const requestTemplate = stateMachineRequestTemplate(props.stateMachine.stateMachineArn)
+    const requestTemplate = stateMachineRequestTemplate(props.stateMachine.stateMachine.stateMachineArn)
 
     const resource = props.parentResource.addResource(props.resourceName)
-    resource.addMethod(props.method, StepFunctionsIntegration.startExecution(props.stateMachine, {
+    resource.addMethod(props.method, StepFunctionsIntegration.startExecution(props.stateMachine.stateMachine, {
       credentialsRole: props.restApiGatewayRole,
       passthroughBehavior: PassthroughBehavior.WHEN_NO_MATCH,
       requestTemplates: {
@@ -60,5 +60,9 @@ export class StateMachineEndpoint extends Construct{
         {statusCode: "500"}
       ]
     })
+
+    props.restApiGatewayRole.addManagedPolicy(props.stateMachine.executionPolicy)
+
+    this.resource = resource
   }
 }

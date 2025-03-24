@@ -10,13 +10,13 @@ import {
   TaskInput
 } from "aws-cdk-lib/aws-stepfunctions"
 import {Fn} from "aws-cdk-lib"
-import {CatchAllErrorPass} from "../constructs/StateMachine/CatchAllErrorPass"
+import {CatchAllErrorPass} from "../../constructs/StateMachine/CatchAllErrorPass"
 
 export interface DefinitionProps {
   readonly clinicalViewFunction: IFunction
 }
 
-export class ClinicalViewStateMachineDefinition extends Construct {
+export class ClinicalView extends Construct {
   public readonly definition: IChainable
 
   public constructor(scope: Construct, id: string, props: DefinitionProps){
