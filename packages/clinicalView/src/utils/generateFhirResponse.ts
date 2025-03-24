@@ -43,11 +43,11 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
       : []
 
   // Get the latest filtered history entry based on SCN (highest SCN value)
-  const latestHistory: FilteredHistoryDetails | null = filteredHistoryArray.length > 0
-    ? filteredHistoryArray.reduce((latest, current) =>
-      (!latest || current.SCN > latest.SCN) ? current : latest
-    )
-    : null
+  const latestHistory: FilteredHistoryDetails | null = filteredHistoryArray.reduce<FilteredHistoryDetails | null>(
+    (latest, current) =>
+      !latest || current.SCN > latest.SCN ? current : latest,
+    null
+  )
 
   // Check if any line has a pending cancellation in the latest history entry
   const hasPendingCancellation = latestHistory?.lineStatusChangeDict?.line?.some(
