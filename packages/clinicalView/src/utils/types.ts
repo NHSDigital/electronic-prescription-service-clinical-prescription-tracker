@@ -116,6 +116,7 @@ export interface FilteredHistoryDetails {
   toStatus: string
   message: string
   agentPersonOrgCode: string
+  cancellationReason?: string
   lineStatusChangeDict?: {
     line: Array<LineStatusChange>
   }
@@ -293,6 +294,7 @@ export interface XmlFilteredHistory {
   message: string
   orgASID: number
   agentPersonOrgCode: string
+  cancellationReason?: string
   lineStatusChangeDict: {
     line: Array<LineStatusChange>
   }
