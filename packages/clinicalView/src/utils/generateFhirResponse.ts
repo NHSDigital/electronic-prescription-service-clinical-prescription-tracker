@@ -19,11 +19,13 @@ import {
   formatToISO8601,
   formatBirthDate
 } from "./fhirMappers"
+import {requestGroupType} from "../schemas/requestGroupSchema"
 
 /**
  * Maps extracted prescription data into a FHIR RequestGroup response.
  */
-export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: Logger): RequestGroup => {
+export const generateFhirResponse =
+(prescription: ParsedSpineResponse, logger: Logger): RequestGroup & requestGroupType => {
   // ======================================================================================
   //  STEP 1: Generate Unique Identifiers & Initialize Data Maps
   // ======================================================================================
@@ -61,7 +63,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   const prescribingOrganization: string = prescription.requestGroupDetails?.prescribingOrganization ?? ""
   const prescriptionTreatmentType: string = prescription.requestGroupDetails?.prescriptionTreatmentType ?? ""
 
-  const requestGroup: RequestGroup = {
+  const requestGroup: RequestGroup & requestGroupType = {
     resourceType: "RequestGroup",
     id: requestGroupId,
     status: "active",
@@ -312,9 +314,7 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
   }
 
   prescription.filteredHistory?.forEach((history) => {
-    let action: RequestGroupAction = {
-      title: history.message,
-      timingDateTime: formatToISO8601(history.sentDateTime),
+    let actionCommonProperties = {
       participant: [
         {
           identifier: {
@@ -336,21 +336,31 @@ export const generateFhirResponse = (prescription: ParsedSpineResponse, logger: 
       ]
     }
 
-    if (history.message.includes("Prescription upload successful")) {
-      // Action: Prescription Upload Successful
-      delete action.timingDateTime
-      action.timingTiming = {
-        event: [formatToISO8601(history.sentDateTime)],
-        repeat: {
-          frequency: 1,
-          period: prescription.requestGroupDetails?.daysSupply ?? 0,
-          periodUnit: "d"
+    let action: RequestGroupAction =
+      history.message.includes("Prescription upload successful")
+        ? {
+          ...actionCommonProperties,
+          title: "Prescription upload successful",
+          timingTiming: {
+            event: [formatToISO8601(history.sentDateTime)],
+            repeat: {
+              frequency: 1,
+              period: prescription.requestGroupDetails?.daysSupply ?? 0,
+              periodUnit: "d"
+            }
+          },
+          action: medicationRequestIds.map((medicationRequestId) => ({
+            resource: {reference: `#${medicationRequestId}`}
+          }))
         }
-      }
-      action.action = medicationRequestIds.map((medicationRequestId) => ({
-        resource: {reference: `#${medicationRequestId}`}
-      }))
-    } else if (history.message.includes("Dispense notification successful")) {
+        : {
+          ...actionCommonProperties,
+          title: history.message,
+          timingDateTime: formatToISO8601(history.sentDateTime),
+          action: []
+        }
+
+    if (history.message.includes("Dispense notification successful")) {
       // Action: Dispense Notification Successful
       // TODO: assign MedicationDispense to correct dispense notification action
       medicationDispenseMap.forEach((medicationDispenseId) => {
