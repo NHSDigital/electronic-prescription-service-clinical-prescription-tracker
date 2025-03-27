@@ -20,6 +20,8 @@ import {
   formatBirthDate
 } from "./fhirMappers"
 import {requestGroupType} from "../schemas/requestGroupSchema"
+import {MedicationRequestType} from "../schemas/medicationRequestSchema"
+import {PatientType} from "../schemas/patientSchema"
 
 /**
  * Maps extracted prescription data into a FHIR RequestGroup response.
@@ -92,7 +94,7 @@ export const generateFhirResponse =
   // ======================================================================================
   if (!requestGroup.contained?.some((entry) => entry.resourceType === "Patient")) {
 
-    const patient: Patient = {
+    const patient: Patient & PatientType = {
       resourceType: "Patient",
       id: patientUuid,
       identifier: [
@@ -199,7 +201,7 @@ export const generateFhirResponse =
       (line) => line.order === item.order
     )
 
-    const medicationRequest: MedicationRequest = {
+    const medicationRequest: MedicationRequest & MedicationRequestType = {
       resourceType: "MedicationRequest",
       id: medicationRequestId,
       status: medicationHistory?.toStatus === "0005" ? "cancelled" : "active",
@@ -221,7 +223,7 @@ export const generateFhirResponse =
 
     // DispensingInformation Extension
     if (medicationHistory?.toStatus) {
-      const dispensingInformation: Extension = {
+      medicationRequest.extension?.push({
         url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-DispensingInformation",
         extension: [
           {
@@ -233,14 +235,12 @@ export const generateFhirResponse =
             }
           }
         ]
-      }
-
-      medicationRequest?.extension?.push(dispensingInformation)
+      })
     }
 
     // Add PendingCancellations Extension for this MedicationRequest
     if (medicationHistory?.cancellationReason?.includes("Pending")) {
-      const cancellationInformation: Extension = {
+      medicationRequest.extension?.push({
         url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PendingCancellations",
         extension: [
           {
@@ -256,8 +256,7 @@ export const generateFhirResponse =
             }
           }
         ]
-      }
-      medicationRequest.extension?.push(cancellationInformation)
+      })
     }
 
     // Store MedicationRequest ID for linking
