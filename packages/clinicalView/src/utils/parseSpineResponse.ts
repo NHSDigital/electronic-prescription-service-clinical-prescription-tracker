@@ -13,7 +13,8 @@ import {
   DispenseNotificationItem,
   FilteredHistoryDetails,
   ParsedSpineResponse,
-  LineStatusChange
+  LineStatusChange,
+  ParseError
 } from "./types"
 import {padWithZeros} from "./fhirMappers"
 
@@ -21,7 +22,7 @@ import {padWithZeros} from "./fhirMappers"
 /**
  * Parses the SOAP XML response from the Spine service.
  */
-export const parseSpineResponse = (spineResponse: string, logger: Logger): ParsedSpineResponse => {
+export const parseSpineResponse = (spineResponse: string, logger: Logger): ParsedSpineResponse | ParseError => {
   const xmlParser = new XMLParser({ignoreAttributes: false})
   const xmlResponse = xmlParser.parse(spineResponse) as XmlResponse
 
@@ -118,8 +119,6 @@ export const parsePatientDetails = (xmlPrescription: XmlPrescription, logger: Lo
     birthTime: parentPrescription?.birthTime
   })
 
-  const patientAddress = parsePatientAddress(parentPrescription, logger)
-
   return {
     nhsNumber: xmlPrescription.patientNhsNumber.toString(),
     prefix: parentPrescription?.prefix ?? "",
@@ -128,7 +127,7 @@ export const parsePatientDetails = (xmlPrescription: XmlPrescription, logger: Lo
     suffix: parentPrescription?.suffix ?? "",
     gender: parentPrescription?.administrativeGenderCode ?? undefined,
     birthDate: parentPrescription?.birthTime.toString(),
-    address: patientAddress ? [patientAddress] : undefined
+    address: parsePatientAddress(parentPrescription, logger)
   }
 }
 
@@ -157,17 +156,7 @@ export const parsePatientAddress = (parentPrescription: XmlPrescription["parentP
     ].filter(Boolean) as Array<string>, // Filter out undefined/null values
     city: parentPrescription?.city ?? undefined,
     district: parentPrescription?.district ?? undefined,
-    postalCode: parentPrescription?.postalCode ?? undefined,
-    text: [
-      parentPrescription?.addrLine1,
-      parentPrescription?.addrLine2,
-      parentPrescription?.addrLine3,
-      parentPrescription?.postalCode
-    ]
-      .filter(Boolean)
-      .join(", "), // Join the address components into a single text string
-    type: "both" as const,
-    use: "home" as const
+    postalCode: parentPrescription?.postalCode ?? undefined
   }
 
   logger.info("Patient address parsed successfully", {address})
@@ -327,6 +316,7 @@ const parseFilteredHistory = (xmlPrescription: XmlPrescription, logger: Logger):
  */
 export const parseDispenseNotificationItems = (xmlPrescription: XmlPrescription, logger: Logger)
   : DispenseNotification => {
+  // TODO: There can be multiple dispense notifications, so we need to handle that
   const dispenseNotification = xmlPrescription?.dispenseNotification
   const parentPrescription = xmlPrescription?.parentPrescription
   const dispensingOrganization = xmlPrescription?.dispensingOrganization ?? ""

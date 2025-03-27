@@ -1,4 +1,4 @@
-import {JSONSchema} from "json-schema-to-ts"
+import {JSONSchema, FromSchema} from "json-schema-to-ts"
 
 export const patientSchema = {
   type: "object",
@@ -10,11 +10,13 @@ export const patientSchema = {
       items: {
         type: "object",
         properties: {
-          system: {type: "string"},
+          system: {type: "string", enum: ["https://fhir.nhs.uk/Id/nhs-number"]},
           value: {type: "string"}
         },
         required: ["system", "value"]
-      }
+      },
+      minItems: 1,
+      maxItems: 1
     },
     name: {
       type: "array",
@@ -26,7 +28,9 @@ export const patientSchema = {
           given: {type: "array", items: {type: "string"}},
           family: {type: "string"}
         }
-      }
+      },
+      minItems: 1,
+      maxItems: 1
     },
     gender: {
       type: "string",
@@ -43,15 +47,15 @@ export const patientSchema = {
           district: {type: "string"},
           postalCode: {type: "string"},
           text: {type: "string"},
-          type: {type: "string"},
-          use: {
-            type: "string",
-            enum: ["home", "work", "temp", "old", "billing"]
-          }
-        }
+          type: {type: "string", enum: ["both"]},
+          use: {type: "string", enum: ["home"]}
+        },
+        required: ["line", "text", "type", "use"]
       }
     }
   },
   required: ["resourceType", "id", "identifier", "name", "gender", "birthDate"],
   additionalProperties: false
 } as const satisfies JSONSchema
+
+export type PatientType = FromSchema<typeof patientSchema>

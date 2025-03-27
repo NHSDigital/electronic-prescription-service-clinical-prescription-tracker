@@ -1,6 +1,6 @@
 import {Logger} from "@aws-lambda-powertools/logger"
 import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
-import {Address, RequestGroupAction} from "fhir/r4"
+import {RequestGroupAction} from "fhir/r4"
 
 interface FhirErrorDetails {
   status: string
@@ -48,12 +48,15 @@ export interface LineStatusChange {
 
 // Main Response Interface
 export interface ParsedSpineResponse {
-  requestGroupDetails?: RequestGroupDetails
-  patientDetails?: PatientDetails
-  productLineItems?: Array<ProductLineItemDetails>
-  filteredHistory?: Array<FilteredHistoryDetails>
+  requestGroupDetails: RequestGroupDetails
+  patientDetails: PatientDetails
+  productLineItems: Array<ProductLineItemDetails>
+  filteredHistory: Array<FilteredHistoryDetails>
   dispenseNotificationDetails?: DispenseNotification
-  error?: SearchError
+}
+
+export interface ParseError {
+  error: SearchError
 }
 
 // Patient Details
@@ -63,9 +66,16 @@ export interface PatientDetails {
   given: string
   family: string
   suffix: string
-  birthDate?: string
-  gender?: number
-  address?: Array<Address>
+  birthDate: string
+  gender: number
+  address?: Address
+}
+
+interface Address {
+  line: Array<string>
+  city?: string
+  district?: string
+  postalCode?: string
 }
 
 // Prescription Details
