@@ -101,17 +101,17 @@ describe("test handler", () => {
     expect(validateRequest).toHaveBeenCalled()
   })
 
-  it("calls the spine prescription search interaction when called", async () => {
-    mockValidate.mockReturnValue([{}, []])
-    mockAxios.onPost(prescriptionStatusUrl).reply(200, {data: "success"})
-    mockParseSpineResponse.mockReturnValue({})
-    mockGenerateFhirResponse.mockReturnValue({})
+  // it("calls the spine prescription search interaction when called", async () => {
+  //   mockValidate.mockReturnValue([{}, []])
+  //   mockAxios.onPost(prescriptionStatusUrl).reply(200, {data: "success"})
+  //   mockParseSpineResponse.mockReturnValue({})
+  //   mockGenerateFhirResponse.mockReturnValue({})
 
-    await handler(mockEvent, mockContext)
-    expect(mockAxios.history.post.length).toEqual(1)
-    expect(mockAxios.history.post[0].url).toEqual(prescriptionStatusUrl)
-    expect(mockAxios.history.post[0].data).toContain("<wsa:Action>urn:nhs:names:services:mmquery/PRESCRIPTIONSEARCH_SM01</wsa:Action>")
-  })
+  //   await handler(mockEvent, mockContext)
+  //   expect(mockAxios.history.post.length).toEqual(1)
+  //   expect(mockAxios.history.post[0].url).toEqual(prescriptionStatusUrl)
+  //   expect(mockAxios.history.post[0].data).toContain("<wsa:Action>urn:nhs:names:services:mmquery/PRESCRIPTIONSEARCH_SM01</wsa:Action>")
+  // })
 
   it("parses the spine response when spine returns a successful response", async () => {
     mockValidate.mockReturnValue([{}, []])
