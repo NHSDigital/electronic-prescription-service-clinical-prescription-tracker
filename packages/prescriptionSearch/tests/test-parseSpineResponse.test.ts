@@ -10,8 +10,7 @@ import {
   multipleRepeat,
   multipleMixed,
   notFound,
-  error,
-  invalid
+  error
 } from "./exampleSpineResponses/examples"
 
 // Types
@@ -621,13 +620,13 @@ describe("Test parseSpineResponse", () => {
       searchError: {
         status: "500",
         severity: "error",
-        description: "hl7:{interactionId}/hl7:ControlActEvent/hl7:author is missing, empty or invalid"
+        description: "Invalid prescription checksum"
       }
     })
   })
 
   it("returns undefined and an error when spine returns an invalid response", async () => {
-    const result: ParsedSpineResponse = parseSpineResponse(invalid, logger)
+    const result: ParsedSpineResponse = parseSpineResponse("invalid", logger)
     expect(result).toEqual({
       searchError: {
         status: "500",
