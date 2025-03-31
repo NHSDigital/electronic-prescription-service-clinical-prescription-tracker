@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@middy/http-header-normalizer": "^6.1.6",
-    "@NHSDigital/eps-spine-client": "^2.1.28",
+    "@nhsdigital/eps-spine-client": "^2.1.29",
     "fast-xml-parser": "^5.0.9",
     "json-schema-to-ts": "^3.1.0"
   },
