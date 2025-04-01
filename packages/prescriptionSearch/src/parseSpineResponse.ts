@@ -149,7 +149,7 @@ const parseErrorResponse = (spineResponse: string): string => {
   const xmlParser = new XMLParser({ignoreAttributes: false})
   const xmlResponse = xmlParser.parse(spineResponse) as SpineXmlErrorResponse
 
-  const xmlSoapEnvBody = xmlResponse["SOAP:Envelope"]["SOAP:Body"]
+  const xmlSoapEnvBody = xmlResponse["SOAP:Envelope"]?.["SOAP:Body"]
   if (!xmlSoapEnvBody){
     logger.error("Response did not contain valid XML.")
     return "Unknown Error."

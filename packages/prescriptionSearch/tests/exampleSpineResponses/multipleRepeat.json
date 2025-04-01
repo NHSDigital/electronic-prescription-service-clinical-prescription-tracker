@@ -40,7 +40,7 @@
         "maxRepeats": "1"
       },
       {
-        "prescriptionID": "5ABA40-000X26-D4801",
+        "prescriptionID": "5ABA40-000X26-D48018",
         "messageID": "DDDEAF23-3C09-4F3C-8338-EA0C966FAC40",
         "patientID": "9732730684",
         "prefix": "MISS",
@@ -84,7 +84,7 @@
         "includedInResults": "True"
       },
       {
-        "id": "5ABA40-000X26-D4801",
+        "id": "5ABA40-000X26-D48018",
         "includedInResults": "True"
       }
     ]
