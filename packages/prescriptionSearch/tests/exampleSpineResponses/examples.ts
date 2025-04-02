@@ -1,20 +1,12 @@
 /* eslint-disable max-len */
-import singleAcuteJson from "./singleAcute.json"
-import singleErdJson from "./singleErd.json"
-import singleRepeatJson from "./singleRepeat.json"
-import multipleAcuteJson from "./multipleAcute.json"
-import multipleErdJson from "./multipleErd.json"
-import multipleRepeatJson from "./multipleRepeat.json"
-import multipleMixedJson from "./multipleMixed.json"
-
-// JSON responses
-export const singleAcute = JSON.stringify(singleAcuteJson)
-export const singleErd = JSON.stringify(singleErdJson)
-export const singleRepeat = JSON.stringify(singleRepeatJson)
-export const multipleAcute = JSON.stringify(multipleAcuteJson)
-export const multipleErd = JSON.stringify(multipleErdJson)
-export const multipleRepeat = JSON.stringify(multipleRepeatJson)
-export const multipleMixed = JSON.stringify(multipleMixedJson)
+// JSON (OK) Responses
+export {default as singleAcute} from "./singleAcute.json"
+export {default as singleErd} from "./singleErd.json"
+export {default as singleRepeat} from "./singleRepeat.json"
+export {default as multipleAcute} from "./multipleAcute.json"
+export {default as multipleErd} from "./multipleErd.json"
+export {default as multipleRepeat} from "./multipleRepeat.json"
+export {default as multipleMixed} from "./multipleMixed.json"
 
 // XML (Error) Responses
 export const error = "<?xml version='1.0' encoding='UTF-8'?>\n<SOAP:Envelope xmlns:crs=\"http://national.carerecords.nhs.uk/schema/crs/\" xmlns:SOAP=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:wsa=\"http://schemas.xmlsoap.org/ws/2004/08/addressing\" xmlns=\"urn:hl7-org:v3\" xmlns:hl7=\"urn:hl7-org:v3\"><SOAP:Header><wsa:MessageID>uuid:example-guid</wsa:MessageID><wsa:Action>urn:nhs:names:services:pdsquery/MCCI_IN010000UK13</wsa:Action><wsa:To/><wsa:From><wsa:Address>https://pdsquery.national.ncrs.nhs.uk/syncservice</wsa:Address></wsa:From><communicationFunctionRcv typeCode=\"RCV\"><device classCode=\"DEV\" determinerCode=\"INSTANCE\"><id root=\"1.2.826.0.1285.0.2.0.107\" extension=\"200000002066\"/></device></communicationFunctionRcv><communicationFunctionSnd typeCode=\"SND\"><device classCode=\"DEV\" determinerCode=\"INSTANCE\"><id root=\"1.2.826.0.1285.0.2.0.107\" extension=\"200000002066\"/></device></communicationFunctionSnd><wsa:RelatesTo>uuid:example-request-GUID</wsa:RelatesTo></SOAP:Header><SOAP:Body><prescriptionSearchResponse><MCCI_IN010000UK13><id root=\"example-guid\"/><creationTime value=\"19700101000000\"/><versionCode code=\"V3NPfIT3.0\"/><interactionId root=\"2.16.840.1.113883.2.1.3.2.4.12\" extension=\"MCCI_IN010000UK13\"/><processingCode code=\"P\"/><processingModeCode code=\"T\"/><acceptAckCode code=\"NE\"/><acknowledgement typeCode=\"AR\"><acknowledgementDetail typeCode=\"ER\"><code codeSystem=\"PRESCRIPTION_SEARCH_ERROR\" code=\"0005\" displayName=\"Invalid prescription checksum\"/></acknowledgementDetail><messageRef><id root=\"example-request-GUID\"/></messageRef></acknowledgement><communicationFunctionRcv typeCode=\"RCV\"><device classCode=\"DEV\" determinerCode=\"INSTANCE\"><id root=\"1.2.826.0.1285.0.2.0.107\" extension=\"200000002066\"/></device></communicationFunctionRcv><communicationFunctionSnd typeCode=\"SND\"><device classCode=\"DEV\" determinerCode=\"INSTANCE\"><id root=\"1.2.826.0.1285.0.2.0.107\" extension=\"200000002066\"/></device></communicationFunctionSnd><ControlActEvent classCode=\"CACT\" moodCode=\"EVN\"><author1 typeCode=\"AUT\"><AgentSystemSDS classCode=\"AGNT\"><agentSystemSDS classCode=\"DEV\" determinerCode=\"INSTANCE\"><id root=\"1.2.826.0.1285.0.2.0.107\" extension=\"200000002066\"/></agentSystemSDS></AgentSystemSDS></author1></ControlActEvent></MCCI_IN010000UK13></prescriptionSearchResponse></SOAP:Body></SOAP:Envelope>"

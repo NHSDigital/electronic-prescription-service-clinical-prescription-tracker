@@ -39,8 +39,10 @@ interface ResponsePrescription {
   prescriptionTreatmentType: string
   maxRepeats: string
 }
-interface SpineJsonResponse {
-  prescriptions: Array<ResponsePrescription>
+export interface SpineJsonResponse {
+  Response:{
+    prescriptions: Array<ResponsePrescription>
+  }
 }
 
 export interface PatientDetails {
@@ -79,28 +81,28 @@ export interface ParsedSpineResponse {
   searchError?: SearchError | undefined
 }
 
-export const parseSpineResponse = (spineResponse: string, logger: Logger): ParsedSpineResponse => {
-  let jsonResponse: SpineJsonResponse
-  try{
-    jsonResponse = JSON.parse(spineResponse).Response
-  } catch(error){
-    if (error instanceof SyntaxError){
-      logger.info("Spine response did not contain valid JSON, attempting to parse response as XML...")
-      const error: string = parseErrorResponse(spineResponse)
-      if (error === "Prescription not found"){
-        logger.info("No prescriptions found.")
-        return {prescriptions: []}
-      }
+export const parseSpineResponse = (
+  spineResponse: SpineJsonResponse | string, logger: Logger): ParsedSpineResponse => {
+  if (typeof spineResponse === "string"){
+    logger.info("Spine response did not contain valid JSON, attempting to parse response as XML...")
 
-      return {searchError: {status: "500", severity: "error", description: error}}
+    const error: string = parseErrorResponse(spineResponse)
+    if (error === "Prescription not found"){
+      logger.info("No prescriptions found.")
+      return {prescriptions: []}
     }
 
-    logger.error("Unexpected error occurred whilst parsing response", {error: error})
+    return {searchError: {status: "500", severity: "error", description: error}}
+  }
+
+  const response = spineResponse.Response
+  if (!response){
+    logger.error("Failed to parse response, Spine response did not contain valid JSON.")
     return {searchError: {status: "500", severity: "error", description: "Unknown Error."}}
   }
 
   logger.info("Parsing prescriptions...")
-  let parsedPrescriptions: Array<Prescription> = parsePrescriptions(jsonResponse.prescriptions)
+  let parsedPrescriptions: Array<Prescription> = parsePrescriptions(response.prescriptions)
   return {prescriptions: parsedPrescriptions}
 }
 
@@ -151,7 +153,7 @@ const parseErrorResponse = (spineResponse: string): string => {
 
   const xmlSoapEnvBody = xmlResponse["SOAP:Envelope"]?.["SOAP:Body"]
   if (!xmlSoapEnvBody){
-    logger.error("Response did not contain valid XML.")
+    logger.error("Failed to parse response, Spine response did not contain valid XML.")
     return "Unknown Error."
   }
 

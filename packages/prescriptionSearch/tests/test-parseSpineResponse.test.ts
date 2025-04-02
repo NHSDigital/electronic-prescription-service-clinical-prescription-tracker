@@ -1,6 +1,6 @@
 import {Logger} from "@aws-lambda-powertools/logger"
 
-import {parseSpineResponse} from "../src/parseSpineResponse"
+import {parseSpineResponse, SpineJsonResponse} from "../src/parseSpineResponse"
 import {
   singleAcute,
   singleErd,
@@ -627,6 +627,18 @@ describe("Test parseSpineResponse", () => {
 
   it("returns undefined and an error when spine returns an invalid response", async () => {
     const result: ParsedSpineResponse = parseSpineResponse("invalid", logger)
+    expect(result).toEqual({
+      searchError: {
+        status: "500",
+        severity: "error",
+        description: "Unknown Error."
+      }
+    })
+  })
+
+  it("returns undefined and an error when spine returns an invalid json response", async () => {
+    const mockResponse = {test: "invalid"} as unknown as SpineJsonResponse
+    const result: ParsedSpineResponse = parseSpineResponse(mockResponse, logger)
     expect(result).toEqual({
       searchError: {
         status: "500",
