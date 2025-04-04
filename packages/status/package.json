@@ -18,8 +18,8 @@
     "@aws-lambda-powertools/parameters": "^2.17.0",
     "@middy/core": "^6.1.6",
     "@middy/input-output-logger": "^6.1.6",
-    "@nhs/fhir-middy-error-handler": "^2.1.27",
-    "@NHSDigital/eps-spine-client": "github:nhsdigital/nhs-eps-spine-client#fix/AEA-5152_swap_prescription_search_interaction"
+    "@nhs/fhir-middy-error-handler": "^2.1.28",
+    "@NHSDigital/eps-spine-client": "^2.1.31"
   },
   "devDependencies": {
     "axios-mock-adapter": "^2.1.0",
