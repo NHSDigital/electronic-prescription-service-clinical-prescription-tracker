@@ -1,16 +1,16 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<SOAP-ENV:Envelope
+<SOAP:Envelope
 	xmlns:crs="http://national.carerecords.nhs.uk/schema/crs/"
-	xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:SOAP="http://schemas.xmlsoap.org/soap/envelope/"
 	xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing"
 	xmlns="urn:hl7-org:v3"
 	xmlns:hl7="urn:hl7-org:v3">
-	<SOAP-ENV:Header>
-		<wsa:MessageID>uuid:418E858E-CCEA-11EF-93C2-0608FC2E3D30</wsa:MessageID>
-		<wsa:Action>urn:nhs:names:services:mmquery/MCCI_IN010000UK13</wsa:Action>
+	<SOAP:Header>
+		<wsa:MessageID>uuid:example-guid</wsa:MessageID>
+		<wsa:Action>urn:nhs:names:services:pdsquery/MCCI_IN010000UK13</wsa:Action>
 		<wsa:To/>
 		<wsa:From>
-			<wsa:Address>https://mmquery.national.ncrs.nhs.uk/syncservice</wsa:Address>
+			<wsa:Address>https://pdsquery.national.ncrs.nhs.uk/syncservice</wsa:Address>
 		</wsa:From>
 		<communicationFunctionRcv typeCode="RCV">
 			<device classCode="DEV" determinerCode="INSTANCE">
@@ -19,27 +19,27 @@
 		</communicationFunctionRcv>
 		<communicationFunctionSnd typeCode="SND">
 			<device classCode="DEV" determinerCode="INSTANCE">
-				<id root="1.2.826.0.1285.0.2.0.107" extension="Not Known"/>
+				<id root="1.2.826.0.1285.0.2.0.107" extension="200000002066"/>
 			</device>
 		</communicationFunctionSnd>
-		<wsa:RelatesTo>uuid:d4880700-4e6d-4b27-94f7-7f319a5397d8</wsa:RelatesTo>
-	</SOAP-ENV:Header>
-	<SOAP-ENV:Body>
+		<wsa:RelatesTo>uuid:example-request-GUID</wsa:RelatesTo>
+	</SOAP:Header>
+	<SOAP:Body>
 		<prescriptionSearchResponse>
 			<MCCI_IN010000UK13>
-				<id root="418E858E-CCEA-11EF-93C2-0608FC2E3D30"/>
-				<creationTime value="20250107112636"/>
-				<versionCode code="1.0"/>
+				<id root="example-guid"/>
+				<creationTime value="19700101000000"/>
+				<versionCode code="V3NPfIT3.0"/>
 				<interactionId root="2.16.840.1.113883.2.1.3.2.4.12" extension="MCCI_IN010000UK13"/>
 				<processingCode code="P"/>
 				<processingModeCode code="T"/>
 				<acceptAckCode code="NE"/>
 				<acknowledgement typeCode="AR">
 					<acknowledgementDetail typeCode="ER">
-						<code codeSystem="2.16.840.1.113883.2.1.3.2.4.17.32" code="508" displayName="hl7:{interactionId}/hl7:ControlActEvent/hl7:author is missing, empty or invalid"/>
+						<code codeSystem="PRESCRIPTION_SEARCH_ERROR" code="0005" displayName="Invalid prescription checksum"/>
 					</acknowledgementDetail>
 					<messageRef>
-						<id root="d4880700-4e6d-4b27-94f7-7f319a5397d8"/>
+						<id root="example-request-GUID"/>
 					</messageRef>
 				</acknowledgement>
 				<communicationFunctionRcv typeCode="RCV">
@@ -49,19 +49,19 @@
 				</communicationFunctionRcv>
 				<communicationFunctionSnd typeCode="SND">
 					<device classCode="DEV" determinerCode="INSTANCE">
-						<id root="1.2.826.0.1285.0.2.0.107" extension="Not Known"/>
+						<id root="1.2.826.0.1285.0.2.0.107" extension="200000002066"/>
 					</device>
 				</communicationFunctionSnd>
 				<ControlActEvent classCode="CACT" moodCode="EVN">
 					<author1 typeCode="AUT">
 						<AgentSystemSDS classCode="AGNT">
 							<agentSystemSDS classCode="DEV" determinerCode="INSTANCE">
-								<id root="1.2.826.0.1285.0.2.0.107" extension="Not Known"/>
+								<id root="1.2.826.0.1285.0.2.0.107" extension="200000002066"/>
 							</agentSystemSDS>
 						</AgentSystemSDS>
 					</author1>
 				</ControlActEvent>
 			</MCCI_IN010000UK13>
 		</prescriptionSearchResponse>
-	</SOAP-ENV:Body>
-</SOAP-ENV:Envelope>
+	</SOAP:Body>
+</SOAP:Envelope>
