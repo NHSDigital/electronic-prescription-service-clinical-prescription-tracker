@@ -1,0 +1,140 @@
+{
+  "Response": {
+    "prescriptions": [
+      {
+        "prescriptionID": "0131A6-A83008-DDFE5P",
+        "messageID": "09210001-FD8F-40D4-BE54-5909A2021A92",
+        "patientID": "9732730684",
+        "prefix": "MISS",
+        "suffix": "",
+        "given": "ETTA",
+        "family": "CORY",
+        "prescriberOrg": "A99968",
+        "nominatedOrg": "FA565",
+        "dispenserOrg": "FA565|FA565",
+        "nextActivity": "expire",
+        "issueDetail": [
+          {
+            "instanceNumber": "1",
+            "releaseDate": "False",
+            "prescriptionStatus": "0001",
+            "cancellations": "0",
+            "prescCancPending": "False",
+            "liCancPending": "False"
+          },
+          {
+            "instanceNumber": "2",
+            "releaseDate": "False",
+            "prescriptionStatus": "9000",
+            "cancellations": "0",
+            "prescCancPending": "False",
+            "liCancPending": "False"
+          },
+          {
+            "instanceNumber": "3",
+            "releaseDate": "False",
+            "prescriptionStatus": "9000",
+            "cancellations": "0",
+            "prescCancPending": "False",
+            "liCancPending": "False"
+          },
+          {
+            "instanceNumber": "4",
+            "releaseDate": "False",
+            "prescriptionStatus": "9000",
+            "cancellations": "0",
+            "prescCancPending": "False",
+            "liCancPending": "False"
+          },
+          {
+            "instanceNumber": "5",
+            "releaseDate": "False",
+            "prescriptionStatus": "9000",
+            "cancellations": "0",
+            "prescCancPending": "False",
+            "liCancPending": "False"
+          },
+          {
+            "instanceNumber": "6",
+            "releaseDate": "False",
+            "prescriptionStatus": "9000",
+            "cancellations": "0",
+            "prescCancPending": "False",
+            "liCancPending": "False"
+          },
+          {
+            "instanceNumber": "7",
+            "releaseDate": "False",
+            "prescriptionStatus": "9000",
+            "cancellations": "0",
+            "prescCancPending": "False",
+            "liCancPending": "False"
+          }
+        ],
+        "instanceNumbers": [
+          {
+            "instanceNumber": "1",
+            "releaseDate": "False"
+          },
+          {
+            "instanceNumber": "2",
+            "releaseDate": "False"
+          },
+          {
+            "instanceNumber": "3",
+            "releaseDate": "False"
+          },
+          {
+            "instanceNumber": "4",
+            "releaseDate": "False"
+          },
+          {
+            "instanceNumber": "5",
+            "releaseDate": "False"
+          },
+          {
+            "instanceNumber": "6",
+            "releaseDate": "False"
+          },
+          {
+            "instanceNumber": "7",
+            "releaseDate": "False"
+          }
+        ],
+        "prescriptionStatuses": [
+          {
+            "status": "0001"
+          },
+          {
+            "status": "9000"
+          },
+          {
+            "status": "9000"
+          },
+          {
+            "status": "9000"
+          },
+          {
+            "status": "9000"
+          },
+          {
+            "status": "9000"
+          },
+          {
+            "status": "9000"
+          }
+        ],
+        "prescribedDate": "20250205000000",
+        "completedDate": "",
+        "prescriptionTreatmentType": "0003",
+        "maxRepeats": "7"
+      }
+    ],
+    "allPrescriptions": [
+      {
+        "id": "0131A6-A83008-DDFE5P",
+        "includedInResults": "True"
+      }
+    ]
+  }
+}
