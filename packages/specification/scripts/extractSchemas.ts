@@ -1,12 +1,13 @@
 import fs from "fs"
 import path from "path"
+import {requestGroupSchema} from "clinicalView"
 import {
   requestGroupBundleSchema as ResponseBundle,
   operationOutcomeSchema as OperationOutcome
 } from "prescriptionSearch"
 import {JSONSchema} from "json-schema-to-ts"
 
-const schemas: Record<string, JSONSchema> = {ResponseBundle, OperationOutcome}
+const schemas: Record<string, JSONSchema> = {requestGroupSchema, ResponseBundle, OperationOutcome}
 
 const schemasFolder = path.join(".", "schemas")
 const resourcesFolder = path.join(schemasFolder, "resources")
