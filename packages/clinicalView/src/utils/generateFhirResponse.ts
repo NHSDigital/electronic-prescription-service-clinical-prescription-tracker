@@ -6,7 +6,7 @@ import {
   MedicationRequest,
   MedicationDispense
 } from "fhir/r4"
-import {ParsedSpineResponse, FilteredHistoryDetails} from "../utils/types"
+import {Prescription, FilteredHistoryDetails} from "../utils/types"
 import {
   mapGender,
   mapTaskBusinessStatus,
@@ -25,7 +25,7 @@ import {PatientType} from "../schemas/patientSchema"
  * Maps extracted prescription data into a FHIR RequestGroup response.
  */
 export const generateFhirResponse =
-(prescription: ParsedSpineResponse, logger: Logger): RequestGroup & requestGroupType => {
+(prescription: Prescription, logger: Logger): RequestGroup & requestGroupType => {
   // ======================================================================================
   //  STEP 1: Generate Unique Identifiers & Initialize Data Maps
   // ======================================================================================

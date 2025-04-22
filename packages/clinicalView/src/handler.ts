@@ -1,3 +1,4 @@
+// TODO: reorder?
 import {LogLevel} from "@aws-lambda-powertools/logger/types"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {injectLambdaContext} from "@aws-lambda-powertools/logger/middleware"
@@ -9,36 +10,49 @@ import {createSpineClient} from "@NHSDigital/eps-spine-client"
 import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
 import {ClinicalViewParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
 import {RequestGroup, OperationOutcome} from "fhir/r4"
+import {generateFhirErrorResponse} from "@cpt-common/common-utils"
 import {requestGroupSchema} from "./schemas/requestGroupSchema"
 import {parseSpineResponse} from "./utils/parseSpineResponse"
 import {generateFhirResponse} from "./utils/generateFhirResponse"
-import {generateFhirErrorResponse} from "./utils/errorHandling"
-import {validateRequest} from "./utils/validateRequest"
-import {HandlerParams, SearchError} from "./utils/types"
+import {validateRequest} from "./validateRequest"
 
-// Set up logger with log level from environment variables
+import {ServiceError} from "@cpt-common/common-types"
+import {ParsedSpineResponse} from "./utils/parseSpineResponse"
+
+// Config
 const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
 export const logger = new Logger({serviceName: "clinicalView", logLevel: LOG_LEVEL})
 const spineClient: SpineClient = createSpineClient(logger)
 
-// Default HTTP headers for FHIR responses
-const headers = {
+const commonHeaders = {
   "Content-Type": "application/fhir+json",
   "Cache-Control": "no-cache"
 }
 
-/**
- * Handles API Gateway requests and calls Spine to fetch prescription details.
- */
+// Types
+export interface HandlerParams {
+  logger: Logger
+  spineClient: SpineClient
+}
+
 export const apiGatewayHandler = async (
   params: HandlerParams, event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
-  logger.info("Received API request", {event})
+  logger.appendKeys({
+    "nhsd-correlation-id": event.headers?.["nhsd-correlation-id"],
+    "nhsd-request-id": event.headers?.["nhsd-request-id"],
+    "x-correlation-id": event.headers?.["x-correlation-id"],
+    "apigw-request-id": event.requestContext.requestId // Change to event.headers?.["apigw-request-id"] when SM
+  })
 
-  // Validate request parameters and headers
   const [searchParameters, validationErrors]:
-    [ClinicalViewParams, Array<SearchError>] = validateRequest(event, logger)
+    [ClinicalViewParams, Array<ServiceError>] = validateRequest(event, logger)
 
-  // If validation fails, return a FHIR-compliant error response
+  const responseHeaders = {
+    ...commonHeaders,
+    "x-request-id": searchParameters.requestId,
+    "x-correlation-id": event.headers?.["x-correlation-id"] ?? ""
+  }
+
   if (validationErrors.length > 0) {
     logger.error("Error validating request.")
     logger.info("Generating FHIR error response...")
@@ -48,24 +62,21 @@ export const apiGatewayHandler = async (
     return {
       statusCode: 400,
       body: JSON.stringify(errorResponseBundle),
-      headers
+      headers: responseHeaders
     }
   }
 
   try {
-    // Make a request to Spine API to retrieve prescription details
-    logger.info("Calling Spine ClinicalView interaction...")
+    logger.info("Calling Spine clinical view interaction...")
     const spineResponse = await params.spineClient.clinicalView(event.headers, searchParameters)
+    logger.debug("Spine response received.", {response: spineResponse})
 
-    logger.info("Received response from Spine.", {status: spineResponse.status, entry: spineResponse.data})
+    logger.info("Parsing Spine response...")
+    const {prescription, spineError}: ParsedSpineResponse = parseSpineResponse(spineResponse.data, logger)
 
-    // Parse the SOAP response from Spine
-    const extractedData = parseSpineResponse(spineResponse.data, logger)
-    logger.info("Extracted data from Spine response.", {extractedData})
-
-    /// If an error was detected in the parsed response, return an appropriate FHIR error
-    if (extractedData.error) {
-      logger.error("Spine response contained an error.", {error: extractedData.error.description})
+    //////////////////////////////////////////////
+    if (spineError) {
+      logger.error("Spine response contained an error.", {error: spineError.description})
       logger.info("Generating FHIR error response...")
       const errorResponseBundle: OperationOutcome = generateFhirErrorResponse([extractedData.error], logger)
 

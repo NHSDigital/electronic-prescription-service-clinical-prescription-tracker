@@ -1,6 +1,6 @@
 import {Logger} from "@aws-lambda-powertools/logger"
 import {parseSpineResponse} from "../src/utils/parseSpineResponse"
-import {ParsedSpineResponse, FilteredHistoryDetails} from "../src/utils/types"
+import {Prescription, FilteredHistoryDetails} from "../src/utils/types"
 
 // Import test data
 import acuteReleased from "./data/acuteReleased"
@@ -204,7 +204,7 @@ const testCases = [
 describe("Test parseSpineResponse", () => {
   testCases.forEach(({name, data, expected}) => {
     it(`returns correctly parsed response for ${name}`, async () => {
-      const result: ParsedSpineResponse = parseSpineResponse(data, logger)
+      const result: Prescription = parseSpineResponse(data, logger)
 
       if (expected.error) {
         expect(result.error).toBeDefined()

@@ -6,23 +6,23 @@ import {
   XmlPrescription,
   XmlFilteredHistory,
   XmlError,
-  PatientDetails,
   RequestGroupDetails,
   ProductLineItemDetails,
   DispenseNotification,
   DispenseNotificationItem,
   FilteredHistoryDetails,
-  ParsedSpineResponse,
-  LineStatusChange,
-  ParseError
+  Prescription,
+  LineStatusChange
 } from "./types"
 import {padWithZeros} from "./fhirMappers"
+import {ServiceError} from "@cpt-common/common-types"
 
-// ---------------------------- PARSE SPINE RESPONSE ------------------------------
-/**
- * Parses the SOAP XML response from the Spine service.
- */
-export const parseSpineResponse = (spineResponse: string, logger: Logger): ParsedSpineResponse | ParseError => {
+export interface ParsedSpineResponse {
+  prescription?: Prescription
+  spineError?: ServiceError
+}
+
+export const parseSpineResponse = (spineResponse: string, logger: Logger): ParsedSpineResponse => {
   const xmlParser = new XMLParser({ignoreAttributes: false})
   const xmlResponse = xmlParser.parse(spineResponse) as XmlResponse
 

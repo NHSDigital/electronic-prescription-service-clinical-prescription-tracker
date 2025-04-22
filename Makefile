@@ -23,6 +23,8 @@ install-hooks: install-python
 compile: compile-node compile-packages compile-specification
 
 compile-node:
+	npm run compile --workspace packages/common/commonTypes
+	npm run compile --workspace packages/common/commonUtils
 	npx tsc --build tsconfig.build.json
 
 compile-packages:
@@ -47,10 +49,12 @@ lint: lint-node lint-python lint-githubactions lint-githubaction-scripts lint-sp
 lint-node: compile
 	npm run lint --workspace packages/cdk
 	npm run lint --workspace packages/clinicalView
+	npm run link --workspace packages/common/commonTypes
+	npm run lint --workspace packages/common/testing
+	npm run lint --workspace packages/common/commonUtils
 	npm run lint --workspace packages/prescriptionSearch
 	npm run lint --workspace packages/sandbox
 	npm run lint --workspace packages/status
-	npm run lint --workspace packages/common/testing
 
 lint-python:
 #	poetry run flake8 scripts/*.py --config .flake8
@@ -66,25 +70,29 @@ lint-specification: compile-specification
 
 test: compile
 	npm run test --workspace packages/cdk
+	npm run test --workspace packages/clinicalView
 	npm run test --workspace packages/prescriptionSearch
 	npm run test --workspace packages/sandbox
 	npm run test --workspace packages/status
-	npm run test --workspace packages/clinicalView
 
 clean:
 	rm -rf packages/cdk/coverage
 	rm -rf packages/cdk/lib
 	rm -rf packages/clinicalView/coverage
-	rm -rf packages/common/testing/coverage
-	rm -rf packages/prescriptionSearch/coverage
-	rm -rf packages/sandbox/coverage
-	rm -rf packages/specification/coverage
-	rm -rf packages/status/coverage
 	rm -rf packages/clinicalView/lib
+	rm -rf packages/common/commonTypes/coverage
+	rm -rf packages/common/commonTypes/lib
+	rm -rf packages/common/testing/coverage
 	rm -rf packages/common/testing/lib
+	rm -rf packages/common/commonUtils/coverage
+	rm -rf packages/common/commonUtils/lib
+	rm -rf packages/prescriptionSearch/coverage
 	rm -rf packages/prescriptionSearch/lib
+	rm -rf packages/sandbox/coverage
 	rm -rf packages/sandbox/lib
+	rm -rf packages/specification/coverage
 	rm -rf packages/specification/lib
+	rm -rf packages/status/coverage
 	rm -rf packages/status/lib
 	rm -rf cdk.out
 
@@ -97,10 +105,13 @@ check-licenses: check-licenses-node check-licenses-python
 check-licenses-node:
 	npm run check-licenses
 	npm run check-licenses --workspace packages/cdk
+	npm run check-licenses --workspace packages/clinicalView
+	npm run check-licenses --workspace packages/common/commonTypes
+	npm run check-licenses --workspace packages/common/commonUtils
 	npm run check-licenses --workspace packages/prescriptionSearch
 	npm run check-licenses --workspace packages/sandbox
 	npm run check-licenses --workspace packages/status
-	npm run check-licenses --workspace packages/clinicalView
+
 
 check-licenses-python:
 	scripts/check_python_licenses.sh

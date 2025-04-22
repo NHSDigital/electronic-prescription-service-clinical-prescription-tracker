@@ -1,31 +1,5 @@
-import {Logger} from "@aws-lambda-powertools/logger"
-import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
+import {PatientDetails} from "@cpt-common/common-types/src/prescription"
 import {RequestGroupAction} from "fhir/r4"
-
-interface FhirErrorDetails {
-  status: string
-  code: string
-  detailsCode: string
-  detailsDisplay: string
-}
-export interface ErrorMap {
-  [key: string]: FhirErrorDetails
-}
-
-export interface HandlerParams {
-  logger: Logger
-  spineClient: SpineClient
-}
-
-export interface SearchError {
-  status: string
-  severity: "fatal" | "error" | "warning" | "information"
-  description: string
-}
-
-export interface PathParameters {
-  prescriptionId?: string
-}
 
 export interface HeaderSearchParameters {
   requestId?: string
@@ -47,36 +21,13 @@ export interface LineStatusChange {
 }
 
 // Main Response Interface
-export interface ParsedSpineResponse {
+export interface Prescription {
   requestGroupDetails: RequestGroupDetails
   patientDetails: PatientDetails
   productLineItems: Array<ProductLineItemDetails>
   filteredHistory: Array<FilteredHistoryDetails>
   dispenseNotificationDetails?: DispenseNotification
-}
-
-export interface ParseError {
-  error: SearchError
-}
-
-// Patient Details
-export interface PatientDetails {
-  nhsNumber: string
-  prefix: string
-  given: string
-  family: string
-  suffix: string
-  birthDate: string
-  gender: number
-  address?: Address
-}
-
-interface Address {
-  line: Array<string>
-  city?: string
-  district?: string
-  postalCode?: string
-}
+} // TODO: make this better, reorder
 
 // Prescription Details
 export interface RequestGroupDetails {
@@ -189,8 +140,8 @@ export interface XmlPrescription {
   prescriptionID: string
   prescriptionTreatmentType: string
   prescriptionType: string
-  signedTime: string
-  prescriptionTime: string
+  // signedTime: string // unused
+  // prescriptionTime: string // ??
   prescriptionMsgRef: string
   prescribingOrganization: string
   daysSupply: number

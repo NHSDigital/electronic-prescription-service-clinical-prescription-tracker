@@ -1,13 +1,13 @@
 import {describe, it, expect} from "@jest/globals"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {generateFhirResponse} from "../src/utils/generateFhirResponse"
-import {ParsedSpineResponse} from "../src/utils/types"
+import {Prescription} from "../src/utils/types"
 import {Patient} from "fhir/r4"
 
 const logger = new Logger({serviceName: "clinicalView"})
 
 // Mock parsed response for testing
-const mockParsedResponse: ParsedSpineResponse = {
+const mockParsedResponse: Prescription = {
   patientDetails: {
     nhsNumber: "9449304130",
     prefix: "MS",
@@ -151,7 +151,7 @@ const mockParsedResponse: ParsedSpineResponse = {
   }
 }
 
-const mockParsedResponseWithDispense: ParsedSpineResponse = {
+const mockParsedResponseWithDispense: Prescription = {
   ...mockParsedResponse,
   dispenseNotificationDetails: {
     statusPrescription: "0006",
@@ -169,7 +169,7 @@ const mockParsedResponseWithDispense: ParsedSpineResponse = {
   }
 }
 
-const mockParsedResponseWithMultipleItems: ParsedSpineResponse = {
+const mockParsedResponseWithMultipleItems: Prescription = {
   ...mockParsedResponse,
   productLineItems: [
     {
@@ -193,7 +193,7 @@ const mockParsedResponseWithMultipleItems: ParsedSpineResponse = {
   ]
 }
 
-const mockParsedResponseWithMultipleDispenseItems: ParsedSpineResponse = {
+const mockParsedResponseWithMultipleDispenseItems: Prescription = {
   ...mockParsedResponseWithMultipleItems,
   dispenseNotificationDetails: {
     statusPrescription: "0006",
@@ -223,7 +223,7 @@ const mockParsedResponseWithMultipleDispenseItems: ParsedSpineResponse = {
   }
 }
 
-const mockParsedResponseWithCancelledItems: ParsedSpineResponse = {
+const mockParsedResponseWithCancelledItems: Prescription = {
   ...mockParsedResponseWithMultipleItems,
   filteredHistory: [
     {
@@ -550,7 +550,7 @@ describe("generateFhirResponse", () => {
   })
 
   it("should handle missing prescription details gracefully", () => {
-    const minimalResponse: ParsedSpineResponse = {
+    const minimalResponse: Prescription = {
       patientDetails: {
         nhsNumber: "1234567890",
         prefix: "",

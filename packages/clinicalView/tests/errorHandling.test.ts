@@ -1,14 +1,14 @@
 import {Logger} from "@aws-lambda-powertools/logger"
 import {jest} from "@jest/globals"
 import {OperationOutcome} from "fhir/r4"
-import {SearchError} from "../src/utils/types"
+import {clinicalViewError} from "../src/utils/types"
 import {generateFhirErrorResponse} from "../src/utils/errorHandling"
 
 const logger: Logger = new Logger({serviceName: "errorHandlingTest", logLevel: "DEBUG"})
 
 describe("Test generateFhirErrorResponse", () => {
   it("returns a valid OperationOutcome for a single error", () => {
-    const errors: Array<SearchError> = [
+    const errors: Array<clinicalViewError> = [
       {
         status: "404",
         severity: "error",
@@ -45,7 +45,7 @@ describe("Test generateFhirErrorResponse", () => {
   })
 
   it("returns a valid OperationOutcome for multiple errors", () => {
-    const errors: Array<SearchError> = [
+    const errors: Array<clinicalViewError> = [
       {
         status: "400",
         severity: "error",
@@ -101,7 +101,7 @@ describe("Test generateFhirErrorResponse", () => {
   })
 
   it("handles an empty error array gracefully", () => {
-    const errors: Array<SearchError> = []
+    const errors: Array<clinicalViewError> = []
 
     const expectedOutcome: OperationOutcome = {
       resourceType: "OperationOutcome",
@@ -117,7 +117,7 @@ describe("Test generateFhirErrorResponse", () => {
   })
 
   it("logs messages while generating OperationOutcome", () => {
-    const errors: Array<SearchError> = [
+    const errors: Array<clinicalViewError> = [
       {
         status: "403",
         severity: "error",

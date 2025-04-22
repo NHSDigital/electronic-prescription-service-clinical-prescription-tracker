@@ -13,8 +13,16 @@
 			"path": "../packages/clinicalView"
 		},
 		{
+			"name": "packages/common/commonTypes",
+			"path": "../packages/common/commonTypes"
+		},
+		{
 			"name": "packages/common/testing",
 			"path": "../packages/common/testing"
+		},
+		{
+			"name": "packages/common/commonUtils",
+			"path": "../packages/common/commonUtils"
 		},
 		{
 			"name": "packages/prescriptionSearch",

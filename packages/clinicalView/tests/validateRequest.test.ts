@@ -1,11 +1,11 @@
 import {jest} from "@jest/globals"
 import {Logger} from "@aws-lambda-powertools/logger"
-import {validateRequest} from "../src/utils/validateRequest"
+import {validateRequest} from "../src/validateRequest"
 
 // Types
 import {APIGatewayProxyEvent, APIGatewayProxyEventHeaders, APIGatewayProxyEventPathParameters} from "aws-lambda"
 import {ClinicalViewParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
-import {SearchError} from "../src/utils/types"
+import {clinicalViewError} from "../src/utils/types"
 
 const logger: Logger = new Logger({serviceName: "clinicalView", logLevel: "DEBUG"})
 
@@ -51,7 +51,7 @@ describe("Test validateRequest for ClinicalView Lambda", () => {
       jobRoleCode: "JOB-123-456-789"
     }
 
-    const [actualParameters]: [ClinicalViewParams, Array<SearchError>] = validateRequest(mockEvent, logger)
+    const [actualParameters]: [ClinicalViewParams, Array<clinicalViewError>] = validateRequest(mockEvent, logger)
     expect(actualParameters).toEqual(expected)
   })
 
@@ -61,13 +61,13 @@ describe("Test validateRequest for ClinicalView Lambda", () => {
       pathParameters: {}
     } as unknown as APIGatewayProxyEvent
 
-    const expectedErrors: Array<SearchError> = [{
+    const expectedErrors: Array<clinicalViewError> = [{
       status: "400",
       severity: "error",
       description: "Missing required path parameter: prescriptionId."
     }]
 
-    const [, actualError]: [ClinicalViewParams, Array<SearchError>] = validateRequest(mockEvent, logger)
+    const [, actualError]: [ClinicalViewParams, Array<clinicalViewError>] = validateRequest(mockEvent, logger)
     expect(actualError).toEqual(expectedErrors)
   })
 
@@ -78,13 +78,13 @@ describe("Test validateRequest for ClinicalView Lambda", () => {
       pathParameters: mockPathParameters
     } as unknown as APIGatewayProxyEvent
 
-    const expectedErrors: Array<SearchError> = [{
+    const expectedErrors: Array<clinicalViewError> = [{
       status: "400",
       severity: "error",
       description: "Missing required header, x-request-id."
     }]
 
-    const [, actualError]: [ClinicalViewParams, Array<SearchError>] = validateRequest(event, logger)
+    const [, actualError]: [ClinicalViewParams, Array<clinicalViewError>] = validateRequest(event, logger)
     expect(actualError).toEqual(expectedErrors)
   })
 
@@ -95,13 +95,13 @@ describe("Test validateRequest for ClinicalView Lambda", () => {
       pathParameters: mockPathParameters
     } as unknown as APIGatewayProxyEvent
 
-    const expectedErrors: Array<SearchError> = [{
+    const expectedErrors: Array<clinicalViewError> = [{
       status: "400",
       severity: "error",
       description: "Missing required header, nhsd-organization-uuid."
     }]
 
-    const [, actualError]: [ClinicalViewParams, Array<SearchError>] = validateRequest(event, logger)
+    const [, actualError]: [ClinicalViewParams, Array<clinicalViewError>] = validateRequest(event, logger)
     expect(actualError).toEqual(expectedErrors)
   })
 
@@ -112,13 +112,13 @@ describe("Test validateRequest for ClinicalView Lambda", () => {
       pathParameters: mockPathParameters
     } as unknown as APIGatewayProxyEvent
 
-    const expectedErrors: Array<SearchError> = [{
+    const expectedErrors: Array<clinicalViewError> = [{
       status: "400",
       severity: "error",
       description: "Missing required header, nhsd-session-urid."
     }]
 
-    const [, actualError]: [ClinicalViewParams, Array<SearchError>] = validateRequest(event, logger)
+    const [, actualError]: [ClinicalViewParams, Array<clinicalViewError>] = validateRequest(event, logger)
     expect(actualError).toEqual(expectedErrors)
   })
 
@@ -129,13 +129,13 @@ describe("Test validateRequest for ClinicalView Lambda", () => {
       pathParameters: mockPathParameters
     } as unknown as APIGatewayProxyEvent
 
-    const expectedErrors: Array<SearchError> = [{
+    const expectedErrors: Array<clinicalViewError> = [{
       status: "400",
       severity: "error",
       description: "Missing required header, nhsd-identity-uuid."
     }]
 
-    const [, actualError]: [ClinicalViewParams, Array<SearchError>] = validateRequest(event, logger)
+    const [, actualError]: [ClinicalViewParams, Array<clinicalViewError>] = validateRequest(event, logger)
     expect(actualError).toEqual(expectedErrors)
   })
 
@@ -146,13 +146,13 @@ describe("Test validateRequest for ClinicalView Lambda", () => {
       pathParameters: mockPathParameters
     } as unknown as APIGatewayProxyEvent
 
-    const expectedErrors: Array<SearchError> = [{
+    const expectedErrors: Array<clinicalViewError> = [{
       status: "400",
       severity: "error",
       description: "Missing required header, nhsd-session-jobrole."
     }]
 
-    const [, actualError]: [ClinicalViewParams, Array<SearchError>] = validateRequest(event, logger)
+    const [, actualError]: [ClinicalViewParams, Array<clinicalViewError>] = validateRequest(event, logger)
     expect(actualError).toEqual(expectedErrors)
   })
 
@@ -162,7 +162,7 @@ describe("Test validateRequest for ClinicalView Lambda", () => {
       pathParameters: mockPathParameters
     } as unknown as APIGatewayProxyEvent
 
-    const expectedErrors: Array<SearchError> = [
+    const expectedErrors: Array<clinicalViewError> = [
       {
         status: "400",
         severity: "error",
@@ -190,7 +190,7 @@ describe("Test validateRequest for ClinicalView Lambda", () => {
       }
     ]
 
-    const [, actualError]: [ClinicalViewParams, Array<SearchError>] = validateRequest(event, logger)
+    const [, actualError]: [ClinicalViewParams, Array<clinicalViewError>] = validateRequest(event, logger)
     expect(actualError).toEqual(expectedErrors)
   })
 })

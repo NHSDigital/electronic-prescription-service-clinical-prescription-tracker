@@ -4,7 +4,14 @@
       "rootDir": ".",
       "outDir": "lib"
     },
-    "references": [],
+    "references": [
+      {
+        "path": "../common/commonTypes"
+      },
+      {
+        "path": "../common/commonUtils"
+      }
+    ],
     "include": ["src/**/*", "tests/**/*"],
     "exclude": ["node_modules"]
   }

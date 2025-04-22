@@ -7,6 +7,7 @@ export const patientSchema = {
     id: {type: "string"},
     identifier: {
       type: "array",
+      description: "An identifier for this patient.",
       items: {
         type: "object",
         properties: {
@@ -20,8 +21,10 @@ export const patientSchema = {
     },
     name: {
       type: "array",
+      description: "A name associated with the patient.",
       items: {
         type: "object",
+        description: "Name of a human - parts and usage.",
         properties: {
           prefix: {type: "array", items: {type: "string"}},
           suffix: {type: "array", items: {type: "string"}},

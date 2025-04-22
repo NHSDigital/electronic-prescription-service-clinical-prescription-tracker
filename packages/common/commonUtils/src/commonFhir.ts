@@ -1,6 +1,17 @@
-import {Logger} from "@aws-lambda-powertools/logger"
 import {OperationOutcome, OperationOutcomeIssue} from "fhir/r4"
-import {ErrorMap, SearchError} from "./types"
+import {Logger} from "@aws-lambda-powertools/logger"
+import {ServiceError} from "@cpt-common/common-types"
+
+interface FhirErrorDetails {
+  status: string
+  code: string
+  detailsCode: string
+  detailsDisplay: string
+}
+
+interface ErrorMap {
+  [key: string]: FhirErrorDetails
+}
 
 const errorMap: ErrorMap = {
   400: {
@@ -11,15 +22,15 @@ const errorMap: ErrorMap = {
   },
   401: {
     status: "401 Unauthorized",
-    code: "security",
+    code: "forbidden",
     detailsCode: "UNAUTHORIZED",
-    detailsDisplay: "401: Authentication is required and has failed or has not yet been provided."
+    detailsDisplay: "401: The Server deemed you unauthorized to make this request."
   },
   403: {
     status: "403 Forbidden",
     code: "forbidden",
     detailsCode: "FORBIDDEN",
-    detailsDisplay: "403: The Server understood the request, but access is forbidden."
+    detailsDisplay: "403: Failed to Authenticate with the Server."
   },
   404: {
     status: "404 Not Found",
@@ -41,10 +52,7 @@ const errorMap: ErrorMap = {
   }
 }
 
-/**
- * Generates a FHIR OperationOutcome response for ClinicalView Lambda errors.
- */
-export const generateFhirErrorResponse = (errors: Array<SearchError>, logger: Logger): OperationOutcome => {
+export const generateFhirErrorResponse = (errors: Array<ServiceError>, logger: Logger): OperationOutcome => {
   logger.info("Generating the OperationOutcome wrapper...")
   // Generate the OperationOutcome wrapper
   const operationOutcome: OperationOutcome = {
@@ -56,7 +64,7 @@ export const generateFhirErrorResponse = (errors: Array<SearchError>, logger: Lo
   }
 
   // For each error generate an issue
-  for (const error of errors) {
+  for(const error of errors){
     logger.info("Generating Issue for error...")
     const issue: OperationOutcomeIssue = {
       code: errorMap[error.status].code,
