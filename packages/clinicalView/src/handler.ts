@@ -13,12 +13,12 @@ import {ClinicalViewParams} from "@NHSDigital/eps-spine-client/lib/live-spine-cl
 import {RequestGroup, OperationOutcome} from "fhir/r4"
 import {generateFhirErrorResponse} from "@cpt-common/common-utils"
 import {requestGroupSchema} from "./schemas/requestGroupSchema"
-import {parseSpineResponse} from "./utils/parseSpineResponse"
-import {generateFhirResponse} from "./utils/generateFhirResponse"
+// import {parseSpineResponse} from "./utils/parseSpineResponse"
+// import {generateFhirResponse} from "./utils/generateFhirResponse"
 import {validateRequest} from "./validateRequest"
 
 import {ServiceError} from "@cpt-common/common-types"
-import {ParsedSpineResponse} from "./utils/parseSpineResponse"
+// import {ParsedSpineResponse} from "./utils/parseSpineResponse"
 
 // Config
 const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
