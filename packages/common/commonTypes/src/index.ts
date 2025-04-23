@@ -1,6 +1,12 @@
 import {ServiceError, CommonHeaderParameters} from "./service"
 import {SpineXmlResponse, SpineXmlPrescriptionSearchResponse, SpineXmlClinicalViewResponse} from "./spine"
-import {PatientDetails, PrescriptionDetails, LineItemDetails} from "./prescription"
+import {
+  PatientDetails,
+  PrescriptionDetails,
+  LineItemDetailsSummary,
+  LineItemDetails,
+  DispenseNotificationDetails
+} from "./prescription"
 
 export {
   ServiceError,
@@ -10,5 +16,7 @@ export {
   SpineXmlClinicalViewResponse,
   PatientDetails,
   PrescriptionDetails,
-  LineItemDetails
+  LineItemDetailsSummary,
+  LineItemDetails,
+  DispenseNotificationDetails
 }

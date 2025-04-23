@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // TODO: reorder?
 import {LogLevel} from "@aws-lambda-powertools/logger/types"
 import {Logger} from "@aws-lambda-powertools/logger"
@@ -66,51 +67,55 @@ export const apiGatewayHandler = async (
     }
   }
 
-  try {
-    logger.info("Calling Spine clinical view interaction...")
-    const spineResponse = await params.spineClient.clinicalView(event.headers, searchParameters)
-    logger.debug("Spine response received.", {response: spineResponse})
+  // try {
+  logger.info("Calling Spine clinical view interaction...")
+  const spineResponse = await params.spineClient.clinicalView(event.headers, searchParameters)
+  logger.debug("Spine response received.", {response: spineResponse})
 
-    logger.info("Parsing Spine response...")
-    const {prescription, spineError}: ParsedSpineResponse = parseSpineResponse(spineResponse.data, logger)
+  //   logger.info("Parsing Spine response...")
+  //   const {prescription, spineError}: ParsedSpineResponse = parseSpineResponse(spineResponse.data, logger)
 
-    //////////////////////////////////////////////
-    if (spineError) {
-      logger.error("Spine response contained an error.", {error: spineError.description})
-      logger.info("Generating FHIR error response...")
-      const errorResponseBundle: OperationOutcome = generateFhirErrorResponse([extractedData.error], logger)
+  //   //////////////////////////////////////////////
+  //   if (spineError) {
+  //     logger.error("Spine response contained an error.", {error: spineError.description})
+  //     logger.info("Generating FHIR error response...")
+  //     const errorResponseBundle: OperationOutcome = generateFhirErrorResponse([extractedData.error], logger)
 
-      logger.info("Returning FHIR error response.")
-      return {
-        statusCode: parseInt(extractedData.error.status, 10), // Convert error status to integer HTTP code
-        body: JSON.stringify(errorResponseBundle),
-        headers
-      }
-    }
+  //     logger.info("Returning FHIR error response.")
+  //     return {
+  //       statusCode: parseInt(extractedData.error.status, 10), // Convert error status to integer HTTP code
+  //       body: JSON.stringify(errorResponseBundle),
+  //       headers
+  //     }
+  //   }
 
-    // Generate a valid FHIR response from the extracted data
-    const fhirResponse: RequestGroup = generateFhirResponse(extractedData, logger)
-    logger.info("Generated FHIR response.", {fhirResponse})
+  //   // Generate a valid FHIR response from the extracted data
+  //   const fhirResponse: RequestGroup = generateFhirResponse(extractedData, logger)
+  //   logger.info("Generated FHIR response.", {fhirResponse})
 
-    return {
-      statusCode: 200, // Successful response
-      body: JSON.stringify(fhirResponse),
-      headers
-    }
-  } catch(err) {
-    // Catch all errors and return a generic FHIR error response
-    logger.error("An unknown error occurred whilst processing the request", {error: err})
-    logger.info("Generating FHIR error response...")
-    const errorResponseBundle: OperationOutcome = generateFhirErrorResponse(
-      [{status: "500", severity: "fatal", description: "Unknown Error."}], logger
-    )
+  //   return {
+  //     statusCode: 200, // Successful response
+  //     body: JSON.stringify(fhirResponse),
+  //     headers
+  //   }
+  // } catch(err) {
+  //   // Catch all errors and return a generic FHIR error response
+  //   logger.error("An unknown error occurred whilst processing the request", {error: err})
+  //   logger.info("Generating FHIR error response...")
+  //   const errorResponseBundle: OperationOutcome = generateFhirErrorResponse(
+  //     [{status: "500", severity: "fatal", description: "Unknown Error."}], logger
+  //   )
 
-    logger.info("Returning FHIR error response.")
-    return {
-      statusCode: 500,
-      body: JSON.stringify(errorResponseBundle),
-      headers
-    }
+  //   logger.info("Returning FHIR error response.")
+  //   return {
+  //     statusCode: 500,
+  //     body: JSON.stringify(errorResponseBundle),
+  //     headers
+  //   }
+  // }
+  return {
+    statusCode: 200,
+    body: "test"
   }
 }
 

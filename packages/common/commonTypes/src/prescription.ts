@@ -1,17 +1,17 @@
 export interface PatientDetailsSummary {
   nhsNumber: string
-  prefix: string
-  suffix: string
-  given: string
-  family: string
+  prefix?: string
+  suffix?: string
+  given?: string
+  family?: string
 }
 
 export interface PatientDetails extends PatientDetailsSummary {
   birthDate: string
   gender: number
   address: {
-    line: Array<string>
-    postalCode: string
+    line: Array<string | undefined>
+    postalCode?: string
   }
 }
 
@@ -30,15 +30,27 @@ export interface IssueDetails {
   itemsPendingCancellation: boolean
 }
 
-export interface LineItemDetails {
+export interface LineItemDetailsSummary {
   lineItemNo: string
-  lineItemId: string
   status: string
   itemName: string
   quantity: number
   quantityForm: string
   dosageInstruction: string
+}
+
+export interface LineItemDetails extends LineItemDetailsSummary {
+  lineItemId: string
   statusReason?: string
+}
+
+export interface DispenseNotificationDetails {
+  dispenseNotificationId: string
+  timestamp: string
+  status: string
+  lineItems: {
+    [key: string]: LineItemDetailsSummary
+  }
 }
 
 export interface HistoryEventDetails {
@@ -52,13 +64,13 @@ export interface HistoryEventDetails {
 export interface PrescriptionDetails extends PrescriptionDetailsSummary, IssueDetails {
   daysSupply: number
   prescriberOrg: string
-  nominatedDispenserOrg: string
+  nominatedDispenserOrg?: string
   dispenserOrg?: string
   lineItems: {
     [key: string]: LineItemDetails
   }
   dispenseNotifications: {
-    [key: string]: LineItemDetails
+    [key: string]: DispenseNotificationDetails
   }
   history: Array<HistoryEventDetails>
 }

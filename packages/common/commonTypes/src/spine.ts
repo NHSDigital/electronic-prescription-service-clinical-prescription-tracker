@@ -25,6 +25,31 @@ interface XmlLineItem {
 
 interface XmlDispenseNotification {
   dispNotifDocumentKey: string
+  dispenseNotifDateTime: string
+  statusPrescription: string
+  [productLineItem: `productLineItem${string}`]: string
+  [quantityLineItem: `quantityLineItem${string}`]: string
+  [narrativeLineItem: `narrativeLineItem${string}`]: string
+  [statusLineItem: `statusLineItem${string}`]: string
+  [dosageLineItem: `dosageLineItem${string}`]: string
+}
+
+interface XmlHistoryEvent {
+  SCN: string
+  timestamp: string
+  agentPersonOrgCode: string
+  status: string
+}
+
+interface XmlFilteredHistoryEvent {
+  SCN: string
+  cancellationReason?: string
+  lineStatusChangeDict: Array<{
+    order: string
+    id: string
+    toStatus: string
+    cancellationReason?: string
+  }>
 }
 
 interface XmlEpsRecord {
@@ -34,21 +59,22 @@ interface XmlEpsRecord {
   instanceNumber: string
   prescriptionStatus: string
   prescriptionTreatmentType: string
+  prescriptionTime: string
   maxRepeats?: string
-  daysSupply: string
+  daysSupply?: string
   prescribingOrganization: string
-  nominatedPerformer: string
+  nominatedPerformer?: string
   dispensingOrganization?: string
   parentPrescription: {
-    prefix: string
-    suffix: string
-    given: string
-    family: string
-    administrativeGenderCode: string
-    addrLine1: string
-    addrLine2: string
-    addrLine3: string
-    postalCode: string
+    prefix?: string
+    suffix?: string
+    given?: string
+    family?: string
+    administrativeGenderCode?: string
+    addrLine1?: string
+    addrLine2?: string
+    addrLine3?: string
+    postalCode?: string
     [productLineItem: `productLineItem${string}`]: string
     [quantityLineItem: `quantityLineItem${string}`]: string
     [narrativeLineItem: `narrativeLineItem${string}`]: string
@@ -56,6 +82,8 @@ interface XmlEpsRecord {
   }
   lineItem: Array<XmlLineItem> | XmlLineItem
   dispenseNotification:Array<XmlDispenseNotification> | XmlDispenseNotification
+  history: Array<XmlHistoryEvent> | XmlHistoryEvent
+  filteredHistory: Array<XmlFilteredHistoryEvent> | XmlFilteredHistoryEvent
 }
 
 interface SpineClinicalView {

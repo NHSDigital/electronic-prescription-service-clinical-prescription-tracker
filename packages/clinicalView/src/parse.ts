@@ -1,6 +1,8 @@
 import {Logger} from "@aws-lambda-powertools/logger"
 import {
+  DispenseNotificationDetails,
   LineItemDetails,
+  LineItemDetailsSummary,
   PatientDetails,
   PrescriptionDetails,
   SpineXmlClinicalViewResponse,
@@ -56,7 +58,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger) => {
 
   const prescriptionDetails: PrescriptionDetails = {
     prescriptionId: xmlEpsRecord.prescriptionID,
-    issueDate: "", // TODO tbc field to parse
+    issueDate: xmlEpsRecord.prescriptionTime,
     issueNumber: Number(xmlEpsRecord.instanceNumber),
     status: xmlEpsRecord.prescriptionStatus,
     treatmentType: xmlEpsRecord.prescriptionTreatmentType,
@@ -98,13 +100,40 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger) => {
   }
 
   for (const xmlDispenseNotification of xmlDispenseNotifications) {
-    const dispenseNotification = {
+    /* Use the first 14 characters of the DN's document key as an id as this matches the timestamp of the
+    relevant event in the history and can be used to tie them together */
+    const dispenseNotificationId = xmlDispenseNotification.dispNotifDocumentKey.substring(0, 14)
+
+    let lineItems: {[key: string]: LineItemDetailsSummary} = {}
+    for (const lineItemNo of Object.keys(prescriptionDetails.lineItems)){
+      const lintItem: LineItemDetailsSummary = {
+        lineItemNo,
+        status: xmlDispenseNotification[`statusLineItem${lineItemNo}`],
+        itemName: xmlDispenseNotification[`productLineItem${lineItemNo}`],
+        quantity: Number(xmlDispenseNotification[`quantityLineItem${lineItemNo}`]),
+        quantityForm: xmlDispenseNotification[`narrativeLineItem${lineItemNo}`],
+        dosageInstruction: xmlDispenseNotification[`dosageLineItem${lineItemNo}`]
+      }
+      lineItems[lineItemNo] = lintItem
     }
-    /* TODO: what is the actual DN id?
-    - do they always have props for all 4 items but they could be empty?
-    - if so going to make sure if multiple they split items properly
-    - how to tie DN to history, timestamp seems to be the only thing ive found that sort of carries across*/
+
+    // TODO: status reasons?
+    const dispenseNotification: DispenseNotificationDetails = {
+      dispenseNotificationId,
+      timestamp: xmlDispenseNotification.dispenseNotifDateTime,
+      status: xmlDispenseNotification.statusPrescription,
+      lineItems
+    }
+    prescriptionDetails.dispenseNotifications[dispenseNotificationId] = dispenseNotification
   }
+
+  let xmlDispenseHistory = xmlEpsRecord.dispenseNotification
+  if (!Array.isArray(xmlDispenseHistory)) {
+    xmlDispenseHistory = [xmlDispenseHistory]
+  }
+  // for (const xmlHistoryEvent of xmlDispenseHistory){
+  //   //
+  // }
 
   return {
     ...patientDetails,
