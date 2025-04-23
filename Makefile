@@ -49,7 +49,7 @@ lint: lint-node lint-python lint-githubactions lint-githubaction-scripts lint-sp
 lint-node: compile
 	npm run lint --workspace packages/cdk
 	npm run lint --workspace packages/clinicalView
-	npm run link --workspace packages/common/commonTypes
+	npm run lint --workspace packages/common/commonTypes
 	npm run lint --workspace packages/common/testing
 	npm run lint --workspace packages/common/commonUtils
 	npm run lint --workspace packages/prescriptionSearch
