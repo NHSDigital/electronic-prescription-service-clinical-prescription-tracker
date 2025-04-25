@@ -89,7 +89,7 @@ interface XmlEpsRecord {
     [dosageLineItem: `dosageLineItem${string}`]: string
   }
   lineItem: Array<XmlLineItem> | XmlLineItem
-  dispenseNotification:Array<XmlDispenseNotification> | XmlDispenseNotification
+  dispenseNotification?:Array<XmlDispenseNotification> | XmlDispenseNotification
   history: Array<XmlHistoryEvent> | XmlHistoryEvent
   filteredHistory: Array<XmlFilteredHistoryEvent> | XmlFilteredHistoryEvent
 }

@@ -20,7 +20,7 @@ export interface ParsedSpineResponse {
 }
 
 export const parseSpineResponse = (spineResponse: string, logger: Logger): ParsedSpineResponse => {
-  const xmlParser = new XMLParser({ignoreAttributes: false})
+  const xmlParser = new XMLParser({ignoreAttributes: false, parseTagValue: false})
   const xmlResponse = xmlParser.parse(spineResponse) as SpineXmlResponse
 
   logger.info("Parsing XML SOAP body...")
@@ -43,10 +43,11 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     .ControlActEvent.subject.PrescriptionJsonQueryResponse.epsRecord
 
   // TODO: logs
+  // do like suffix for the rest of the optional fields
   const patientDetails: PatientDetails = {
     nhsNumber: xmlEpsRecord.patientNhsNumber,
     prefix: xmlEpsRecord.parentPrescription.prefix,
-    suffix: xmlEpsRecord.parentPrescription.suffix,
+    ...(xmlEpsRecord.parentPrescription.suffix ? {suffix: xmlEpsRecord.parentPrescription.suffix} : {}),
     given: xmlEpsRecord.parentPrescription.given,
     family: xmlEpsRecord.parentPrescription.family,
     birthDate: xmlEpsRecord.patientBirthTime,
@@ -67,13 +68,13 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     issueNumber: Number(xmlEpsRecord.instanceNumber),
     status: xmlEpsRecord.prescriptionStatus,
     treatmentType: xmlEpsRecord.prescriptionTreatmentType,
-    maxRepeats: Number(xmlEpsRecord.maxRepeats),
+    ...(xmlEpsRecord.maxRepeats ? {maxRepeats: Number(xmlEpsRecord.maxRepeats)} : {}),
     daysSupply: Number(xmlEpsRecord.daysSupply),
     prescriptionPendingCancellation: false, //default to false but update when checking last history event
     itemsPendingCancellation: false, //default to false but update when checking last history events line items
     prescriberOrg: xmlEpsRecord.prescribingOrganization,
-    nominatedDispenserOrg: xmlEpsRecord.nominatedPerformer,
-    dispenserOrg: xmlEpsRecord?.dispensingOrganization,
+    ...(xmlEpsRecord.nominatedPerformer ? {nominatedDispenserOrg: xmlEpsRecord.nominatedPerformer} : {}),
+    ...(xmlEpsRecord.dispensingOrganization ? {dispenserOrg: xmlEpsRecord.dispensingOrganization} : {}),
     lineItems: {},
     dispenseNotifications: {},
     history: {}
@@ -102,7 +103,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
 
   let xmlDispenseNotifications = xmlEpsRecord.dispenseNotification
   if (!Array.isArray(xmlDispenseNotifications)) {
-    xmlDispenseNotifications = [xmlDispenseNotifications]
+    xmlDispenseNotifications = [...(xmlDispenseNotifications ? [xmlDispenseNotifications]: [])]
   }
 
   for (const xmlDispenseNotification of xmlDispenseNotifications) {
@@ -148,14 +149,14 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     const finalEvent = eventIndex === xmlHistory.length - 1
 
     const eventId = xmlHistoryEvent.SCN
-    const message = xmlHistoryEvent.message
+    const message = xmlHistoryEvent.message.slice(1, -1) // Strip unnecessary "" from value
     const xmlFilteredHistoryEvent = xmlFilteredHistory.find((event) => event.SCN === eventId)!
 
     const historyEvent: HistoryEventDetails = {
       eventId,
       message,
-      messageId: xmlHistoryEvent.messageID, // this matches the DN ID for relevant events
-      timestamp: xmlHistoryEvent.timestamp ?? xmlFilteredHistoryEvent.timestamp, //Timestamp in history could be empty
+      messageId: xmlHistoryEvent.messageID.slice(1, -1), // This id matches the DN ID for relevant events. Strip unnecessary "" from value
+      timestamp: xmlFilteredHistoryEvent.timestamp, // Use the timestamp from filtered history as the one from regular history could be empty/missing
       org: xmlHistoryEvent.agentPersonOrgCode,
       newStatus: xmlHistoryEvent.status,
       cancellationReason: xmlFilteredHistoryEvent.cancellationReason,
@@ -171,7 +172,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
       const lineItemNo = xmlEventLineItem.order
       const cancellationReason = xmlEventLineItem.cancellationReason
 
-      if (finalEvent){
+      if (finalEvent && cancellationReason){
         if (cancellationReason?.includes("Pending")){
           prescriptionDetails.itemsPendingCancellation = true
           prescriptionDetails.lineItems[lineItemNo].pendingCancellation = true
@@ -182,7 +183,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
       const lineItem: EventLineItem = {
         lineItemNo,
         newStatus: xmlEventLineItem.toStatus,
-        cancellationReason
+        ...(cancellationReason ? {cancellationReason} : {})
       }
       historyEvent.lineItems[lineItemNo] = lineItem
     }
@@ -197,3 +198,5 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     }
   }
 }
+
+// TODO: go and check all possible undefined and have them conditionally added to objects where necessary
