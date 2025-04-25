@@ -23,7 +23,8 @@ interface XmlLineItem {
   status: XmlStringValue
 }
 
-interface XmlDispenseNotification {
+interface XmlDispenseNotification { // TODO: technically all optional
+  dispenseNotificationID: string
   dispNotifDocumentKey: string
   dispenseNotifDateTime: string
   statusPrescription: string
@@ -36,20 +37,27 @@ interface XmlDispenseNotification {
 
 interface XmlHistoryEvent {
   SCN: string
-  timestamp: string
+  message: string
+  messageID: string
+  timestamp?: string // TODO: use the one from filtered history?
   agentPersonOrgCode: string
   status: string
 }
 
+interface XmlHistoryEventLineItem{
+  order: string
+  id: string
+  toStatus: string
+  cancellationReason?: string
+}
+
 interface XmlFilteredHistoryEvent {
   SCN: string
+  timestamp: string
   cancellationReason?: string
-  lineStatusChangeDict: Array<{
-    order: string
-    id: string
-    toStatus: string
-    cancellationReason?: string
-  }>
+  lineStatusChangeDict: {
+    line: Array<XmlHistoryEventLineItem> | XmlHistoryEventLineItem
+  }
 }
 
 interface XmlEpsRecord {

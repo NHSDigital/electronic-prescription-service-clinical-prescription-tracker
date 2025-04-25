@@ -10,12 +10,11 @@ export interface PatientDetails extends PatientDetailsSummary {
   birthDate: string
   gender: number
   address: {
-    line: Array<string | undefined>
+    line: Array<string>
     postalCode?: string
   }
 }
 
-/// ----------------------------------------------------
 export interface PrescriptionDetailsSummary {
   prescriptionId: string
   issueDate: string
@@ -41,7 +40,8 @@ export interface LineItemDetailsSummary {
 
 export interface LineItemDetails extends LineItemDetailsSummary {
   lineItemId: string
-  statusReason?: string
+  cancellationReason?: string
+  pendingCancellation: boolean
 }
 
 export interface DispenseNotificationDetails {
@@ -53,16 +53,28 @@ export interface DispenseNotificationDetails {
   }
 }
 
+export interface EventLineItem {
+  lineItemNo: string
+  newStatus: string
+  cancellationReason?: string
+}
+
 export interface HistoryEventDetails {
   eventId: string
-  time: string
+  message: string
+  messageId: string
+  timestamp: string
   org: string
   newStatus: string
-  dispenseNotificationId: string
+  cancellationReason?: string
+  isDispenseNotification: boolean,
+  lineItems: {
+    [key: string]: EventLineItem
+  }
 }
 
 export interface PrescriptionDetails extends PrescriptionDetailsSummary, IssueDetails {
-  daysSupply: number
+  daysSupply?: number
   prescriberOrg: string
   nominatedDispenserOrg?: string
   dispenserOrg?: string
@@ -72,5 +84,9 @@ export interface PrescriptionDetails extends PrescriptionDetailsSummary, IssueDe
   dispenseNotifications: {
     [key: string]: DispenseNotificationDetails
   }
-  history: Array<HistoryEventDetails>
+  history: {
+    [key: string]: HistoryEventDetails
+  }
 }
+
+export type Prescription = PatientDetails & PrescriptionDetails
