@@ -1,17 +1,25 @@
 import {Logger} from "@aws-lambda-powertools/logger"
 import {
   DispenseNotificationDetails,
+  EventLineItem,
+  HistoryEventDetails,
   LineItemDetails,
   LineItemDetailsSummary,
   PatientDetails,
+  Prescription,
   PrescriptionDetails,
+  ServiceError,
   SpineXmlClinicalViewResponse,
   SpineXmlResponse
 } from "@cpt-common/common-types"
 import {XMLParser} from "fast-xml-parser"
 
-// TODO: add return type
-export const parseSpineResponse = (spineResponse: string, logger: Logger) => {
+export interface ParsedSpineResponse {
+  prescription?: Prescription | undefined
+  spineError?: ServiceError | undefined
+}
+
+export const parseSpineResponse = (spineResponse: string, logger: Logger): ParsedSpineResponse => {
   const xmlParser = new XMLParser({ignoreAttributes: false})
   const xmlResponse = xmlParser.parse(spineResponse) as SpineXmlResponse
 
@@ -35,9 +43,6 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger) => {
     .ControlActEvent.subject.PrescriptionJsonQueryResponse.epsRecord
 
   // TODO: logs
-  // TODO: structure checking?
-  // TODO: add ? for defaults
-
   const patientDetails: PatientDetails = {
     nhsNumber: xmlEpsRecord.patientNhsNumber,
     prefix: xmlEpsRecord.parentPrescription.prefix,
@@ -48,9 +53,9 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger) => {
     gender: Number(xmlEpsRecord.parentPrescription.administrativeGenderCode),
     address: {
       line: [
-        xmlEpsRecord.parentPrescription.addrLine1,
-        xmlEpsRecord.parentPrescription.addrLine2,
-        xmlEpsRecord.parentPrescription.addrLine3
+        ...(xmlEpsRecord.parentPrescription.addrLine1 ? [xmlEpsRecord.parentPrescription.addrLine1]: []),
+        ...(xmlEpsRecord.parentPrescription.addrLine2 ? [xmlEpsRecord.parentPrescription.addrLine2]: []),
+        ...(xmlEpsRecord.parentPrescription.addrLine3 ? [xmlEpsRecord.parentPrescription.addrLine3]: [])
       ],
       postalCode: xmlEpsRecord.parentPrescription.postalCode
     }
@@ -64,14 +69,14 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger) => {
     treatmentType: xmlEpsRecord.prescriptionTreatmentType,
     maxRepeats: Number(xmlEpsRecord.maxRepeats),
     daysSupply: Number(xmlEpsRecord.daysSupply),
-    prescriptionPendingCancellation: false, //default to false but update when checking line items
-    itemsPendingCancellation: false, //default to false but update when checking line items
+    prescriptionPendingCancellation: false, //default to false but update when checking last history event
+    itemsPendingCancellation: false, //default to false but update when checking last history events line items
     prescriberOrg: xmlEpsRecord.prescribingOrganization,
     nominatedDispenserOrg: xmlEpsRecord.nominatedPerformer,
     dispenserOrg: xmlEpsRecord?.dispensingOrganization,
     lineItems: {},
-    dispenseNotifications: {}, // TODO
-    history: [] //TODO / do we just need the split out DN's?
+    dispenseNotifications: {},
+    history: {}
   }
 
   let xmlLineItems = xmlEpsRecord.lineItem
@@ -89,7 +94,8 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger) => {
       itemName: xmlEpsRecord.parentPrescription[`productLineItem${lineItemNo}`],
       quantity: Number(xmlEpsRecord.parentPrescription[`quantityLineItem${lineItemNo}`]),
       quantityForm: xmlEpsRecord.parentPrescription[`narrativeLineItem${lineItemNo}`],
-      dosageInstruction: xmlEpsRecord.parentPrescription[`dosageLineItem${lineItemNo}`]
+      dosageInstruction: xmlEpsRecord.parentPrescription[`dosageLineItem${lineItemNo}`],
+      pendingCancellation: false //default to false but update when checking last history events line items
     }
     prescriptionDetails.lineItems[lineItemNo] = lineItem
   }
@@ -100,43 +106,94 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger) => {
   }
 
   for (const xmlDispenseNotification of xmlDispenseNotifications) {
-    /* Use the first 14 characters of the DN's document key as an id as this matches the timestamp of the
-    relevant event in the history and can be used to tie them together */
-    const dispenseNotificationId = xmlDispenseNotification.dispNotifDocumentKey.substring(0, 14)
-
-    let lineItems: {[key: string]: LineItemDetailsSummary} = {}
-    for (const lineItemNo of Object.keys(prescriptionDetails.lineItems)){
-      const lintItem: LineItemDetailsSummary = {
-        lineItemNo,
-        status: xmlDispenseNotification[`statusLineItem${lineItemNo}`],
-        itemName: xmlDispenseNotification[`productLineItem${lineItemNo}`],
-        quantity: Number(xmlDispenseNotification[`quantityLineItem${lineItemNo}`]),
-        quantityForm: xmlDispenseNotification[`narrativeLineItem${lineItemNo}`],
-        dosageInstruction: xmlDispenseNotification[`dosageLineItem${lineItemNo}`]
-      }
-      lineItems[lineItemNo] = lintItem
-    }
-
-    // TODO: status reasons?
+    const dispenseNotificationId = xmlDispenseNotification.dispenseNotificationID
     const dispenseNotification: DispenseNotificationDetails = {
       dispenseNotificationId,
       timestamp: xmlDispenseNotification.dispenseNotifDateTime,
       status: xmlDispenseNotification.statusPrescription,
-      lineItems
+      lineItems: {}
     }
+
+    for (const lineItemNo of Object.keys(prescriptionDetails.lineItems)){
+      const quantity = Number(xmlDispenseNotification[`quantityLineItem${lineItemNo}`])
+      if (quantity === 0) {
+        continue
+      }
+
+      const lintItem: LineItemDetailsSummary = {
+        lineItemNo,
+        status: xmlDispenseNotification[`statusLineItem${lineItemNo}`],
+        itemName: xmlDispenseNotification[`productLineItem${lineItemNo}`],
+        quantity,
+        quantityForm: xmlDispenseNotification[`narrativeLineItem${lineItemNo}`],
+        dosageInstruction: xmlDispenseNotification[`dosageLineItem${lineItemNo}`]
+      }
+      dispenseNotification.lineItems[lineItemNo] = lintItem
+    }
+
     prescriptionDetails.dispenseNotifications[dispenseNotificationId] = dispenseNotification
   }
 
-  let xmlDispenseHistory = xmlEpsRecord.dispenseNotification
-  if (!Array.isArray(xmlDispenseHistory)) {
-    xmlDispenseHistory = [xmlDispenseHistory]
+  let xmlHistory = xmlEpsRecord.history
+  if (!Array.isArray(xmlHistory)) {
+    xmlHistory = [xmlHistory]
   }
-  // for (const xmlHistoryEvent of xmlDispenseHistory){
-  //   //
-  // }
+
+  let xmlFilteredHistory = xmlEpsRecord.filteredHistory
+  if (!Array.isArray(xmlFilteredHistory)) {
+    xmlFilteredHistory = [xmlFilteredHistory]
+  }
+
+  for (const [eventIndex, xmlHistoryEvent] of xmlHistory.entries()){
+    const finalEvent = eventIndex === xmlHistory.length - 1
+
+    const eventId = xmlHistoryEvent.SCN
+    const message = xmlHistoryEvent.message
+    const xmlFilteredHistoryEvent = xmlFilteredHistory.find((event) => event.SCN === eventId)!
+
+    const historyEvent: HistoryEventDetails = {
+      eventId,
+      message,
+      messageId: xmlHistoryEvent.messageID, // this matches the DN ID for relevant events
+      timestamp: xmlHistoryEvent.timestamp ?? xmlFilteredHistoryEvent.timestamp, //Timestamp in history could be empty
+      org: xmlHistoryEvent.agentPersonOrgCode,
+      newStatus: xmlHistoryEvent.status,
+      cancellationReason: xmlFilteredHistoryEvent.cancellationReason,
+      isDispenseNotification: message.includes("Dispense notification successful"),
+      lineItems: {}
+    }
+
+    let xmlEventLineItems = xmlFilteredHistoryEvent.lineStatusChangeDict.line
+    if (!Array.isArray(xmlEventLineItems)){
+      xmlEventLineItems = [xmlEventLineItems]
+    }
+    for(const xmlEventLineItem of xmlEventLineItems){
+      const lineItemNo = xmlEventLineItem.order
+      const cancellationReason = xmlEventLineItem.cancellationReason
+
+      if (finalEvent){
+        if (cancellationReason?.includes("Pending")){
+          prescriptionDetails.itemsPendingCancellation = true
+          prescriptionDetails.lineItems[lineItemNo].pendingCancellation = true
+        }
+        prescriptionDetails.lineItems[lineItemNo].cancellationReason = cancellationReason
+      }
+
+      const lineItem: EventLineItem = {
+        lineItemNo,
+        newStatus: xmlEventLineItem.toStatus,
+        cancellationReason
+      }
+      historyEvent.lineItems[lineItemNo] = lineItem
+    }
+
+    prescriptionDetails.history[eventId] = historyEvent
+  }
 
   return {
-    ...patientDetails,
-    ...prescriptionDetails
+    prescription: {
+      ...patientDetails,
+      ...prescriptionDetails
+    }
   }
 }

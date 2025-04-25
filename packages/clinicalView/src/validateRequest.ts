@@ -16,6 +16,8 @@ export const validateRequest = (
   const [pathParameters, pathParameterErrors]:
     [PathParameters, Array<ServiceError>] = validatePathParameters(event.pathParameters, logger)
 
+  //TODO: add issue number query param
+
   logger.info("Validating headers...")
   const [headerParameters, headerErrors]:
     [CommonHeaderParameters, Array<ServiceError>] = validateCommonHeaders(event.headers, logger)
