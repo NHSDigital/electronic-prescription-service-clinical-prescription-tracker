@@ -6,7 +6,7 @@
 	xmlns="urn:hl7-org:v3"
 	xmlns:hl7="urn:hl7-org:v3">
 	<SOAP:Header>
-		<wsa:MessageID>uuid:BA3E0E3A-20FC-11F0-860F-3520031DD101</wsa:MessageID>
+		<wsa:MessageID>uuid:302C5FE8-2517-11F0-860F-3520031DD101</wsa:MessageID>
 		<wsa:Action>urn:nhs:names:services:mmquery/PORX_IN000006UK98</wsa:Action>
 		<wsa:To/>
 		<wsa:From>
@@ -27,8 +27,8 @@
 	<SOAP:Body>
 		<prescriptionClinicalViewResponse>
 			<PORX_IN000006UK98>
-				<id root="BA3E0E3A-20FC-11F0-860F-3520031DD101"/>
-				<creationTime value="20250424111027"/>
+				<id root="302C5FE8-2517-11F0-860F-3520031DD101"/>
+				<creationTime value="20250429162957"/>
 				<versionCode code="V3NPfIT3.0"/>
 				<interactionId root="2.16.840.1.113883.2.1.3.2.4.12" extension="PORX_IN000006UK98"/>
 				<processingCode code="P"/>
@@ -65,10 +65,10 @@
 							<effectiveTime value="20050922101500"/>
 							<epsIndex>
 								<!-- These are the secondary index items for the record-->
-								<prescribingSite_status>['A83008_0001']</prescribingSite_status>
-								<nominatedPharmacy_status>['FA565_0001']</nominatedPharmacy_status>
-								<nextActivity_nextActivityDate>['expire_20251024']</nextActivity_nextActivityDate>
-								<dispenser_status>['FA565_0001']</dispenser_status>
+								<prescribingSite_status>['A99968_0001', 'A99968_9000']</prescribingSite_status>
+								<nominatedPharmacy_status>['VNE51_0001', 'VNE51_9000']</nominatedPharmacy_status>
+								<nextActivity_nextActivityDate>['expire_20251029']</nextActivity_nextActivityDate>
+								<dispenser_status>['VNE51_0001', 'VNE51_9000']['VNE51_0001', 'VNE51_9000']</dispenser_status>
 							</epsIndex>
 							<epsRecord>
 								<!-- These are the other fields stored on the JSON for the record-->
@@ -77,30 +77,16 @@
 								<nominatedDownloadDate/>
 								<downloadDate/>
 								<completionDate>False</completionDate>
-								<expiryDate>20251024</expiryDate>
+								<expiryDate>20251029</expiryDate>
 								<dispenseWindow>
-									<low value="20250424"/>
-									<high value="20260424"/>
+									<low value="20250429"/>
+									<high value="20250529"/>
 								</dispenseWindow>
 								<instanceNumber>1</instanceNumber>
 								<lineItem>
 									<order value="1"/>
-									<ID value="D37FD639-E831-420C-B37B-40481DCA910E"/>
-									<status value="0007"/>
-								</lineItem>
-								<lineItem>
-									<order value="2"/>
-									<ID value="407685A2-A1A2-4B6B-B281-CAED41733C2B"/>
-									<status value="0007"/>
-								</lineItem>
-								<lineItem>
-									<order value="3"/>
-									<ID value="20D6D69F-7BDD-4798-86DF-30F902BD2936"/>
-									<status value="0007"/>
-								</lineItem>
-								<lineItem>
-									<order value="4"/>
-									<ID value="BF1B0BD8-0E6D-4D90-989E-F32065200CA3"/>
+									<ID value="58F3FF9A-E00B-44DC-8CDF-280883267C16"/>
+									<lineItemMaxRepeats value="7"/>
 									<status value="0007"/>
 								</lineItem>
 								<!--Prescription History-->
@@ -112,46 +98,27 @@
 									<instanceStatus>0001</instanceStatus>
 									<agentPerson>555086689106</agentPerson>
 									<agentSystem>200000001215</agentSystem>
-									<agentPersonOrgCode>A83008</agentPersonOrgCode>
+									<agentPersonOrgCode>A99968</agentPersonOrgCode>
 									<message>"Prescription upload successful"</message>
-									<messageID>"F1204DE7-9434-4EDE-B1A2-ACB849891919"</messageID>
-									<timestamp>"20250424111005"</timestamp>
+									<messageID>"F677E0E8-4C5A-45FF-B2A0-37D2F9693721"</messageID>
+									<timestamp>"20250429162913"</timestamp>
 									<toASID>"200000001215"</toASID>
 									<fromASID>"567456789789"</fromASID>
 								</history>
 								<filteredHistory>
 									<SCN>2</SCN>
-									<timestamp>20250424111005</timestamp>
+									<timestamp>20250429162913</timestamp>
 									<fromStatus>False</fromStatus>
 									<toStatus>0001</toStatus>
 									<agentPerson>555086689106</agentPerson>
-									<agentRoleProfileCodeId>200102238987</agentRoleProfileCodeId>
+									<agentRoleProfileCodeId>100102238986</agentRoleProfileCodeId>
 									<message>Prescription upload successful</message>
 									<orgASID>200000001215</orgASID>
-									<agentPersonOrgCode>A83008</agentPersonOrgCode>
+									<agentPersonOrgCode>A99968</agentPersonOrgCode>
 									<lineStatusChangeDict>
 										<line>
 											<order>1</order>
-											<id>D37FD639-E831-420C-B37B-40481DCA910E</id>
-											<fromStatus>None</fromStatus>
-											<toStatus>0007</toStatus>
-										</line>
-										<line>
-											<order>2</order>
-											<id>407685A2-A1A2-4B6B-B281-CAED41733C2B</id>
-											<status/>
-											<fromStatus>None</fromStatus>
-											<toStatus>0007</toStatus>
-										</line>
-										<line>
-											<order>3</order>
-											<id>20D6D69F-7BDD-4798-86DF-30F902BD2936</id>
-											<fromStatus>None</fromStatus>
-											<toStatus>0007</toStatus>
-										</line>
-										<line>
-											<order>4</order>
-											<id>BF1B0BD8-0E6D-4D90-989E-F32065200CA3</id>
+											<id>58F3FF9A-E00B-44DC-8CDF-280883267C16</id>
 											<fromStatus>None</fromStatus>
 											<toStatus>0007</toStatus>
 										</line>
@@ -166,52 +133,52 @@
 								<claimReceivedDate>False</claimReceivedDate>
 								<!--Prescription Specific Information-->
 								<currentInstance>1</currentInstance>
-								<signedTime>20250424111004</signedTime>
-								<prescriptionTreatmentType>0001</prescriptionTreatmentType>
+								<signedTime>20250429162912</signedTime>
+								<prescriptionTreatmentType>0003</prescriptionTreatmentType>
 								<prescriptionType>0101</prescriptionType>
-								<prescriptionTime>20250424000000</prescriptionTime>
-								<prescriptionID>C0C3E6-A83008-93D8FL</prescriptionID>
-								<prescriptionMsgRef>20250424111005027335_2CBA3C_1614371148</prescriptionMsgRef>
-								<prescribingOrganization>A83008</prescribingOrganization>
-								<daysSupply>28</daysSupply>
-								<maxRepeats/>
-								<eventID>F1204DE7-9434-4EDE-B1A2-ACB849891919</eventID>
+								<prescriptionTime>20250429000000</prescriptionTime>
+								<prescriptionID>6D9882-A83008-6AB663</prescriptionID>
+								<prescriptionMsgRef>20250429162913308377_64D49D_1614371148</prescriptionMsgRef>
+								<prescribingOrganization>A99968</prescribingOrganization>
+								<daysSupply>10</daysSupply>
+								<maxRepeats>7</maxRepeats>
+								<eventID>F677E0E8-4C5A-45FF-B2A0-37D2F9693721</eventID>
 								<!--Patient Specific Information-->
 								<lowerAgeLimit>False</lowerAgeLimit>
 								<higherAgeLimit>False</higherAgeLimit>
-								<patientNhsNumber>5839945242</patientNhsNumber>
-								<patientBirthTime>19480430</patientBirthTime>
+								<patientNhsNumber>9732730684</patientNhsNumber>
+								<patientBirthTime>19990104</patientBirthTime>
 								<!--Nomination Specific Information-->
-								<nominatedPerformer>FA565</nominatedPerformer>
+								<nominatedPerformer>VNE51</nominatedPerformer>
 								<nominatedPerformerType>P1</nominatedPerformerType>
 								<!--Parent Prescription Information-->
 								<parentPrescription>
-									<birthTime>19480430</birthTime>
+									<birthTime>19990104</birthTime>
 									<administrativeGenderCode>2</administrativeGenderCode>
-									<prefix>MS</prefix>
-									<given>STACEY</given>
-									<family>TWITCHETT</family>
-									<suffix>OBE</suffix>
-									<addrLine1>10 HEATHFIELD</addrLine1>
-									<addrLine2>COBHAM</addrLine2>
-									<addrLine3>SURREY</addrLine3>
-									<postalCode>KT11 2QY</postalCode>
-									<productLineItem1>Amoxicillin 250mg capsules</productLineItem1>
-									<quantityLineItem1>20</quantityLineItem1>
+									<prefix>MISS</prefix>
+									<given>ETTA</given>
+									<family>CORY</family>
+									<suffix/>
+									<addrLine1>123 Dale Avenue</addrLine1>
+									<addrLine2>Long Eaton</addrLine2>
+									<addrLine3>Nottingham</addrLine3>
+									<postalCode>NG10 1NP</postalCode>
+									<productLineItem1>Azithromycin 250mg capsules</productLineItem1>
+									<quantityLineItem1>30</quantityLineItem1>
 									<narrativeLineItem1>tablet</narrativeLineItem1>
-									<dosageLineItem1>2 times a day for 10 days</dosageLineItem1>
-									<productLineItem2>Co-codamol 30mg/500mg tablets</productLineItem2>
-									<quantityLineItem2>20</quantityLineItem2>
-									<narrativeLineItem2>tablet</narrativeLineItem2>
-									<dosageLineItem2>2 times a day for 10 days</dosageLineItem2>
-									<productLineItem3>Pseudoephedrine hydrochloride 60mg tablets</productLineItem3>
-									<quantityLineItem3>30</quantityLineItem3>
-									<narrativeLineItem3>tablet</narrativeLineItem3>
-									<dosageLineItem3>3 times a day for 10 days</dosageLineItem3>
-									<productLineItem4>Azithromycin 250mg capsules</productLineItem4>
-									<quantityLineItem4>30</quantityLineItem4>
-									<narrativeLineItem4>tablet</narrativeLineItem4>
-									<dosageLineItem4>3 times a day for 10 days</dosageLineItem4>
+									<dosageLineItem1>3 times a day for 10 days</dosageLineItem1>
+									<productLineItem2/>
+									<quantityLineItem2/>
+									<narrativeLineItem2/>
+									<dosageLineItem2/>
+									<productLineItem3/>
+									<quantityLineItem3/>
+									<narrativeLineItem3/>
+									<dosageLineItem3/>
+									<productLineItem4/>
+									<quantityLineItem4/>
+									<narrativeLineItem4/>
+									<dosageLineItem4/>
 								</parentPrescription>
 							</epsRecord>
 						</PrescriptionJsonQueryResponse>

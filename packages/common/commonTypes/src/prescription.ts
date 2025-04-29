@@ -8,7 +8,7 @@ export interface PatientDetailsSummary {
 
 export interface PatientDetails extends PatientDetailsSummary {
   birthDate: string
-  gender: number
+  gender?: number
   address: {
     line: Array<string>
     postalCode?: string
@@ -31,11 +31,11 @@ export interface IssueDetails {
 
 export interface LineItemDetailsSummary {
   lineItemNo: string
-  status: string
-  itemName: string
-  quantity: number
-  quantityForm: string
-  dosageInstruction: string
+  status?: string
+  itemName?: string
+  quantity?: number
+  quantityForm?: string
+  dosageInstruction?: string
 }
 
 export interface LineItemDetails extends LineItemDetailsSummary {
@@ -75,6 +75,7 @@ export interface HistoryEventDetails {
 
 export interface PrescriptionDetails extends PrescriptionDetailsSummary, IssueDetails {
   daysSupply?: number
+  prescriptionType: string
   prescriberOrg: string
   nominatedDispenserOrg?: string
   dispenserOrg?: string

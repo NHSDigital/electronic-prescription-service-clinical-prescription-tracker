@@ -310,19 +310,19 @@
 									<productLineItem1>Amoxicillin 250mg capsules</productLineItem1>
 									<quantityLineItem1>20</quantityLineItem1>
 									<narrativeLineItem1>tablet</narrativeLineItem1>
-									<dosageLineItem1>2 times a day for 10 days</dosageLineItem1>
+									<dosageLineItem1/>
 									<productLineItem2>Co-codamol 30mg/500mg tablets</productLineItem2>
 									<quantityLineItem2>20</quantityLineItem2>
 									<narrativeLineItem2>tablet</narrativeLineItem2>
-									<dosageLineItem2>2 times a day for 10 days</dosageLineItem2>
+									<dosageLineItem2/>
 									<productLineItem3>Pseudoephedrine hydrochloride 60mg tablets</productLineItem3>
 									<quantityLineItem3>30</quantityLineItem3>
 									<narrativeLineItem3>tablet</narrativeLineItem3>
-									<dosageLineItem3>3 times a day for 10 days</dosageLineItem3>
+									<dosageLineItem3/>
 									<productLineItem4>Azithromycin 250mg capsules</productLineItem4>
 									<quantityLineItem4>30</quantityLineItem4>
 									<narrativeLineItem4>tablet</narrativeLineItem4>
-									<dosageLineItem4>3 times a day for 10 days</dosageLineItem4>
+									<dosageLineItem4/>
 								</parentPrescription>
 								<!--Dispense Notification Information-->
 								<dispenseNotification>
@@ -334,22 +334,22 @@
 									<productLineItem1>Amoxicillin 250mg capsules</productLineItem1>
 									<quantityLineItem1>20</quantityLineItem1>
 									<narrativeLineItem1>tablet</narrativeLineItem1>
-									<dosageLineItem1>2 times a day for 10 days</dosageLineItem1>
+									<dosageLineItem1/>
 									<statusLineItem1>0001</statusLineItem1>
 									<productLineItem2>Co-codamol 30mg/500mg tablets</productLineItem2>
 									<quantityLineItem2>20</quantityLineItem2>
 									<narrativeLineItem2>tablet</narrativeLineItem2>
-									<dosageLineItem2>2 times a day for 10 days</dosageLineItem2>
+									<dosageLineItem2/>
 									<statusLineItem2>0001</statusLineItem2>
 									<productLineItem3>Pseudoephedrine hydrochloride 60mg tablets</productLineItem3>
 									<quantityLineItem3>30</quantityLineItem3>
 									<narrativeLineItem3>tablet</narrativeLineItem3>
-									<dosageLineItem3>3 times a day for 10 days</dosageLineItem3>
+									<dosageLineItem3/>
 									<statusLineItem3>0001</statusLineItem3>
 									<productLineItem4>Azithromycin 250mg capsules</productLineItem4>
 									<quantityLineItem4>30</quantityLineItem4>
 									<narrativeLineItem4>tablet</narrativeLineItem4>
-									<dosageLineItem4>3 times a day for 10 days</dosageLineItem4>
+									<dosageLineItem4/>
 									<statusLineItem4>0001</statusLineItem4>
 									<statusPrescription>0006</statusPrescription>
 								</dispenseNotification>

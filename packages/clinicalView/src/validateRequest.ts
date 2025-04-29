@@ -1,5 +1,9 @@
 // Types
-import {APIGatewayEvent, APIGatewayProxyEventPathParameters} from "aws-lambda"
+import {
+  APIGatewayEvent,
+  APIGatewayProxyEventPathParameters,
+  APIGatewayProxyEventQueryStringParameters
+} from "aws-lambda"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {ClinicalViewParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
 import {validateCommonHeaders} from "@cpt-common/common-utils"
@@ -9,6 +13,10 @@ export interface PathParameters {
   prescriptionId?: string
 }
 
+export interface QueryStringParameters {
+  repeatNumber? : number
+}
+
 export const validateRequest = (
   event: APIGatewayEvent, logger: Logger): [ClinicalViewParams, Array<ServiceError>] => {
 
@@ -16,7 +24,9 @@ export const validateRequest = (
   const [pathParameters, pathParameterErrors]:
     [PathParameters, Array<ServiceError>] = validatePathParameters(event.pathParameters, logger)
 
-  //TODO: add issue number query param
+  logger.info("Validating query string parameters...")
+  const queryStringParameters: QueryStringParameters =
+  validateQueryStringParameters(event.queryStringParameters)
 
   logger.info("Validating headers...")
   const [headerParameters, headerErrors]:
@@ -25,6 +35,7 @@ export const validateRequest = (
   const errors: Array<ServiceError> = [...pathParameterErrors, ...headerErrors]
   const clinicalViewParameters = {
     ...pathParameters,
+    ...queryStringParameters,
     ...headerParameters
   } as unknown as ClinicalViewParams
 
@@ -38,7 +49,6 @@ const validatePathParameters = (
   const errors: Array<ServiceError> = []
 
   const prescriptionId: string | undefined = eventPathParameters?.prescriptionId
-
   if (!prescriptionId) {
     logger.error("Missing required path parameter; prescriptionId.")
     errors.push({
@@ -48,7 +58,20 @@ const validatePathParameters = (
     })
   }
 
-  const pathParameters: PathParameters = {prescriptionId: prescriptionId}
+  const pathParameters: PathParameters = {
+    prescriptionId
+  }
 
   return [pathParameters, errors]
+}
+
+const validateQueryStringParameters = (
+  eventQueryStringParameters: APIGatewayProxyEventQueryStringParameters | null): QueryStringParameters => {
+
+  const repeatNumber: number | undefined = Number(eventQueryStringParameters?.issueNumber)
+  const queryStringParameters = {
+    repeatNumber
+  }
+
+  return queryStringParameters
 }

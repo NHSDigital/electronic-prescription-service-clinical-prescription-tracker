@@ -36,29 +36,33 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     const error = xmlSoapBody?.prescriptionClinicalViewResponse?.MCCI_IN010000UK13
       ?.acknowledgement?.acknowledgementDetail?.code?.["@_displayName"] ?? "Unknown Error"
 
-    return {spineError: {status: "500", severity: "error", description: error}}
+    const statusCode = error === "Prescription not found" ? "404" : "500"
+
+    return {spineError: {status: statusCode, severity: "error", description: error}}
   }
 
   const xmlEpsRecord = xmlSoapBody.prescriptionClinicalViewResponse.PORX_IN000006UK98
     .ControlActEvent.subject.PrescriptionJsonQueryResponse.epsRecord
 
   // TODO: logs
-  // do like suffix for the rest of the optional fields
+  // TODO: put patient details under a patient key rather than root?
+  const xmlParentPrescription = xmlEpsRecord.parentPrescription
   const patientDetails: PatientDetails = {
     nhsNumber: xmlEpsRecord.patientNhsNumber,
-    prefix: xmlEpsRecord.parentPrescription.prefix,
-    ...(xmlEpsRecord.parentPrescription.suffix ? {suffix: xmlEpsRecord.parentPrescription.suffix} : {}),
-    given: xmlEpsRecord.parentPrescription.given,
-    family: xmlEpsRecord.parentPrescription.family,
+    ...(xmlParentPrescription.prefix ? {prefix: xmlParentPrescription.prefix}: {}),
+    ...(xmlParentPrescription.suffix ? {suffix: xmlParentPrescription.suffix} : {}),
+    ...(xmlParentPrescription.given ? {given: xmlParentPrescription.given} : {}),
+    ...(xmlParentPrescription.family ? {family: xmlParentPrescription.family} : {}),
     birthDate: xmlEpsRecord.patientBirthTime,
-    gender: Number(xmlEpsRecord.parentPrescription.administrativeGenderCode),
+    ...(xmlParentPrescription.administrativeGenderCode ?
+      {gender: Number(xmlParentPrescription.administrativeGenderCode)} : {}),
     address: {
       line: [
-        ...(xmlEpsRecord.parentPrescription.addrLine1 ? [xmlEpsRecord.parentPrescription.addrLine1]: []),
-        ...(xmlEpsRecord.parentPrescription.addrLine2 ? [xmlEpsRecord.parentPrescription.addrLine2]: []),
-        ...(xmlEpsRecord.parentPrescription.addrLine3 ? [xmlEpsRecord.parentPrescription.addrLine3]: [])
+        ...(xmlParentPrescription.addrLine1 ? [xmlParentPrescription.addrLine1]: []),
+        ...(xmlParentPrescription.addrLine2 ? [xmlParentPrescription.addrLine2]: []),
+        ...(xmlParentPrescription.addrLine3 ? [xmlParentPrescription.addrLine3]: [])
       ],
-      postalCode: xmlEpsRecord.parentPrescription.postalCode
+      ...(xmlParentPrescription.postalCode ? {postalCode: xmlParentPrescription.postalCode} : {})
     }
   }
 
@@ -68,8 +72,9 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     issueNumber: Number(xmlEpsRecord.instanceNumber),
     status: xmlEpsRecord.prescriptionStatus,
     treatmentType: xmlEpsRecord.prescriptionTreatmentType,
+    prescriptionType: xmlEpsRecord.prescriptionType,
     ...(xmlEpsRecord.maxRepeats ? {maxRepeats: Number(xmlEpsRecord.maxRepeats)} : {}),
-    daysSupply: Number(xmlEpsRecord.daysSupply),
+    ...(xmlEpsRecord.daysSupply ? {daysSupply: Number(xmlEpsRecord.daysSupply)} : {}),
     prescriptionPendingCancellation: false, //default to false but update when checking last history event
     itemsPendingCancellation: false, //default to false but update when checking last history events line items
     prescriberOrg: xmlEpsRecord.prescribingOrganization,
@@ -92,10 +97,11 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
       lineItemNo,
       lineItemId: xmlLineItem.ID["@_value"],
       status: xmlLineItem.status["@_value"],
-      itemName: xmlEpsRecord.parentPrescription[`productLineItem${lineItemNo}`],
-      quantity: Number(xmlEpsRecord.parentPrescription[`quantityLineItem${lineItemNo}`]),
-      quantityForm: xmlEpsRecord.parentPrescription[`narrativeLineItem${lineItemNo}`],
-      dosageInstruction: xmlEpsRecord.parentPrescription[`dosageLineItem${lineItemNo}`],
+      itemName: xmlParentPrescription[`productLineItem${lineItemNo}`],
+      quantity: Number(xmlParentPrescription[`quantityLineItem${lineItemNo}`]),
+      quantityForm: xmlParentPrescription[`narrativeLineItem${lineItemNo}`],
+      ...(xmlParentPrescription[`dosageLineItem${lineItemNo}`] ?
+        {dosageInstruction: xmlParentPrescription[`dosageLineItem${lineItemNo}`]} : {}),
       pendingCancellation: false //default to false but update when checking last history events line items
     }
     prescriptionDetails.lineItems[lineItemNo] = lineItem
@@ -127,7 +133,8 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
         itemName: xmlDispenseNotification[`productLineItem${lineItemNo}`],
         quantity,
         quantityForm: xmlDispenseNotification[`narrativeLineItem${lineItemNo}`],
-        dosageInstruction: xmlDispenseNotification[`dosageLineItem${lineItemNo}`]
+        ...(xmlDispenseNotification[`dosageLineItem${lineItemNo}`] ?
+          {dosageInstruction: xmlDispenseNotification[`dosageLineItem${lineItemNo}`]} : {})
       }
       dispenseNotification.lineItems[lineItemNo] = lintItem
     }
@@ -135,31 +142,32 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     prescriptionDetails.dispenseNotifications[dispenseNotificationId] = dispenseNotification
   }
 
-  let xmlHistory = xmlEpsRecord.history
-  if (!Array.isArray(xmlHistory)) {
-    xmlHistory = [xmlHistory]
-  }
-
   let xmlFilteredHistory = xmlEpsRecord.filteredHistory
   if (!Array.isArray(xmlFilteredHistory)) {
     xmlFilteredHistory = [xmlFilteredHistory]
   }
 
-  for (const [eventIndex, xmlHistoryEvent] of xmlHistory.entries()){
+  let xmlHistory = xmlEpsRecord.history
+  if (!Array.isArray(xmlHistory)) {
+    xmlHistory = [xmlHistory]
+  }
+
+  for (const [eventIndex, xmlFilteredHistoryEvent] of xmlFilteredHistory.entries()){
     const finalEvent = eventIndex === xmlHistory.length - 1
 
-    const eventId = xmlHistoryEvent.SCN
-    const message = xmlHistoryEvent.message.slice(1, -1) // Strip unnecessary "" from value
-    const xmlFilteredHistoryEvent = xmlFilteredHistory.find((event) => event.SCN === eventId)!
+    const eventId = xmlFilteredHistoryEvent.SCN
+    const message = xmlFilteredHistoryEvent.message
+    const xmlHistoryEvent = xmlHistory.find((event) => event.SCN === eventId)!
 
     const historyEvent: HistoryEventDetails = {
       eventId,
       message,
       messageId: xmlHistoryEvent.messageID.slice(1, -1), // This id matches the DN ID for relevant events. Strip unnecessary "" from value
-      timestamp: xmlFilteredHistoryEvent.timestamp, // Use the timestamp from filtered history as the one from regular history could be empty/missing
-      org: xmlHistoryEvent.agentPersonOrgCode,
-      newStatus: xmlHistoryEvent.status,
-      cancellationReason: xmlFilteredHistoryEvent.cancellationReason,
+      timestamp: xmlFilteredHistoryEvent.timestamp,
+      org: xmlFilteredHistoryEvent.agentPersonOrgCode,
+      newStatus: xmlFilteredHistoryEvent.toStatus,
+      ...(xmlFilteredHistoryEvent.cancellationReason ?
+        {cancellationReason: xmlFilteredHistoryEvent.cancellationReason} : {}),
       isDispenseNotification: message.includes("Dispense notification successful"),
       lineItems: {}
     }

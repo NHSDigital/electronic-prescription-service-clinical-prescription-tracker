@@ -18,6 +18,7 @@ import {requestGroupSchema} from "./schemas/requestGroupSchema"
 import {validateRequest} from "./validateRequest"
 
 import {ServiceError} from "@cpt-common/common-types"
+import {ParsedSpineResponse, parseSpineResponse} from "./parseSpineResponse"
 // import {ParsedSpineResponse} from "./utils/parseSpineResponse"
 
 // Config
@@ -42,7 +43,7 @@ export const apiGatewayHandler = async (
     "nhsd-correlation-id": event.headers?.["nhsd-correlation-id"],
     "nhsd-request-id": event.headers?.["nhsd-request-id"],
     "x-correlation-id": event.headers?.["x-correlation-id"],
-    "apigw-request-id": event.requestContext.requestId // Change to event.headers?.["apigw-request-id"] when SM
+    "apigw-request-id": event.requestContext.requestId // Change to event.headers?.["apigw-request-id"] when State machine
   })
 
   const [searchParameters, validationErrors]:
@@ -72,8 +73,8 @@ export const apiGatewayHandler = async (
   const spineResponse = await params.spineClient.clinicalView(event.headers, searchParameters)
   logger.debug("Spine response received.", {response: spineResponse})
 
-  //   logger.info("Parsing Spine response...")
-  //   const {prescription, spineError}: ParsedSpineResponse = parseSpineResponse(spineResponse.data, logger)
+  logger.info("Parsing Spine response...")
+  const {prescription, spineError}: ParsedSpineResponse = parseSpineResponse(spineResponse.data, logger)
 
   //   //////////////////////////////////////////////
   //   if (spineError) {

@@ -1,4 +1,4 @@
-/* eslint-disable max-len */
+
 // import {describe, it, expect} from "@jest/globals"
 // import {Logger} from "@aws-lambda-powertools/logger"
 // import {generateFhirResponse} from "../src/utils/generateFhirResponse"
