@@ -38,7 +38,7 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       }
     ]
-    const result: ParsedSpineResponse = parseSpineResponse(singleAcute, logger)
+    const result: ParsedSpineResponse = parseSpineResponse(singleAcute as SpineJsonResponse, logger)
     expect(result).toEqual({prescriptions: expected})
   })
 
@@ -75,7 +75,7 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       }
     ]
-    const result: ParsedSpineResponse = parseSpineResponse(multipleAcute, logger)
+    const result: ParsedSpineResponse = parseSpineResponse(multipleAcute as SpineJsonResponse, logger)
     expect(result).toEqual({prescriptions: expected})
   })
 
@@ -187,7 +187,7 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       }
     ]
-    const result: ParsedSpineResponse = parseSpineResponse(singleErd, logger)
+    const result: ParsedSpineResponse = parseSpineResponse(singleErd as SpineJsonResponse, logger)
     expect(result).toEqual({prescriptions: expected})
   })
 
@@ -404,7 +404,7 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       }
     ]
-    const result: ParsedSpineResponse = parseSpineResponse(multipleErd, logger)
+    const result: ParsedSpineResponse = parseSpineResponse(multipleErd as SpineJsonResponse, logger)
     expect(result).toEqual({prescriptions: expected})
   })
 
@@ -426,7 +426,7 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       }
     ]
-    const result: ParsedSpineResponse = parseSpineResponse(singleRepeat, logger)
+    const result: ParsedSpineResponse = parseSpineResponse(singleRepeat as SpineJsonResponse, logger)
     expect(result).toEqual({prescriptions: expected})
   })
 
@@ -463,7 +463,7 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       }
     ]
-    const result: ParsedSpineResponse = parseSpineResponse(multipleRepeat, logger)
+    const result: ParsedSpineResponse = parseSpineResponse(multipleRepeat as SpineJsonResponse, logger)
     expect(result).toEqual({prescriptions: expected})
   })
 
@@ -605,7 +605,7 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       }
     ]
-    const result: ParsedSpineResponse = parseSpineResponse(multipleMixed, logger)
+    const result: ParsedSpineResponse = parseSpineResponse(multipleMixed as SpineJsonResponse, logger)
     expect(result).toEqual({prescriptions: expected})
   })
 

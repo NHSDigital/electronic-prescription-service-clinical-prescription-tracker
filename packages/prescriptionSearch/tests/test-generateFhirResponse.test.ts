@@ -246,11 +246,11 @@ describe("Test generateFhirResponse", () => {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
       extension: [
         {
-          url: "numberOfRepeatsAllowed",
+          url: "numberOfRepeatsIssued",
           valueInteger: 1
         },
         {
-          url: "numberOfRepeatsIssued",
+          url: "numberOfRepeatsAllowed",
           valueInteger: 1
         }
       ]
@@ -269,12 +269,12 @@ describe("Test generateFhirResponse", () => {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
       extension: [
         {
-          url: "numberOfRepeatsAllowed",
-          valueInteger: 7
-        },
-        {
           url: "numberOfRepeatsIssued",
           valueInteger: 1
+        },
+        {
+          url: "numberOfRepeatsAllowed",
+          valueInteger: 7
         }
       ]
     }
@@ -513,11 +513,11 @@ describe("Test generateFhirResponse", () => {
                 url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
                 extension: [
                   {
-                    url: "numberOfRepeatsAllowed",
+                    url: "numberOfRepeatsIssued",
                     valueInteger: 1
                   },
                   {
-                    url: "numberOfRepeatsIssued",
+                    url: "numberOfRepeatsAllowed",
                     valueInteger: 1
                   }
                 ]
@@ -575,12 +575,12 @@ describe("Test generateFhirResponse", () => {
                 url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
                 extension: [
                   {
-                    url: "numberOfRepeatsAllowed",
-                    valueInteger: 7
-                  },
-                  {
                     url: "numberOfRepeatsIssued",
                     valueInteger: 1
+                  },
+                  {
+                    url: "numberOfRepeatsAllowed",
+                    valueInteger: 7
                   }
                 ]
               },
