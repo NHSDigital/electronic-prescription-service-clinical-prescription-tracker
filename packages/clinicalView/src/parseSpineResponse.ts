@@ -9,9 +9,11 @@ import {
   Prescription,
   PrescriptionDetails,
   ServiceError,
+  SPINE_TIMESTAMP_FORMAT,
   SpineXmlClinicalViewResponse,
   SpineXmlResponse
 } from "@cpt-common/common-types"
+import {parse} from "date-fns"
 import {XMLParser} from "fast-xml-parser"
 
 export interface ParsedSpineResponse {
@@ -68,7 +70,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
 
   const prescriptionDetails: PrescriptionDetails = {
     prescriptionId: xmlEpsRecord.prescriptionID,
-    issueDate: xmlEpsRecord.prescriptionTime,
+    issueDate: parse(xmlEpsRecord.prescriptionTime, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
     issueNumber: Number(xmlEpsRecord.instanceNumber),
     status: xmlEpsRecord.prescriptionStatus,
     treatmentType: xmlEpsRecord.prescriptionTreatmentType,
@@ -116,7 +118,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     const dispenseNotificationId = xmlDispenseNotification.dispenseNotificationID
     const dispenseNotification: DispenseNotificationDetails = {
       dispenseNotificationId,
-      timestamp: xmlDispenseNotification.dispenseNotifDateTime,
+      timestamp: parse(xmlDispenseNotification.dispenseNotifDateTime, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
       status: xmlDispenseNotification.statusPrescription,
       lineItems: {}
     }
@@ -163,7 +165,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
       eventId,
       message,
       messageId: xmlHistoryEvent.messageID.slice(1, -1), // This id matches the DN ID for relevant events. Strip unnecessary "" from value
-      timestamp: xmlFilteredHistoryEvent.timestamp,
+      timestamp: parse(xmlFilteredHistoryEvent.timestamp, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
       org: xmlFilteredHistoryEvent.agentPersonOrgCode,
       newStatus: xmlFilteredHistoryEvent.toStatus,
       ...(xmlFilteredHistoryEvent.cancellationReason ?
@@ -206,5 +208,6 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     }
   }
 }
-
-// TODO: go and check all possible undefined and have them conditionally added to objects where necessary
+// TODO: would any of this benefit from some brief comments or some refactoring to break it up?
+/* TODO: do all possible optionals as per spine template need to be covered even if in practice they should be populated?
+  is it fine it it errors if they are missing? */

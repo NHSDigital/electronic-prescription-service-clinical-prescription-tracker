@@ -119,7 +119,7 @@ const parsePrescriptions = (responsePrescriptions: Array<ResponsePrescription>):
 
     const prescriptionDetails: PrescriptionDetails = {
       prescriptionId: responsePrescription.prescriptionID,
-      issueDate: responsePrescription.prescribedDate,
+      issueDate: responsePrescription.prescribedDate, //TODO: needs formatting
       treatmentType: responsePrescription.prescriptionTreatmentType,
       maxRepeats: responsePrescription.maxRepeats === "None" ? undefined : Number(responsePrescription.maxRepeats)
     }

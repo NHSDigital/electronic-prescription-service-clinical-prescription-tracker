@@ -1,5 +1,11 @@
 import {ServiceError, CommonHeaderParameters} from "./service"
-import {SpineXmlResponse, SpineXmlPrescriptionSearchResponse, SpineXmlClinicalViewResponse} from "./spine"
+import {
+  SpineXmlResponse,
+  SpineXmlPrescriptionSearchResponse,
+  SpineXmlClinicalViewResponse,
+  SPINE_TIMESTAMP_FORMAT
+} from "./spine"
+
 import {
   Prescription,
   PatientDetails,
@@ -11,12 +17,15 @@ import {
   HistoryEventDetails
 } from "./prescription"
 
+import {INTENT_MAP, GENDER_MAP} from "./fhir"
+
 export {
   ServiceError,
   CommonHeaderParameters,
   SpineXmlResponse,
   SpineXmlPrescriptionSearchResponse,
   SpineXmlClinicalViewResponse,
+  SPINE_TIMESTAMP_FORMAT,
   Prescription,
   PatientDetails,
   PrescriptionDetails,
@@ -24,5 +33,7 @@ export {
   LineItemDetails,
   DispenseNotificationDetails,
   EventLineItem,
-  HistoryEventDetails
+  HistoryEventDetails,
+  INTENT_MAP,
+  GENDER_MAP
 }

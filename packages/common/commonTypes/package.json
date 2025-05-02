@@ -15,5 +15,7 @@
     "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
   },
   "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {
+        "@types/fhir": "^0.0.41"
+    }
 }
