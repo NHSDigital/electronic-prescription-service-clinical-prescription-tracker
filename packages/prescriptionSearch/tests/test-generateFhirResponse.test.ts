@@ -15,6 +15,9 @@ import {
 } from "fhir/r4"
 import {SearchError} from "../src/parseSpineResponse"
 import {Prescription} from "../src/parseSpineResponse"
+import {PrescriptionStatusExtensionType} from "../src/schema/response"
+
+type PrescriptionStatusCode = PrescriptionStatusExtensionType["extension"][0]["valueCoding"]["code"]
 
 const logger: Logger = new Logger({serviceName: "prescriptionSearch", logLevel: "DEBUG"})
 
@@ -211,7 +214,7 @@ describe("Test generateFhirResponse", () => {
     expect(actualExtensions[0]).toEqual(expected)
   })
 
-  const statusDisplayTestCases = [
+  const statusDisplayTestCases: Array<{status: PrescriptionStatusCode, expectedDisplay: string}> = [
     {status: "0001", expectedDisplay: "To be Dispensed"},
     {status: "0002", expectedDisplay: "With Dispenser"},
     {status: "0003", expectedDisplay: "With Dispenser - Active"},
@@ -243,11 +246,11 @@ describe("Test generateFhirResponse", () => {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
       extension: [
         {
-          url: "numberOfRepeatsAllowed",
+          url: "numberOfRepeatsIssued",
           valueInteger: 1
         },
         {
-          url: "numberOfRepeatsIssued",
+          url: "numberOfRepeatsAllowed",
           valueInteger: 1
         }
       ]
@@ -266,12 +269,12 @@ describe("Test generateFhirResponse", () => {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
       extension: [
         {
-          url: "numberOfRepeatsAllowed",
-          valueInteger: 7
-        },
-        {
           url: "numberOfRepeatsIssued",
           valueInteger: 1
+        },
+        {
+          url: "numberOfRepeatsAllowed",
+          valueInteger: 7
         }
       ]
     }
@@ -510,11 +513,11 @@ describe("Test generateFhirResponse", () => {
                 url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
                 extension: [
                   {
-                    url: "numberOfRepeatsAllowed",
+                    url: "numberOfRepeatsIssued",
                     valueInteger: 1
                   },
                   {
-                    url: "numberOfRepeatsIssued",
+                    url: "numberOfRepeatsAllowed",
                     valueInteger: 1
                   }
                 ]
@@ -572,12 +575,12 @@ describe("Test generateFhirResponse", () => {
                 url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
                 extension: [
                   {
-                    url: "numberOfRepeatsAllowed",
-                    valueInteger: 7
-                  },
-                  {
                     url: "numberOfRepeatsIssued",
                     valueInteger: 1
+                  },
+                  {
+                    url: "numberOfRepeatsAllowed",
+                    valueInteger: 7
                   }
                 ]
               },
