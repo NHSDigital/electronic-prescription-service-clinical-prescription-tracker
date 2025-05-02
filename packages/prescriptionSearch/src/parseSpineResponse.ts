@@ -1,6 +1,9 @@
 import {XMLParser} from "fast-xml-parser"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {logger} from "./handler"
+import {PrescriptionStatusExtensionType} from "./schema/response"
+
+type PrescriptionStatusCode = PrescriptionStatusExtensionType["extension"][0]["valueCoding"]["code"]
 
 interface SpineXmlErrorResponse {
   "SOAP:Envelope": {
@@ -23,7 +26,7 @@ interface SpineXmlErrorResponse {
 }
 interface ResponseIssueDetail {
   instanceNumber: string
-  prescriptionStatus: string
+  prescriptionStatus: PrescriptionStatusCode
   prescCancPending: string
   liCancPending: string
 }
@@ -62,7 +65,7 @@ export interface PrescriptionDetails {
 
 export interface IssueDetails {
   issueNumber: number
-  status: string
+  status: PrescriptionStatusCode
   prescriptionPendingCancellation: boolean
   itemsPendingCancellation: boolean
 

@@ -6,13 +6,21 @@ import {
   Extension,
   RequestGroup,
   Patient,
-  OperationOutcome,
-  OperationOutcomeIssue
+  OperationOutcome
 } from "fhir/r4"
 import {Prescription, SearchError} from "./parseSpineResponse"
+import {
+  BundleType,
+  MedicationRepeatInformationExtensionType,
+  OperationOutcomeType,
+  PatientBundleEntryType,
+  PendingCancellationExtensionType,
+  PrescriptionStatusExtensionType,
+  RequestGroupBundleEntryType
+} from "./schema/response"
 
 export interface IntentMap {
-  [key: string]: RequestGroup["intent"]
+  [key: string]: RequestGroupBundleEntryType["resource"]["intent"]
 }
 
 export enum TreatmentType {
@@ -27,10 +35,9 @@ const intentMap: IntentMap = {
   [TreatmentType.ERD] : "reflex-order"
 }
 
-export interface StatusDisplayMap {
-  [key: string]: string
-}
-const statusDisplayMap: StatusDisplayMap = {
+type PrescriptionStatusCoding = PrescriptionStatusExtensionType["extension"][0]["valueCoding"]
+
+const statusDisplayMap: Record<PrescriptionStatusCoding["code"], PrescriptionStatusCoding["display"]> = {
   "0001": "To be Dispensed",
   "0002": "With Dispenser",
   "0003": "With Dispenser - Active",
@@ -48,7 +55,7 @@ const statusDisplayMap: StatusDisplayMap = {
 export const generateFhirResponse = (prescriptions: Array<Prescription>, logger: Logger): Bundle => {
   // Generate the Bundle wrapper
   logger.info("Generating the Bundle wrapper...")
-  const responseBundle: Bundle = {
+  const responseBundle: Bundle & BundleType = {
     resourceType: "Bundle",
     type: "searchset",
     total: prescriptions.length,
@@ -61,7 +68,7 @@ export const generateFhirResponse = (prescriptions: Array<Prescription>, logger:
     // Generate the Patient bundle entry if there are prescriptions to process
     logger.info("Generating the Patient bundle entry...")
     if (responseBundle.entry?.length === 0){
-      const patient: BundleEntry<Patient> = {
+      const patient: BundleEntry<Patient> & PatientBundleEntryType = {
         fullUrl: `urn:uuid:${patientUuid}`,
         search: {
           mode: "include"
@@ -88,7 +95,7 @@ export const generateFhirResponse = (prescriptions: Array<Prescription>, logger:
   for (const prescription of prescriptions){
     // Generate the RequestGroup bundle entry for the prescription/issue
     logger.info("Generating the RequestGroup bundle entry...", {prescriptionId: prescription.prescriptionId})
-    const requestGroup:BundleEntry<RequestGroup> = {
+    const requestGroup:BundleEntry<RequestGroup> & RequestGroupBundleEntryType = {
       fullUrl: `urn:uuid:${randomUUID()}`,
       search: {
         mode: "match"
@@ -112,7 +119,7 @@ export const generateFhirResponse = (prescriptions: Array<Prescription>, logger:
     // Generate the PrescriptionStatus extension
     logger.info("Generating the PrescriptionStatus extension...",
       {prescriptionId: prescription.prescriptionId})
-    const prescriptionStatus: Extension = {
+    const prescriptionStatus: Extension & PrescriptionStatusExtensionType = {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
       extension: [{
         url: "status",
@@ -129,25 +136,27 @@ export const generateFhirResponse = (prescriptions: Array<Prescription>, logger:
     if (prescription.treatmentType !== TreatmentType.ACUTE){
       logger.info("Generating the RepeatInformation extension for non acute prescription...",
         {prescriptionId: prescription.prescriptionId})
-      const medicationRepeatInformation: Extension = {
+      const medicationRepeatInformation: Extension & MedicationRepeatInformationExtensionType = {
         url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
         extension: [
-          {
-            url: "numberOfRepeatsAllowed",
-            valueInteger: prescription.maxRepeats
-          },
           {
             url: "numberOfRepeatsIssued",
             valueInteger: prescription.issueNumber
           }
         ]
       }
+      if (prescription.maxRepeats){
+        medicationRepeatInformation.extension?.push({
+          url: "numberOfRepeatsAllowed",
+          valueInteger: prescription.maxRepeats
+        })
+      }
       requestGroup.resource?.extension?.push(medicationRepeatInformation)
     }
 
     // Generate the PendingCancellation extension
     logger.info("Generating the PendingCancellation extension...", {prescriptionId: prescription.prescriptionId})
-    const pendingCancellation: Extension = {
+    const pendingCancellation: Extension & PendingCancellationExtensionType = {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PendingCancellation",
       extension: [
         {
@@ -168,9 +177,9 @@ export const generateFhirResponse = (prescriptions: Array<Prescription>, logger:
 
 export interface FhirErrorDetails {
   status: string
-  code: string
-  detailsCode: string
-  detailsDisplay: string
+  code: OperationOutcomeType["issue"][0]["code"]
+  detailsCode: OperationOutcomeType["issue"][0]["details"]["coding"][0]["code"]
+  detailsDisplay: OperationOutcomeType["issue"][0]["details"]["coding"][0]["display"]
 }
 
 export interface ErrorMap {
@@ -207,18 +216,12 @@ const errorMap: ErrorMap = {
 export const generateFhirErrorResponse = (errors: Array<SearchError>, logger: Logger): OperationOutcome => {
   logger.info("Generating the OperationOutcome wrapper...")
   // Generate the OperationOutcome wrapper
-  const operationOutcome: OperationOutcome = {
+  const operationOutcome: OperationOutcome & OperationOutcomeType = {
     resourceType: "OperationOutcome",
     meta: {
       lastUpdated: new Date().toISOString()
     },
-    issue: []
-  }
-
-  // For each error generate an issue
-  for(const error of errors){
-    logger.info("Generating Issue for error...")
-    const issue: OperationOutcomeIssue = {
+    issue: errors.map((error) => ({
       code: errorMap[error.status].code,
       severity: error.severity,
       diagnostics: error.description,
@@ -229,9 +232,7 @@ export const generateFhirErrorResponse = (errors: Array<SearchError>, logger: Lo
           display: errorMap[error.status].detailsDisplay
         }]
       }
-    }
-
-    operationOutcome.issue.push(issue)
+    }))
   }
 
   return operationOutcome

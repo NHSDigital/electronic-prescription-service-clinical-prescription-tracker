@@ -157,6 +157,7 @@ paths:
             | ----------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
             | 400         | `value`             | The Server was unable to process the request                                                                                              |
             | 404         | `not-found`         | The Server was unable to find the specified resource.                                                                                     |
+            | 408         | `timeout`           | The server has timed out whilst processing the request.                                                                                   |
 
             Any errors will be included in the returned OperationOutcome (below).
           content:
@@ -170,7 +171,6 @@ paths:
             | HTTP status | Error code          | Description                                                                                                                               |
             | ----------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
             | 500         | `exception`         | The Server has encountered an error processing the request.                                                                               |
-            | 404         | `timeout`           | The server has timed out whilst processing the request.                                                                                   |
 
             Any errors will be included in the returned OperationOutcome (below).
           content:
