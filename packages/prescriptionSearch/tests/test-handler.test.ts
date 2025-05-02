@@ -14,7 +14,7 @@ const prescriptionStatusUrl = `https://live/syncservice-pds/pds`
 const mockAxios = new MockAdapter(axios)
 const mockHeaders: APIGatewayProxyEventHeaders = {
   "nhsd-correlation-id": "NHSD-COR-123-456",
-  "nhsd-request-id":  "NHSD-REQ-123-345",
+  "nhsd-request-id": "NHSD-REQ-123-345",
   "x-correlation-id": "COR-123-456",
   "x-request-id": "REQ-123-456-789",
   "nhsd-organization-uuid": "ORG-123-456-789",
@@ -25,7 +25,7 @@ const mockHeaders: APIGatewayProxyEventHeaders = {
 const mockEvent = {
   headers: mockHeaders,
   queryStringParameters: {
-    prescriptionId : "PRES-1234-5678"
+    prescriptionId: "PRES-1234-5678"
   },
   requestContext: {
     requestId: "API-GW-REQ-123"
@@ -35,14 +35,14 @@ const mockContext = {} as unknown as Context
 
 let mockValidate = jest.fn()
 jest.unstable_mockModule("../src/validateRequest", () => {
-  return{
+  return {
     validateRequest: mockValidate
   }
 })
 
 let mockParseSpineResponse = jest.fn()
 jest.unstable_mockModule("../src/parseSpineResponse", () => {
-  return{
+  return {
     parseSpineResponse: mockParseSpineResponse
   }
 })
@@ -50,7 +50,7 @@ jest.unstable_mockModule("../src/parseSpineResponse", () => {
 let mockGenerateFhirResponse = jest.fn()
 let mockGenerateFhirErrorResponse = jest.fn()
 jest.unstable_mockModule("../src/generateFhirResponse", () => {
-  return{
+  return {
     generateFhirResponse: mockGenerateFhirResponse,
     generateFhirErrorResponse: mockGenerateFhirErrorResponse
   }
@@ -85,7 +85,7 @@ describe("test handler", () => {
     await handler(mockEvent, mockContext)
     expect(appendKeySpy).toHaveBeenLastCalledWith({
       "nhsd-correlation-id": "NHSD-COR-123-456",
-      "nhsd-request-id":  "NHSD-REQ-123-345",
+      "nhsd-request-id": "NHSD-REQ-123-345",
       "x-correlation-id": "COR-123-456",
       "apigw-request-id": "API-GW-REQ-123"
     })
@@ -204,10 +204,12 @@ describe("test handler", () => {
   it("generates a OperationOutcome and returns it and a 500 response when spine returns an error", async () => {
     mockValidate.mockReturnValue([{requestId: "REQ-123-456-789"}, []])
     mockAxios.onPost(prescriptionStatusUrl).reply(200, {data: "success"})
-    mockParseSpineResponse.mockReturnValue({searchError: {
-      status: "500",
-      severity: "error",
-      description: "Unknown Error."}
+    mockParseSpineResponse.mockReturnValue({
+      searchError: {
+        status: "500",
+        severity: "error",
+        description: "Unknown Error."
+      }
     })
     const mockOperationOutcome = {
       resourceType: "OperationOutcome",
