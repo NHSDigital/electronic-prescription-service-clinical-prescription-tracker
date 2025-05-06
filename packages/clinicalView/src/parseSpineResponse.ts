@@ -1,4 +1,13 @@
+import {parse} from "date-fns"
+import {XMLParser} from "fast-xml-parser"
 import {Logger} from "@aws-lambda-powertools/logger"
+import {ServiceError} from "@cpt-common/common-types/service"
+import {
+  SPINE_TIMESTAMP_FORMAT,
+  SpineGenderCode,
+  SpineXmlClinicalViewResponse,
+  SpineXmlResponse
+} from "@cpt-common/common-types/spine"
 import {
   DispenseNotificationDetails,
   EventLineItem,
@@ -7,14 +16,9 @@ import {
   LineItemDetailsSummary,
   PatientDetails,
   Prescription,
-  PrescriptionDetails,
-  ServiceError,
-  SPINE_TIMESTAMP_FORMAT,
-  SpineXmlClinicalViewResponse,
-  SpineXmlResponse
-} from "@cpt-common/common-types"
-import {parse} from "date-fns"
-import {XMLParser} from "fast-xml-parser"
+  PrescriptionDetails
+} from "@cpt-common/common-types/prescription"
+import {PrescriptionStatusCoding} from "@cpt-common/common-types/schema"
 
 export interface ParsedSpineResponse {
   prescription?: Prescription | undefined
@@ -57,7 +61,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     ...(xmlParentPrescription.family ? {family: xmlParentPrescription.family} : {}),
     birthDate: xmlEpsRecord.patientBirthTime,
     ...(xmlParentPrescription.administrativeGenderCode ?
-      {gender: Number(xmlParentPrescription.administrativeGenderCode)} : {}),
+      {gender: Number(xmlParentPrescription.administrativeGenderCode) as SpineGenderCode} : {}),
     address: {
       line: [
         ...(xmlParentPrescription.addrLine1 ? [xmlParentPrescription.addrLine1]: []),
@@ -72,7 +76,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     prescriptionId: xmlEpsRecord.prescriptionID,
     issueDate: parse(xmlEpsRecord.prescriptionTime, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
     issueNumber: Number(xmlEpsRecord.instanceNumber),
-    status: xmlEpsRecord.prescriptionStatus,
+    status: xmlEpsRecord.prescriptionStatus as PrescriptionStatusCoding["code"],
     treatmentType: xmlEpsRecord.prescriptionTreatmentType,
     prescriptionType: xmlEpsRecord.prescriptionType,
     ...(xmlEpsRecord.maxRepeats ? {maxRepeats: Number(xmlEpsRecord.maxRepeats)} : {}),

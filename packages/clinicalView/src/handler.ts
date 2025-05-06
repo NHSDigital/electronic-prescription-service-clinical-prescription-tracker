@@ -17,7 +17,7 @@ import {requestGroupSchema} from "./schemas/requestGroupSchema"
 // import {generateFhirResponse} from "./utils/generateFhirResponse"
 import {validateRequest} from "./validateRequest"
 
-import {ServiceError} from "@cpt-common/common-types"
+import {ServiceError} from "@cpt-common/common-types/service"
 import {ParsedSpineResponse, parseSpineResponse} from "./parseSpineResponse"
 // import {ParsedSpineResponse} from "./utils/parseSpineResponse"
 

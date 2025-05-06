@@ -1,3 +1,5 @@
+import {validateCommonHeaders} from "@cpt-common/common-utils"
+
 // Types
 import {
   APIGatewayEvent,
@@ -6,8 +8,7 @@ import {
 } from "aws-lambda"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {ClinicalViewParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
-import {validateCommonHeaders} from "@cpt-common/common-utils"
-import {CommonHeaderParameters, ServiceError} from "@cpt-common/common-types"
+import {CommonHeaderParameters, ServiceError} from "@cpt-common/common-types/service"
 
 export interface PathParameters {
   prescriptionId?: string

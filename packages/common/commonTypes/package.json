@@ -17,5 +17,32 @@
   "dependencies": {},
   "devDependencies": {
         "@types/fhir": "^0.0.41"
+  },
+  "exports": {
+    ".": {
+      "default": "./lib/src/index.js",
+      "import": "./lib/src/index.js"
+    },
+    "./service": {
+      "default": "./lib/src/service/index.js",
+      "import": "./lib/src/service/index.js"
+    },
+    "./prescription": {
+      "default": "./lib/src/prescription/index.js",
+      "import": "./lib/src/prescription/index.js"
+    },
+    "./spine": {
+      "default": "./lib/src/spine/index.js",
+      "import": "./lib/src/spine/index.js"
+    },
+    "./fhir": {
+      "default": "./lib/src/fhir/index.js",
+      "import": "./lib/src/fhir/index.js"
+      
+    },
+    "./schema": {
+      "default": "./lib/src/schema/index.js",
+      "import": "./lib/src/schema/index.js"
     }
+  }
 }

@@ -1,3 +1,6 @@
+import {PrescriptionStatusCoding} from "../schema"
+import {SpineGenderCode} from "../spine"
+
 export interface PatientDetailsSummary {
   nhsNumber: string
   prefix?: string
@@ -8,7 +11,7 @@ export interface PatientDetailsSummary {
 
 export interface PatientDetails extends PatientDetailsSummary {
   birthDate: string
-  gender?: number
+  gender?: SpineGenderCode
   address: {
     line: Array<string>
     postalCode?: string
@@ -18,13 +21,13 @@ export interface PatientDetails extends PatientDetailsSummary {
 export interface PrescriptionDetailsSummary {
   prescriptionId: string
   issueDate: string
-  treatmentType: string
+  treatmentType: string // TODO: point to union type like gender/status
   maxRepeats?: number
 }
 
 export interface IssueDetails {
   issueNumber: number
-  status: string
+  status: PrescriptionStatusCoding["code"]
   prescriptionPendingCancellation: boolean
   itemsPendingCancellation: boolean
 }
@@ -47,7 +50,7 @@ export interface LineItemDetails extends LineItemDetailsSummary {
 export interface DispenseNotificationDetails {
   dispenseNotificationId: string
   timestamp: string
-  status: string
+  status: string // TODO: point to union type like gender/status
   lineItems: {
     [key: string]: LineItemDetailsSummary
   }

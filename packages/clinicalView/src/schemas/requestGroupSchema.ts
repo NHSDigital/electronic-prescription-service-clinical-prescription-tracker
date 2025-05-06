@@ -3,6 +3,67 @@ import {patientSchema} from "./patientSchema"
 import {medicationRequestSchema} from "./medicationRequestSchema"
 import {medicationDispenseSchema} from "./medicationDispenseSchema"
 
+// const prescriptionStatusExtensionSchema = {
+//   type: "object",
+//   properties: {
+//     url: {
+//       type: "string",
+//       enum: ["https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory"]
+//     },
+//     extension: {
+//       type: "array",
+//       items: {
+//         type: "object",
+//         properties: {
+//           url: {type: "string", enum: ["status"]},
+//           valueCoding: {
+//             type: "object",
+//             properties: {
+//               system: {type: "string", enum: ["https://fhir.nhs.uk/CodeSystem/EPS-task-business-status"]},
+//               code: {type: "string"},
+//               display: {type: "string"}
+//             },
+//             required: ["system", "code", "display"]
+//           }
+//         },
+//         required: ["url", "valueCoding"]
+//       }
+//     }
+//   },
+//   required: ["url", "extension"]
+// } as const satisfies JSONSchema
+
+// const medicationRepeatInformationExtensionSchema = {
+//   type: "object",
+//   properties: {
+//     url: {type: "string", enum: ["https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation"]},
+//     extension: {
+//       type: "array",
+//       items: {
+//         oneOf: [
+//           {
+//             type: "object",
+//             properties: {
+//               url: {type: "string", enum: ["numberOfRepeatsAllowed"]},
+//               valueInteger: {type: "integer"}
+//             },
+//             required: ["url", "valueInteger"]
+//           },
+//           {
+//             type: "object",
+//             properties: {
+//               url: {type: "string", enum: ["numberOfRepeatsIssued"]},
+//               valueInteger: {type: "integer"}
+//             },
+//             required: ["url", "valueInteger"]
+//           }
+//         ]
+//       }
+//     }
+//   },
+//   required: ["url", "extension"]
+// } as const satisfies JSONSchema
+
 const actionCommonProperties = {
   participant: {
     type: "array",
@@ -114,7 +175,10 @@ export const requestGroupSchema = {
   type: "object",
   description: "A FHIR RequestGroup representing a prescription.",
   properties: {
-    resourceType: {type: "string", enum: ["RequestGroup"]},
+    resourceType: {
+      type: "string",
+      enum: ["RequestGroup"]
+    },
     id: {type: "string"},
     identifier: {
       description: "The short form prescription ID.",
@@ -122,7 +186,10 @@ export const requestGroupSchema = {
       items: {
         type: "object",
         properties: {
-          system: {type: "string", enum: ["https://fhir.nhs.uk/Id/prescription-order-number"]},
+          system: {
+            type: "string",
+            enum: ["https://fhir.nhs.uk/Id/prescription-order-number"]
+          },
           value: {type: "string"}
         },
         required: ["system", "value"]
@@ -130,43 +197,20 @@ export const requestGroupSchema = {
     },
     intent: {
       description: "Whether the prescription is an acute, repeat, or eRD.",
-      type: "string"
+      type: "string",
+      enum: [
+        "order",
+        "instance-order",
+        "reflex-order"
+      ]
     },
     extension: {
       type: "array",
       description: "Additional information related to the prescription.",
       items: {
         oneOf: [
-          {
-            type: "object",
-            properties: {
-              url: {type: "string", enum: ["https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation"]},
-              extension: {
-                type: "array",
-                items: {
-                  oneOf: [
-                    {
-                      type: "object",
-                      properties: {
-                        url: {type: "string", enum: ["numberOfRepeatsAllowed"]},
-                        valueInteger: {type: "integer"}
-                      },
-                      required: ["url", "valueInteger"]
-                    },
-                    {
-                      type: "object",
-                      properties: {
-                        url: {type: "string", enum: ["numberOfRepeatsIssued"]},
-                        valueInteger: {type: "integer"}
-                      },
-                      required: ["url", "valueInteger"]
-                    }
-                  ]
-                }
-              }
-            },
-            required: ["url", "extension"]
-          },
+          prescriptionStatusExtensionSchema,
+          medicationRepeatInformationExtensionSchema,
           {
             type: "object",
             properties: {
@@ -195,35 +239,6 @@ export const requestGroupSchema = {
                       required: ["url", "valueBoolean"]
                     }
                   ]
-                }
-              }
-            },
-            required: ["url", "extension"]
-          },
-          {
-            type: "object",
-            properties: {
-              url: {
-                type: "string",
-                enum: ["https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory"]
-              },
-              extension: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    url: {type: "string", enum: ["status"]},
-                    valueCoding: {
-                      type: "object",
-                      properties: {
-                        system: {type: "string", enum: ["https://fhir.nhs.uk/CodeSystem/EPS-task-business-status"]},
-                        code: {type: "string"},
-                        display: {type: "string"}
-                      },
-                      required: ["system", "code", "display"]
-                    }
-                  },
-                  required: ["url", "valueCoding"]
                 }
               }
             },
@@ -314,4 +329,6 @@ export const requestGroupSchema = {
   additionalProperties: false
 } as const satisfies JSONSchema
 
+// export type PrescriptionStatusExtensionType = FromSchema<typeof prescriptionStatusExtensionSchema>
+export type MedicationRepeatInformationExtensionType = FromSchema<typeof medicationRepeatInformationExtensionSchema>
 export type requestGroupType = FromSchema<typeof requestGroupSchema>

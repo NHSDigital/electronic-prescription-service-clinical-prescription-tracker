@@ -61,4 +61,4 @@ export const patientSchema = {
   additionalProperties: false
 } as const satisfies JSONSchema
 
-export type PatientType = FromSchema<typeof patientSchema>
+// export type PatientType = FromSchema<typeof patientSchema>

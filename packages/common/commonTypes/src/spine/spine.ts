@@ -132,3 +132,4 @@ interface SpineSoapEnvEnvelope {
 export type SpineXmlResponse = SpineSoapEnvelope | SpineSoapEnvEnvelope
 
 export const SPINE_TIMESTAMP_FORMAT = "yyyyMMddHHmmss" as const
+export type SpineGenderCode = 1 | 2 | 3 | 4

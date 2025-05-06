@@ -25,7 +25,8 @@ import {
   unknownError
 } from "./examples/examples"
 
-import {Prescription, ServiceError} from "@cpt-common/common-types"
+import {Prescription} from "@cpt-common/common-types/prescription"
+import {ServiceError} from "@cpt-common/common-types/service"
 
 const logger: Logger = new Logger({serviceName: "clinicalView", logLevel: "DEBUG"})
 
