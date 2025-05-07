@@ -1,6 +1,6 @@
 import {JSONSchema, FromSchema} from "json-schema-to-ts"
 
-const patientCommonProperties = {
+export const patientCommonProperties = {
   resourceType: {
     type: "string",
     description: "The resource type.",
@@ -115,7 +115,6 @@ export const clinicalViewPatientSchema = {
     "resourceType",
     "id",
     "identifier",
-    "name",
     "gender",
     "birthDate"
   ]

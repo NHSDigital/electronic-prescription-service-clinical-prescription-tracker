@@ -1,8 +1,13 @@
 /* eslint-disable max-len */
 import {FromSchema, JSONSchema} from "json-schema-to-ts"
-import {prescriptionStatusExtension, medicationRepeatInformationExtension} from "./extensions"
+import {
+  prescriptionStatusExtension,
+  medicationRepeatInformationExtension,
+  pendingCancellationExtension,
+  prescriptionTypeExtension
+} from "./extensions"
 
-const requestGroupCommonProperties ={
+export const requestGroupCommonProperties ={
   resourceType: {
     type: "string",
     description: "The resource type.",
@@ -56,16 +61,6 @@ const requestGroupCommonProperties ={
     description: "The date the prescription was created.",
     type: "string",
     format: "date-time"
-  },
-  extension: {
-    type: "array",
-    description: "Additional information related to the prescription.",
-    items: {
-      oneOf: [
-        prescriptionStatusExtension,
-        medicationRepeatInformationExtension
-      ]
-    }
   }
 } as const satisfies Readonly<Record<string, JSONSchema>>
 
@@ -75,7 +70,8 @@ export const clinicalViewRequestGroup = {
   properties: {
     ...requestGroupCommonProperties,
     id: {
-      type: "string"
+      type: "string",
+      description: "Logical id of this artifact"
     },
     author: {
       type: "object",
@@ -94,6 +90,18 @@ export const clinicalViewRequestGroup = {
           },
           required: ["system", "value"]
         }
+      }
+    },
+    extension: {
+      type: "array",
+      description: "Additional information related to the prescription.",
+      items: {
+        oneOf: [
+          prescriptionStatusExtension,
+          medicationRepeatInformationExtension,
+          pendingCancellationExtension,
+          prescriptionTypeExtension
+        ]
       }
     },
     action: {},

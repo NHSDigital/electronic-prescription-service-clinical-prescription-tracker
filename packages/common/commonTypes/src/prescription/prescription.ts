@@ -1,5 +1,5 @@
-import {PrescriptionStatusCoding} from "../schema"
-import {SpineGenderCode} from "../spine"
+import {PrescriptionStatusCoding, PrescriptionTypeCoding} from "../schema"
+import {SpineGenderCode, SpineTreatmentTypeCode} from "../spine"
 
 export interface PatientDetailsSummary {
   nhsNumber: string
@@ -21,7 +21,7 @@ export interface PatientDetails extends PatientDetailsSummary {
 export interface PrescriptionDetailsSummary {
   prescriptionId: string
   issueDate: string
-  treatmentType: string // TODO: point to union type like gender/status
+  treatmentType: SpineTreatmentTypeCode
   maxRepeats?: number
 }
 
@@ -34,7 +34,7 @@ export interface IssueDetails {
 
 export interface LineItemDetailsSummary {
   lineItemNo: string
-  status?: string
+  status?: string // TODO: point to union type
   itemName?: string
   quantity?: number
   quantityForm?: string
@@ -50,7 +50,7 @@ export interface LineItemDetails extends LineItemDetailsSummary {
 export interface DispenseNotificationDetails {
   dispenseNotificationId: string
   timestamp: string
-  status: string // TODO: point to union type like gender/status
+  status: PrescriptionStatusCoding["code"]
   lineItems: {
     [key: string]: LineItemDetailsSummary
   }
@@ -78,7 +78,7 @@ export interface HistoryEventDetails {
 
 export interface PrescriptionDetails extends PrescriptionDetailsSummary, IssueDetails {
   daysSupply?: number
-  prescriptionType: string
+  prescriptionType: PrescriptionTypeCoding["code"]
   prescriberOrg: string
   nominatedDispenserOrg?: string
   dispenserOrg?: string

@@ -6,7 +6,8 @@ import {
   SPINE_TIMESTAMP_FORMAT,
   SpineGenderCode,
   SpineXmlClinicalViewResponse,
-  SpineXmlResponse
+  SpineXmlResponse,
+  SpineTreatmentTypeCode
 } from "@cpt-common/common-types/spine"
 import {
   DispenseNotificationDetails,
@@ -18,7 +19,7 @@ import {
   Prescription,
   PrescriptionDetails
 } from "@cpt-common/common-types/prescription"
-import {PrescriptionStatusCoding} from "@cpt-common/common-types/schema"
+import {PrescriptionStatusCoding, PrescriptionTypeCoding} from "@cpt-common/common-types/schema"
 
 export interface ParsedSpineResponse {
   prescription?: Prescription | undefined
@@ -77,8 +78,8 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     issueDate: parse(xmlEpsRecord.prescriptionTime, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
     issueNumber: Number(xmlEpsRecord.instanceNumber),
     status: xmlEpsRecord.prescriptionStatus as PrescriptionStatusCoding["code"],
-    treatmentType: xmlEpsRecord.prescriptionTreatmentType,
-    prescriptionType: xmlEpsRecord.prescriptionType,
+    treatmentType: xmlEpsRecord.prescriptionTreatmentType as SpineTreatmentTypeCode,
+    prescriptionType: xmlEpsRecord.prescriptionType as PrescriptionTypeCoding["code"],
     ...(xmlEpsRecord.maxRepeats ? {maxRepeats: Number(xmlEpsRecord.maxRepeats)} : {}),
     ...(xmlEpsRecord.daysSupply ? {daysSupply: Number(xmlEpsRecord.daysSupply)} : {}),
     prescriptionPendingCancellation: false, //default to false but update when checking last history event
@@ -123,7 +124,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     const dispenseNotification: DispenseNotificationDetails = {
       dispenseNotificationId,
       timestamp: parse(xmlDispenseNotification.dispenseNotifDateTime, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
-      status: xmlDispenseNotification.statusPrescription,
+      status: xmlDispenseNotification.statusPrescription as PrescriptionStatusCoding["code"],
       lineItems: {}
     }
 

@@ -5,8 +5,14 @@ import {
   PrescriptionStatusExtensionType,
   PrescriptionStatusCoding,
   medicationRepeatInformationExtension,
-  MedicationRepeatInformationExtensionType
+  MedicationRepeatInformationExtensionType,
+  pendingCancellationExtension,
+  PendingCancellationExtensionType,
+  prescriptionTypeExtension,
+  PrescriptionTypeExtensionType,
+  PrescriptionTypeCoding
 } from "./extensions"
+import {StatusReasonCoding, MedicationRequestType} from "./medicationRequest"
 
 export {
   ClinicalViewRequestGroupType,
@@ -15,5 +21,12 @@ export {
   PrescriptionStatusExtensionType,
   PrescriptionStatusCoding,
   medicationRepeatInformationExtension,
-  MedicationRepeatInformationExtensionType
+  MedicationRepeatInformationExtensionType,
+  pendingCancellationExtension,
+  PendingCancellationExtensionType,
+  prescriptionTypeExtension,
+  PrescriptionTypeExtensionType,
+  PrescriptionTypeCoding,
+  StatusReasonCoding,
+  MedicationRequestType
 }

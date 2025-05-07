@@ -1,15 +1,17 @@
 import {
-  SpineGenderCode,
   SpineXmlResponse,
   SpineXmlPrescriptionSearchResponse,
   SpineXmlClinicalViewResponse,
-  SPINE_TIMESTAMP_FORMAT
+  SPINE_TIMESTAMP_FORMAT,
+  SpineGenderCode,
+  SpineTreatmentTypeCode
 } from "./spine"
 
 export {
-  SpineGenderCode,
   SpineXmlResponse,
   SpineXmlPrescriptionSearchResponse,
   SpineXmlClinicalViewResponse,
-  SPINE_TIMESTAMP_FORMAT
+  SPINE_TIMESTAMP_FORMAT,
+  SpineGenderCode,
+  SpineTreatmentTypeCode
 }

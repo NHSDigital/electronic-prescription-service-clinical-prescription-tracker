@@ -210,56 +210,56 @@ export const requestGroupSchema = {
       items: {
         oneOf: [
           prescriptionStatusExtensionSchema,
-          medicationRepeatInformationExtensionSchema,
-          {
-            type: "object",
-            properties: {
-              url: {
-                type: "string",
-                enum: ["https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PendingCancellations"]
-              },
-              extension: {
-                type: "array",
-                items: {
-                  oneOf: [
-                    {
-                      type: "object",
-                      properties: {
-                        url: {type: "string", enum: ["prescriptionPendingCancellation"]},
-                        valueBoolean: {type: "boolean"}
-                      },
-                      required: ["url", "valueBoolean"]
-                    },
-                    {
-                      type: "object",
-                      properties: {
-                        url: {type: "string", enum: ["lineItemPendingCancellation"]},
-                        valueBoolean: {type: "boolean"}
-                      },
-                      required: ["url", "valueBoolean"]
-                    }
-                  ]
-                }
-              }
-            },
-            required: ["url", "extension"]
-          },
-          {
-            type: "object",
-            properties: {
-              url: {type: "string", enum: ["https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionType"]},
-              valueCoding: {
-                type: "object",
-                properties: {
-                  system: {type: "string", enum: ["https://fhir.nhs.uk/CodeSystem/prescription-type"]},
-                  code: {type: "string"},
-                  display: {type: "string"}
-                },
-                required: ["system", "code", "display"]
-              }
-            },
-            required: ["url", "valueCoding"]
-          }
+          medicationRepeatInformationExtensionSchema
+          // {
+          //   type: "object",
+          //   properties: {
+          //     url: {
+          //       type: "string",
+          //       enum: ["https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PendingCancellations"]
+          //     },
+          //     extension: {
+          //       type: "array",
+          //       items: {
+          //         oneOf: [
+          //           {
+          //             type: "object",
+          //             properties: {
+          //               url: {type: "string", enum: ["prescriptionPendingCancellation"]},
+          //               valueBoolean: {type: "boolean"}
+          //             },
+          //             required: ["url", "valueBoolean"]
+          //           },
+          //           {
+          //             type: "object",
+          //             properties: {
+          //               url: {type: "string", enum: ["lineItemPendingCancellation"]},
+          //               valueBoolean: {type: "boolean"}
+          //             },
+          //             required: ["url", "valueBoolean"]
+          //           }
+          //         ]
+          //       }
+          //     }
+          //   },
+          //   required: ["url", "extension"]
+          // },
+          // {
+          //   type: "object",
+          //   properties: {
+          //     url: {type: "string", enum: ["https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionType"]},
+          //     valueCoding: {
+          //       type: "object",
+          //       properties: {
+          //         system: {type: "string", enum: ["https://fhir.nhs.uk/CodeSystem/prescription-type"]},
+          //         code: {type: "string"},
+          //         display: {type: "string"}
+          //       },
+          //       required: ["system", "code", "display"]
+          //     }
+          //   },
+          //   required: ["url", "valueCoding"]
+          // }
         ]
       }
     },
