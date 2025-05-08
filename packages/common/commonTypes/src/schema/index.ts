@@ -1,5 +1,6 @@
-import {ClinicalViewRequestGroupType} from "./requestGroup"
-import {ClinicalViewPatientType} from "./patient"
+import {requestGroupCommonProperties} from "./requestGroup"
+import {gender, GenderType, patientCommonProperties} from "./patient"
+import {IntentType} from "./elements"
 import {
   prescriptionStatusExtension,
   PrescriptionStatusExtensionType,
@@ -10,13 +11,18 @@ import {
   PendingCancellationExtensionType,
   prescriptionTypeExtension,
   PrescriptionTypeExtensionType,
-  PrescriptionTypeCoding
+  PrescriptionTypeCoding,
+  DispensingInformationExtensionType,
+  DispenseStatusCoding
 } from "./extensions"
-import {StatusReasonCoding, MedicationRequestType} from "./medicationRequest"
+import {StatusType, StatusReasonCoding, MedicationRequestType} from "./medicationRequest"
 
 export {
-  ClinicalViewRequestGroupType,
-  ClinicalViewPatientType,
+  IntentType,
+  requestGroupCommonProperties,
+  gender,
+  GenderType,
+  patientCommonProperties,
   prescriptionStatusExtension,
   PrescriptionStatusExtensionType,
   PrescriptionStatusCoding,
@@ -27,6 +33,11 @@ export {
   prescriptionTypeExtension,
   PrescriptionTypeExtensionType,
   PrescriptionTypeCoding,
+  DispensingInformationExtensionType,
+  DispenseStatusCoding,
+  StatusType,
   StatusReasonCoding,
   MedicationRequestType
 }
+
+// TODO - organize this

@@ -1,9 +1,11 @@
 import {
-  ClinicalViewPatientType,
-  ClinicalViewRequestGroupType,
+  IntentType,
+  GenderType,
   StatusReasonCoding,
   PrescriptionStatusCoding,
-  PrescriptionTypeCoding
+  PrescriptionTypeCoding,
+  StatusType,
+  DispenseStatusCoding
 } from "../schema"
 import {SpineGenderCode, SpineTreatmentTypeCode} from "../spine"
 
@@ -13,13 +15,13 @@ export enum TreatmentType {
   ERD = "0003"
 }
 
-export const INTENT_MAP: Record<SpineTreatmentTypeCode, ClinicalViewRequestGroupType["intent"]> = {
+export const INTENT_MAP: Record<SpineTreatmentTypeCode, IntentType> = {
   [TreatmentType.ACUTE]: "order",
   [TreatmentType.REPEAT]: "instance-order",
   [TreatmentType.ERD] : "reflex-order"
 } as const
 
-export const GENDER_MAP: Record<SpineGenderCode, ClinicalViewPatientType["gender"]> = {
+export const GENDER_MAP: Record<SpineGenderCode, GenderType> = {
   1 : "male",
   2 : "female",
   3 : "other",
@@ -105,7 +107,18 @@ export const PRESCRIPTION_TYPE_MAP: Record<PrescriptionTypeCoding["code"], Presc
   "5025": "Outpatient Community Prescriber - Paramedic Independent/Supplementary prescriber (IOM)"
 }
 
-export const LINE_ITEM_STATUS_MAP = {
+export const MEDICATION_REQUEST_STATUS_MAP: Record<DispenseStatusCoding["code"], StatusType> = {
+  "0001": "completed",
+  "0002": "stopped",
+  "0003": "active",
+  "0004": "active",
+  "0005": "cancelled",
+  "0006": "stopped",
+  "0007": "active",
+  "0008": "active"
+}
+
+export const LINE_ITEM_STATUS_MAP: Record<DispenseStatusCoding["code"], DispenseStatusCoding["display"]> = {
   "0001": "Item fully dispensed",
   "0002": "Item not dispensed",
   "0003": "Item dispensed - partial",

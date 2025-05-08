@@ -60,64 +60,8 @@ export const patientCommonProperties = {
   }
 } as const satisfies Readonly<Record<string, JSONSchema>>
 
-export const clinicalViewPatientSchema = {
-  type: "object",
-  properties: {
-    ...patientCommonProperties,
-    id: {
-      type: "string"
-    },
-    gender: {
-      type: "string",
-      enum: ["male", "female", "other", "unknown"]
-    },
-    birthDate: {
-      type: "string",
-      format: "date"
-    },
-    address: {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          line: {
-            type: "array",
-            items: {
-              type: "string"
-            }
-          },
-          city: {
-            type: "string"
-          },
-          district: {
-            type: "string"
-          },
-          postalCode: {
-            type: "string"
-          },
-          text: {
-            type: "string"
-          },
-          type: {
-            type: "string",
-            enum: ["both"]
-          },
-          use: {
-            type: "string",
-            enum: ["home"]
-          }
-        },
-        required: ["line", "text", "type", "use"]
-      }
-    }
-  },
-  required: [
-    "resourceType",
-    "id",
-    "identifier",
-    "gender",
-    "birthDate"
-  ]
+export const gender = {
+  type: "string",
+  enum: ["male", "female", "other", "unknown"]
 } as const satisfies JSONSchema
-
-export type ClinicalViewPatientType = FromSchema<typeof clinicalViewPatientSchema>
+export type GenderType = FromSchema<typeof gender>

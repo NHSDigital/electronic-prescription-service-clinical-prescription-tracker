@@ -10,37 +10,39 @@ import {
 } from "fhir/r4"
 import {Prescription} from "@cpt-common/common-types/prescription"
 import {
-  ClinicalViewRequestGroupType,
-  ClinicalViewPatientType,
   PrescriptionStatusExtensionType,
   MedicationRepeatInformationExtensionType,
   PendingCancellationExtensionType,
-  PrescriptionTypeExtensionType
+  PrescriptionTypeExtensionType,
+  MedicationRequestType
 } from "@cpt-common/common-types/schema"
 import {
   INTENT_MAP,
   GENDER_MAP,
   PRESCRIPTION_STATUS_MAP,
   TreatmentType,
-  PRESCRIPTION_TYPE_MAP
+  PRESCRIPTION_TYPE_MAP,
+  MEDICATION_REQUEST_STATUS_MAP,
+  LINE_ITEM_STATUS_REASON_MAP
 } from "@cpt-common/common-types/fhir"
+import {RequestGroupType} from "./schema/requestGroup"
+import {PatientType} from "./schema/patient"
+import {text} from "stream/consumers"
 
 export const generateFhirResponse = (
-  prescription: Prescription, logger: Logger): RequestGroup & ClinicalViewRequestGroupType => {
+  prescription: Prescription, logger: Logger): RequestGroup & RequestGroupType => {
   logger.info("") // TODO: logs
 
   // generate a UUID for the patient resource for other resources to reference
   const patientUuid = randomUUID()
 
-  const responseRequestGroup: RequestGroup & ClinicalViewRequestGroupType = {
+  const responseRequestGroup: RequestGroup & RequestGroupType = {
     resourceType: "RequestGroup",
     id: randomUUID(),
-    identifier: [
-      {
-        system: "https://fhir.nhs.uk/Id/prescription-order-number",
-        value: prescription.prescriptionId
-      }
-    ],
+    identifier: [{
+      system: "https://fhir.nhs.uk/Id/prescription-order-number",
+      value: prescription.prescriptionId
+    }],
     subject: {
       reference: `#${patientUuid}`
     },
@@ -59,7 +61,7 @@ export const generateFhirResponse = (
   }
 
   // Generate patient resource
-  const patientName: HumanName & ClinicalViewPatientType["name"] = [{
+  const patientName: HumanName & PatientType["name"] = [{
     ...(prescription.prefix ? {prefix: [prescription.prefix]}: {}),
     ...(prescription.suffix ? {suffix: [prescription.suffix]}: {}),
     ...(prescription.given ? {given: [prescription.given]}: {}),
@@ -68,7 +70,7 @@ export const generateFhirResponse = (
 
   const line = prescription.address.line
   const postalCode = prescription.address.postalCode
-  const patientAddress: Address & ClinicalViewPatientType["address"] = line.length || postalCode ? [{
+  const patientAddress: Address & PatientType["address"] = line.length || postalCode ? [{
     line,
     ...(postalCode ? {postalCode}: {}),
     text: [...line, ...[postalCode ? [postalCode]: []]].join(", "),
@@ -76,7 +78,7 @@ export const generateFhirResponse = (
     use: "home"
   }] : []
 
-  const patient: Patient & ClinicalViewPatientType = {
+  const patient: Patient & PatientType = {
     resourceType: "Patient",
     id: patientUuid,
     identifier: [{
@@ -127,12 +129,10 @@ export const generateFhirResponse = (
   // TODO: should this be here?
   const prescriptionPendingCancellationExtension: Extension & PendingCancellationExtensionType = {
     url: "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
-    extension: [
-      {
-        url: "prescriptionPendingCancellation",
-        valueBoolean: prescription.prescriptionPendingCancellation
-      }
-    ]
+    extension: [{
+      url: "prescriptionPendingCancellation",
+      valueBoolean: prescription.prescriptionPendingCancellation
+    }]
   }
   responseRequestGroup.extension?.push(prescriptionPendingCancellationExtension)
 
@@ -147,18 +147,54 @@ export const generateFhirResponse = (
   }
   responseRequestGroup.extension?.push(prescriptionTypeExtension)
 
+  // Generate medication dispense resources for DN's
+  const medicationDispenseReferences: {[key: string]: string} = {}
+
   // Generate medication request resources for line items
   for (const lineItem of Object.values(prescription.lineItems)){
-    //
-    const medicationRequest: MedicationRequest = {
-      status: ""
+    const medicationRequest: MedicationRequest & MedicationRequestType= {
+      resourceType: "MedicationRequest",
+      id: randomUUID(),
+      identifier: [{
+        system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
+        value: lineItem.lineItemId
+      }],
+      subject: {
+        reference: `#${patientUuid}`
+      },
+      status: MEDICATION_REQUEST_STATUS_MAP[lineItem.status],
+      ...(lineItem.cancellationReason ? {
+        statusReason: {
+          coding:[{
+            system: "https://fhir.nhs.uk/CodeSystem/medicationrequest-status-reason",
+            code: LINE_ITEM_STATUS_REASON_MAP[lineItem.cancellationReason],
+            display: lineItem.cancellationReason
+          }]
+        }
+      } : {}),
+      intent: INTENT_MAP[prescription.treatmentType],
+      medicationCodeableConcept: {
+        text: lineItem.itemName
+      },
+      dispenseRequest: {
+        quantity: {
+          value: lineItem.quantity,
+          unit: lineItem.quantityForm
+        }
+      },
+      ...(lineItem.dosageInstruction ? {dosageInstructions:[{
+        text: lineItem.dosageInstruction
+      }]} : {} )
     }
+    responseRequestGroup.contained.push(medicationRequest)
   }
+  /*TODO:
+  - extensions
+  - authored on?
+  - requester - prescriber?
+  - groupIdentifier? - prescription id again?
+  - courseOfTherapyType
+  */
 
   return responseRequestGroup
 }
-
-/* TODO: NEXT WEEK
-- Continue FHIR
-- What to do about common types / consts / schema when interdependent?, single or multiple common modules?
-*/

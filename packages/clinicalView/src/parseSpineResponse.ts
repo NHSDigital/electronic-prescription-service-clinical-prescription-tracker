@@ -19,7 +19,12 @@ import {
   Prescription,
   PrescriptionDetails
 } from "@cpt-common/common-types/prescription"
-import {PrescriptionStatusCoding, PrescriptionTypeCoding} from "@cpt-common/common-types/schema"
+import {
+  DispenseStatusCoding,
+  PrescriptionStatusCoding,
+  PrescriptionTypeCoding,
+  StatusReasonCoding
+} from "@cpt-common/common-types/schema"
 
 export interface ParsedSpineResponse {
   prescription?: Prescription | undefined
@@ -103,7 +108,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     const lineItem: LineItemDetails = {
       lineItemNo,
       lineItemId: xmlLineItem.ID["@_value"],
-      status: xmlLineItem.status["@_value"],
+      status: xmlLineItem.status["@_value"] as DispenseStatusCoding["code"],
       itemName: xmlParentPrescription[`productLineItem${lineItemNo}`],
       quantity: Number(xmlParentPrescription[`quantityLineItem${lineItemNo}`]),
       quantityForm: xmlParentPrescription[`narrativeLineItem${lineItemNo}`],
@@ -136,7 +141,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
 
       const lintItem: LineItemDetailsSummary = {
         lineItemNo,
-        status: xmlDispenseNotification[`statusLineItem${lineItemNo}`],
+        status: xmlDispenseNotification[`statusLineItem${lineItemNo}`] as DispenseStatusCoding["code"],
         itemName: xmlDispenseNotification[`productLineItem${lineItemNo}`],
         quantity,
         quantityForm: xmlDispenseNotification[`narrativeLineItem${lineItemNo}`],
@@ -174,7 +179,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
       org: xmlFilteredHistoryEvent.agentPersonOrgCode,
       newStatus: xmlFilteredHistoryEvent.toStatus,
       ...(xmlFilteredHistoryEvent.cancellationReason ?
-        {cancellationReason: xmlFilteredHistoryEvent.cancellationReason} : {}),
+        {cancellationReason: xmlFilteredHistoryEvent.cancellationReason as StatusReasonCoding["display"]} : {}),
       isDispenseNotification: message.includes("Dispense notification successful"),
       lineItems: {}
     }
@@ -185,7 +190,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     }
     for(const xmlEventLineItem of xmlEventLineItems){
       const lineItemNo = xmlEventLineItem.order
-      const cancellationReason = xmlEventLineItem.cancellationReason
+      const cancellationReason = xmlEventLineItem.cancellationReason as StatusReasonCoding["display"]
 
       if (finalEvent && cancellationReason){
         if (cancellationReason?.includes("Pending")){

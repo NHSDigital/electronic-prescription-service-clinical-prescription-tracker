@@ -326,3 +326,70 @@ export const prescriptionTypeExtension = {
 } as const satisfies JSONSchema
 export type PrescriptionTypeExtensionType = FromSchema<typeof prescriptionTypeExtension>
 export type PrescriptionTypeCoding = PrescriptionTypeExtensionType["valueCoding"]
+
+const dispenseStatus = {
+  type: "object",
+  properties: {
+    url: {
+      type: "string",
+      enum: ["dispenseStatus"]
+    },
+    valueCoding: {
+      type: "object",
+      properties: {
+        system: {
+          type: "string",
+          enum: ["https://fhir.nhs.uk/CodeSystem/medicationdispense-type"]
+        },
+        code: {
+          type: "string",
+          enum: [
+            "0001",
+            "0002",
+            "0003",
+            "0004",
+            "0005",
+            "0006",
+            "0007",
+            "0008"
+          ]
+        },
+        display: {
+          type: "string",
+          enum: [
+            "Item fully dispensed",
+            "Item not dispensed",
+            "Item dispensed - partial",
+            "Item not dispensed - owing",
+            "Item Cancelled",
+            "Expired",
+            "Item to be dispensed",
+            "Item with dispenser"
+          ]
+        }
+      },
+      required: ["system", "code", "display"]
+    }
+  },
+  required: ["url", "valueCoding"]
+} as const satisfies JSONSchema
+export type DispenseStatusCoding = FromSchema<typeof dispenseStatus>["valueCoding"]
+
+export const dispensingInformationExtension = {
+  type: "object",
+  properties: {
+    url: {
+      type: "string",
+      enum: ["https://fhir.nhs.uk/StructureDefinition/Extension-EPS-DispensingInformation"]
+    },
+    extension: {
+      type: "array",
+      items: {
+        oneOf: [
+          dispenseStatus
+        ]
+      }
+    }
+  }
+} as const satisfies JSONSchema
+export type DispensingInformationExtensionType = FromSchema<typeof dispensingInformationExtension>

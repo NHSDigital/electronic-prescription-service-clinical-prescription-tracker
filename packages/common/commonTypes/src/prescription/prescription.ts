@@ -1,4 +1,9 @@
-import {PrescriptionStatusCoding, PrescriptionTypeCoding} from "../schema"
+import {
+  DispenseStatusCoding,
+  PrescriptionStatusCoding,
+  PrescriptionTypeCoding,
+  StatusReasonCoding
+} from "../schema"
 import {SpineGenderCode, SpineTreatmentTypeCode} from "../spine"
 
 export interface PatientDetailsSummary {
@@ -34,16 +39,16 @@ export interface IssueDetails {
 
 export interface LineItemDetailsSummary {
   lineItemNo: string
-  status?: string // TODO: point to union type
-  itemName?: string
-  quantity?: number
-  quantityForm?: string
+  status: DispenseStatusCoding["code"]
+  itemName: string
+  quantity: number
+  quantityForm: string
   dosageInstruction?: string
 }
 
 export interface LineItemDetails extends LineItemDetailsSummary {
   lineItemId: string
-  cancellationReason?: string
+  cancellationReason?: StatusReasonCoding["display"]
   pendingCancellation: boolean
 }
 
@@ -59,7 +64,7 @@ export interface DispenseNotificationDetails {
 export interface EventLineItem {
   lineItemNo: string
   newStatus: string
-  cancellationReason?: string
+  cancellationReason?: StatusReasonCoding["display"]
 }
 
 export interface HistoryEventDetails {
@@ -69,7 +74,7 @@ export interface HistoryEventDetails {
   timestamp: string
   org: string
   newStatus: string
-  cancellationReason?: string
+  cancellationReason?: StatusReasonCoding["display"]
   isDispenseNotification: boolean,
   lineItems: {
     [key: string]: EventLineItem

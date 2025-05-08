@@ -1,5 +1,18 @@
 /* eslint-disable max-len */
 import {JSONSchema, FromSchema} from "json-schema-to-ts"
+import {intent, subject} from "./elements"
+
+const status = {
+  type: "string",
+  description: "The current state of the request. For request groups, the status reflects the status of all the requests in the group.",
+  enum: [
+    "active",
+    "cancelled",
+    "completed",
+    "stopped"
+  ]
+} as const satisfies JSONSchema
+export type StatusType = FromSchema<typeof status>
 
 const statusReason = {
   type: "object",
@@ -62,57 +75,35 @@ export const medicationRequest = {
       type: "string",
       description: "Logical id of this artifact"
     },
-    status: {
-      type: "string",
-      description: "The current state of the request. For request groups, the status reflects the status of all the requests in the group.",
-      enum: [
-        "active",
-        "cancelled",
-        "completed",
-        "stopped", //TODO: do we need/want the rest of these?
-        "on-hold",
-        "entered-in-error",
-        "draft"
-      ]
-    },
-    statusReason,
-    subject: {
-      type: "object",
-      description: "A reference to the patient the prescription is for.",
-      properties: {
-        reference: {
-          type: "string"
+    identifier: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          system: {
+            type: "string",
+            enum: ["https://fhir.nhs.uk/Id/prescription-order-item-number"]
+          },
+          value: {
+            type: "string"
+          }
         }
-      },
-      required: ["reference"]
+      }
     },
+    subject,
+    status,
+    statusReason,
+    intent,
     medicationCodeableConcept: {
       type: "object",
       properties: {
-        coding: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              system: {
-                type: "string",
-                enum: ["http://snomed.info/sct"]
-              },
-              code: {
-                type: "string"
-              },
-              display: {
-                type: "string"
-              }
-            }
-          },
-          minItems: 1,
-          maxItems: 1
+        text: {
+          type: "string"
         }
       },
-      required: ["coding"]
+      required: ["text"]
     },
-    dispenseRequest: { // TODO: continue from here
+    dispenseRequest: {
       type: "object",
       properties: {
         quantity: {
@@ -124,11 +115,55 @@ export const medicationRequest = {
             unit: {
               type: "string"
             }
-          }
+          },
+          required: ["value", "unit"]
+        },
+        performer: {
+          type: "object",
+          properties: {
+            identifier: {
+              type: "array",
+              items:{
+                type: "object",
+                properties: {
+                  system: {
+                    type: "string",
+                    enum: ["https://fhir.nhs.uk/Id/ods-organization-code"]
+                  },
+                  value: {
+                    type: "string"
+                  }
+                },
+                required: ["system", "value"]
+              }
+            }
+          },
+          required: ["identifier"]
         }
+      },
+      required: ["quantity"]
+    },
+    dosageInstruction: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          text: {
+            type: "string"
+          }
+        },
+        required: ["text"]
       }
     }
   },
-  required: ["id"]
+  required: [
+    "resourceType",
+    "id",
+    "identifier",
+    "status",
+    "subject",
+    "medicationCodeableConcept",
+    "dispenseRequest"
+  ]
 } as const satisfies JSONSchema
 export type MedicationRequestType = FromSchema<typeof medicationRequest>
