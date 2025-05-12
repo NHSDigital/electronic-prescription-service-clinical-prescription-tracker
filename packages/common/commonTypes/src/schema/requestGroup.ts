@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import {JSONSchema} from "json-schema-to-ts"
-import {intent} from "./elements"
+import {subject, intent} from "./elements"
 
 export const requestGroupCommonProperties ={
   resourceType: {
@@ -28,16 +28,7 @@ export const requestGroupCommonProperties ={
       required: ["system", "value"]
     }
   },
-  subject: {
-    type: "object",
-    description: "A reference to the patient the prescription is for.",
-    properties: {
-      reference: {
-        type: "string"
-      }
-    },
-    required: ["reference"]
-  },
+  subject,
   status: {
     type: "string",
     description: "The current state of the request. For request groups, the status reflects the status of all the requests in the group.",
@@ -50,67 +41,3 @@ export const requestGroupCommonProperties ={
     format: "date-time"
   }
 } as const satisfies Readonly<Record<string, JSONSchema>>
-
-// export const clinicalViewRequestGroup = {
-//   type: "object",
-//   description: "A FHIR RequestGroup representing a prescription",
-//   properties: {
-//     ...requestGroupCommonProperties,
-//     id: {
-//       type: "string",
-//       description: "Logical id of this artifact"
-//     },
-//     author: {
-//       type: "object",
-//       description: "The ODS code of the organization that authored the prescription.",
-//       properties: {
-//         identifier: {
-//           type: "object",
-//           properties: {
-//             system: {
-//               type: "string",
-//               enum: ["https://fhir.nhs.uk/Id/ods-organization-code"]
-//             },
-//             value: {
-//               type: "string"
-//             }
-//           },
-//           required: ["system", "value"]
-//         }
-//       }
-//     },
-//     extension: {
-//       type: "array",
-//       description: "Additional information related to the prescription.",
-//       items: {
-//         oneOf: [
-//           prescriptionStatusExtension,
-//           medicationRepeatInformationExtension,
-//           pendingCancellationExtension,
-//           prescriptionTypeExtension
-//         ]
-//       }
-//     },
-//     action: {},
-//     contained: {
-//       type: "array",
-//       items: {
-//         oneOf: [
-
-//         ]
-//       }
-//     }
-//   },
-//   required: [
-//     "resourceType",
-//     "id",
-//     "identifier",
-//     "intent",
-//     "author",
-//     "authoredOn",
-//     "subject",
-//     "action",
-//     "contained"
-//   ]
-// } as const satisfies JSONSchema
-// export type ClinicalViewRequestGroupType = FromSchema<typeof clinicalViewRequestGroup>

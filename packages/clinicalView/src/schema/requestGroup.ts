@@ -4,8 +4,12 @@ import {
   prescriptionStatusExtension,
   medicationRepeatInformationExtension,
   pendingCancellationExtension,
-  prescriptionTypeExtension
+  prescriptionTypeExtension,
+  medicationRequest,
+  medicationDispense,
+  practitionerRole
 } from "@cpt-common/common-types/schema"
+import {patient} from "./patient"
 
 export const requestGroup = {
   type: "object",
@@ -52,7 +56,10 @@ export const requestGroup = {
       type: "array",
       items: {
         oneOf: [
-
+          patient,
+          practitionerRole,
+          medicationRequest,
+          medicationDispense
         ]
       }
     }

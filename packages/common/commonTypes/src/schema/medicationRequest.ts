@@ -1,10 +1,17 @@
-/* eslint-disable max-len */
 import {JSONSchema, FromSchema} from "json-schema-to-ts"
-import {intent, subject} from "./elements"
+import {
+  dosageInstruction,
+  id,
+  intent,
+  medicationCodeableConcept,
+  quantity,
+  statusReason,
+  subject
+} from "./elements"
+import {dispensingInformationExtension, pendingCancellationExtension} from "./extensions"
 
 const status = {
   type: "string",
-  description: "The current state of the request. For request groups, the status reflects the status of all the requests in the group.",
   enum: [
     "active",
     "cancelled",
@@ -12,9 +19,9 @@ const status = {
     "stopped"
   ]
 } as const satisfies JSONSchema
-export type StatusType = FromSchema<typeof status>
+export type MedicationRequestStatusType = FromSchema<typeof status>
 
-const statusReason = {
+const courseOfTherapyType = {
   type: "object",
   properties: {
     coding: {
@@ -24,34 +31,22 @@ const statusReason = {
         properties: {
           system: {
             type: "string",
-            enum: ["https://fhir.nhs.uk/CodeSystem/medicationrequest-status-reason"]
+            enum: ["http://terminology.hl7.org/CodeSystem/medicationrequest-course-of-therapy"]
           },
           code: {
             type: "string",
             enum: [
-              "0001",
-              "0002",
-              "0003",
-              "0004",
-              "0005",
-              "0006",
-              "0007",
-              "0008",
-              "0009"
+              "acute",
+              "continuous",
+              "continuous-repeat-dispensing"
             ]
           },
           display: {
             type: "string",
             enum: [
-              "Prescribing Error",
-              "Clinical contra-indication",
-              "Change to medication treatment regime",
-              "Clinical grounds",
-              "At the Patients request",
-              "At the Pharmacists request",
-              "Notification of Death",
-              "Patient deducted - other reason",
-              "Patient deducted - registered with new practice"
+              "Short course (acute) therapy",
+              "Continuous long term therapy",
+              "Continuous long term (repeat dispensing)"
             ]
           }
         },
@@ -61,7 +56,7 @@ const statusReason = {
   },
   required: ["coding"]
 } as const satisfies JSONSchema
-export type StatusReasonCoding = FromSchema<typeof statusReason>["coding"][0]
+export type CourseOfTherapyTypeCoding = FromSchema<typeof courseOfTherapyType>["coding"][0]
 
 export const medicationRequest = {
   type: "object",
@@ -71,10 +66,7 @@ export const medicationRequest = {
       description: "The resource type.",
       enum: ["MedicationRequest"]
     },
-    id: {
-      type: "string",
-      description: "Logical id of this artifact"
-    },
+    id,
     identifier: {
       type: "array",
       items: {
@@ -94,30 +86,34 @@ export const medicationRequest = {
     status,
     statusReason,
     intent,
-    medicationCodeableConcept: {
+    requester: {
       type: "object",
       properties: {
-        text: {
+        reference: {
           type: "string"
         }
       },
-      required: ["text"]
+      required: ["reference"]
     },
+    groupIdentifier: {
+      type: "object",
+      properties: {
+        system: {
+          type: "string",
+          enum: ["https://fhir.nhs.uk/Id/prescription-order-number"]
+        },
+        value: {
+          type: "string"
+        }
+      },
+      required: ["system", "value"]
+    },
+    medicationCodeableConcept,
+    courseOfTherapyType,
     dispenseRequest: {
       type: "object",
       properties: {
-        quantity: {
-          type: "object",
-          properties: {
-            value: {
-              type: "integer"
-            },
-            unit: {
-              type: "string"
-            }
-          },
-          required: ["value", "unit"]
-        },
+        quantity,
         performer: {
           type: "object",
           properties: {
@@ -143,16 +139,24 @@ export const medicationRequest = {
       },
       required: ["quantity"]
     },
-    dosageInstruction: {
+    dosageInstruction,
+    substitution: {
+      type: "object",
+      properties: {
+        allowedBoolean: {
+          type: "boolean",
+          enum: [false]
+        }
+      },
+      required: ["allowedBoolean"]
+    },
+    extension: {
       type: "array",
       items: {
-        type: "object",
-        properties: {
-          text: {
-            type: "string"
-          }
-        },
-        required: ["text"]
+        oneOf: [
+          dispensingInformationExtension,
+          pendingCancellationExtension
+        ]
       }
     }
   },
@@ -160,10 +164,17 @@ export const medicationRequest = {
     "resourceType",
     "id",
     "identifier",
-    "status",
     "subject",
+    "status",
+    "intent",
+    "requester",
+    "groupIdentifier",
     "medicationCodeableConcept",
-    "dispenseRequest"
+    "courseOfTherapyType",
+    "dispenseRequest",
+    "dosageInstruction",
+    "substitution",
+    "extension"
   ]
 } as const satisfies JSONSchema
 export type MedicationRequestType = FromSchema<typeof medicationRequest>

@@ -1,10 +1,14 @@
 import {requestGroupCommonProperties} from "./requestGroup"
 import {gender, GenderType, patientCommonProperties} from "./patient"
-import {IntentType} from "./elements"
+import {
+  PrescriptionStatusCoding,
+  StatusReasonCoding,
+  IntentType,
+  DispenseStatusCoding
+} from "./elements"
 import {
   prescriptionStatusExtension,
   PrescriptionStatusExtensionType,
-  PrescriptionStatusCoding,
   medicationRepeatInformationExtension,
   MedicationRepeatInformationExtensionType,
   pendingCancellationExtension,
@@ -13,9 +17,17 @@ import {
   PrescriptionTypeExtensionType,
   PrescriptionTypeCoding,
   DispensingInformationExtensionType,
-  DispenseStatusCoding
+  taskBusinessStatusExtension,
+  TaskBusinessStatusExtensionType
 } from "./extensions"
-import {StatusType, StatusReasonCoding, MedicationRequestType} from "./medicationRequest"
+import {practitionerRole, PractitionerRoleType} from "./practitionerRole"
+import {
+  MedicationRequestStatusType,
+  medicationRequest,
+  MedicationRequestType,
+  CourseOfTherapyTypeCoding
+} from "./medicationRequest"
+import {MedicationDispenseStatusType, medicationDispense, MedicationDispenseType} from "./medicationDispense"
 
 export {
   IntentType,
@@ -25,7 +37,6 @@ export {
   patientCommonProperties,
   prescriptionStatusExtension,
   PrescriptionStatusExtensionType,
-  PrescriptionStatusCoding,
   medicationRepeatInformationExtension,
   MedicationRepeatInformationExtensionType,
   pendingCancellationExtension,
@@ -34,10 +45,20 @@ export {
   PrescriptionTypeExtensionType,
   PrescriptionTypeCoding,
   DispensingInformationExtensionType,
+  taskBusinessStatusExtension,
+  TaskBusinessStatusExtensionType,
   DispenseStatusCoding,
-  StatusType,
+  PrescriptionStatusCoding,
   StatusReasonCoding,
-  MedicationRequestType
+  practitionerRole,
+  PractitionerRoleType,
+  MedicationRequestStatusType,
+  medicationRequest,
+  MedicationRequestType,
+  CourseOfTherapyTypeCoding,
+  MedicationDispenseStatusType,
+  medicationDispense,
+  MedicationDispenseType
 }
 
 // TODO - organize this

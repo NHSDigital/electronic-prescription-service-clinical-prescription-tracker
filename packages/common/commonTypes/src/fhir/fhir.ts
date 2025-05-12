@@ -4,8 +4,10 @@ import {
   StatusReasonCoding,
   PrescriptionStatusCoding,
   PrescriptionTypeCoding,
-  StatusType,
-  DispenseStatusCoding
+  DispenseStatusCoding,
+  MedicationRequestStatusType,
+  MedicationDispenseStatusType,
+  CourseOfTherapyTypeCoding
 } from "../schema"
 import {SpineGenderCode, SpineTreatmentTypeCode} from "../spine"
 
@@ -20,6 +22,13 @@ export const INTENT_MAP: Record<SpineTreatmentTypeCode, IntentType> = {
   [TreatmentType.REPEAT]: "instance-order",
   [TreatmentType.ERD] : "reflex-order"
 } as const
+
+export const COURSE_OF_THERAPY_TYPE_MAP: Record<SpineTreatmentTypeCode,
+  {code: CourseOfTherapyTypeCoding["code"], display: CourseOfTherapyTypeCoding["display"]}> = {
+    [TreatmentType.ACUTE]: {code: "acute", display: "Short course (acute) therapy"},
+    [TreatmentType.REPEAT]: {code: "continuous", display: "Continuous long term therapy"},
+    [TreatmentType.ERD]: {code: "continuous-repeat-dispensing", display: "Continuous long term (repeat dispensing)"}
+  }
 
 export const GENDER_MAP: Record<SpineGenderCode, GenderType> = {
   1 : "male",
@@ -107,7 +116,7 @@ export const PRESCRIPTION_TYPE_MAP: Record<PrescriptionTypeCoding["code"], Presc
   "5025": "Outpatient Community Prescriber - Paramedic Independent/Supplementary prescriber (IOM)"
 }
 
-export const MEDICATION_REQUEST_STATUS_MAP: Record<DispenseStatusCoding["code"], StatusType> = {
+export const MEDICATION_REQUEST_STATUS_MAP: Record<DispenseStatusCoding["code"], MedicationRequestStatusType> = {
   "0001": "completed",
   "0002": "stopped",
   "0003": "active",
@@ -116,6 +125,17 @@ export const MEDICATION_REQUEST_STATUS_MAP: Record<DispenseStatusCoding["code"],
   "0006": "stopped",
   "0007": "active",
   "0008": "active"
+}
+
+export const MEDICATION_DISPENSE_STATUS_MAP: Record<DispenseStatusCoding["code"], MedicationDispenseStatusType> = {
+  "0001": "completed",
+  "0002": "stopped",
+  "0003": "in-progress",
+  "0004": "in-progress",
+  "0005": "cancelled",
+  "0006": "stopped",
+  "0007": "in-progress",
+  "0008": "in-progress"
 }
 
 export const LINE_ITEM_STATUS_MAP: Record<DispenseStatusCoding["code"], DispenseStatusCoding["display"]> = {

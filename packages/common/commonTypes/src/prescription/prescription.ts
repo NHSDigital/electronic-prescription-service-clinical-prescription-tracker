@@ -34,7 +34,7 @@ export interface IssueDetails {
   issueNumber: number
   status: PrescriptionStatusCoding["code"]
   prescriptionPendingCancellation: boolean
-  itemsPendingCancellation: boolean
+  itemsPendingCancellation?: boolean // TODO: Only needed for prescription search?
 }
 
 export interface LineItemDetailsSummary {

@@ -1,7 +1,7 @@
 import {FromSchema, JSONSchema} from "json-schema-to-ts"
 import {gender, patientCommonProperties} from "@cpt-common/common-types/schema"
 
-export const patientSchema = {
+export const patient = {
   type: "object",
   properties: {
     ...patientCommonProperties,
@@ -57,4 +57,4 @@ export const patientSchema = {
     "birthDate"
   ]
 } as const satisfies JSONSchema
-export type PatientType = FromSchema<typeof patientSchema>
+export type PatientType = FromSchema<typeof patient>
