@@ -1,5 +1,6 @@
 import {JSONSchema, FromSchema} from "json-schema-to-ts"
 import {
+  daysSupply,
   dosageInstruction,
   id,
   intent,
@@ -8,7 +9,7 @@ import {
   statusReason,
   subject
 } from "./elements"
-import {dispensingInformationExtension, pendingCancellationExtension} from "./extensions"
+import {dispensingInformationExtension, pendingCancellationExtension, performerSiteTypeExtension} from "./extensions"
 
 const status = {
   type: "string",
@@ -135,6 +136,11 @@ export const medicationRequest = {
             }
           },
           required: ["identifier"]
+        },
+        expectedSupplyDuration: daysSupply, // TODO: seemed to be missing added here
+        extension: {
+          type: "array",
+          items: performerSiteTypeExtension
         }
       },
       required: ["quantity"]

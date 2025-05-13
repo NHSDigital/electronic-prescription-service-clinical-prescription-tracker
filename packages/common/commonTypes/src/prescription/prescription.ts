@@ -1,5 +1,6 @@
 import {
   DispenseStatusCoding,
+  PerformerSiteTypeCoding,
   PrescriptionStatusCoding,
   PrescriptionTypeCoding,
   StatusReasonCoding
@@ -86,6 +87,7 @@ export interface PrescriptionDetails extends PrescriptionDetailsSummary, IssueDe
   prescriptionType: PrescriptionTypeCoding["code"]
   prescriberOrg: string
   nominatedDispenserOrg?: string
+  nominatedDisperserType?: PerformerSiteTypeCoding["code"]
   dispenserOrg?: string
   lineItems: {
     [key: string]: LineItemDetails

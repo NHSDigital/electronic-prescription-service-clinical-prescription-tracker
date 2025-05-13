@@ -294,6 +294,47 @@ export const dispensingInformationExtension = {
 } as const satisfies JSONSchema
 export type DispensingInformationExtensionType = FromSchema<typeof dispensingInformationExtension>
 
+export const performerSiteTypeExtension = {
+  type: "object",
+  properties: {
+    url: {
+      type: "string",
+      enum: ["https://fhir.nhs.uk/StructureDefinition/Extension-DM-PerformerSiteType"]
+    },
+    valueCoding: {
+      type: "object",
+      properties: {
+        system: {
+          type: "string",
+          enum: ["https://fhir.nhs.uk/CodeSystem/dispensing-site-preference"]
+        },
+        code: {
+          type: "string",
+          enum: [
+            "P1",
+            "P2",
+            "P3",
+            "0004"
+          ]
+        },
+        display: {
+          type: "string",
+          enum: [
+            "Other (e.g. Community Pharmacy)",
+            "Appliance Contractor",
+            "Dispensing Doctor",
+            "None"
+          ]
+        }
+      },
+      required: ["system", "code", "display"]
+    }
+  },
+  required: ["url", "valueCoding"]
+} as const satisfies JSONSchema
+export type PerformerSiteTypeExtensionType = FromSchema<typeof performerSiteTypeExtension>
+export type PerformerSiteTypeCoding = PerformerSiteTypeExtensionType["valueCoding"]
+
 export const taskBusinessStatusExtension = {
   type: "object",
   description: "The prescription status.",

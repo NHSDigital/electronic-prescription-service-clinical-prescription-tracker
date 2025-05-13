@@ -7,7 +7,8 @@ import {
   DispenseStatusCoding,
   MedicationRequestStatusType,
   MedicationDispenseStatusType,
-  CourseOfTherapyTypeCoding
+  CourseOfTherapyTypeCoding,
+  PerformerSiteTypeCoding
 } from "../schema"
 import {SpineGenderCode, SpineTreatmentTypeCode} from "../spine"
 
@@ -160,3 +161,10 @@ export const LINE_ITEM_STATUS_REASON_MAP:Record<StatusReasonCoding["display"], S
   "Patient deducted - other reason": "0008",
   "Patient deducted - registered with new practice": "0009"
 } as const
+
+export const PERFORMER_SITE_TYPE_MAP: Record<PerformerSiteTypeCoding["code"], PerformerSiteTypeCoding["display"]> = {
+  "P1": "Other (e.g. Community Pharmacy)",
+  "P2": "Appliance Contractor",
+  "P3": "Dispensing Doctor",
+  "0004": "None"
+}

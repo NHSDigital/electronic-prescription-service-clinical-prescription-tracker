@@ -8,7 +8,8 @@ import {
   MedicationRequest,
   Patient,
   PractitionerRole,
-  RequestGroup
+  RequestGroup,
+  RequestGroupAction
 } from "fhir/r4"
 import {Prescription} from "@cpt-common/common-types/prescription"
 import {
@@ -20,7 +21,8 @@ import {
   DispensingInformationExtensionType,
   MedicationDispenseType,
   PractitionerRoleType,
-  TaskBusinessStatusExtensionType
+  TaskBusinessStatusExtensionType,
+  PerformerSiteTypeExtensionType
 } from "@cpt-common/common-types/schema"
 import {
   INTENT_MAP,
@@ -32,7 +34,8 @@ import {
   LINE_ITEM_STATUS_REASON_MAP,
   LINE_ITEM_STATUS_MAP,
   COURSE_OF_THERAPY_TYPE_MAP,
-  MEDICATION_DISPENSE_STATUS_MAP
+  MEDICATION_DISPENSE_STATUS_MAP,
+  PERFORMER_SITE_TYPE_MAP
 } from "@cpt-common/common-types/fhir"
 import {RequestGroupType} from "./schema/requestGroup"
 import {PatientType} from "./schema/patient"
@@ -120,7 +123,7 @@ const generatePatientResource = (prescription: Prescription, patientResourceId: 
       value: prescription.nhsNumber
     }],
     ...(Object.keys(patientName).length ? {name: patientName}: {}),
-    birthDate: prescription.birthDate,
+    birthDate: prescription.birthDate, //TODO - format
     gender: prescription.gender ? GENDER_MAP[prescription.gender] : "unknown",
     ...(patientAddress.length ? {address: patientAddress} : {})
   }
@@ -146,17 +149,17 @@ const generateRequestGroupExtensions = (prescription: Prescription): Array<Exten
 
   // Generate repeat information extension
   if (prescription.treatmentType !== TreatmentType.ACUTE){
-    const repeatInformationExtension: Extension & MedicationRepeatInformationExtensionType = {
+    const repeatInformationExtension: MedicationRepeatInformationExtensionType = {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
       extension: [
         {
           url: "numberOfRepeatsIssued",
           valueInteger: prescription.issueNumber
         },
-        ...(prescription.issueNumber ? [{
+        ...(prescription.maxRepeats ? [{
           url: "numberOfRepeatsAllowed",
-          valueInteger: prescription.issueNumber
-        }] as MedicationRepeatInformationExtensionType["extension"] : [])
+          valueInteger: prescription.maxRepeats as number
+        } satisfies Extension & MedicationRepeatInformationExtensionType["extension"][0]] : [])
       ]
     }
     extensions.push(repeatInformationExtension)
@@ -284,7 +287,27 @@ const generateMedicationRequests = (
         quantity: {
           value: lineItem.quantity,
           unit: lineItem.quantityForm
-        }
+        },
+        ...(prescription.nominatedDispenserOrg ? {performer: {
+          identifier: [{
+            system: "https://fhir.nhs.uk/Id/ods-organization-code",
+            value: prescription.nominatedDispenserOrg
+          }]
+        }} : {}),
+        ...(prescription.daysSupply ? {expectedSupplyDuration :{
+          system: "http://unitsofmeasure.org",
+          value: prescription.daysSupply,
+          code: "d",
+          unit: "days"
+        }} : {}),
+        ...(prescription.nominatedDisperserType ? {extension: [{
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PerformerSiteType",
+          valueCoding: {
+            system: "https://fhir.nhs.uk/CodeSystem/dispensing-site-preference",
+            code: prescription.nominatedDisperserType,
+            display: PERFORMER_SITE_TYPE_MAP[prescription.nominatedDisperserType]
+          }
+        } satisfies Extension & PerformerSiteTypeExtensionType]}: {})
       },
       dosageInstruction:[{
         text: lineItem.dosageInstruction ?? "" // TODO: dosage instruction can be missing, but is required in fhir
@@ -327,18 +350,17 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
     }
   }
 
-  for (const dispenseNotification of Object.values(prescription.dispenseNotifications)){
-
-    // Generate medication dispense extensions
-    const taskBusinessStatusExtension : Extension & TaskBusinessStatusExtensionType = {
-      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-TaskBusinessStatus",
-      valueCoding: {
-        system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
-        code: prescription.status,
-        display: PRESCRIPTION_STATUS_MAP[prescription.status]
-      }
+  // Generate medication dispense extensions
+  const taskBusinessStatusExtension : Extension & TaskBusinessStatusExtensionType = {
+    url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-TaskBusinessStatus",
+    valueCoding: {
+      system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+      code: prescription.status,
+      display: PRESCRIPTION_STATUS_MAP[prescription.status]
     }
+  }
 
+  for (const dispenseNotification of Object.values(prescription.dispenseNotifications)){
     for (const lineItem of Object.values(dispenseNotification.lineItems)){
       // Generate medication dispense
       const medicationDispense: MedicationDispense & MedicationDispenseType= {
@@ -363,7 +385,15 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
           value: lineItem.quantity,
           unit: lineItem.quantityForm
         },
-        ...(lineItem.dosageInstruction ? {dosageInstruction: [{text: lineItem.dosageInstruction}]}: {}),
+        ...(lineItem.dosageInstruction ? {dosageInstruction: [{
+          text: lineItem.dosageInstruction
+        }]}: {}),
+        ...(prescription.daysSupply ? {daysSupply: {
+          system: "http://unitsofmeasure.org",
+          value: prescription.daysSupply,
+          code: "d",
+          unit: "days"
+        }}: {}),
         extension: [
           taskBusinessStatusExtension
         ]
@@ -373,4 +403,10 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
   }
 
   return {dispenserPractitionerRole, medicationDispenses}
+}
+
+const generateHistoryActions = (prescription: Prescription): Array<RequestGroupAction> => {
+  const actions: Array<RequestGroupAction> = []
+
+  return actions
 }

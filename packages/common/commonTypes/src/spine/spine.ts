@@ -72,6 +72,7 @@ interface XmlEpsRecord {
   daysSupply?: string
   prescribingOrganization: string
   nominatedPerformer?: string
+  nominatedPerformerType?: string
   dispensingOrganization?: string
   parentPrescription: {
     prefix?: string

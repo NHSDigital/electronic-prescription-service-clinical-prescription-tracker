@@ -21,6 +21,7 @@ import {
 } from "@cpt-common/common-types/prescription"
 import {
   DispenseStatusCoding,
+  PerformerSiteTypeCoding,
   PrescriptionStatusCoding,
   PrescriptionTypeCoding,
   StatusReasonCoding
@@ -65,7 +66,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     ...(xmlParentPrescription.suffix ? {suffix: xmlParentPrescription.suffix} : {}),
     ...(xmlParentPrescription.given ? {given: xmlParentPrescription.given} : {}),
     ...(xmlParentPrescription.family ? {family: xmlParentPrescription.family} : {}),
-    birthDate: xmlEpsRecord.patientBirthTime,
+    birthDate: xmlEpsRecord.patientBirthTime, //TODO: format
     ...(xmlParentPrescription.administrativeGenderCode ?
       {gender: Number(xmlParentPrescription.administrativeGenderCode) as SpineGenderCode} : {}),
     address: {
@@ -91,6 +92,8 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     itemsPendingCancellation: false, //default to false but update when checking last history events line items
     prescriberOrg: xmlEpsRecord.prescribingOrganization,
     ...(xmlEpsRecord.nominatedPerformer ? {nominatedDispenserOrg: xmlEpsRecord.nominatedPerformer} : {}),
+    ...(xmlEpsRecord.nominatedPerformerType ? {
+      nominatedDisperserType: xmlEpsRecord.nominatedPerformerType as PerformerSiteTypeCoding["code"]}: {}),
     ...(xmlEpsRecord.dispensingOrganization ? {dispenserOrg: xmlEpsRecord.dispensingOrganization} : {}),
     lineItems: {},
     dispenseNotifications: {},

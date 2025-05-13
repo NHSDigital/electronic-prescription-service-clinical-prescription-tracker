@@ -4,7 +4,8 @@ import {
   subject,
   medicationCodeableConcept,
   dosageInstruction,
-  quantity
+  quantity,
+  daysSupply
 } from "./elements"
 import {taskBusinessStatusExtension} from "./extensions"
 
@@ -63,6 +64,7 @@ export const medicationDispense = {
     medicationCodeableConcept,
     quantity,
     dosageInstruction,
+    daysSupply, // TODO: seemed to be missing added here
     extension: {
       type: "array",
       items: taskBusinessStatusExtension

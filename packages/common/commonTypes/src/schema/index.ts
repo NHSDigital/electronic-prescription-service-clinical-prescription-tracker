@@ -1,6 +1,7 @@
 import {requestGroupCommonProperties} from "./requestGroup"
 import {gender, GenderType, patientCommonProperties} from "./patient"
 import {
+  taskBusinessStatus,
   PrescriptionStatusCoding,
   StatusReasonCoding,
   IntentType,
@@ -17,6 +18,9 @@ import {
   PrescriptionTypeExtensionType,
   PrescriptionTypeCoding,
   DispensingInformationExtensionType,
+  performerSiteTypeExtension,
+  PerformerSiteTypeExtensionType,
+  PerformerSiteTypeCoding,
   taskBusinessStatusExtension,
   TaskBusinessStatusExtensionType
 } from "./extensions"
@@ -45,9 +49,13 @@ export {
   PrescriptionTypeExtensionType,
   PrescriptionTypeCoding,
   DispensingInformationExtensionType,
+  performerSiteTypeExtension,
+  PerformerSiteTypeExtensionType,
+  PerformerSiteTypeCoding,
   taskBusinessStatusExtension,
   TaskBusinessStatusExtensionType,
   DispenseStatusCoding,
+  taskBusinessStatus,
   PrescriptionStatusCoding,
   StatusReasonCoding,
   practitionerRole,
