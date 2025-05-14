@@ -143,7 +143,8 @@ export class LambdaFunction extends Construct {
       role,
       environment: {
         ...props.environmentVariables,
-        LOG_LEVEL: props.logLevel
+        LOG_LEVEL: props.logLevel,
+        NODE_OPTIONS: "--enable-source-maps"
       },
       logGroup,
       layers:[
