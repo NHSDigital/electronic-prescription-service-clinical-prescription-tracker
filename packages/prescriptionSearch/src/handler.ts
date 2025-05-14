@@ -70,6 +70,7 @@ export const apiGatewayHandler = async (
   try{
     logger.info("Calling Spine prescription search interaction...")
     const spineResponse = await params.spineClient.prescriptionSearch(event.headers, searchParameters)
+    logger.debug("spine response", {response: spineResponse})
 
     logger.info("Parsing Spine Response...")
     const {prescriptions, searchError}: ParsedSpineResponse = parseSpineResponse(spineResponse.data, logger)

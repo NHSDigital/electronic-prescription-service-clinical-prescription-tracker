@@ -1,6 +1,6 @@
 import {Logger} from "@aws-lambda-powertools/logger"
 
-import {parseSpineResponse} from "../src/parseSpineResponse"
+import {parseSpineResponse, SpineJsonResponse} from "../src/parseSpineResponse"
 import {
   singleAcute,
   singleErd,
@@ -10,8 +10,7 @@ import {
   multipleRepeat,
   multipleMixed,
   notFound,
-  error,
-  invalid
+  error
 } from "./exampleSpineResponses/examples"
 
 // Types
@@ -39,7 +38,7 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       }
     ]
-    const result: ParsedSpineResponse = parseSpineResponse(singleAcute, logger)
+    const result: ParsedSpineResponse = parseSpineResponse(singleAcute as SpineJsonResponse, logger)
     expect(result).toEqual({prescriptions: expected})
   })
 
@@ -76,7 +75,7 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       }
     ]
-    const result: ParsedSpineResponse = parseSpineResponse(multipleAcute, logger)
+    const result: ParsedSpineResponse = parseSpineResponse(multipleAcute as SpineJsonResponse, logger)
     expect(result).toEqual({prescriptions: expected})
   })
 
@@ -188,20 +187,20 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       }
     ]
-    const result: ParsedSpineResponse = parseSpineResponse(singleErd, logger)
+    const result: ParsedSpineResponse = parseSpineResponse(singleErd as SpineJsonResponse, logger)
     expect(result).toEqual({prescriptions: expected})
   })
 
   it("returns a correctly parsed response and no error when spine returns multiple erd prescriptions", async () => {
     const expected: Array<Prescription> = [
       {
-        nhsNumber: "4669955012",
+        nhsNumber: "9732730684",
         prefix: "MISS",
         suffix: "",
         given: "ETTA",
         family: "CORY",
-        prescriptionId: "5ABA40-000X26-D48018",
-        issueDate: "20250205000000",
+        prescriptionId: "05BF8D-A83008-F11164",
+        issueDate: "20250303000000",
         treatmentType: "0003",
         maxRepeats: 7,
         issueNumber: 1,
@@ -210,13 +209,13 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       },
       {
-        nhsNumber: "4669955012",
+        nhsNumber: "9732730684",
         prefix: "MISS",
         suffix: "",
         given: "ETTA",
         family: "CORY",
-        prescriptionId: "5ABA40-000X26-D48018",
-        issueDate: "20250205000000",
+        prescriptionId: "05BF8D-A83008-F11164",
+        issueDate: "20250303000000",
         treatmentType: "0003",
         maxRepeats: 7,
         issueNumber: 2,
@@ -225,13 +224,13 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       },
       {
-        nhsNumber: "4669955012",
+        nhsNumber: "9732730684",
         prefix: "MISS",
         suffix: "",
         given: "ETTA",
         family: "CORY",
-        prescriptionId: "5ABA40-000X26-D48018",
-        issueDate: "20250205000000",
+        prescriptionId: "05BF8D-A83008-F11164",
+        issueDate: "20250303000000",
         treatmentType: "0003",
         maxRepeats: 7,
         issueNumber: 3,
@@ -240,13 +239,13 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       },
       {
-        nhsNumber: "4669955012",
+        nhsNumber: "9732730684",
         prefix: "MISS",
         suffix: "",
         given: "ETTA",
         family: "CORY",
-        prescriptionId: "5ABA40-000X26-D48018",
-        issueDate: "20250205000000",
+        prescriptionId: "05BF8D-A83008-F11164",
+        issueDate: "20250303000000",
         treatmentType: "0003",
         maxRepeats: 7,
         issueNumber: 4,
@@ -255,13 +254,13 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       },
       {
-        nhsNumber: "4669955012",
+        nhsNumber: "9732730684",
         prefix: "MISS",
         suffix: "",
         given: "ETTA",
         family: "CORY",
-        prescriptionId: "5ABA40-000X26-D48018",
-        issueDate: "20250205000000",
+        prescriptionId: "05BF8D-A83008-F11164",
+        issueDate: "20250303000000",
         treatmentType: "0003",
         maxRepeats: 7,
         issueNumber: 5,
@@ -270,13 +269,13 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       },
       {
-        nhsNumber: "4669955012",
+        nhsNumber: "9732730684",
         prefix: "MISS",
         suffix: "",
         given: "ETTA",
         family: "CORY",
-        prescriptionId: "5ABA40-000X26-D48018",
-        issueDate: "20250205000000",
+        prescriptionId: "05BF8D-A83008-F11164",
+        issueDate: "20250303000000",
         treatmentType: "0003",
         maxRepeats: 7,
         issueNumber: 6,
@@ -285,13 +284,13 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       },
       {
-        nhsNumber: "4669955012",
+        nhsNumber: "9732730684",
         prefix: "MISS",
         suffix: "",
         given: "ETTA",
         family: "CORY",
-        prescriptionId: "5ABA40-000X26-D48018",
-        issueDate: "20250205000000",
+        prescriptionId: "05BF8D-A83008-F11164",
+        issueDate: "20250303000000",
         treatmentType: "0003",
         maxRepeats: 7,
         issueNumber: 7,
@@ -300,13 +299,13 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       },
       {
-        nhsNumber: "4669955012",
+        nhsNumber: "9732730684",
         prefix: "MISS",
         suffix: "",
         given: "ETTA",
         family: "CORY",
-        prescriptionId: "37E35F-000X26-FCC06H",
-        issueDate: "20250205000000",
+        prescriptionId: "4DDA5B-A83008-0530E5",
+        issueDate: "20250228000000",
         treatmentType: "0003",
         maxRepeats: 7,
         issueNumber: 1,
@@ -315,13 +314,13 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       },
       {
-        nhsNumber: "4669955012",
+        nhsNumber: "9732730684",
         prefix: "MISS",
         suffix: "",
         given: "ETTA",
         family: "CORY",
-        prescriptionId: "37E35F-000X26-FCC06H",
-        issueDate: "20250205000000",
+        prescriptionId: "4DDA5B-A83008-0530E5",
+        issueDate: "20250228000000",
         treatmentType: "0003",
         maxRepeats: 7,
         issueNumber: 2,
@@ -330,13 +329,13 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       },
       {
-        nhsNumber: "4669955012",
+        nhsNumber: "9732730684",
         prefix: "MISS",
         suffix: "",
         given: "ETTA",
         family: "CORY",
-        prescriptionId: "37E35F-000X26-FCC06H",
-        issueDate: "20250205000000",
+        prescriptionId: "4DDA5B-A83008-0530E5",
+        issueDate: "20250228000000",
         treatmentType: "0003",
         maxRepeats: 7,
         issueNumber: 3,
@@ -345,13 +344,13 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       },
       {
-        nhsNumber: "4669955012",
+        nhsNumber: "9732730684",
         prefix: "MISS",
         suffix: "",
         given: "ETTA",
         family: "CORY",
-        prescriptionId: "37E35F-000X26-FCC06H",
-        issueDate: "20250205000000",
+        prescriptionId: "4DDA5B-A83008-0530E5",
+        issueDate: "20250228000000",
         treatmentType: "0003",
         maxRepeats: 7,
         issueNumber: 4,
@@ -360,13 +359,13 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       },
       {
-        nhsNumber: "4669955012",
+        nhsNumber: "9732730684",
         prefix: "MISS",
         suffix: "",
         given: "ETTA",
         family: "CORY",
-        prescriptionId: "37E35F-000X26-FCC06H",
-        issueDate: "20250205000000",
+        prescriptionId: "4DDA5B-A83008-0530E5",
+        issueDate: "20250228000000",
         treatmentType: "0003",
         maxRepeats: 7,
         issueNumber: 5,
@@ -375,13 +374,13 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       },
       {
-        nhsNumber: "4669955012",
+        nhsNumber: "9732730684",
         prefix: "MISS",
         suffix: "",
         given: "ETTA",
         family: "CORY",
-        prescriptionId: "37E35F-000X26-FCC06H",
-        issueDate: "20250205000000",
+        prescriptionId: "4DDA5B-A83008-0530E5",
+        issueDate: "20250228000000",
         treatmentType: "0003",
         maxRepeats: 7,
         issueNumber: 6,
@@ -390,13 +389,13 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       },
       {
-        nhsNumber: "4669955012",
+        nhsNumber: "9732730684",
         prefix: "MISS",
         suffix: "",
         given: "ETTA",
         family: "CORY",
-        prescriptionId: "37E35F-000X26-FCC06H",
-        issueDate: "20250205000000",
+        prescriptionId: "4DDA5B-A83008-0530E5",
+        issueDate: "20250228000000",
         treatmentType: "0003",
         maxRepeats: 7,
         issueNumber: 7,
@@ -405,7 +404,7 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       }
     ]
-    const result: ParsedSpineResponse = parseSpineResponse(multipleErd, logger)
+    const result: ParsedSpineResponse = parseSpineResponse(multipleErd as SpineJsonResponse, logger)
     expect(result).toEqual({prescriptions: expected})
   })
 
@@ -427,7 +426,7 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       }
     ]
-    const result: ParsedSpineResponse = parseSpineResponse(singleRepeat, logger)
+    const result: ParsedSpineResponse = parseSpineResponse(singleRepeat as SpineJsonResponse, logger)
     expect(result).toEqual({prescriptions: expected})
   })
 
@@ -464,7 +463,7 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       }
     ]
-    const result: ParsedSpineResponse = parseSpineResponse(multipleRepeat, logger)
+    const result: ParsedSpineResponse = parseSpineResponse(multipleRepeat as SpineJsonResponse, logger)
     expect(result).toEqual({prescriptions: expected})
   })
 
@@ -486,11 +485,11 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       },
       {
-        nhsNumber: "9732730684",
-        prefix: "MISS",
+        nhsNumber: "5839945242",
+        prefix: "MS",
         suffix: "",
-        given: "ETTA",
-        family: "CORY",
+        family: "TWITCHETT",
+        given: "STACEY",
         prescriptionId: "0131A6-A83008-DDFE5P",
         issueDate: "20250205000000",
         treatmentType: "0003",
@@ -501,11 +500,11 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       },
       {
-        nhsNumber: "9732730684",
-        prefix: "MISS",
+        nhsNumber: "5839945242",
+        prefix: "MS",
         suffix: "",
-        given: "ETTA",
-        family: "CORY",
+        family: "TWITCHETT",
+        given: "STACEY",
         prescriptionId: "0131A6-A83008-DDFE5P",
         issueDate: "20250205000000",
         treatmentType: "0003",
@@ -516,11 +515,11 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       },
       {
-        nhsNumber: "9732730684",
-        prefix: "MISS",
+        nhsNumber: "5839945242",
+        prefix: "MS",
         suffix: "",
-        given: "ETTA",
-        family: "CORY",
+        family: "TWITCHETT",
+        given: "STACEY",
         prescriptionId: "0131A6-A83008-DDFE5P",
         issueDate: "20250205000000",
         treatmentType: "0003",
@@ -531,11 +530,11 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       },
       {
-        nhsNumber: "9732730684",
-        prefix: "MISS",
+        nhsNumber: "5839945242",
+        prefix: "MS",
         suffix: "",
-        given: "ETTA",
-        family: "CORY",
+        family: "TWITCHETT",
+        given: "STACEY",
         prescriptionId: "0131A6-A83008-DDFE5P",
         issueDate: "20250205000000",
         treatmentType: "0003",
@@ -546,11 +545,11 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       },
       {
-        nhsNumber: "9732730684",
-        prefix: "MISS",
+        nhsNumber: "5839945242",
+        prefix: "MS",
         suffix: "",
-        given: "ETTA",
-        family: "CORY",
+        family: "TWITCHETT",
+        given: "STACEY",
         prescriptionId: "0131A6-A83008-DDFE5P",
         issueDate: "20250205000000",
         treatmentType: "0003",
@@ -561,11 +560,11 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       },
       {
-        nhsNumber: "9732730684",
-        prefix: "MISS",
+        nhsNumber: "5839945242",
+        prefix: "MS",
         suffix: "",
-        given: "ETTA",
-        family: "CORY",
+        family: "TWITCHETT",
+        given: "STACEY",
         prescriptionId: "0131A6-A83008-DDFE5P",
         issueDate: "20250205000000",
         treatmentType: "0003",
@@ -576,11 +575,11 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       },
       {
-        nhsNumber: "9732730684",
-        prefix: "MISS",
+        nhsNumber: "5839945242",
+        prefix: "MS",
         suffix: "",
-        given: "ETTA",
-        family: "CORY",
+        family: "TWITCHETT",
+        given: "STACEY",
         prescriptionId: "0131A6-A83008-DDFE5P",
         issueDate: "20250205000000",
         treatmentType: "0003",
@@ -591,11 +590,11 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       },
       {
-        nhsNumber: "9732730684",
-        prefix: "MISS",
+        nhsNumber: "5839945242",
+        prefix: "MS",
         suffix: "",
-        family: "CORY",
-        given: "ETTA",
+        family: "TWITCHETT",
+        given: "STACEY",
         prescriptionId: "1CFAAA-A83008-BE0B3Y",
         issueDate: "20250212122302",
         treatmentType: "0002",
@@ -606,7 +605,7 @@ describe("Test parseSpineResponse", () => {
         itemsPendingCancellation: false
       }
     ]
-    const result: ParsedSpineResponse = parseSpineResponse(multipleMixed, logger)
+    const result: ParsedSpineResponse = parseSpineResponse(multipleMixed as SpineJsonResponse, logger)
     expect(result).toEqual({prescriptions: expected})
   })
 
@@ -621,13 +620,25 @@ describe("Test parseSpineResponse", () => {
       searchError: {
         status: "500",
         severity: "error",
-        description: "hl7:{interactionId}/hl7:ControlActEvent/hl7:author is missing, empty or invalid"
+        description: "Invalid prescription checksum"
       }
     })
   })
 
   it("returns undefined and an error when spine returns an invalid response", async () => {
-    const result: ParsedSpineResponse = parseSpineResponse(invalid, logger)
+    const result: ParsedSpineResponse = parseSpineResponse("invalid", logger)
+    expect(result).toEqual({
+      searchError: {
+        status: "500",
+        severity: "error",
+        description: "Unknown Error."
+      }
+    })
+  })
+
+  it("returns undefined and an error when spine returns an invalid json response", async () => {
+    const mockResponse = {test: "invalid"} as unknown as SpineJsonResponse
+    const result: ParsedSpineResponse = parseSpineResponse(mockResponse, logger)
     expect(result).toEqual({
       searchError: {
         status: "500",

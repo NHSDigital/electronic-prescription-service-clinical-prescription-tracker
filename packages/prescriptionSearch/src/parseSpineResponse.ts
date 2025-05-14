@@ -1,74 +1,51 @@
 import {XMLParser} from "fast-xml-parser"
 import {Logger} from "@aws-lambda-powertools/logger"
+import {logger} from "./handler"
+import {PrescriptionStatusExtensionType} from "./schema/response"
 
-export type XmlStringValue = {
-  "@_value": string
-}
+type PrescriptionStatusCode = PrescriptionStatusExtensionType["extension"][0]["valueCoding"]["code"]
 
-export interface XmlIssueDetail {
-  instanceNumber: XmlStringValue
-  prescriptionStatus: XmlStringValue
-  prescCancPending: XmlStringValue
-  liCancPending: XmlStringValue
-}
-
-export interface XmlPrescription {
-  id: XmlStringValue
-  patientId: XmlStringValue
-  prefix: XmlStringValue
-  suffix: XmlStringValue
-  given: XmlStringValue
-  family: XmlStringValue
-  issueDetail: XmlIssueDetail | Array<XmlIssueDetail>
-  prescribedDate: XmlStringValue
-  prescriptionTreatmentType: XmlStringValue
-  maxRepeats: XmlStringValue
-}
-
-export interface XmlSearchResults {
-  prescription: XmlPrescription | Array<XmlPrescription>
-}
-
-export interface XmlSoapBody {
-  prescriptionSearchResponse: {
-    PRESCRIPTIONSEARCHRESPONSE_SM01: {
-      ControlActEvent: {
-        subject: {
-          searchResults: XmlSearchResults
+interface SpineXmlErrorResponse {
+  "SOAP:Envelope": {
+    "SOAP:Body": {
+      prescriptionSearchResponse: {
+        MCCI_IN010000UK13: {
+          acknowledgement: {
+            acknowledgementDetail: {
+              code: {
+                "@_codeSystem": string
+                "@_code": string
+                "@_displayName": string
+              }
+            }
+          }
         }
       }
     }
   }
 }
-
-interface XmlSoapEnvelope {
-  "SOAP:Body": XmlSoapBody
+interface ResponseIssueDetail {
+  instanceNumber: string
+  prescriptionStatus: PrescriptionStatusCode
+  prescCancPending: string
+  liCancPending: string
 }
-
-export interface XmlError {
-  "@_codeSystem": string
-  "@_code": string
-  "@_displayName": string
+interface ResponsePrescription {
+  prescriptionID: string
+  patientID: string
+  prefix: string
+  suffix: string
+  given: string
+  family: string
+  issueDetail: Array<ResponseIssueDetail>
+  prescribedDate: string
+  prescriptionTreatmentType: string
+  maxRepeats: string
 }
-
-export interface XmlSoapEnvBody {
-  prescriptionSearchResponse: {
-    MCCI_IN010000UK13: {
-      acknowledgement: {
-        acknowledgementDetail: {
-          code: XmlError
-        }
-      }
-    }
+export interface SpineJsonResponse {
+  Response:{
+    prescriptions: Array<ResponsePrescription>
   }
-}
-interface XmlSoapEnvEnvelope {
-  "SOAP-ENV:Body": XmlSoapEnvBody
-}
-
-export interface XmlResponse {
-  "SOAP:Envelope"?: XmlSoapEnvelope
-  "SOAP-ENV:Envelope"?: XmlSoapEnvEnvelope
 }
 
 export interface PatientDetails {
@@ -88,7 +65,7 @@ export interface PrescriptionDetails {
 
 export interface IssueDetails {
   issueNumber: number
-  status: string
+  status: PrescriptionStatusCode
   prescriptionPendingCancellation: boolean
   itemsPendingCancellation: boolean
 
@@ -107,65 +84,55 @@ export interface ParsedSpineResponse {
   searchError?: SearchError | undefined
 }
 
-export const parseSpineResponse = (spineResponse: string, logger: Logger): ParsedSpineResponse => {
-  const xmlParser = new XMLParser({ignoreAttributes: false})
-  const xmlResponse = xmlParser.parse(spineResponse) as XmlResponse
+export const parseSpineResponse = (
+  spineResponse: SpineJsonResponse | string, logger: Logger): ParsedSpineResponse => {
+  if (typeof spineResponse === "string"){
+    logger.info("Spine response did not contain valid JSON, attempting to parse response as XML...")
 
-  logger.info("Parsing XML SOAP body...")
-  const xmlSoapBody: XmlSoapBody | undefined = xmlResponse["SOAP:Envelope"]?.["SOAP:Body"]
-  if (!xmlSoapBody) {
-    const error: string = parseErrorResponse(xmlResponse)
+    const error: string = parseErrorResponse(spineResponse)
     if (error === "Prescription not found"){
       logger.info("No prescriptions found.")
       return {prescriptions: []}
     }
+
     return {searchError: {status: "500", severity: "error", description: error}}
   }
 
-  logger.info("Parsing search results...")
-  const xmlSearchResults: XmlSearchResults = xmlSoapBody.prescriptionSearchResponse
-    .PRESCRIPTIONSEARCHRESPONSE_SM01.ControlActEvent.subject.searchResults
-  let xmlPrescriptions: XmlPrescription | Array<XmlPrescription> = xmlSearchResults.prescription
-  if (!Array.isArray(xmlPrescriptions)) {
-    xmlPrescriptions = [xmlPrescriptions]
+  const response = spineResponse.Response
+  if (!response){
+    logger.error("Failed to parse response, Spine response did not contain valid JSON.")
+    return {searchError: {status: "500", severity: "error", description: "Unknown Error."}}
   }
 
   logger.info("Parsing prescriptions...")
-  let parsedPrescriptions: Array<Prescription> = parsePrescriptions(xmlPrescriptions)
+  let parsedPrescriptions: Array<Prescription> = parsePrescriptions(response.prescriptions)
   return {prescriptions: parsedPrescriptions}
 }
 
-const parsePrescriptions = (xmlPrescriptions: Array<XmlPrescription>): Array<Prescription> => {
+const parsePrescriptions = (responsePrescriptions: Array<ResponsePrescription>): Array<Prescription> => {
   let parsedPrescriptions: Array<Prescription> = []
-
-  for (const xmlPrescription of xmlPrescriptions) {
+  for (const responsePrescription of responsePrescriptions){
     const patientDetails: PatientDetails = {
-      nhsNumber: xmlPrescription.patientId["@_value"],
-      prefix: xmlPrescription.prefix["@_value"],
-      suffix: xmlPrescription.suffix["@_value"],
-      given: xmlPrescription.given["@_value"],
-      family: xmlPrescription.family["@_value"]
+      nhsNumber: responsePrescription.patientID,
+      prefix: responsePrescription.prefix,
+      suffix: responsePrescription.suffix,
+      given: responsePrescription.given,
+      family: responsePrescription.family
     }
 
     const prescriptionDetails: PrescriptionDetails = {
-      prescriptionId: xmlPrescription.id["@_value"],
-      issueDate: xmlPrescription.prescribedDate["@_value"],
-      treatmentType: xmlPrescription.prescriptionTreatmentType["@_value"],
-      maxRepeats: xmlPrescription.maxRepeats["@_value"] === "None" ?
-        undefined : Number(xmlPrescription.maxRepeats["@_value"])
+      prescriptionId: responsePrescription.prescriptionID,
+      issueDate: responsePrescription.prescribedDate,
+      treatmentType: responsePrescription.prescriptionTreatmentType,
+      maxRepeats: responsePrescription.maxRepeats === "None" ? undefined : Number(responsePrescription.maxRepeats)
     }
 
-    let xmlIssues: XmlIssueDetail | Array<XmlIssueDetail> = xmlPrescription.issueDetail
-    if (!Array.isArray(xmlIssues)) {
-      xmlIssues = [xmlIssues]
-    }
-
-    for (const xmlIssue of xmlIssues) {
+    for (const responseIssue of responsePrescription.issueDetail){
       const issueDetails: IssueDetails = {
-        issueNumber: Number(xmlIssue.instanceNumber["@_value"]),
-        status: xmlIssue.prescriptionStatus["@_value"],
-        prescriptionPendingCancellation: convertXmlBool(xmlIssue.prescCancPending["@_value"]),
-        itemsPendingCancellation: convertXmlBool(xmlIssue.liCancPending["@_value"])
+        issueNumber: Number(responseIssue.instanceNumber),
+        status: responseIssue.prescriptionStatus,
+        prescriptionPendingCancellation: convertStringBool(responseIssue.prescCancPending),
+        itemsPendingCancellation: convertStringBool(responseIssue.liCancPending)
       }
       const parsedPrescription: Prescription = {
         ...patientDetails,
@@ -175,20 +142,25 @@ const parsePrescriptions = (xmlPrescriptions: Array<XmlPrescription>): Array<Pre
       parsedPrescriptions.push(parsedPrescription)
     }
   }
+
   return parsedPrescriptions
 }
 
-const convertXmlBool = (value: string): boolean => {
+const convertStringBool = (value: string): boolean => {
   return value === "True" ? true : false
 }
 
-const parseErrorResponse = (responseXml: XmlResponse): string => {
-  const xmlSoapEnvBody: XmlSoapEnvBody | undefined = responseXml["SOAP-ENV:Envelope"]?.["SOAP-ENV:Body"]
+const parseErrorResponse = (spineResponse: string): string => {
+  const xmlParser = new XMLParser({ignoreAttributes: false})
+  const xmlResponse = xmlParser.parse(spineResponse) as SpineXmlErrorResponse
+
+  const xmlSoapEnvBody = xmlResponse["SOAP:Envelope"]?.["SOAP:Body"]
   if (!xmlSoapEnvBody){
+    logger.error("Failed to parse response, Spine response did not contain valid XML.")
     return "Unknown Error."
   }
 
-  const xmlError: XmlError = xmlSoapEnvBody.prescriptionSearchResponse
+  const xmlError = xmlSoapEnvBody.prescriptionSearchResponse
     .MCCI_IN010000UK13.acknowledgement.acknowledgementDetail.code
 
   return xmlError["@_displayName"]
