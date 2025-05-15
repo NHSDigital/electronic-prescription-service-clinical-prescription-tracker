@@ -57,8 +57,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
   const xmlEpsRecord = xmlSoapBody.prescriptionClinicalViewResponse.PORX_IN000006UK98
     .ControlActEvent.subject.PrescriptionJsonQueryResponse.epsRecord
 
-  // TODO: logs
-  // TODO: put patient details under a patient key rather than root?
+  /* TODO: logs */
   const xmlParentPrescription = xmlEpsRecord.parentPrescription
   const patientDetails: PatientDetails = {
     nhsNumber: xmlEpsRecord.patientNhsNumber,
@@ -136,7 +135,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
       lineItems: {}
     }
 
-    for (const lineItemNo of Object.keys(prescriptionDetails.lineItems)){
+    for (const [lineItemNo, LineItemDetails] of Object.entries(prescriptionDetails.lineItems)){
       const quantity = Number(xmlDispenseNotification[`quantityLineItem${lineItemNo}`])
       if (quantity === 0) {
         continue
@@ -144,6 +143,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
 
       const lintItem: LineItemDetailsSummary = {
         lineItemNo,
+        lineItemId: LineItemDetails.lineItemId,
         status: xmlDispenseNotification[`statusLineItem${lineItemNo}`] as DispenseStatusCoding["code"],
         itemName: xmlDispenseNotification[`productLineItem${lineItemNo}`],
         quantity,
@@ -180,10 +180,11 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
       messageId: xmlHistoryEvent.messageID.slice(1, -1), // This id matches the DN ID for relevant events. Strip unnecessary "" from value
       timestamp: parse(xmlFilteredHistoryEvent.timestamp, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
       org: xmlFilteredHistoryEvent.agentPersonOrgCode,
-      newStatus: xmlFilteredHistoryEvent.toStatus,
+      newStatus: xmlFilteredHistoryEvent.toStatus as PrescriptionStatusCoding["code"],
       ...(xmlFilteredHistoryEvent.cancellationReason ?
-        {cancellationReason: xmlFilteredHistoryEvent.cancellationReason as StatusReasonCoding["display"]} : {}),
+        {cancellationReason: xmlFilteredHistoryEvent.cancellationReason as StatusReasonCoding["display"]} : {}), /* does this need to strip "Pending: "?*/
       isDispenseNotification: message.includes("Dispense notification successful"),
+      isPrescriptionUpload: message.includes("Prescription upload successful"),
       lineItems: {}
     }
 
@@ -193,7 +194,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     }
     for(const xmlEventLineItem of xmlEventLineItems){
       const lineItemNo = xmlEventLineItem.order
-      const cancellationReason = xmlEventLineItem.cancellationReason as StatusReasonCoding["display"]
+      const cancellationReason = xmlEventLineItem.cancellationReason as StatusReasonCoding["display"] /* does this need to strip "Pending: "?*/
 
       if (finalEvent && cancellationReason){
         if (cancellationReason?.includes("Pending")){
@@ -222,5 +223,3 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
   }
 }
 // TODO: would any of this benefit from some brief comments or some refactoring to break it up?
-/* TODO: do all possible optionals as per spine template need to be covered even if in practice they should be populated?
-  is it fine it it errors if they are missing? */

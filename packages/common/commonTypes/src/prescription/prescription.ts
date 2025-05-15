@@ -40,6 +40,7 @@ export interface IssueDetails {
 
 export interface LineItemDetailsSummary {
   lineItemNo: string
+  lineItemId: string
   status: DispenseStatusCoding["code"]
   itemName: string
   quantity: number
@@ -48,7 +49,6 @@ export interface LineItemDetailsSummary {
 }
 
 export interface LineItemDetails extends LineItemDetailsSummary {
-  lineItemId: string
   cancellationReason?: StatusReasonCoding["display"]
   pendingCancellation: boolean
 }
@@ -74,9 +74,10 @@ export interface HistoryEventDetails {
   messageId: string
   timestamp: string
   org: string
-  newStatus: string
-  cancellationReason?: StatusReasonCoding["display"]
+  newStatus: PrescriptionStatusCoding["code"]
+  cancellationReason?: StatusReasonCoding["display"] /* TODO: is this the correct coding*/
   isDispenseNotification: boolean,
+  isPrescriptionUpload: boolean,
   lineItems: {
     [key: string]: EventLineItem
   }

@@ -233,3 +233,20 @@ export const daysSupply = {
     }
   }
 } as const satisfies JSONSchema
+
+// Line item ID
+export const identifier = {
+  type: "array",
+  items: {
+    type: "object",
+    properties: {
+      system: {
+        type: "string",
+        enum: ["https://fhir.nhs.uk/Id/prescription-order-item-number"]
+      },
+      value: {
+        type: "string"
+      }
+    }
+  }
+} as const satisfies JSONSchema

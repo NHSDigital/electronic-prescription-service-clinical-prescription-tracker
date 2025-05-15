@@ -1,4 +1,4 @@
-import {JSONSchema, FromSchema} from "json-schema-to-ts"
+/* import {JSONSchema, FromSchema} from "json-schema-to-ts"
 
 export const patientSchema = {
   type: "object",
@@ -62,3 +62,4 @@ export const patientSchema = {
 } as const satisfies JSONSchema
 
 // export type PatientType = FromSchema<typeof patientSchema>
+*/

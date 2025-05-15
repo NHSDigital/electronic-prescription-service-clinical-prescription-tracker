@@ -3,6 +3,7 @@ import {
   daysSupply,
   dosageInstruction,
   id,
+  identifier,
   intent,
   medicationCodeableConcept,
   quantity,
@@ -68,21 +69,7 @@ export const medicationRequest = {
       enum: ["MedicationRequest"]
     },
     id,
-    identifier: {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          system: {
-            type: "string",
-            enum: ["https://fhir.nhs.uk/Id/prescription-order-item-number"]
-          },
-          value: {
-            type: "string"
-          }
-        }
-      }
-    },
+    identifier,
     subject,
     status,
     statusReason,
@@ -137,7 +124,7 @@ export const medicationRequest = {
           },
           required: ["identifier"]
         },
-        expectedSupplyDuration: daysSupply, // TODO: seemed to be missing added here
+        expectedSupplyDuration: daysSupply, /* TODO: seemed to be missing added here */
         extension: {
           type: "array",
           items: performerSiteTypeExtension

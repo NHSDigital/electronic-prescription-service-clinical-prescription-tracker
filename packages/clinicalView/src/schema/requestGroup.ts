@@ -13,6 +13,23 @@ import {
 } from "@cpt-common/common-types/schema"
 import {patient} from "./patient"
 
+const referenceAction = {
+  type: "object",
+  properties: {
+    resource: {
+      type: "object",
+      properties: {
+        reference: {
+          type: "string"
+        }
+      },
+      required: ["reference"]
+    }
+  },
+  required: ["resource"]
+} as const satisfies JSONSchema
+export type ReferenceAction = FromSchema<typeof referenceAction>
+
 const historyAction = {
   type: "object",
   properties: {
@@ -34,14 +51,8 @@ const historyAction = {
           title: {
             type: "string"
           },
-          timingDateTime: { // TODO: changed to timingDatetime, examples seemed to use timingTiming with days supply info in it
-            type: "object",
-            properties: {
-              value: {
-                type: "string"
-              }
-            },
-            required: ["value"]
+          timingDateTime: {/* TODO: changed to timingDatetime, examples seemed to use timingTiming with days supply info in it */
+            type: "string"
           },
           code: {
             type: "array",
@@ -57,21 +68,23 @@ const historyAction = {
                   },
                   required: ["coding"]
                 },
-                { // TODO: is this the right format?
+                {/* TODO: is this the right format? */
                   type: "object",
                   properties: {
                     coding: {
-                      type: "object",
-                      properties: {
-                        system: {
-                          type: "string",
-                          enum: ["https://tools.ietf.org/html/rfc4122"]
+                      type: "array",
+                      items: {
+                        properties: {
+                          system: {
+                            type: "string",
+                            enum: ["https://tools.ietf.org/html/rfc4122"]
+                          },
+                          code: {
+                            type: "string"
+                          }
                         },
-                        code: {
-                          type: "string"
-                        }
-                      },
-                      required: ["system", "code"]
+                        required: ["system", "code"]
+                      }
                     }
                   },
                   required: ["coding"]
@@ -121,23 +134,9 @@ const historyAction = {
             }
           },
           action: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                resource: {
-                  type: "object",
-                  properties: {
-                    reference: {
-                      type: "string"
-                    }
-                  },
-                  required: ["reference"]
-                }
-              },
-              required: ["resource"]
-            }
-          }
+            type: "array"
+          },
+          items: referenceAction
         },
         required: [
           "id",
@@ -148,9 +147,10 @@ const historyAction = {
         ]
       }
     }
-  }
-
+  },
+  required: ["id", "title", "action"]
 } as const satisfies JSONSchema
+export type HistoryAction = FromSchema<typeof historyAction>
 
 export const requestGroup = {
   type: "object",

@@ -1,3 +1,5 @@
+/*
+
 import {FromSchema, JSONSchema} from "json-schema-to-ts"
 import {patientSchema} from "./patientSchema"
 import {medicationRequestSchema} from "./medicationRequestSchema"
@@ -332,3 +334,4 @@ export const requestGroupSchema = {
 // export type PrescriptionStatusExtensionType = FromSchema<typeof prescriptionStatusExtensionSchema>
 export type MedicationRepeatInformationExtensionType = FromSchema<typeof medicationRepeatInformationExtensionSchema>
 export type requestGroupType = FromSchema<typeof requestGroupSchema>
+*/

@@ -5,7 +5,8 @@ import {
   medicationCodeableConcept,
   dosageInstruction,
   quantity,
-  daysSupply
+  daysSupply,
+  identifier
 } from "./elements"
 import {taskBusinessStatusExtension} from "./extensions"
 
@@ -29,6 +30,7 @@ export const medicationDispense = {
       enum: ["MedicationDispense"]
     },
     id,
+    identifier,
     subject,
     status,
     performer: {
@@ -64,7 +66,7 @@ export const medicationDispense = {
     medicationCodeableConcept,
     quantity,
     dosageInstruction,
-    daysSupply, // TODO: seemed to be missing added here
+    daysSupply, /* TODO: seemed to be missing added here */
     extension: {
       type: "array",
       items: taskBusinessStatusExtension
@@ -73,6 +75,7 @@ export const medicationDispense = {
   required: [
     "resourceType",
     "id",
+    "identifier",
     "subject",
     "status",
     "performer",
