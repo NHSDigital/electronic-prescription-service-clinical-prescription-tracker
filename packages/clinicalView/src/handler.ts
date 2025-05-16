@@ -1,121 +1,131 @@
-import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
-import {LogLevel} from "@aws-lambda-powertools/logger/types"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {injectLambdaContext} from "@aws-lambda-powertools/logger/middleware"
-import inputOutputLogger from "@middy/input-output-logger"
-
-import {createSpineClient} from "@NHSDigital/eps-spine-client"
-import {APIGatewayEvent, APIGatewayProxyEventHeaders, APIGatewayProxyEventQueryStringParameters} from "aws-lambda"
+import {LogLevel} from "@aws-lambda-powertools/logger/types"
+import {ServiceError} from "@cpt-common/common-types/service"
+import {generateFhirErrorResponse} from "@cpt-common/common-utils"
 import middy from "@middy/core"
-import {ClinicalViewParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
-import {DOMParser} from "@xmldom/xmldom"
-import {AxiosResponse} from "axios"
+import inputOutputLogger from "@middy/input-output-logger"
 import errorHandler from "@nhs/fhir-middy-error-handler"
+import {createSpineClient} from "@NHSDigital/eps-spine-client"
+import {ClinicalViewParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
+import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
+import {APIGatewayEvent, APIGatewayProxyResult} from "aws-lambda"
+import {OperationOutcome} from "fhir/r4"
+import {generateFhirResponse} from "./generateFhirResponse"
+import {ParsedSpineResponse, parseSpineResponse, Prescription} from "./parseSpineResponse"
+import {requestGroup, RequestGroupType} from "./schema/requestGroup"
+import {validateRequest} from "./validateRequest"
 
+// Config
 const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
 export const logger = new Logger({serviceName: "clinicalView", logLevel: LOG_LEVEL})
-const defaultSpineClient = createSpineClient(logger)
+const spineClient: SpineClient = createSpineClient(logger)
 
-type HandlerParams = {
-  logger: Logger,
+const commonHeaders = {
+  "Content-Type": "application/fhir+json",
+  "Cache-Control": "no-cache"
+} as const
+
+export interface HandlerParams {
+  logger: Logger
   spineClient: SpineClient
 }
 
-type HandlerResponse = {
-  data: {
-    prescriptionId: string,
-    prescriptionStatus?: string,
-    error?: string
-  },
-  status: number
-}
+export const apiGatewayHandler = async (
+  params: HandlerParams, event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
+  logger.appendKeys({
+    "nhsd-correlation-id": event.headers?.["nhsd-correlation-id"],
+    "nhsd-request-id": event.headers?.["nhsd-request-id"],
+    "x-correlation-id": event.headers?.["x-correlation-id"],
+    "apigw-request-id": event.requestContext.requestId /* TODO: Change to event.headers?.["apigw-request-id"] when State machine */
+  })
 
-export const apiGatewayHandler = async (params: HandlerParams, event: APIGatewayEvent): Promise<HandlerResponse> => {
-  const inboundHeaders = event.headers
-  const queryStringParameters = event.queryStringParameters ?? {}
-  const prescriptionId = event.queryStringParameters?.prescriptionId ?? ""
+  const [searchParameters, validationErrors]:
+    [ClinicalViewParams, Array<ServiceError>] = validateRequest(event, logger)
 
-  const clinicalViewParams = buildClinicalViewParams(inboundHeaders, queryStringParameters)
-
-  let spineResponse
-  spineResponse = await params.spineClient.clinicalView(inboundHeaders, clinicalViewParams)
-
-  return handleSpineResponse(spineResponse, prescriptionId)
-}
-
-const buildClinicalViewParams = (
-  inboundHeaders: APIGatewayProxyEventHeaders,
-  queryStringParameters: APIGatewayProxyEventQueryStringParameters
-): ClinicalViewParams => {
-  const requestId = inboundHeaders["apigw-request-id"] ?? ""
-  const organizationId = inboundHeaders["nhsd-organization-uuid"] ?? ""
-  const sdsRoleProfileId = inboundHeaders["nhsd-session-urid"] ?? ""
-  const sdsId = inboundHeaders["nhsd-identity-uuid"] ?? ""
-  const jobRoleCode = inboundHeaders["nhsd-session-jobrole"] ?? ""
-
-  const repeatNumber = queryStringParameters?.repeatNumber
-  const prescriptionId = queryStringParameters?.prescriptionId ?? ""
-
-  return {
-    requestId,
-    prescriptionId,
-    organizationId,
-    repeatNumber,
-    sdsRoleProfileId,
-    sdsId,
-    jobRoleCode
-  }
-}
-
-const handleSpineResponse = (spineResponse: AxiosResponse<string, unknown>, prescriptionId: string) => {
-  const soap_response = (new DOMParser()).parseFromString(spineResponse.data, "text/xml")
-  const acknowledgement = soap_response.getElementsByTagName("acknowledgement").item(0)
-  const acknowledgementTypeCode = acknowledgement?.getAttribute("typeCode")
-
-  if (acknowledgementTypeCode !== "AA") {
-    return prescriptionNotFoundResponse(prescriptionId)
+  const responseHeaders = {
+    ...commonHeaders,
+    "x-request-id": searchParameters.requestId,
+    "x-correlation-id": event.headers?.["x-correlation-id"] ?? ""
   }
 
-  const prescriptionStatus = soap_response.getElementsByTagName("prescriptionStatus")?.item(0)?.textContent
+  if (validationErrors.length > 0) {
+    logger.error("Error validating request.")
+    logger.info("Generating FHIR error response...")
+    const errorResponseBundle: OperationOutcome = generateFhirErrorResponse(validationErrors, logger)
 
-  if (!prescriptionStatus) {
-    return prescriptionNotFoundResponse(prescriptionId)
+    logger.info("Returning FHIR error response.")
+    return {
+      statusCode: 400,
+      body: JSON.stringify(errorResponseBundle),
+      headers: responseHeaders
+    }
   }
 
-  const response = {
-    prescriptionId,
-    prescriptionStatus
-  }
+  try {
+    logger.info("Calling Spine clinical view interaction...")
+    const spineResponse = await params.spineClient.clinicalView(event.headers, searchParameters)
+    logger.debug("Spine response received.", {response: spineResponse})
 
-  return {
-    data: response,
-    status: spineResponse.status
-  }
-}
+    logger.info("Parsing Spine response...")
+    const {prescription, spineError}: ParsedSpineResponse = parseSpineResponse(spineResponse.data, logger)
 
-const prescriptionNotFoundResponse = (prescriptionId: string) => {
-  return {
-    data: {
-      prescriptionId,
-      error: "Not Found"
-    },
-    status: 404
+    if (spineError) {
+      logger.error("Spine response contained an error.", {error: spineError.description})
+      logger.info("Generating FHIR error response...")
+      const errorResponseBundle: OperationOutcome = generateFhirErrorResponse([spineError], logger)
+
+      logger.info("Returning FHIR error response.")
+      return {
+        statusCode: 500,
+        body: JSON.stringify(errorResponseBundle),
+        headers: responseHeaders
+      }
+    }
+
+    logger.info("Generating FHIR response...")
+    const responseRequestGroup: RequestGroupType = generateFhirResponse(prescription as Prescription, logger)
+
+    logger.info("Retuning FHIR response.")
+    return {
+      statusCode: 200,
+      body: JSON.stringify(responseRequestGroup),
+      headers: responseHeaders
+    }
+  } catch {
+    // catch all error
+    logger.error("An unknown error occurred whilst processing the request")
+    logger.info("Generating FHIR error response...")
+    const errorResponseBundle: OperationOutcome = generateFhirErrorResponse(
+      [{status: "500", severity: "fatal", description: "Unknown Error."}],
+      logger
+    )
+
+    logger.info("Returning FHIR error response.")
+    return {
+      statusCode: 500,
+      body: JSON.stringify(errorResponseBundle),
+      headers: responseHeaders
+    }
   }
 }
 
 export const newHandler = (params: HandlerParams) => {
   const newHandler = middy((event: APIGatewayEvent) => apiGatewayHandler(params, event))
     .use(injectLambdaContext(logger, {clearState: true}))
-    .use(
-      inputOutputLogger({
-        logger: (request) => {
-          logger.info(request)
-        }
-      })
-    )
-    .use(errorHandler({logger: logger}))
+    .use(inputOutputLogger({
+      logger: (request) => {
+        logger.info(request)
+      }
+    }))
+    .use(errorHandler({logger}))
   return newHandler
 }
 
-const DEFAULT_HANDLER_PARAMS: HandlerParams = {logger: logger, spineClient: defaultSpineClient}
+const DEFAULT_HANDLER_PARAMS: HandlerParams = {logger, spineClient}
 export const handler = newHandler(DEFAULT_HANDLER_PARAMS)
+
+export {
+  requestGroup as requestGroupSchema
+}
+/* TODO: use specific operationOutcome schema type once its been moved to common */

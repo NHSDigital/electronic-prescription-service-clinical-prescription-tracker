@@ -1,0 +1,506 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SOAP:Envelope
+	xmlns:crs="http://national.carerecords.nhs.uk/schema/crs/"
+	xmlns:SOAP="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing"
+	xmlns="urn:hl7-org:v3"
+	xmlns:hl7="urn:hl7-org:v3">
+	<SOAP:Header>
+		<wsa:MessageID>uuid:CB46970C-2105-11F0-860F-3520031DD101</wsa:MessageID>
+		<wsa:Action>urn:nhs:names:services:mmquery/PORX_IN000006UK98</wsa:Action>
+		<wsa:To/>
+		<wsa:From>
+			<wsa:Address>https://mmquery.national.ncrs.nhs.uk/syncservice</wsa:Address>
+		</wsa:From>
+		<communicationFunctionRcv typeCode="RCV">
+			<device classCode="DEV" determinerCode="INSTANCE">
+				<id root="1.2.826.0.1285.0.2.0.107" extension="200000002066"/>
+			</device>
+		</communicationFunctionRcv>
+		<communicationFunctionSnd typeCode="SND">
+			<device classCode="DEV" determinerCode="INSTANCE">
+				<id root="1.2.826.0.1285.0.2.0.107" extension="Not Known"/>
+			</device>
+		</communicationFunctionSnd>
+		<wsa:RelatesTo>uuid:5a562114-d5e4-4a02-90d9-b9d556f10a2b</wsa:RelatesTo>
+	</SOAP:Header>
+	<SOAP:Body>
+		<prescriptionClinicalViewResponse>
+			<PORX_IN000006UK98>
+				<id root="CB46970C-2105-11F0-860F-3520031DD101"/>
+				<creationTime value="20250424121521"/>
+				<versionCode code="V3NPfIT3.0"/>
+				<interactionId root="2.16.840.1.113883.2.1.3.2.4.12" extension="PORX_IN000006UK98"/>
+				<processingCode code="P"/>
+				<processingModeCode code="T"/>
+				<acceptAckCode code="NE"/>
+				<acknowledgement typeCode="AA">
+					<messageRef>
+						<id root="5a562114-d5e4-4a02-90d9-b9d556f10a2b"/>
+					</messageRef>
+				</acknowledgement>
+				<communicationFunctionRcv typeCode="RCV">
+					<device classCode="DEV" determinerCode="INSTANCE">
+						<id root="1.2.826.0.1285.0.2.0.107" extension="200000002066"/>
+					</device>
+				</communicationFunctionRcv>
+				<communicationFunctionSnd typeCode="SND">
+					<device classCode="DEV" determinerCode="INSTANCE">
+						<id root="1.2.826.0.1285.0.2.0.107" extension="Not Known"/>
+					</device>
+				</communicationFunctionSnd>
+				<ControlActEvent classCode="CACT" moodCode="EVN">
+					<author1 typeCode="AUT">
+						<AgentSystemSDS classCode="AGNT">
+							<agentSystemSDS classCode="DEV" determinerCode="INSTANCE">
+								<id root="1.2.826.0.1285.0.2.0.107" extension="Not Known"/>
+							</agentSystemSDS>
+						</AgentSystemSDS>
+					</author1>
+					<reason typeCode="RSON"/>
+					<subject typeCode="SUBJ">
+						<PrescriptionJsonQueryResponse
+							xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:hl7-org:v3 ..schemasPORX_MT000006UK02.xsd" classCode="ORGANIZER" moodCode="EVN">
+							<id root="F8966CE0-E034-11DA-863F-A7A405B41481"/>
+							<effectiveTime value="20050922101500"/>
+							<epsIndex>
+								<!-- These are the secondary index items for the record-->
+								<prescribingSite_status>['A83008_0002']</prescribingSite_status>
+								<nominatedPharmacy_status>['FA565_0002']</nominatedPharmacy_status>
+								<nextActivity_nextActivityDate>['expire_20251024']</nextActivity_nextActivityDate>
+								<dispenser_status>['VNFKT_0002']</dispenser_status>
+							</epsIndex>
+							<epsRecord>
+								<!-- These are the other fields stored on the JSON for the record-->
+								<!--Prescription Instance Specific Information-->
+								<releaseRequestMsgRef>20250424120958669107_C7D6F4_1614371148</releaseRequestMsgRef>
+								<prescriptionStatus>0002</prescriptionStatus>
+								<nominatedDownloadDate/>
+								<downloadDate>20250424120958</downloadDate>
+								<completionDate>False</completionDate>
+								<expiryDate>20251024</expiryDate>
+								<dispenseWindow>
+									<low value="20250424"/>
+									<high value="20260424"/>
+								</dispenseWindow>
+								<instanceNumber>1</instanceNumber>
+								<lineItem>
+									<order value="1"/>
+									<ID value="0206F8EF-0194-49C3-807A-ABE5DF42ADC3"/>
+									<previousStatus value="0007"/>
+									<status value="0008"/>
+								</lineItem>
+								<lineItem>
+									<order value="2"/>
+									<ID value="EE3636D5-E411-4656-A47E-053F0464E7AC"/>
+									<previousStatus value="0007"/>
+									<status value="0008"/>
+								</lineItem>
+								<lineItem>
+									<order value="3"/>
+									<ID value="3E3D4CCA-DFE1-4D8E-9BC8-6A1F0FA95C86"/>
+									<previousStatus value="0007"/>
+									<status value="0008"/>
+								</lineItem>
+								<lineItem>
+									<order value="4"/>
+									<ID value="44E252BD-2AB3-4AB1-A5A3-879DEA9B25C3"/>
+									<previousStatus value="0007"/>
+									<status value="0008"/>
+								</lineItem>
+								<!--Prescription History-->
+								<history>
+									<SCN>2</SCN>
+									<instance>1</instance>
+									<interactionID>PORX_IN020101SM31</interactionID>
+									<status>0001</status>
+									<instanceStatus>0001</instanceStatus>
+									<agentPerson>555086689106</agentPerson>
+									<agentSystem>200000001215</agentSystem>
+									<agentPersonOrgCode>A83008</agentPersonOrgCode>
+									<message>"Prescription upload successful"</message>
+									<messageID>"1E042BB0-164D-48C2-B4F4-CB94771838A0"</messageID>
+									<timestamp>"20250424120953"</timestamp>
+									<toASID>"200000001215"</toASID>
+									<fromASID>"567456789789"</fromASID>
+								</history>
+								<history>
+									<SCN>3</SCN>
+									<instance>1</instance>
+									<interactionID>PORX_IN132004SM30</interactionID>
+									<status>0002</status>
+									<instanceStatus>0002</instanceStatus>
+									<agentPerson>555086689106</agentPerson>
+									<agentSystem>200000001215</agentSystem>
+									<agentPersonOrgCode>VNFKT</agentPersonOrgCode>
+									<message>"Release Request successful"</message>
+									<messageID>"3339B7A4-4D62-48B3-A58B-9360D565CE68"</messageID>
+									<timestamp>"20250424120958"</timestamp>
+									<toASID>"200000001215"</toASID>
+									<fromASID>"567456789789"</fromASID>
+								</history>
+								<history>
+									<SCN>4</SCN>
+									<instance>1</instance>
+									<interactionID>PORX_IN050102SM32</interactionID>
+									<status>0002</status>
+									<instanceStatus>0002</instanceStatus>
+									<agentPerson>555086689106</agentPerson>
+									<agentSystem>200000001215</agentSystem>
+									<agentPersonOrgCode>A83008</agentPersonOrgCode>
+									<message>"Prescription/item was not cancelled. With dispenser. Marked for cancellation"</message>
+									<messageID>"074269EB-C2AC-4571-B6A8-401B90A6F40A"</messageID>
+									<timestamp>"20250424121113"</timestamp>
+									<toASID>"200000001215"</toASID>
+									<fromASID>"567456789789"</fromASID>
+								</history>
+								<history>
+									<SCN>5</SCN>
+									<instance>1</instance>
+									<interactionID>PORX_IN050102SM32</interactionID>
+									<status>0002</status>
+									<instanceStatus>0002</instanceStatus>
+									<agentPerson>555086689106</agentPerson>
+									<agentSystem>200000001215</agentSystem>
+									<agentPersonOrgCode>A83008</agentPersonOrgCode>
+									<message>"Prescription/item was not cancelled. With dispenser. Marked for cancellation"</message>
+									<messageID>"7C6E7789-ED69-4580-A5AC-4F310CF652DA"</messageID>
+									<timestamp>"20250424121437"</timestamp>
+									<toASID>"200000001215"</toASID>
+									<fromASID>"567456789789"</fromASID>
+								</history>
+								<history>
+									<SCN>6</SCN>
+									<instance>1</instance>
+									<interactionID>PORX_IN050102SM32</interactionID>
+									<status>0002</status>
+									<instanceStatus>0002</instanceStatus>
+									<agentPerson>555086689106</agentPerson>
+									<agentSystem>200000001215</agentSystem>
+									<agentPersonOrgCode>A83008</agentPersonOrgCode>
+									<message>"Prescription/item was not cancelled. With dispenser. Marked for cancellation"</message>
+									<messageID>"F501683B-79A4-4032-A460-48B3BAB21C4C"</messageID>
+									<timestamp>"20250424121446"</timestamp>
+									<toASID>"200000001215"</toASID>
+									<fromASID>"567456789789"</fromASID>
+								</history>
+								<history>
+									<SCN>7</SCN>
+									<instance>1</instance>
+									<interactionID>PORX_IN050102SM32</interactionID>
+									<status>0002</status>
+									<instanceStatus>0002</instanceStatus>
+									<agentPerson>555086689106</agentPerson>
+									<agentSystem>200000001215</agentSystem>
+									<agentPersonOrgCode>A83008</agentPersonOrgCode>
+									<message>"Prescription/item was not cancelled. With dispenser. Marked for cancellation"</message>
+									<messageID>"B94DF589-CE8C-4740-8657-CB62428388A2"</messageID>
+									<timestamp>"20250424121457"</timestamp>
+									<toASID>"200000001215"</toASID>
+									<fromASID>"567456789789"</fromASID>
+								</history>
+								<filteredHistory>
+									<SCN>2</SCN>
+									<timestamp>20250424120953</timestamp>
+									<fromStatus>False</fromStatus>
+									<toStatus>0001</toStatus>
+									<agentPerson>555086689106</agentPerson>
+									<agentRoleProfileCodeId>200102238987</agentRoleProfileCodeId>
+									<message>Prescription upload successful</message>
+									<orgASID>200000001215</orgASID>
+									<agentPersonOrgCode>A83008</agentPersonOrgCode>
+									<lineStatusChangeDict>
+										<line>
+											<order>1</order>
+											<id>0206F8EF-0194-49C3-807A-ABE5DF42ADC3</id>
+											<fromStatus>None</fromStatus>
+											<toStatus>0007</toStatus>
+										</line>
+										<line>
+											<order>2</order>
+											<id>EE3636D5-E411-4656-A47E-053F0464E7AC</id>
+											<status/>
+											<fromStatus>None</fromStatus>
+											<toStatus>0007</toStatus>
+										</line>
+										<line>
+											<order>3</order>
+											<id>3E3D4CCA-DFE1-4D8E-9BC8-6A1F0FA95C86</id>
+											<fromStatus>None</fromStatus>
+											<toStatus>0007</toStatus>
+										</line>
+										<line>
+											<order>4</order>
+											<id>44E252BD-2AB3-4AB1-A5A3-879DEA9B25C3</id>
+											<fromStatus>None</fromStatus>
+											<toStatus>0007</toStatus>
+										</line>
+									</lineStatusChangeDict>
+								</filteredHistory>
+								<filteredHistory>
+									<SCN>3</SCN>
+									<timestamp>20250424120958</timestamp>
+									<fromStatus>0001</fromStatus>
+									<toStatus>0002</toStatus>
+									<agentPerson>555086689106</agentPerson>
+									<agentRoleProfileCodeId>555086415105</agentRoleProfileCodeId>
+									<message>Release Request successful</message>
+									<orgASID>200000001215</orgASID>
+									<agentPersonOrgCode>VNFKT</agentPersonOrgCode>
+									<lineStatusChangeDict>
+										<line>
+											<order>1</order>
+											<id>0206F8EF-0194-49C3-807A-ABE5DF42ADC3</id>
+											<fromStatus>0007</fromStatus>
+											<toStatus>0008</toStatus>
+										</line>
+										<line>
+											<order>2</order>
+											<id>EE3636D5-E411-4656-A47E-053F0464E7AC</id>
+											<status/>
+											<fromStatus>0007</fromStatus>
+											<toStatus>0008</toStatus>
+										</line>
+										<line>
+											<order>3</order>
+											<id>3E3D4CCA-DFE1-4D8E-9BC8-6A1F0FA95C86</id>
+											<fromStatus>0007</fromStatus>
+											<toStatus>0008</toStatus>
+										</line>
+										<line>
+											<order>4</order>
+											<id>44E252BD-2AB3-4AB1-A5A3-879DEA9B25C3</id>
+											<fromStatus>0007</fromStatus>
+											<toStatus>0008</toStatus>
+										</line>
+									</lineStatusChangeDict>
+								</filteredHistory>
+								<filteredHistory>
+									<SCN>4</SCN>
+									<timestamp>20250424121113</timestamp>
+									<fromStatus>0002</fromStatus>
+									<toStatus>0002</toStatus>
+									<agentPerson>555086689106</agentPerson>
+									<agentRoleProfileCodeId>200102238987</agentRoleProfileCodeId>
+									<message>Prescription/item was not cancelled. With dispenser. Marked for cancellation</message>
+									<orgASID>200000001215</orgASID>
+									<agentPersonOrgCode>A83008</agentPersonOrgCode>
+									<lineStatusChangeDict>
+										<line>
+											<order>1</order>
+											<id>0206F8EF-0194-49C3-807A-ABE5DF42ADC3</id>
+											<fromStatus>0008</fromStatus>
+											<toStatus>0008</toStatus>
+											<cancellationReason>Pending: Prescribing Error</cancellationReason>
+										</line>
+										<line>
+											<order>2</order>
+											<id>EE3636D5-E411-4656-A47E-053F0464E7AC</id>
+											<status/>
+											<fromStatus>0008</fromStatus>
+											<toStatus>0008</toStatus>
+										</line>
+										<line>
+											<order>3</order>
+											<id>3E3D4CCA-DFE1-4D8E-9BC8-6A1F0FA95C86</id>
+											<fromStatus>0008</fromStatus>
+											<toStatus>0008</toStatus>
+										</line>
+										<line>
+											<order>4</order>
+											<id>44E252BD-2AB3-4AB1-A5A3-879DEA9B25C3</id>
+											<fromStatus>0008</fromStatus>
+											<toStatus>0008</toStatus>
+										</line>
+									</lineStatusChangeDict>
+								</filteredHistory>
+								<filteredHistory>
+									<SCN>5</SCN>
+									<timestamp>20250424121437</timestamp>
+									<fromStatus>0002</fromStatus>
+									<toStatus>0002</toStatus>
+									<agentPerson>555086689106</agentPerson>
+									<agentRoleProfileCodeId>200102238987</agentRoleProfileCodeId>
+									<message>Prescription/item was not cancelled. With dispenser. Marked for cancellation</message>
+									<orgASID>200000001215</orgASID>
+									<agentPersonOrgCode>A83008</agentPersonOrgCode>
+									<lineStatusChangeDict>
+										<line>
+											<order>1</order>
+											<id>0206F8EF-0194-49C3-807A-ABE5DF42ADC3</id>
+											<fromStatus>0008</fromStatus>
+											<toStatus>0008</toStatus>
+											<cancellationReason>Pending: Prescribing Error</cancellationReason>
+										</line>
+										<line>
+											<order>2</order>
+											<id>EE3636D5-E411-4656-A47E-053F0464E7AC</id>
+											<status/>
+											<fromStatus>0008</fromStatus>
+											<toStatus>0008</toStatus>
+											<cancellationReason>Pending: Prescribing Error</cancellationReason>
+										</line>
+										<line>
+											<order>3</order>
+											<id>3E3D4CCA-DFE1-4D8E-9BC8-6A1F0FA95C86</id>
+											<fromStatus>0008</fromStatus>
+											<toStatus>0008</toStatus>
+										</line>
+										<line>
+											<order>4</order>
+											<id>44E252BD-2AB3-4AB1-A5A3-879DEA9B25C3</id>
+											<fromStatus>0008</fromStatus>
+											<toStatus>0008</toStatus>
+										</line>
+									</lineStatusChangeDict>
+								</filteredHistory>
+								<filteredHistory>
+									<SCN>6</SCN>
+									<timestamp>20250424121446</timestamp>
+									<fromStatus>0002</fromStatus>
+									<toStatus>0002</toStatus>
+									<agentPerson>555086689106</agentPerson>
+									<agentRoleProfileCodeId>200102238987</agentRoleProfileCodeId>
+									<message>Prescription/item was not cancelled. With dispenser. Marked for cancellation</message>
+									<orgASID>200000001215</orgASID>
+									<agentPersonOrgCode>A83008</agentPersonOrgCode>
+									<lineStatusChangeDict>
+										<line>
+											<order>1</order>
+											<id>0206F8EF-0194-49C3-807A-ABE5DF42ADC3</id>
+											<fromStatus>0008</fromStatus>
+											<toStatus>0008</toStatus>
+											<cancellationReason>Pending: Prescribing Error</cancellationReason>
+										</line>
+										<line>
+											<order>2</order>
+											<id>EE3636D5-E411-4656-A47E-053F0464E7AC</id>
+											<status/>
+											<fromStatus>0008</fromStatus>
+											<toStatus>0008</toStatus>
+											<cancellationReason>Pending: Prescribing Error</cancellationReason>
+										</line>
+										<line>
+											<order>3</order>
+											<id>3E3D4CCA-DFE1-4D8E-9BC8-6A1F0FA95C86</id>
+											<fromStatus>0008</fromStatus>
+											<toStatus>0008</toStatus>
+											<cancellationReason>Pending: Prescribing Error</cancellationReason>
+										</line>
+										<line>
+											<order>4</order>
+											<id>44E252BD-2AB3-4AB1-A5A3-879DEA9B25C3</id>
+											<fromStatus>0008</fromStatus>
+											<toStatus>0008</toStatus>
+										</line>
+									</lineStatusChangeDict>
+								</filteredHistory>
+								<filteredHistory>
+									<SCN>7</SCN>
+									<timestamp>20250424121457</timestamp>
+									<fromStatus>0002</fromStatus>
+									<toStatus>0002</toStatus>
+									<agentPerson>555086689106</agentPerson>
+									<agentRoleProfileCodeId>200102238987</agentRoleProfileCodeId>
+									<message>Prescription/item was not cancelled. With dispenser. Marked for cancellation</message>
+									<orgASID>200000001215</orgASID>
+									<agentPersonOrgCode>A83008</agentPersonOrgCode>
+									<lineStatusChangeDict>
+										<line>
+											<order>1</order>
+											<id>0206F8EF-0194-49C3-807A-ABE5DF42ADC3</id>
+											<fromStatus>0008</fromStatus>
+											<toStatus>0008</toStatus>
+											<cancellationReason>Pending: Prescribing Error</cancellationReason>
+										</line>
+										<line>
+											<order>2</order>
+											<id>EE3636D5-E411-4656-A47E-053F0464E7AC</id>
+											<status/>
+											<fromStatus>0008</fromStatus>
+											<toStatus>0008</toStatus>
+											<cancellationReason>Pending: Prescribing Error</cancellationReason>
+										</line>
+										<line>
+											<order>3</order>
+											<id>3E3D4CCA-DFE1-4D8E-9BC8-6A1F0FA95C86</id>
+											<fromStatus>0008</fromStatus>
+											<toStatus>0008</toStatus>
+											<cancellationReason>Pending: Prescribing Error</cancellationReason>
+										</line>
+										<line>
+											<order>4</order>
+											<id>44E252BD-2AB3-4AB1-A5A3-879DEA9B25C3</id>
+											<fromStatus>0008</fromStatus>
+											<toStatus>0008</toStatus>
+											<cancellationReason>Pending: Prescribing Error</cancellationReason>
+										</line>
+									</lineStatusChangeDict>
+								</filteredHistory>
+								<!--Dispense Specific Information-->
+								<dispensingOrganization>VNFKT</dispensingOrganization>
+								<lastDispenseDate>False</lastDispenseDate>
+								<lastDispenseNotificationMsgRef/>
+								<lastDispenseNotificationGuid/>
+								<!--Claim Specific Information-->
+								<claimReceivedDate>False</claimReceivedDate>
+								<!--Prescription Specific Information-->
+								<currentInstance>1</currentInstance>
+								<signedTime>20250424120952</signedTime>
+								<prescriptionTreatmentType>0001</prescriptionTreatmentType>
+								<prescriptionType>0101</prescriptionType>
+								<prescriptionTime>20250424000000</prescriptionTime>
+								<prescriptionID>65C4B1-A83008-AA9C1I</prescriptionID>
+								<prescriptionMsgRef>20250424120953265417_552EBD_1614371148</prescriptionMsgRef>
+								<prescribingOrganization>A83008</prescribingOrganization>
+								<daysSupply>28</daysSupply>
+								<maxRepeats/>
+								<eventID>1E042BB0-164D-48C2-B4F4-CB94771838A0</eventID>
+								<!--Patient Specific Information-->
+								<lowerAgeLimit>19640429</lowerAgeLimit>
+								<higherAgeLimit>20080430</higherAgeLimit>
+								<patientNhsNumber>5839945242</patientNhsNumber>
+								<patientBirthTime>19480430</patientBirthTime>
+								<!--Nomination Specific Information-->
+								<nominatedPerformer>FA565</nominatedPerformer>
+								<nominatedPerformerType>P1</nominatedPerformerType>
+								<!--Parent Prescription Information-->
+								<parentPrescription>
+									<birthTime>19480430</birthTime>
+									<administrativeGenderCode>2</administrativeGenderCode>
+									<prefix>MS</prefix>
+									<given>STACEY</given>
+									<family>TWITCHETT</family>
+									<suffix/>
+									<addrLine1>10 HEATHFIELD</addrLine1>
+									<addrLine2>COBHAM</addrLine2>
+									<addrLine3>SURREY</addrLine3>
+									<postalCode>KT11 2QY</postalCode>
+									<productLineItem1>Amoxicillin 250mg capsules</productLineItem1>
+									<quantityLineItem1>20</quantityLineItem1>
+									<narrativeLineItem1>tablet</narrativeLineItem1>
+									<dosageLineItem1>2 times a day for 10 days</dosageLineItem1>
+									<productLineItem2>Co-codamol 30mg/500mg tablets</productLineItem2>
+									<quantityLineItem2>20</quantityLineItem2>
+									<narrativeLineItem2>tablet</narrativeLineItem2>
+									<dosageLineItem2>2 times a day for 10 days</dosageLineItem2>
+									<productLineItem3>Pseudoephedrine hydrochloride 60mg tablets</productLineItem3>
+									<quantityLineItem3>30</quantityLineItem3>
+									<narrativeLineItem3>tablet</narrativeLineItem3>
+									<dosageLineItem3>3 times a day for 10 days</dosageLineItem3>
+									<productLineItem4>Azithromycin 250mg capsules</productLineItem4>
+									<quantityLineItem4>30</quantityLineItem4>
+									<narrativeLineItem4>tablet</narrativeLineItem4>
+									<dosageLineItem4>3 times a day for 10 days</dosageLineItem4>
+								</parentPrescription>
+							</epsRecord>
+						</PrescriptionJsonQueryResponse>
+					</subject>
+					<queryAck type="QueryAck">
+						<queryResponseCode code="OK"/>
+					</queryAck>
+				</ControlActEvent>
+			</PORX_IN000006UK98>
+		</prescriptionClinicalViewResponse>
+	</SOAP:Body>
+</SOAP:Envelope>
