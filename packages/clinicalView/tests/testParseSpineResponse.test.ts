@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable max-len */
 import {Logger} from "@aws-lambda-powertools/logger"
-import {parseSpineResponse, ParsedSpineResponse} from "../src/parseSpineResponse"
+import {Prescription, parseSpineResponse, ParsedSpineResponse} from "../src/parseSpineResponse"
 import {
   acuteCancelled,
   acuteCreated,
@@ -26,7 +26,6 @@ import {
   unknownError
 } from "./examples/examples"
 
-import {Prescription} from "@cpt-common/common-types/prescription"
 import {ServiceError} from "@cpt-common/common-types/service"
 
 const logger: Logger = new Logger({serviceName: "clinicalView", logLevel: "DEBUG"})
@@ -40,7 +39,7 @@ describe("Test parseSpineResponse", () => {
       given: "STACEY",
       suffix: "OBE",
       family: "TWITCHETT",
-      birthDate: "19480430",
+      birthDate: "1948-04-30",
       gender: 2,
       address: {
         line: [
@@ -147,7 +146,7 @@ describe("Test parseSpineResponse", () => {
       prefix: "MS",
       given: "STACEY",
       family: "TWITCHETT",
-      birthDate: "19480430",
+      birthDate: "1948-04-30",
       gender: 2,
       address: {
         line: [
@@ -211,7 +210,7 @@ describe("Test parseSpineResponse", () => {
       prefix: "MS",
       given: "STACEY",
       family: "TWITCHETT",
-      birthDate: "19480430",
+      birthDate: "1948-04-30",
       gender: 2,
       address: {
         line: [
@@ -347,7 +346,7 @@ describe("Test parseSpineResponse", () => {
       prefix: "MS",
       given: "STACEY",
       family: "TWITCHETT",
-      birthDate: "19480430",
+      birthDate: "1948-04-30",
       gender: 2,
       address: {
         line: [
@@ -555,7 +554,7 @@ describe("Test parseSpineResponse", () => {
       prefix: "MS",
       given: "STACEY",
       family: "TWITCHETT",
-      birthDate: "19480430",
+      birthDate: "1948-04-30",
       gender: 2,
       address: {
         line: [
@@ -669,7 +668,7 @@ describe("Test parseSpineResponse", () => {
       prefix: "MS",
       given: "STACEY",
       family: "TWITCHETT",
-      birthDate: "19480430",
+      birthDate: "1948-04-30",
       gender: 2,
       address: {
         line: [
@@ -902,7 +901,7 @@ describe("Test parseSpineResponse", () => {
       prefix: "MS",
       given: "STACEY",
       family: "TWITCHETT",
-      birthDate: "19480430",
+      birthDate: "1948-04-30",
       gender: 2,
       address: {
         line: [
@@ -1039,7 +1038,7 @@ describe("Test parseSpineResponse", () => {
       prefix: "MS",
       given: "STACEY",
       family: "TWITCHETT",
-      birthDate: "19480430",
+      birthDate: "1948-04-30",
       gender: 2,
       address: {
         line: [
@@ -1227,7 +1226,7 @@ describe("Test parseSpineResponse", () => {
       prefix: "MS",
       given: "STACEY",
       family: "TWITCHETT",
-      birthDate: "19480430",
+      birthDate: "1948-04-30",
       gender: 2,
       address: {
         line: [
@@ -1431,7 +1430,7 @@ describe("Test parseSpineResponse", () => {
       prefix: "MS",
       given: "STACEY",
       family: "TWITCHETT",
-      birthDate: "19480430",
+      birthDate: "1948-04-30",
       gender: 2,
       address: {
         line: [
@@ -1678,7 +1677,7 @@ describe("Test parseSpineResponse", () => {
       prefix: "MS",
       given: "STACEY",
       family: "TWITCHETT",
-      birthDate: "19480430",
+      birthDate: "1948-04-30",
       gender: 2,
       address: {
         line: [
@@ -1933,7 +1932,7 @@ describe("Test parseSpineResponse", () => {
       prefix: "MS",
       given: "STACEY",
       family: "TWITCHETT",
-      birthDate: "19480430",
+      birthDate: "1948-04-30",
       gender: 2,
       address: {
         line: [
@@ -2095,7 +2094,7 @@ describe("Test parseSpineResponse", () => {
       prefix: "MS",
       given: "STACEY",
       family: "TWITCHETT",
-      birthDate: "19480430",
+      birthDate: "1948-04-30",
       gender: 2,
       address: {
         line: [
@@ -2329,7 +2328,7 @@ describe("Test parseSpineResponse", () => {
       prefix: "MS",
       given: "STACEY",
       family: "TWITCHETT",
-      birthDate: "19480430",
+      birthDate: "1948-04-30",
       gender: 2,
       address: {
         line: [
@@ -2582,7 +2581,7 @@ describe("Test parseSpineResponse", () => {
     const expected: Prescription = {
       prescriptionId: "EA1CBC-A83008-F1F8A8",
       nhsNumber: "5839945242",
-      birthDate: "19480430",
+      birthDate: "1948-04-30",
       address: {
         line: []
       },
@@ -2691,7 +2690,7 @@ describe("Test parseSpineResponse", () => {
       given: "STACEY",
       suffix: "OBE",
       family: "TWITCHETT",
-      birthDate: "19480430",
+      birthDate: "1948-04-30",
       gender: 2,
       address: {
         line: [
@@ -2797,7 +2796,7 @@ describe("Test parseSpineResponse", () => {
       prefix: "MS",
       given: "STACEY",
       family: "TWITCHETT",
-      birthDate: "19480430",
+      birthDate: "1948-04-30",
       gender: 2,
       address: {
         line: [
@@ -2997,7 +2996,7 @@ describe("Test parseSpineResponse", () => {
       prefix: "MISS",
       given: "ETTA",
       family: "CORY",
-      birthDate: "19990104",
+      birthDate: "1999-01-04",
       gender: 2,
       address: {
         line: [

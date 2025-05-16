@@ -3,8 +3,10 @@ import {Logger} from "@aws-lambda-powertools/logger"
 import {logger} from "./handler"
 import {PrescriptionStatusExtensionType} from "./schema/response"
 
+/* TODO: use common version */
 type PrescriptionStatusCode = PrescriptionStatusExtensionType["extension"][0]["valueCoding"]["code"]
 
+/* TODO: Use common version */
 interface SpineXmlErrorResponse {
   "SOAP:Envelope": {
     "SOAP:Body": {
@@ -48,6 +50,7 @@ export interface SpineJsonResponse {
   }
 }
 
+/* TODO: use common version*/
 export interface PatientDetails {
   nhsNumber: string
   prefix: string
@@ -56,6 +59,7 @@ export interface PatientDetails {
   family: string
 }
 
+/* TODO: use common version */
 export interface PrescriptionDetails {
   prescriptionId: string
   issueDate: string
@@ -63,6 +67,7 @@ export interface PrescriptionDetails {
   maxRepeats: number | undefined
 }
 
+/* TODO: use common version */
 export interface IssueDetails {
   issueNumber: number
   status: PrescriptionStatusCode
@@ -73,6 +78,7 @@ export interface IssueDetails {
 
 export type Prescription = PatientDetails & PrescriptionDetails & IssueDetails
 
+/* TODO: use common service error type*/
 export interface SearchError {
   status: string
   severity: "error" | "fatal"

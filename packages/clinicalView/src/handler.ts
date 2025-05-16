@@ -1,23 +1,20 @@
-/* TODO: organize? */
-import {LogLevel} from "@aws-lambda-powertools/logger/types"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {injectLambdaContext} from "@aws-lambda-powertools/logger/middleware"
-import {APIGatewayEvent, APIGatewayProxyResult} from "aws-lambda"
+import {LogLevel} from "@aws-lambda-powertools/logger/types"
+import {ServiceError} from "@cpt-common/common-types/service"
+import {generateFhirErrorResponse} from "@cpt-common/common-utils"
 import middy from "@middy/core"
 import inputOutputLogger from "@middy/input-output-logger"
 import errorHandler from "@nhs/fhir-middy-error-handler"
 import {createSpineClient} from "@NHSDigital/eps-spine-client"
-import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
 import {ClinicalViewParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
+import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
+import {APIGatewayEvent, APIGatewayProxyResult} from "aws-lambda"
 import {OperationOutcome} from "fhir/r4"
-import {generateFhirErrorResponse} from "@cpt-common/common-utils"
-import {validateRequest} from "./validateRequest"
-
-import {ServiceError} from "@cpt-common/common-types/service"
-import {ParsedSpineResponse, parseSpineResponse} from "./parseSpineResponse"
 import {generateFhirResponse} from "./generateFhirResponse"
-import {Prescription} from "@cpt-common/common-types/prescription"
+import {ParsedSpineResponse, parseSpineResponse, Prescription} from "./parseSpineResponse"
 import {requestGroup, RequestGroupType} from "./schema/requestGroup"
+import {validateRequest} from "./validateRequest"
 
 // Config
 const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
@@ -27,9 +24,8 @@ const spineClient: SpineClient = createSpineClient(logger)
 const commonHeaders = {
   "Content-Type": "application/fhir+json",
   "Cache-Control": "no-cache"
-}
+} as const
 
-// Types
 export interface HandlerParams {
   logger: Logger
   spineClient: SpineClient
@@ -91,7 +87,7 @@ export const apiGatewayHandler = async (
     const responseRequestGroup: RequestGroupType = generateFhirResponse(prescription as Prescription, logger)
 
     logger.info("Retuning FHIR response.")
-    return{
+    return {
       statusCode: 200,
       body: JSON.stringify(responseRequestGroup),
       headers: responseHeaders
@@ -132,4 +128,4 @@ export const handler = newHandler(DEFAULT_HANDLER_PARAMS)
 export {
   requestGroup as requestGroupSchema
 }
-/* TODO: move operation outcome schema to common and use types here*/
+/* TODO: use specific operationOutcome schema type once its been moved to common */

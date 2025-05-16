@@ -1,21 +1,7 @@
-import {
-  Prescription,
-  PatientDetails,
-  PrescriptionDetails,
-  LineItemDetailsSummary,
-  LineItemDetails,
-  DispenseNotificationDetails,
-  EventLineItem,
-  HistoryEventDetails
-} from "./prescription"
+import {IssueDetails, PatientDetailsSummary, PrescriptionDetailsSummary} from "./prescription"
 
 export {
-  Prescription,
-  PatientDetails,
-  PrescriptionDetails,
-  LineItemDetailsSummary,
-  LineItemDetails,
-  DispenseNotificationDetails,
-  EventLineItem,
-  HistoryEventDetails
+  IssueDetails,
+  PatientDetailsSummary,
+  PrescriptionDetailsSummary
 }

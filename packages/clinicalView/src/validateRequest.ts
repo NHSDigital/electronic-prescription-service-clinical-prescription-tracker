@@ -1,14 +1,12 @@
+import {Logger} from "@aws-lambda-powertools/logger"
+import {CommonHeaderParameters, ServiceError} from "@cpt-common/common-types/service"
 import {validateCommonHeaders} from "@cpt-common/common-utils"
-
-// Types
+import {ClinicalViewParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
 import {
   APIGatewayEvent,
   APIGatewayProxyEventPathParameters,
   APIGatewayProxyEventQueryStringParameters
 } from "aws-lambda"
-import {Logger} from "@aws-lambda-powertools/logger"
-import {ClinicalViewParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
-import {CommonHeaderParameters, ServiceError} from "@cpt-common/common-types/service"
 
 export interface PathParameters {
   prescriptionId?: string

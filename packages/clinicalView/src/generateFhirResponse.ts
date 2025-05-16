@@ -1,5 +1,11 @@
-import {randomUUID, UUID} from "crypto"
 import {Logger} from "@aws-lambda-powertools/logger"
+import {INTENT_MAP, PRESCRIPTION_STATUS_MAP, TreatmentType} from "@cpt-common/common-types/fhir"
+import {
+  MedicationRepeatInformationExtensionType,
+  PendingCancellationExtensionType,
+  PrescriptionStatusExtensionType
+} from "@cpt-common/common-types/schema"
+import {randomUUID, UUID} from "crypto"
 import {
   Address,
   Extension,
@@ -11,34 +17,30 @@ import {
   RequestGroup,
   RequestGroupAction
 } from "fhir/r4"
-import {Prescription} from "@cpt-common/common-types/prescription"
 import {
-  PrescriptionStatusExtensionType,
-  MedicationRepeatInformationExtensionType,
-  PendingCancellationExtensionType,
-  PrescriptionTypeExtensionType,
-  MedicationRequestType,
-  DispensingInformationExtensionType,
-  MedicationDispenseType,
-  PractitionerRoleType,
-  TaskBusinessStatusExtensionType,
-  PerformerSiteTypeExtensionType
-} from "@cpt-common/common-types/schema"
-import {
-  INTENT_MAP,
-  GENDER_MAP,
-  PRESCRIPTION_STATUS_MAP,
-  TreatmentType,
-  PRESCRIPTION_TYPE_MAP,
-  MEDICATION_REQUEST_STATUS_MAP,
-  LINE_ITEM_STATUS_REASON_MAP,
-  LINE_ITEM_STATUS_MAP,
   COURSE_OF_THERAPY_TYPE_MAP,
+  GENDER_MAP,
+  LINE_ITEM_STATUS_MAP,
+  LINE_ITEM_STATUS_REASON_MAP,
   MEDICATION_DISPENSE_STATUS_MAP,
-  PERFORMER_SITE_TYPE_MAP
-} from "@cpt-common/common-types/fhir"
-import {HistoryAction, ReferenceAction, RequestGroupType} from "./schema/requestGroup"
+  MEDICATION_REQUEST_STATUS_MAP,
+  PERFORMER_SITE_TYPE_MAP,
+  PRESCRIPTION_TYPE_MAP
+} from "./fhirMaps"
+import {Prescription} from "./parseSpineResponse"
+import {HistoryAction, ReferenceAction} from "./schema/actions"
+import {
+  DispensingInformationExtensionType,
+  PerformerSiteTypeExtensionType,
+  PrescriptionTypeExtensionType,
+  TaskBusinessStatusExtensionType
+} from "./schema/extensions"
+import {MedicationDispenseType} from "./schema/medicationDispense"
+import {MedicationRequestType} from "./schema/medicationRequest"
 import {PatientType} from "./schema/patient"
+import {PractitionerRoleType} from "./schema/practitionerRole"
+import {RequestGroupType} from "./schema/requestGroup"
+import {logger} from "./handler"
 
 interface MedicationRequestResourceIds {
   [key:string]: UUID
@@ -54,15 +56,11 @@ interface ResourceIds {
 
 }
 
-/* TODO: Logging */
-
 export const generateFhirResponse = (prescription: Prescription, logger: Logger): RequestGroup & RequestGroupType => {
-  logger.info("")
-
   // Generate an ID (UUID) for the patient resource for others to reference
   const patientResourceId = randomUUID()
 
-  // Generate main request group resource
+  logger.info("Generating RequestGroup...")
   const responseRequestGroup: RequestGroup & RequestGroupType = {
     resourceType: "RequestGroup",
     id: randomUUID(),
@@ -87,15 +85,15 @@ export const generateFhirResponse = (prescription: Prescription, logger: Logger)
     contained: []
   }
 
-  // Generate patient resource
+  logger.info("Generating Patient resource...")
   const patient: PatientType = generatePatientResource(prescription, patientResourceId)
   responseRequestGroup.contained.push(patient)
 
-  // Generate request group extensions
+  logger.info("Generating RequestGroup extensions...")
   const requestGroupExtensions: Array<Extension> = generateRequestGroupExtensions(prescription)
   responseRequestGroup.extension?.push(...requestGroupExtensions)
 
-  // Generate medication requests for line items
+  logger.info("Generating MedicationRequest resources...")
   const {prescriberPractitionerRole, medicationRequests, medicationRequestResourceIds}:
     MedicationRequestResources = generateMedicationRequests(prescription, patientResourceId)
   responseRequestGroup.contained.push(prescriberPractitionerRole, ...medicationRequests)
@@ -103,7 +101,7 @@ export const generateFhirResponse = (prescription: Prescription, logger: Logger)
     medicationRequest: medicationRequestResourceIds
   }
 
-  // Generate medication dispenses for dispense notifications
+  logger.info("Generating MedicationDispense resources...")
   if (Object.keys(prescription.dispenseNotifications).length){
     const {dispenserPractitionerRole, medicationDispenses, medicationDispenseResourceIds
     }:MedicationDispenseResources = generateMedicationDispenses(
@@ -113,14 +111,15 @@ export const generateFhirResponse = (prescription: Prescription, logger: Logger)
     resourceIds.medicationDispense = medicationDispenseResourceIds
   }
 
-  const historyAction = generateHistoryActions(prescription, resourceIds)
+  logger.info("Generating history Action...")
+  const historyAction = generateHistoryAction(prescription, resourceIds)
   responseRequestGroup.action.push(historyAction)
 
   return responseRequestGroup
 }
 
 const generatePatientResource = (prescription: Prescription, patientResourceId: UUID): PatientType => {
-  // Generate name element
+  logger.info("Generating Patient name...")
   const patientName: HumanName & PatientType["name"] = [{
     ...(prescription.prefix ? {prefix: [prescription.prefix]}: {}),
     ...(prescription.suffix ? {suffix: [prescription.suffix]}: {}),
@@ -128,7 +127,7 @@ const generatePatientResource = (prescription: Prescription, patientResourceId: 
     ...(prescription.family ? {family: prescription.family}: {})
   }]
 
-  // Generate address element
+  logger.info("Generating Patient address...")
   const line = prescription.address.line
   const postalCode = prescription.address.postalCode
   const patientAddress: Address & PatientType["address"] = line.length || postalCode ? [{
@@ -139,7 +138,6 @@ const generatePatientResource = (prescription: Prescription, patientResourceId: 
     use: "home"
   }] : []
 
-  // Generate patient resource
   const patient: Patient & PatientType = {
     resourceType: "Patient",
     id: patientResourceId,
@@ -148,7 +146,7 @@ const generatePatientResource = (prescription: Prescription, patientResourceId: 
       value: prescription.nhsNumber
     }],
     ...(Object.keys(patientName).length ? {name: patientName}: {}),
-    birthDate: prescription.birthDate, /* TODO - format */
+    birthDate: prescription.birthDate,
     gender: prescription.gender ? GENDER_MAP[prescription.gender] : "unknown",
     ...(patientAddress.length ? {address: patientAddress} : {})
   }
@@ -159,7 +157,7 @@ const generatePatientResource = (prescription: Prescription, patientResourceId: 
 const generateRequestGroupExtensions = (prescription: Prescription): Array<Extension> => {
   const extensions: Array<Extension> = []
 
-  // Generate prescription status extension
+  logger.info("Generating PrescriptionStatus extension...")
   const prescriptionStatusExtension: Extension & PrescriptionStatusExtensionType = {
     url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
     extension: [{
@@ -173,7 +171,7 @@ const generateRequestGroupExtensions = (prescription: Prescription): Array<Exten
   }
   extensions.push(prescriptionStatusExtension)
 
-  // Generate repeat information extension
+  logger.info("Generating MedicationRepeatInformation extension for non acute prescription...")
   if (prescription.treatmentType !== TreatmentType.ACUTE){
     const repeatInformationExtension: MedicationRepeatInformationExtensionType = {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
@@ -191,8 +189,8 @@ const generateRequestGroupExtensions = (prescription: Prescription): Array<Exten
     extensions.push(repeatInformationExtension)
   }
 
-  // Generate pending cancellation extension
   /* TODO: should this be here? is this the correct format? */
+  logger.info("Generating prescription PendingCancellation extension...")
   const prescriptionPendingCancellationExtension: Extension & PendingCancellationExtensionType = {
     url: "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
     extension: [{
@@ -202,7 +200,7 @@ const generateRequestGroupExtensions = (prescription: Prescription): Array<Exten
   }
   extensions.push(prescriptionPendingCancellationExtension)
 
-  // Generate prescription type extension
+  logger.info("Generating PrescriptionType extensions...")
   const prescriptionTypeExtension : Extension & PrescriptionTypeExtensionType = {
     url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionType",
     valueCoding: {
@@ -224,7 +222,7 @@ interface MedicationRequestResources {
 
 const generateMedicationRequests = (
   prescription: Prescription, patientResourceId: UUID): MedicationRequestResources => {
-  // Generate practitioner role resource for prescriber
+  logger.info("Generating prescriber PractitionerRole resource...")
   const prescriberPractitionerRole: PractitionerRole & PractitionerRoleType = {
     resourceType: "PractitionerRole",
     id: randomUUID(),
@@ -238,9 +236,9 @@ const generateMedicationRequests = (
 
   const medicationRequests = []
   const medicationRequestResourceIds: {[key: string]: UUID} = {}
-  // Generate medication request resources for line items
+  // Generate a medication request resource for each line item
   for (const lineItem of Object.values(prescription.lineItems)){
-    // Generate medication request extensions
+    console.log("Generating DispensingInformation extension for line item...", {lineItemNo: lineItem.lineItemNo})
     const dispensingInformationExtension: Extension & DispensingInformationExtensionType = {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-DispensingInformation",
       extension:[
@@ -255,6 +253,7 @@ const generateMedicationRequests = (
       ]
     }
 
+    console.log("Generating PendingCancellation extension for line item...", {lineItemNo: lineItem.lineItemNo})
     const lineItemPendingCancellationExtension: Extension & PendingCancellationExtensionType = {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
       extension:[{
@@ -263,7 +262,7 @@ const generateMedicationRequests = (
       }]
     }
 
-    // Generate medication request
+    logger.info("Generating MedicationRequest for line item...", {lineItemNo: lineItem.lineItemNo})
     const medicationRequestResourceId = randomUUID()
     medicationRequestResourceIds[lineItem.lineItemNo] = medicationRequestResourceId
 
@@ -360,10 +359,10 @@ interface MedicationDispenseResources {
 
 const generateMedicationDispenses = (prescription: Prescription, patientResourceId: UUID,
   medicationRequestResourceIds: MedicationRequestResourceIds): MedicationDispenseResources => {
-
   const medicationDispenses: Array<MedicationDispenseType> = []
   const medicationDispenseResourceIds: MedicationDispenseResourceIds = {}
-  // Generate practitioner role resource for dispenser
+
+  logger.info("Generating dispenser PractitionerRole resource...")
   const dispenserPractitionerRole: PractitionerRole & PractitionerRoleType = {
     resourceType: "PractitionerRole",
     id: randomUUID(),
@@ -375,7 +374,7 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
     }
   }
 
-  // Generate medication dispense extensions
+  logger.info("Generating TaskBusinessStatus extension...")
   const taskBusinessStatusExtension : Extension & TaskBusinessStatusExtensionType = {
     url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-TaskBusinessStatus",
     valueCoding: {
@@ -386,15 +385,18 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
   }
 
   /* TODO: do we need a prescriptionNonDispensingReason extension for a hl7 prescription level cancellation?*/
-
+  // Generate a medication dispense resource for each line item of each dispense notification
   for (const dispenseNotification of Object.values(prescription.dispenseNotifications)){
     for (const lineItem of Object.values(dispenseNotification.lineItems)){
-      const medicationDispenseResourceId = randomUUID()
 
+      logger.info("Generating MedicationDispense resource for DN line item...", {
+        dispenseNotificationId: dispenseNotification.dispenseNotificationId,
+        lineItemNo: lineItem.lineItemNo
+      })
+      const medicationDispenseResourceId = randomUUID()
       medicationDispenseResourceIds[
         dispenseNotification.dispenseNotificationId][lineItem.lineItemNo] = medicationDispenseResourceId
 
-      // Generate medication dispense
       const medicationDispense: MedicationDispense & MedicationDispenseType= {
         resourceType: "MedicationDispense",
         id: medicationDispenseResourceId,
@@ -441,33 +443,23 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
   return {dispenserPractitionerRole, medicationDispenses, medicationDispenseResourceIds}
 }
 
-const generateHistoryActions = (
+const generateHistoryAction = (
   prescription: Prescription, resourceIds: ResourceIds): RequestGroupAction & HistoryAction => {
 
-  // Generate main action for prescription history
+  logger.info("Generating Action for prescription history...")
   const historyAction: RequestGroupAction & HistoryAction = {
     id: randomUUID(),
     title: "Prescription status transitions",
     action: []
   }
 
+  // Generate a sub Action for each prescription history event
   for (const event of Object.values(prescription.history)){
-    // Generate reference sub sub actions
     const referenceActions: Array<ReferenceAction> = []
-    // Generate sub sub action to reference relevant medication dispenses for dispense notification history events
-    if (event.isDispenseNotification && resourceIds.medicationDispense){
-      for (const medicationDispenseResourceId of Object.values(resourceIds.medicationDispense[event.messageId])){
-        const referenceAction: RequestGroupAction & ReferenceAction = {
-          resource: {
-            reference : medicationDispenseResourceId
-          }
-        }
-        referenceActions.push(referenceAction)
-      }
-    }
 
-    // Generate sub sub action to reference medication requests for creation/upload history events
     if (event.isPrescriptionUpload) {
+      logger.info("Generating reference Actions for MedicationRequests...")
+      // Generate a reference sub Action of the event sub Action for each MedicationRequest
       for (const medicationRequestResourceId of Object.values(resourceIds.medicationRequest)){
         const referenceAction: RequestGroupAction & ReferenceAction = {
           resource: {
@@ -478,7 +470,20 @@ const generateHistoryActions = (
       }
     }
 
-    // Generate history event sub action
+    if (event.isDispenseNotification && resourceIds.medicationDispense){
+      logger.info("Generating reference Actions for MedicationDispenses...")
+      // Generate a reference sub Action of the event sub Action for each MedicationDispense
+      for (const medicationDispenseResourceId of Object.values(resourceIds.medicationDispense[event.messageId])){
+        const referenceAction: RequestGroupAction & ReferenceAction = {
+          resource: {
+            reference : medicationDispenseResourceId
+          }
+        }
+        referenceActions.push(referenceAction)
+      }
+    }
+
+    logger.info("Generating sub Action for history event...")
     const eventAction: RequestGroupAction & HistoryAction["action"][0] = {
       id: randomUUID(),
       title: event.message,

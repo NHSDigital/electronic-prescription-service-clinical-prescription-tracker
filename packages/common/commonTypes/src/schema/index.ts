@@ -1,72 +1,33 @@
-import {requestGroupCommonProperties} from "./requestGroup"
-import {gender, GenderType, patientCommonProperties} from "./patient"
 import {
-  taskBusinessStatus,
-  PrescriptionStatusCoding,
-  StatusReasonCoding,
+  intent,
   IntentType,
-  DispenseStatusCoding
+  PrescriptionStatusCoding,
+  subject,
+  taskBusinessStatus
 } from "./elements"
 import {
-  prescriptionStatusExtension,
-  PrescriptionStatusExtensionType,
   medicationRepeatInformationExtension,
   MedicationRepeatInformationExtensionType,
   pendingCancellationExtension,
   PendingCancellationExtensionType,
-  prescriptionTypeExtension,
-  PrescriptionTypeExtensionType,
-  PrescriptionTypeCoding,
-  DispensingInformationExtensionType,
-  performerSiteTypeExtension,
-  PerformerSiteTypeExtensionType,
-  PerformerSiteTypeCoding,
-  taskBusinessStatusExtension,
-  TaskBusinessStatusExtensionType
+  prescriptionStatusExtension,
+  PrescriptionStatusExtensionType
 } from "./extensions"
-import {practitionerRole, PractitionerRoleType} from "./practitionerRole"
-import {
-  MedicationRequestStatusType,
-  medicationRequest,
-  MedicationRequestType,
-  CourseOfTherapyTypeCoding
-} from "./medicationRequest"
-import {MedicationDispenseStatusType, medicationDispense, MedicationDispenseType} from "./medicationDispense"
+import {patientCommonProperties} from "./patient"
+import {requestGroupCommonProperties} from "./requestGroup"
 
 export {
+  intent,
   IntentType,
-  requestGroupCommonProperties,
-  gender,
-  GenderType,
-  patientCommonProperties,
-  prescriptionStatusExtension,
-  PrescriptionStatusExtensionType,
   medicationRepeatInformationExtension,
   MedicationRepeatInformationExtensionType,
+  patientCommonProperties,
   pendingCancellationExtension,
   PendingCancellationExtensionType,
-  prescriptionTypeExtension,
-  PrescriptionTypeExtensionType,
-  PrescriptionTypeCoding,
-  DispensingInformationExtensionType,
-  performerSiteTypeExtension,
-  PerformerSiteTypeExtensionType,
-  PerformerSiteTypeCoding,
-  taskBusinessStatusExtension,
-  TaskBusinessStatusExtensionType,
-  DispenseStatusCoding,
-  taskBusinessStatus,
   PrescriptionStatusCoding,
-  StatusReasonCoding,
-  practitionerRole,
-  PractitionerRoleType,
-  MedicationRequestStatusType,
-  medicationRequest,
-  MedicationRequestType,
-  CourseOfTherapyTypeCoding,
-  MedicationDispenseStatusType,
-  medicationDispense,
-  MedicationDispenseType
+  prescriptionStatusExtension,
+  PrescriptionStatusExtensionType,
+  requestGroupCommonProperties,
+  subject,
+  taskBusinessStatus
 }
-
-/* TODO - organize this */

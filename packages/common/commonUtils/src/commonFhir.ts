@@ -1,6 +1,6 @@
-import {OperationOutcome, OperationOutcomeIssue} from "fhir/r4"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {ServiceError} from "@cpt-common/common-types/service"
+import {OperationOutcome, OperationOutcomeIssue} from "fhir/r4"
 
 interface FhirErrorDetails {
   status: string

@@ -1,6 +1,6 @@
-import {APIGatewayProxyEventHeaders} from "aws-lambda"
 import {Logger} from "@aws-lambda-powertools/logger"
-import {ServiceError, CommonHeaderParameters} from "@cpt-common/common-types"
+import {CommonHeaderParameters, ServiceError} from "@cpt-common/common-types/service"
+import {APIGatewayProxyEventHeaders} from "aws-lambda"
 
 export const validateCommonHeaders = (
   eventHeaders: APIGatewayProxyEventHeaders, logger: Logger): [CommonHeaderParameters, Array<ServiceError>] => {

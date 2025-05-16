@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import {JSONSchema} from "json-schema-to-ts"
-import {subject, intent} from "./elements"
+import {intent, subject} from "./elements"
 
 export const requestGroupCommonProperties ={
   resourceType: {

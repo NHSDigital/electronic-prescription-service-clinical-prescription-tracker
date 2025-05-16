@@ -1,4 +1,4 @@
-import {JSONSchema, FromSchema} from "json-schema-to-ts"
+import {JSONSchema} from "json-schema-to-ts"
 
 export const patientCommonProperties = {
   resourceType: {
@@ -59,9 +59,3 @@ export const patientCommonProperties = {
     maxItems: 1
   }
 } as const satisfies Readonly<Record<string, JSONSchema>>
-
-export const gender = {
-  type: "string",
-  enum: ["male", "female", "other", "unknown"]
-} as const satisfies JSONSchema
-export type GenderType = FromSchema<typeof gender>

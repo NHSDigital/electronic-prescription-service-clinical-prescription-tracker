@@ -1,6 +1,6 @@
-import {ServiceError, CommonHeaderParameters} from "./service"
+import {CommonHeaderParameters, ServiceError} from "./service"
 
 export {
-  ServiceError,
-  CommonHeaderParameters
+  CommonHeaderParameters,
+  ServiceError
 }

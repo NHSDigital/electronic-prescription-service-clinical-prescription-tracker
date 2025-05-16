@@ -1,11 +1,5 @@
-import {
-  DispenseStatusCoding,
-  PerformerSiteTypeCoding,
-  PrescriptionStatusCoding,
-  PrescriptionTypeCoding,
-  StatusReasonCoding
-} from "../schema"
-import {SpineGenderCode, SpineTreatmentTypeCode} from "../spine"
+import {PrescriptionStatusCoding} from "../schema"
+import {SpineTreatmentTypeCode} from "../spine"
 
 export interface PatientDetailsSummary {
   nhsNumber: string
@@ -13,15 +7,6 @@ export interface PatientDetailsSummary {
   suffix?: string
   given?: string
   family?: string
-}
-
-export interface PatientDetails extends PatientDetailsSummary {
-  birthDate: string
-  gender?: SpineGenderCode
-  address: {
-    line: Array<string>
-    postalCode?: string
-  }
 }
 
 export interface PrescriptionDetailsSummary {
@@ -35,70 +20,5 @@ export interface IssueDetails {
   issueNumber: number
   status: PrescriptionStatusCoding["code"]
   prescriptionPendingCancellation: boolean
-  itemsPendingCancellation?: boolean // TODO: Only needed for prescription search?
+  itemsPendingCancellation?: boolean // prescription search only
 }
-
-export interface LineItemDetailsSummary {
-  lineItemNo: string
-  lineItemId: string
-  status: DispenseStatusCoding["code"]
-  itemName: string
-  quantity: number
-  quantityForm: string
-  dosageInstruction?: string
-}
-
-export interface LineItemDetails extends LineItemDetailsSummary {
-  cancellationReason?: StatusReasonCoding["display"]
-  pendingCancellation: boolean
-}
-
-export interface DispenseNotificationDetails {
-  dispenseNotificationId: string
-  timestamp: string
-  status: PrescriptionStatusCoding["code"]
-  lineItems: {
-    [key: string]: LineItemDetailsSummary
-  }
-}
-
-export interface EventLineItem {
-  lineItemNo: string
-  newStatus: string
-  cancellationReason?: StatusReasonCoding["display"]
-}
-
-export interface HistoryEventDetails {
-  eventId: string
-  message: string
-  messageId: string
-  timestamp: string
-  org: string
-  newStatus: PrescriptionStatusCoding["code"]
-  cancellationReason?: StatusReasonCoding["display"] /* TODO: is this the correct coding*/
-  isDispenseNotification: boolean,
-  isPrescriptionUpload: boolean,
-  lineItems: {
-    [key: string]: EventLineItem
-  }
-}
-
-export interface PrescriptionDetails extends PrescriptionDetailsSummary, IssueDetails {
-  daysSupply?: number
-  prescriptionType: PrescriptionTypeCoding["code"]
-  prescriberOrg: string
-  nominatedDispenserOrg?: string
-  nominatedDisperserType?: PerformerSiteTypeCoding["code"]
-  dispenserOrg?: string
-  lineItems: {
-    [key: string]: LineItemDetails
-  }
-  dispenseNotifications: {
-    [key: string]: DispenseNotificationDetails
-  }
-  history: {
-    [key: string]: HistoryEventDetails
-  }
-}
-
-export type Prescription = PatientDetails & PrescriptionDetails

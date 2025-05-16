@@ -1,31 +1,197 @@
-import {parse} from "date-fns"
-import {XMLParser} from "fast-xml-parser"
 import {Logger} from "@aws-lambda-powertools/logger"
+import {IssueDetails, PatientDetailsSummary, PrescriptionDetailsSummary} from "@cpt-common/common-types/prescription"
+import {PrescriptionStatusCoding} from "@cpt-common/common-types/schema"
 import {ServiceError} from "@cpt-common/common-types/service"
 import {
   SPINE_TIMESTAMP_FORMAT,
-  SpineGenderCode,
-  SpineXmlClinicalViewResponse,
-  SpineXmlResponse,
-  SpineTreatmentTypeCode
+  SpineTreatmentTypeCode,
+  SpineXmlError,
+  SpineXmlResponse
 } from "@cpt-common/common-types/spine"
-import {
-  DispenseNotificationDetails,
-  EventLineItem,
-  HistoryEventDetails,
-  LineItemDetails,
-  LineItemDetailsSummary,
-  PatientDetails,
-  Prescription,
-  PrescriptionDetails
-} from "@cpt-common/common-types/prescription"
-import {
-  DispenseStatusCoding,
-  PerformerSiteTypeCoding,
-  PrescriptionStatusCoding,
-  PrescriptionTypeCoding,
-  StatusReasonCoding
-} from "@cpt-common/common-types/schema"
+import {format, parse} from "date-fns"
+import {XMLParser} from "fast-xml-parser"
+import {DispenseStatusCoding, PerformerSiteTypeCoding, PrescriptionTypeCoding} from "./schema/extensions"
+import {StatusReasonCoding} from "./schema/medicationRequest"
+
+// Constants
+export const SPINE_DOB_FORMAT = "yyyymmdd" as const
+export const FHIR_DATE_FORMAT = "yyyy-mm-dd"
+
+// XML Types
+type XmlStringValue = {
+  "@_value": string
+}
+
+interface XmlLineItem {
+  order: XmlStringValue
+  ID: XmlStringValue
+  status: XmlStringValue
+}
+
+interface XmlDispenseNotification {
+  dispenseNotificationID: string
+  dispNotifDocumentKey: string
+  dispenseNotifDateTime: string
+  statusPrescription: string
+  [productLineItem: `productLineItem${string}`]: string
+  [quantityLineItem: `quantityLineItem${string}`]: string
+  [narrativeLineItem: `narrativeLineItem${string}`]: string
+  [statusLineItem: `statusLineItem${string}`]: string
+  [dosageLineItem: `dosageLineItem${string}`]: string
+}
+
+interface XmlHistoryEvent {
+  SCN: string
+  messageID: string
+}
+
+interface XmlHistoryEventLineItem {
+  order: string
+  id: string
+  toStatus: string
+  cancellationReason?: string
+}
+
+interface XmlFilteredHistoryEvent {
+  SCN: string
+  timestamp: string
+  toStatus: string
+  message: string
+  agentPersonOrgCode: string
+  cancellationReason?: string
+  lineStatusChangeDict: {
+    line: Array<XmlHistoryEventLineItem> | XmlHistoryEventLineItem
+  }
+}
+
+interface XmlEpsRecord {
+  patientNhsNumber: string
+  patientBirthTime: string
+  prescriptionID: string
+  instanceNumber: string
+  prescriptionStatus: string
+  prescriptionTreatmentType: string
+  prescriptionType: string
+  prescriptionTime: string
+  maxRepeats?: string
+  daysSupply?: string
+  prescribingOrganization: string
+  nominatedPerformer?: string
+  nominatedPerformerType?: string
+  dispensingOrganization?: string
+  parentPrescription: {
+    prefix?: string
+    suffix?: string
+    given?: string
+    family?: string
+    administrativeGenderCode?: string
+    addrLine1?: string
+    addrLine2?: string
+    addrLine3?: string
+    postalCode?: string
+    [productLineItem: `productLineItem${string}`]: string
+    [quantityLineItem: `quantityLineItem${string}`]: string
+    [narrativeLineItem: `narrativeLineItem${string}`]: string
+    [dosageLineItem: `dosageLineItem${string}`]: string
+  }
+  lineItem: Array<XmlLineItem> | XmlLineItem
+  dispenseNotification?: Array<XmlDispenseNotification> | XmlDispenseNotification
+  history: Array<XmlHistoryEvent> | XmlHistoryEvent
+  filteredHistory: Array<XmlFilteredHistoryEvent> | XmlFilteredHistoryEvent
+}
+
+interface SpineClinicalView {
+  PORX_IN000006UK98: {
+    ControlActEvent: {
+      subject: {
+        PrescriptionJsonQueryResponse: {
+          epsRecord: XmlEpsRecord
+        }
+      }
+    }
+  }
+  MCCI_IN010000UK13: never
+}
+
+interface SpineXmlClinicalViewResponse {
+  prescriptionClinicalViewResponse: SpineClinicalView | SpineXmlError
+}
+
+// Parsed response types
+export type SpineGenderCode = 1 | 2 | 3 | 4
+interface PatientDetails extends PatientDetailsSummary {
+  birthDate: string
+  gender?: SpineGenderCode
+  address: {
+    line: Array<string>
+    postalCode?: string
+  }
+}
+
+interface LineItemDetailsSummary {
+  lineItemNo: string
+  lineItemId: string
+  status: DispenseStatusCoding["code"]
+  itemName: string
+  quantity: number
+  quantityForm: string
+  dosageInstruction?: string
+}
+
+interface LineItemDetails extends LineItemDetailsSummary {
+  cancellationReason?: StatusReasonCoding["display"]
+  pendingCancellation: boolean
+}
+
+interface DispenseNotificationDetails {
+  dispenseNotificationId: string
+  timestamp: string
+  status: PrescriptionStatusCoding["code"]
+  lineItems: {
+    [key: string]: LineItemDetailsSummary
+  }
+}
+
+interface EventLineItem {
+  lineItemNo: string
+  newStatus: string
+  cancellationReason?: StatusReasonCoding["display"]
+}
+
+interface HistoryEventDetails {
+  eventId: string
+  message: string
+  messageId: string
+  timestamp: string
+  org: string
+  newStatus: PrescriptionStatusCoding["code"]
+  cancellationReason?: StatusReasonCoding["display"] /* TODO: is this the correct coding? are prescription/item level reasons different?*/
+  isDispenseNotification: boolean,
+  isPrescriptionUpload: boolean,
+  lineItems: {
+    [key: string]: EventLineItem
+  }
+}
+
+interface PrescriptionDetails extends PrescriptionDetailsSummary, IssueDetails {
+  daysSupply?: number
+  prescriptionType: PrescriptionTypeCoding["code"]
+  prescriberOrg: string
+  nominatedDispenserOrg?: string
+  nominatedDisperserType?: PerformerSiteTypeCoding["code"]
+  dispenserOrg?: string
+  lineItems: {
+    [key: string]: LineItemDetails
+  }
+  dispenseNotifications: {
+    [key: string]: DispenseNotificationDetails
+  }
+  history: {
+    [key: string]: HistoryEventDetails
+  }
+}
+
+export type Prescription = PatientDetails & PrescriptionDetails
 
 export interface ParsedSpineResponse {
   prescription?: Prescription | undefined
@@ -34,18 +200,18 @@ export interface ParsedSpineResponse {
 
 export const parseSpineResponse = (spineResponse: string, logger: Logger): ParsedSpineResponse => {
   const xmlParser = new XMLParser({ignoreAttributes: false, parseTagValue: false})
-  const xmlResponse = xmlParser.parse(spineResponse) as SpineXmlResponse
+  const xmlResponse = xmlParser.parse(spineResponse) as SpineXmlResponse<SpineXmlClinicalViewResponse>
 
   logger.info("Parsing XML SOAP body...")
   const xmlSoapBody = xmlResponse["SOAP:Envelope"]?.["SOAP:Body"] as SpineXmlClinicalViewResponse | undefined
-  || xmlResponse["SOAP-ENV:Envelope"]?.["SOAP-ENV:Body"] as SpineXmlClinicalViewResponse | undefined
+    || xmlResponse["SOAP-ENV:Envelope"]?.["SOAP-ENV:Body"] as SpineXmlClinicalViewResponse | undefined
 
   if (!xmlSoapBody) {
     logger.error("Failed to parse response, Spine response did not contain valid XML")
     return {spineError: {status: "500", severity: "error", description: "Unknown Error."}}
   }
 
-  if (xmlSoapBody?.prescriptionClinicalViewResponse?.MCCI_IN010000UK13){
+  if (xmlSoapBody?.prescriptionClinicalViewResponse?.MCCI_IN010000UK13) {
     const error = xmlSoapBody?.prescriptionClinicalViewResponse?.MCCI_IN010000UK13
       ?.acknowledgement?.acknowledgementDetail?.code?.["@_displayName"] ?? "Unknown Error"
 
@@ -57,27 +223,28 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
   const xmlEpsRecord = xmlSoapBody.prescriptionClinicalViewResponse.PORX_IN000006UK98
     .ControlActEvent.subject.PrescriptionJsonQueryResponse.epsRecord
 
-  /* TODO: logs */
+  logger.info("Parsing patient details...")
   const xmlParentPrescription = xmlEpsRecord.parentPrescription
   const patientDetails: PatientDetails = {
     nhsNumber: xmlEpsRecord.patientNhsNumber,
-    ...(xmlParentPrescription.prefix ? {prefix: xmlParentPrescription.prefix}: {}),
+    ...(xmlParentPrescription.prefix ? {prefix: xmlParentPrescription.prefix} : {}),
     ...(xmlParentPrescription.suffix ? {suffix: xmlParentPrescription.suffix} : {}),
     ...(xmlParentPrescription.given ? {given: xmlParentPrescription.given} : {}),
     ...(xmlParentPrescription.family ? {family: xmlParentPrescription.family} : {}),
-    birthDate: xmlEpsRecord.patientBirthTime, //TODO: format
+    birthDate: format(parse(xmlEpsRecord.patientBirthTime, SPINE_DOB_FORMAT, new Date()), FHIR_DATE_FORMAT),
     ...(xmlParentPrescription.administrativeGenderCode ?
       {gender: Number(xmlParentPrescription.administrativeGenderCode) as SpineGenderCode} : {}),
     address: {
       line: [
-        ...(xmlParentPrescription.addrLine1 ? [xmlParentPrescription.addrLine1]: []),
-        ...(xmlParentPrescription.addrLine2 ? [xmlParentPrescription.addrLine2]: []),
-        ...(xmlParentPrescription.addrLine3 ? [xmlParentPrescription.addrLine3]: [])
+        ...(xmlParentPrescription.addrLine1 ? [xmlParentPrescription.addrLine1] : []),
+        ...(xmlParentPrescription.addrLine2 ? [xmlParentPrescription.addrLine2] : []),
+        ...(xmlParentPrescription.addrLine3 ? [xmlParentPrescription.addrLine3] : [])
       ],
       ...(xmlParentPrescription.postalCode ? {postalCode: xmlParentPrescription.postalCode} : {})
     }
   }
 
+  logger.info("Parsing prescription details...")
   const prescriptionDetails: PrescriptionDetails = {
     prescriptionId: xmlEpsRecord.prescriptionID,
     issueDate: parse(xmlEpsRecord.prescriptionTime, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
@@ -92,7 +259,8 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     prescriberOrg: xmlEpsRecord.prescribingOrganization,
     ...(xmlEpsRecord.nominatedPerformer ? {nominatedDispenserOrg: xmlEpsRecord.nominatedPerformer} : {}),
     ...(xmlEpsRecord.nominatedPerformerType ? {
-      nominatedDisperserType: xmlEpsRecord.nominatedPerformerType as PerformerSiteTypeCoding["code"]}: {}),
+      nominatedDisperserType: xmlEpsRecord.nominatedPerformerType as PerformerSiteTypeCoding["code"]
+    } : {}),
     ...(xmlEpsRecord.dispensingOrganization ? {dispenserOrg: xmlEpsRecord.dispensingOrganization} : {}),
     lineItems: {},
     dispenseNotifications: {},
@@ -100,13 +268,15 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
   }
 
   let xmlLineItems = xmlEpsRecord.lineItem
-  if(!Array.isArray(xmlLineItems)) {
+  if (!Array.isArray(xmlLineItems)) {
     xmlLineItems = [xmlLineItems]
   }
 
-  for (const xmlLineItem of xmlLineItems){
+  // Parse each line item
+  for (const xmlLineItem of xmlLineItems) {
     const lineItemNo = xmlLineItem.order["@_value"]
 
+    console.log("Parsing line item...", {lineItemNo})
     const lineItem: LineItemDetails = {
       lineItemNo,
       lineItemId: xmlLineItem.ID["@_value"],
@@ -123,11 +293,13 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
 
   let xmlDispenseNotifications = xmlEpsRecord.dispenseNotification
   if (!Array.isArray(xmlDispenseNotifications)) {
-    xmlDispenseNotifications = [...(xmlDispenseNotifications ? [xmlDispenseNotifications]: [])]
+    xmlDispenseNotifications = [...(xmlDispenseNotifications ? [xmlDispenseNotifications] : [])]
   }
 
+  // Parse each dispense notification
   for (const xmlDispenseNotification of xmlDispenseNotifications) {
     const dispenseNotificationId = xmlDispenseNotification.dispenseNotificationID
+    logger.info("Parsing dispense notification...", {dispenseNotificationId})
     const dispenseNotification: DispenseNotificationDetails = {
       dispenseNotificationId,
       timestamp: parse(xmlDispenseNotification.dispenseNotifDateTime, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
@@ -135,7 +307,10 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
       lineItems: {}
     }
 
-    for (const [lineItemNo, LineItemDetails] of Object.entries(prescriptionDetails.lineItems)){
+    // Parse each line item of the DN
+    for (const [lineItemNo, LineItemDetails] of Object.entries(prescriptionDetails.lineItems)) {
+      logger.info("Parsing dispense notifications line item...", {dispenseNotificationId, lineItemNo})
+      // DN's include all line items, those with 0 quantity are those not dispensed as part of this DN.
       const quantity = Number(xmlDispenseNotification[`quantityLineItem${lineItemNo}`])
       if (quantity === 0) {
         continue
@@ -167,13 +342,16 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     xmlHistory = [xmlHistory]
   }
 
-  for (const [eventIndex, xmlFilteredHistoryEvent] of xmlFilteredHistory.entries()){
+  // Parse each event in the filtered history
+  for (const [eventIndex, xmlFilteredHistoryEvent] of xmlFilteredHistory.entries()) {
     const finalEvent = eventIndex === xmlHistory.length - 1
 
     const eventId = xmlFilteredHistoryEvent.SCN
     const message = xmlFilteredHistoryEvent.message
+    // Need to find corresponding event from the full history to parse the events full details
     const xmlHistoryEvent = xmlHistory.find((event) => event.SCN === eventId)!
 
+    logger.info("Parsing history event...", {scn: eventId})
     const historyEvent: HistoryEventDetails = {
       eventId,
       message,
@@ -189,15 +367,18 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     }
 
     let xmlEventLineItems = xmlFilteredHistoryEvent.lineStatusChangeDict.line
-    if (!Array.isArray(xmlEventLineItems)){
+    if (!Array.isArray(xmlEventLineItems)) {
       xmlEventLineItems = [xmlEventLineItems]
     }
-    for(const xmlEventLineItem of xmlEventLineItems){
+
+    // Parse each line item of the event
+    for (const xmlEventLineItem of xmlEventLineItems) {
       const lineItemNo = xmlEventLineItem.order
       const cancellationReason = xmlEventLineItem.cancellationReason as StatusReasonCoding["display"] /* does this need to strip "Pending: "?*/
+      logger.info("Parsing history event line item...", {scn: eventId, lineItemNo})
 
-      if (finalEvent && cancellationReason){
-        if (cancellationReason?.includes("Pending")){
+      if (finalEvent && cancellationReason) {
+        if (cancellationReason?.includes("Pending")) {
           prescriptionDetails.itemsPendingCancellation = true
           prescriptionDetails.lineItems[lineItemNo].pendingCancellation = true
         }
@@ -222,4 +403,3 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     }
   }
 }
-// TODO: would any of this benefit from some brief comments or some refactoring to break it up?

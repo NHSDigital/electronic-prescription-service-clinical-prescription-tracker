@@ -1,12 +1,12 @@
-import {JSONSchema, FromSchema} from "json-schema-to-ts"
+import {subject} from "@cpt-common/common-types/schema"
+import {FromSchema, JSONSchema} from "json-schema-to-ts"
 import {
-  id,
-  subject,
-  medicationCodeableConcept,
-  dosageInstruction,
-  quantity,
   daysSupply,
-  identifier
+  dosageInstruction,
+  id,
+  identifier,
+  medicationCodeableConcept,
+  quantity
 } from "./elements"
 import {taskBusinessStatusExtension} from "./extensions"
 
