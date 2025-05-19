@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable max-len */
 import {Logger} from "@aws-lambda-powertools/logger"
 import {Prescription, parseSpineResponse, ParsedSpineResponse} from "../src/parseSpineResponse"
@@ -514,7 +513,7 @@ describe("Test parseSpineResponse", () => {
         },
         4: {
           eventId: "4",
-          message: "Dispense notification successful; Update applied to issue=1",
+          message: "Dispense notification successful",
           messageId: "DF525024-FD4E-4292-9FF6-B67025791B69",
           timestamp: "2025-04-24T11:16:02.000Z",
           org: "FA565",
@@ -640,7 +639,7 @@ describe("Test parseSpineResponse", () => {
         },
         4: {
           eventId: "4",
-          message: "Dispense notification successful; Update applied to issue=1",
+          message: "Dispense notification successful",
           messageId: "2416B1D1-82D3-4D14-BB34-1F3C6B57CFFB",
           timestamp: "2025-04-29T13:27:04.000Z",
           org: "FA565",
@@ -1186,7 +1185,7 @@ describe("Test parseSpineResponse", () => {
         },
         4: {
           eventId: "4",
-          message: "Dispense notification successful; Update applied to issue=1",
+          message: "Dispense notification successful",
           messageId: "70EE28E2-896B-448F-9454-4DD333141CFB",
           timestamp: "2025-04-24T11:36:58.000Z",
           org: "FA565",
@@ -1390,7 +1389,7 @@ describe("Test parseSpineResponse", () => {
         },
         4: {
           eventId: "4",
-          message: "Dispense notification successful; Update applied to issue=1",
+          message: "Dispense notification successful",
           messageId: "42A6A1A0-596C-482C-B018-0D15F8FFF9F3",
           timestamp: "2025-04-24T11:45:32.000Z",
           org: "FA565",
@@ -1609,7 +1608,7 @@ describe("Test parseSpineResponse", () => {
         },
         4: {
           eventId: "4",
-          message: "Dispense notification successful; Update applied to issue=1",
+          message: "Dispense notification successful",
           messageId: "42A6A1A0-596C-482C-B018-0D15F8FFF9F3",
           timestamp: "2025-04-24T11:45:32.000Z",
           org: "FA565",
@@ -1637,7 +1636,7 @@ describe("Test parseSpineResponse", () => {
         },
         5: {
           eventId: "5",
-          message: "Dispense notification successful; Update applied to issue=1",
+          message: "Dispense notification successful",
           messageId: "B358A55E-A423-48E2-A9D8-2612B4E66604",
           timestamp: "2025-04-24T11:49:41.000Z",
           org: "FA565",
@@ -1670,7 +1669,7 @@ describe("Test parseSpineResponse", () => {
     expect(result).toEqual({prescription: expected})
   })
 
-  /*it("returns a correctly parsed response and no error when spine returns an acute prescription pending cancellation", async () => {
+  it("returns a correctly parsed response and no error when spine returns an acute prescription pending cancellation", async () => {
     const expected: Prescription = {
       prescriptionId: "65C4B1-A83008-AA9C1I",
       nhsNumber: "5839945242",
@@ -1697,6 +1696,7 @@ describe("Test parseSpineResponse", () => {
       daysSupply: 28,
       prescriberOrg: "A83008",
       nominatedDispenserOrg: "FA565",
+      nominatedDisperserType: "P1",
       dispenserOrg: "VNFKT",
       lineItems: {
         1: {
@@ -1707,7 +1707,7 @@ describe("Test parseSpineResponse", () => {
           quantity: 20,
           quantityForm: "tablet",
           dosageInstruction: "2 times a day for 10 days",
-          cancellationReason: "Pending: Prescribing Error",
+          cancellationReason: "Prescribing Error",
           pendingCancellation: true
         },
         2: {
@@ -1718,7 +1718,7 @@ describe("Test parseSpineResponse", () => {
           quantity: 20,
           quantityForm: "tablet",
           dosageInstruction: "2 times a day for 10 days",
-          cancellationReason: "Pending: Prescribing Error",
+          cancellationReason: "Prescribing Error",
           pendingCancellation: true
         },
         3: {
@@ -1729,7 +1729,7 @@ describe("Test parseSpineResponse", () => {
           quantity: 30,
           quantityForm: "tablet",
           dosageInstruction: "3 times a day for 10 days",
-          cancellationReason: "Pending: Prescribing Error",
+          cancellationReason: "Prescribing Error",
           pendingCancellation: true
         },
         4: {
@@ -1740,7 +1740,7 @@ describe("Test parseSpineResponse", () => {
           quantity: 30,
           quantityForm: "tablet",
           dosageInstruction: "3 times a day for 10 days",
-          cancellationReason: "Pending: Prescribing Error",
+          cancellationReason: "Prescribing Error",
           pendingCancellation: true
         }
       },
@@ -1754,6 +1754,7 @@ describe("Test parseSpineResponse", () => {
           org: "A83008",
           newStatus: "0001",
           isDispenseNotification: false,
+          isPrescriptionUpload: true,
           lineItems: {
             1: {
               lineItemNo: "1",
@@ -1781,6 +1782,7 @@ describe("Test parseSpineResponse", () => {
           org: "VNFKT",
           newStatus: "0002",
           isDispenseNotification: false,
+          isPrescriptionUpload: false,
           lineItems: {
             1: {
               lineItemNo: "1",
@@ -1808,11 +1810,12 @@ describe("Test parseSpineResponse", () => {
           org: "A83008",
           newStatus: "0002",
           isDispenseNotification: false,
+          isPrescriptionUpload: false,
           lineItems: {
             1: {
               lineItemNo: "1",
               newStatus: "0008",
-              cancellationReason: "Pending: Prescribing Error"
+              cancellationReason: "Prescribing Error"
             },
             2: {
               lineItemNo: "2",
@@ -1836,16 +1839,17 @@ describe("Test parseSpineResponse", () => {
           org: "A83008",
           newStatus: "0002",
           isDispenseNotification: false,
+          isPrescriptionUpload: false,
           lineItems: {
             1: {
               lineItemNo: "1",
               newStatus: "0008",
-              cancellationReason: "Pending: Prescribing Error"
+              cancellationReason: "Prescribing Error"
             },
             2: {
               lineItemNo: "2",
               newStatus: "0008",
-              cancellationReason: "Pending: Prescribing Error"
+              cancellationReason: "Prescribing Error"
             },
             3: {
               lineItemNo: "3",
@@ -1865,21 +1869,22 @@ describe("Test parseSpineResponse", () => {
           org: "A83008",
           newStatus: "0002",
           isDispenseNotification: false,
+          isPrescriptionUpload: false,
           lineItems: {
             1: {
               lineItemNo: "1",
               newStatus: "0008",
-              cancellationReason: "Pending: Prescribing Error"
+              cancellationReason: "Prescribing Error"
             },
             2: {
               lineItemNo: "2",
               newStatus: "0008",
-              cancellationReason: "Pending: Prescribing Error"
+              cancellationReason: "Prescribing Error"
             },
             3: {
               lineItemNo: "3",
               newStatus: "0008",
-              cancellationReason: "Pending: Prescribing Error"
+              cancellationReason: "Prescribing Error"
             },
             4: {
               lineItemNo: "4",
@@ -1895,26 +1900,27 @@ describe("Test parseSpineResponse", () => {
           org: "A83008",
           newStatus: "0002",
           isDispenseNotification: false,
+          isPrescriptionUpload: false,
           lineItems: {
             1: {
               lineItemNo: "1",
               newStatus: "0008",
-              cancellationReason: "Pending: Prescribing Error"
+              cancellationReason: "Prescribing Error"
             },
             2: {
               lineItemNo: "2",
               newStatus: "0008",
-              cancellationReason: "Pending: Prescribing Error"
+              cancellationReason: "Prescribing Error"
             },
             3: {
               lineItemNo: "3",
               newStatus: "0008",
-              cancellationReason: "Pending: Prescribing Error"
+              cancellationReason: "Prescribing Error"
             },
             4: {
               lineItemNo: "4",
               newStatus: "0008",
-              cancellationReason: "Pending: Prescribing Error"
+              cancellationReason: "Prescribing Error"
             }
           }
         }
@@ -1923,9 +1929,9 @@ describe("Test parseSpineResponse", () => {
 
     const result: ParsedSpineResponse = parseSpineResponse(acutePendingCancellation, logger)
     expect(result).toEqual({prescription: expected})
-  }) */
+  })
 
-  /* it("returns a correctly parsed response and no error when spine returns an acute prescription with an item pending cancellation", async () => {
+  it("returns a correctly parsed response and no error when spine returns an acute prescription with an item pending cancellation", async () => {
     const expected: Prescription = {
       prescriptionId: "65C4B1-A83008-AA9C1I",
       nhsNumber: "5839945242",
@@ -1952,6 +1958,7 @@ describe("Test parseSpineResponse", () => {
       daysSupply: 28,
       prescriberOrg: "A83008",
       nominatedDispenserOrg: "FA565",
+      nominatedDisperserType: "P1",
       dispenserOrg: "VNFKT",
       lineItems: {
         1: {
@@ -1962,7 +1969,7 @@ describe("Test parseSpineResponse", () => {
           quantity: 20,
           quantityForm: "tablet",
           dosageInstruction: "2 times a day for 10 days",
-          cancellationReason: "Pending: Prescribing Error",
+          cancellationReason: "Prescribing Error",
           pendingCancellation: true
         },
         2: {
@@ -2006,6 +2013,7 @@ describe("Test parseSpineResponse", () => {
           org: "A83008",
           newStatus: "0001",
           isDispenseNotification: false,
+          isPrescriptionUpload: true,
           lineItems: {
             1: {
               lineItemNo: "1",
@@ -2033,6 +2041,7 @@ describe("Test parseSpineResponse", () => {
           org: "VNFKT",
           newStatus: "0002",
           isDispenseNotification: false,
+          isPrescriptionUpload: false,
           lineItems: {
             1: {
               lineItemNo: "1",
@@ -2060,11 +2069,12 @@ describe("Test parseSpineResponse", () => {
           org: "A83008",
           newStatus: "0002",
           isDispenseNotification: false,
+          isPrescriptionUpload: false,
           lineItems: {
             1: {
               lineItemNo: "1",
               newStatus: "0008",
-              cancellationReason: "Pending: Prescribing Error"
+              cancellationReason: "Prescribing Error"
             },
             2: {
               lineItemNo: "2",
@@ -2085,7 +2095,7 @@ describe("Test parseSpineResponse", () => {
 
     const result: ParsedSpineResponse = parseSpineResponse(acuteWithItemPendingCancellation, logger)
     expect(result).toEqual({prescription: expected})
-  }) */
+  })
 
   it("returns a correctly parsed response and no error when spine returns a HL7 cancelled acute prescription", async () => {
     const expected: Prescription = {
@@ -2321,7 +2331,7 @@ describe("Test parseSpineResponse", () => {
     expect(result).toEqual({prescription: expected})
   })
 
-  /* it("returns a correctly parsed response and no error when spine returns an acute prescription pending HL7 cancellation", async () => {
+  it("returns a correctly parsed response and no error when spine returns an acute prescription pending HL7 cancellation", async () => {
     const expected: Prescription = {
       prescriptionId: "65C4B1-A83008-AA9C1I",
       nhsNumber: "5839945242",
@@ -2348,6 +2358,7 @@ describe("Test parseSpineResponse", () => {
       daysSupply: 28,
       prescriberOrg: "A83008",
       nominatedDispenserOrg: "FA565",
+      nominatedDisperserType: "P1",
       dispenserOrg: "VNFKT",
       lineItems: {
         1: {
@@ -2358,7 +2369,7 @@ describe("Test parseSpineResponse", () => {
           quantity: 20,
           quantityForm: "tablet",
           dosageInstruction: "2 times a day for 10 days",
-          cancellationReason: "Pending: Prescribing Error",
+          cancellationReason: "Prescribing Error",
           pendingCancellation: true
         },
         2: {
@@ -2369,7 +2380,7 @@ describe("Test parseSpineResponse", () => {
           quantity: 20,
           quantityForm: "tablet",
           dosageInstruction: "2 times a day for 10 days",
-          cancellationReason: "Pending: Prescribing Error",
+          cancellationReason: "Prescribing Error",
           pendingCancellation: true
         },
         3: {
@@ -2380,7 +2391,7 @@ describe("Test parseSpineResponse", () => {
           quantity: 30,
           quantityForm: "tablet",
           dosageInstruction: "3 times a day for 10 days",
-          cancellationReason: "Pending: Prescribing Error",
+          cancellationReason: "Prescribing Error",
           pendingCancellation: true
         },
         4: {
@@ -2391,7 +2402,7 @@ describe("Test parseSpineResponse", () => {
           quantity: 30,
           quantityForm: "tablet",
           dosageInstruction: "3 times a day for 10 days",
-          cancellationReason: "Pending: Prescribing Error",
+          cancellationReason: "Prescribing Error",
           pendingCancellation: true
         }
       },
@@ -2405,6 +2416,7 @@ describe("Test parseSpineResponse", () => {
           org: "A83008",
           newStatus: "0001",
           isDispenseNotification: false,
+          isPrescriptionUpload: true,
           lineItems: {
             1: {
               lineItemNo: "1",
@@ -2432,6 +2444,7 @@ describe("Test parseSpineResponse", () => {
           org: "VNFKT",
           newStatus: "0002",
           isDispenseNotification: false,
+          isPrescriptionUpload: false,
           lineItems: {
             1: {
               lineItemNo: "1",
@@ -2459,11 +2472,12 @@ describe("Test parseSpineResponse", () => {
           org: "A83008",
           newStatus: "0002",
           isDispenseNotification: false,
+          isPrescriptionUpload: false,
           lineItems: {
             1: {
               lineItemNo: "1",
               newStatus: "0008",
-              cancellationReason: "Pending: Prescribing Error"
+              cancellationReason: "Prescribing Error"
             },
             2: {
               lineItemNo: "2",
@@ -2487,16 +2501,17 @@ describe("Test parseSpineResponse", () => {
           org: "A83008",
           newStatus: "0002",
           isDispenseNotification: false,
+          isPrescriptionUpload: false,
           lineItems: {
             1: {
               lineItemNo: "1",
               newStatus: "0008",
-              cancellationReason: "Pending: Prescribing Error"
+              cancellationReason: "Prescribing Error"
             },
             2: {
               lineItemNo: "2",
               newStatus: "0008",
-              cancellationReason: "Pending: Prescribing Error"
+              cancellationReason: "Prescribing Error"
             },
             3: {
               lineItemNo: "3",
@@ -2516,21 +2531,22 @@ describe("Test parseSpineResponse", () => {
           org: "A83008",
           newStatus: "0002",
           isDispenseNotification: false,
+          isPrescriptionUpload: false,
           lineItems: {
             1: {
               lineItemNo: "1",
               newStatus: "0008",
-              cancellationReason: "Pending: Prescribing Error"
+              cancellationReason: "Prescribing Error"
             },
             2: {
               lineItemNo: "2",
               newStatus: "0008",
-              cancellationReason: "Pending: Prescribing Error"
+              cancellationReason: "Prescribing Error"
             },
             3: {
               lineItemNo: "3",
               newStatus: "0008",
-              cancellationReason: "Pending: Prescribing Error"
+              cancellationReason: "Prescribing Error"
             },
             4: {
               lineItemNo: "4",
@@ -2545,28 +2561,29 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T12:14:57.000Z",
           org: "A83008",
           newStatus: "0002",
-          cancellationReason: "Pending: Prescribing Error",
+          cancellationReason: "Prescribing Error",
           isDispenseNotification: false,
+          isPrescriptionUpload: false,
           lineItems: {
             1: {
               lineItemNo: "1",
               newStatus: "0008",
-              cancellationReason: "Pending: Prescribing Error"
+              cancellationReason: "Prescribing Error"
             },
             2: {
               lineItemNo: "2",
               newStatus: "0008",
-              cancellationReason: "Pending: Prescribing Error"
+              cancellationReason: "Prescribing Error"
             },
             3: {
               lineItemNo: "3",
               newStatus: "0008",
-              cancellationReason: "Pending: Prescribing Error"
+              cancellationReason: "Prescribing Error"
             },
             4: {
               lineItemNo: "4",
               newStatus: "0008",
-              cancellationReason: "Pending: Prescribing Error"
+              cancellationReason: "Prescribing Error"
             }
           }
         }
@@ -2575,7 +2592,7 @@ describe("Test parseSpineResponse", () => {
 
     const result: ParsedSpineResponse = parseSpineResponse(acuteHl7PendingCancellation, logger)
     expect(result).toEqual({prescription: expected})
-  }) */
+  })
 
   it("returns a correctly parsed response and no error when spine returns an acute prescription without optional patient details", async () => {
     const expected: Prescription = {
@@ -2661,7 +2678,7 @@ describe("Test parseSpineResponse", () => {
         },
         4: {
           eventId: "4",
-          message: "Dispense notification successful; Update applied to issue=1",
+          message: "Dispense notification successful",
           messageId: "2416B1D1-82D3-4D14-BB34-1F3C6B57CFFB",
           timestamp: "2025-04-29T13:27:04.000Z",
           org: "FA565",
@@ -2956,7 +2973,7 @@ describe("Test parseSpineResponse", () => {
         },
         4: {
           eventId: "4",
-          message: "Dispense notification successful; Update applied to issue=1",
+          message: "Dispense notification successful",
           messageId: "DF525024-FD4E-4292-9FF6-B67025791B69",
           timestamp: "2025-04-24T11:16:02.000Z",
           org: "FA565",

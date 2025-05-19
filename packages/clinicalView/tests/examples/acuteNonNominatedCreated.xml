@@ -149,7 +149,7 @@
 								<patientBirthTime>19480430</patientBirthTime>
 								<!--Nomination Specific Information-->
 								<nominatedPerformer/>
-								<nominatedPerformerType>0004</nominatedPerformerType>
+								<nominatedPerformerType/>
 								<!--Parent Prescription Information-->
 								<parentPrescription>
 									<birthTime>19480430</birthTime>

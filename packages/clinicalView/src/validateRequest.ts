@@ -13,7 +13,7 @@ export interface PathParameters {
 }
 
 export interface QueryStringParameters {
-  repeatNumber? : number
+  repeatNumber? : string
 }
 
 export const validateRequest = (
@@ -67,7 +67,7 @@ const validatePathParameters = (
 const validateQueryStringParameters = (
   eventQueryStringParameters: APIGatewayProxyEventQueryStringParameters | null): QueryStringParameters => {
 
-  const repeatNumber: number | undefined = Number(eventQueryStringParameters?.issueNumber)
+  const repeatNumber: string | undefined = eventQueryStringParameters?.issueNumber
   const queryStringParameters = {
     repeatNumber
   }

@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.defaults.json",
   "compilerOptions": {
-    "module": "commonjs",
+    // "module": "commonjs",
     "rootDir": ".",
     "outDir": "lib",
     "allowImportingTsExtensions": true,

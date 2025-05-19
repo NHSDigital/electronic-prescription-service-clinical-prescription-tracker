@@ -12,6 +12,7 @@ import {format, parse} from "date-fns"
 import {XMLParser} from "fast-xml-parser"
 import {DispenseStatusCoding, PerformerSiteTypeCoding, PrescriptionTypeCoding} from "./schema/extensions"
 import {StatusReasonCoding} from "./schema/medicationRequest"
+import {HistoryMessage} from "./schema/actions"
 
 // Constants
 export const SPINE_DOB_FORMAT = "yyyymmdd" as const
@@ -160,7 +161,7 @@ interface EventLineItem {
 
 interface HistoryEventDetails {
   eventId: string
-  message: string
+  message: HistoryMessage
   messageId: string
   timestamp: string
   org: string
@@ -178,7 +179,7 @@ interface PrescriptionDetails extends PrescriptionDetailsSummary, IssueDetails {
   prescriptionType: PrescriptionTypeCoding["code"]
   prescriberOrg: string
   nominatedDispenserOrg?: string
-  nominatedDisperserType?: PerformerSiteTypeCoding["code"]
+  nominatedDisperserType: PerformerSiteTypeCoding["code"]
   dispenserOrg?: string
   lineItems: {
     [key: string]: LineItemDetails
@@ -245,6 +246,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
   }
 
   logger.info("Parsing prescription details...")
+  console.log(xmlEpsRecord)
   const prescriptionDetails: PrescriptionDetails = {
     prescriptionId: xmlEpsRecord.prescriptionID,
     issueDate: parse(xmlEpsRecord.prescriptionTime, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
@@ -258,9 +260,8 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     itemsPendingCancellation: false, //default to false but update when checking last history events line items
     prescriberOrg: xmlEpsRecord.prescribingOrganization,
     ...(xmlEpsRecord.nominatedPerformer ? {nominatedDispenserOrg: xmlEpsRecord.nominatedPerformer} : {}),
-    ...(xmlEpsRecord.nominatedPerformerType ? {
-      nominatedDisperserType: xmlEpsRecord.nominatedPerformerType as PerformerSiteTypeCoding["code"]
-    } : {}),
+    nominatedDisperserType: xmlEpsRecord.nominatedPerformerType ?
+      xmlEpsRecord.nominatedPerformerType as PerformerSiteTypeCoding["code"] : "0004", // default to 0004 (None)
     ...(xmlEpsRecord.dispensingOrganization ? {dispenserOrg: xmlEpsRecord.dispensingOrganization} : {}),
     lineItems: {},
     dispenseNotifications: {},
@@ -347,20 +348,23 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     const finalEvent = eventIndex === xmlHistory.length - 1
 
     const eventId = xmlFilteredHistoryEvent.SCN
-    const message = xmlFilteredHistoryEvent.message
+    const message = (xmlFilteredHistoryEvent.message).split(";")[0] // Remove unwanted additional information after the ";"
+
     // Need to find corresponding event from the full history to parse the events full details
     const xmlHistoryEvent = xmlHistory.find((event) => event.SCN === eventId)!
 
     logger.info("Parsing history event...", {scn: eventId})
+    // Determine if cancellation reason is pending, but remove from value to return
+    const cancellationReasonParts = xmlFilteredHistoryEvent.cancellationReason?.split("Pending: ")
+    const cancellationReason = cancellationReasonParts?.at(-1) as StatusReasonCoding["display"] | undefined
     const historyEvent: HistoryEventDetails = {
       eventId,
-      message,
+      message: message as HistoryMessage,
       messageId: xmlHistoryEvent.messageID.slice(1, -1), // This id matches the DN ID for relevant events. Strip unnecessary "" from value
       timestamp: parse(xmlFilteredHistoryEvent.timestamp, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
       org: xmlFilteredHistoryEvent.agentPersonOrgCode,
       newStatus: xmlFilteredHistoryEvent.toStatus as PrescriptionStatusCoding["code"],
-      ...(xmlFilteredHistoryEvent.cancellationReason ?
-        {cancellationReason: xmlFilteredHistoryEvent.cancellationReason as StatusReasonCoding["display"]} : {}), /* does this need to strip "Pending: "?*/
+      ...(cancellationReason ? {cancellationReason} : {}),
       isDispenseNotification: message.includes("Dispense notification successful"),
       isPrescriptionUpload: message.includes("Prescription upload successful"),
       lineItems: {}
@@ -374,21 +378,25 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     // Parse each line item of the event
     for (const xmlEventLineItem of xmlEventLineItems) {
       const lineItemNo = xmlEventLineItem.order
-      const cancellationReason = xmlEventLineItem.cancellationReason as StatusReasonCoding["display"] /* does this need to strip "Pending: "?*/
-      logger.info("Parsing history event line item...", {scn: eventId, lineItemNo})
 
-      if (finalEvent && cancellationReason) {
-        if (cancellationReason?.includes("Pending")) {
+      // Determine if cancellation reason is pending, but remove from value to return
+      const itemCancellationReasonParts = xmlEventLineItem.cancellationReason?.split("Pending: ")
+      const itemCancellationReason = itemCancellationReasonParts?.at(-1) as StatusReasonCoding["display"] | undefined
+
+      logger.info("Parsing history event line item...", {scn: eventId, lineItemNo})
+      if (finalEvent && itemCancellationReason) {
+        if (itemCancellationReasonParts?.length === 2) {
           prescriptionDetails.itemsPendingCancellation = true
           prescriptionDetails.lineItems[lineItemNo].pendingCancellation = true
         }
-        prescriptionDetails.lineItems[lineItemNo].cancellationReason = cancellationReason
+        prescriptionDetails.lineItems[lineItemNo].cancellationReason = itemCancellationReason
       }
 
       const lineItem: EventLineItem = {
         lineItemNo,
         newStatus: xmlEventLineItem.toStatus,
-        ...(cancellationReason ? {cancellationReason} : {})
+        ...(itemCancellationReason ? {
+          cancellationReason: itemCancellationReason} : {})
       }
       historyEvent.lineItems[lineItemNo] = lineItem
     }

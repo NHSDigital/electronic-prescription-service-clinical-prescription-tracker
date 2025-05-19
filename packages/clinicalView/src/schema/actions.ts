@@ -38,7 +38,27 @@ export const historyAction = {
             type: "string"
           },
           title: {
-            type: "string"
+            type: "string",
+            enum: [
+              "Prescription upload successful",
+              "Release Request successful",
+              "Nominated Release Request successful",
+              "Dispense notification successful",
+              "Dispense claim successful",
+              "Prescription Reset request successful",
+              "Administrative update successful",
+              "Administrative Action Update Successful",
+              "Prescription/item was cancelled",
+              "Prescription/item was not cancelled. With dispenser. Marked for cancellation",
+              "Subsequent cancellation",
+              "Dispense proposal return successful",
+              "Dispense Withdrawal successful",
+              "Rebuild Dispense History successful",
+              "Updated by Urgent Admin Batch worker",
+              "Updated by Routine Admin Batch worker",
+              "Updated by Non-Urgent Admin Batch worker",
+              "Updated by Document Batch worker"
+            ]
           },
           timingDateTime: {
             type: "string"
@@ -140,3 +160,4 @@ export const historyAction = {
   required: ["id", "title", "action"]
 } as const satisfies JSONSchema
 export type HistoryAction = FromSchema<typeof historyAction>
+export type HistoryMessage = HistoryAction["action"][0]["title"]
