@@ -31,7 +31,6 @@ import {Prescription} from "./parseSpineResponse"
 import {HistoryAction, ReferenceAction} from "./schema/actions"
 import {
   DispensingInformationExtensionType,
-  PerformerSiteTypeExtensionType,
   PrescriptionTypeExtensionType,
   TaskBusinessStatusExtensionType
 } from "./schema/extensions"
@@ -321,14 +320,14 @@ const generateMedicationRequests = (
           code: "d",
           unit: "days"
         }} : {}),
-        ...(prescription.nominatedDisperserType ? {extension: [{
+        extension: [{
           url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PerformerSiteType",
           valueCoding: {
             system: "https://fhir.nhs.uk/CodeSystem/dispensing-site-preference",
             code: prescription.nominatedDisperserType,
             display: PERFORMER_SITE_TYPE_MAP[prescription.nominatedDisperserType]
           }
-        } satisfies Extension & PerformerSiteTypeExtensionType]}: {})
+        }]
       },
       dosageInstruction:[{
         text: lineItem.dosageInstruction ?? "" // dosage instruction can be missing, but is required in fhir
@@ -387,6 +386,7 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
   /* TODO: do we need a prescriptionNonDispensingReason extension for a hl7 prescription level cancellation?*/
   // Generate a medication dispense resource for each line item of each dispense notification
   for (const dispenseNotification of Object.values(prescription.dispenseNotifications)){
+    medicationDispenseResourceIds[dispenseNotification.dispenseNotificationId] = {}
     for (const lineItem of Object.values(dispenseNotification.lineItems)){
 
       logger.info("Generating MedicationDispense resource for DN line item...", {
@@ -410,7 +410,7 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
         status: MEDICATION_DISPENSE_STATUS_MAP[lineItem.status],
         performer: [{
           actor: {
-            reference: `#${dispenserPractitionerRole}`
+            reference: `#${dispenserPractitionerRole.id}`
           }
         }],
         authorizingPrescription: [{
@@ -463,7 +463,7 @@ const generateHistoryAction = (
       for (const medicationRequestResourceId of Object.values(resourceIds.medicationRequest)){
         const referenceAction: RequestGroupAction & ReferenceAction = {
           resource: {
-            reference : medicationRequestResourceId
+            reference: `#${medicationRequestResourceId}`
           }
         }
         referenceActions.push(referenceAction)
@@ -476,7 +476,7 @@ const generateHistoryAction = (
       for (const medicationDispenseResourceId of Object.values(resourceIds.medicationDispense[event.messageId])){
         const referenceAction: RequestGroupAction & ReferenceAction = {
           resource: {
-            reference : medicationDispenseResourceId
+            reference: `#${medicationDispenseResourceId}`
           }
         }
         referenceActions.push(referenceAction)

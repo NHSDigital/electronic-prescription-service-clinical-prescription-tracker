@@ -357,6 +357,10 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     // Determine if cancellation reason is pending, but remove from value to return
     const cancellationReasonParts = xmlFilteredHistoryEvent.cancellationReason?.split("Pending: ")
     const cancellationReason = cancellationReasonParts?.at(-1) as StatusReasonCoding["display"] | undefined
+    if (finalEvent && cancellationReasonParts?.length === 2){
+      prescriptionDetails.prescriptionPendingCancellation = true
+    }
+
     const historyEvent: HistoryEventDetails = {
       eventId,
       message: message as HistoryMessage,

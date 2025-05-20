@@ -2351,7 +2351,7 @@ describe("Test parseSpineResponse", () => {
       issueDate: "2025-04-24T00:00:00.000Z",
       issueNumber: 1,
       status: "0002",
-      prescriptionPendingCancellation: false,
+      prescriptionPendingCancellation: true,
       itemsPendingCancellation: true,
       treatmentType: "0001",
       prescriptionType: "0101",
