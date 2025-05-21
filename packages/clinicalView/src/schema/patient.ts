@@ -51,7 +51,7 @@ export const patient = {
             enum: ["home"]
           }
         },
-        required: ["line", "text", "type", "use"]
+        required: ["text", "type", "use"]
       }
     }
   },

@@ -120,6 +120,7 @@ interface SpineXmlClinicalViewResponse {
 
 // Parsed response types
 export type SpineGenderCode = 1 | 2 | 3 | 4
+
 interface PatientDetails extends PatientDetailsSummary {
   birthDate: string
   gender?: SpineGenderCode

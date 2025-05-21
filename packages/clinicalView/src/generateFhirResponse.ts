@@ -130,9 +130,9 @@ const generatePatientResource = (prescription: Prescription, patientResourceId: 
   const line = prescription.address.line
   const postalCode = prescription.address.postalCode
   const patientAddress: Address & PatientType["address"] = line.length || postalCode ? [{
-    line,
+    ...(line.length ? {line} : {}),
     ...(postalCode ? {postalCode}: {}),
-    text: [...line, ...[postalCode ? [postalCode]: []]].join(", "),
+    text: [...line, ...(postalCode ? [postalCode]: [])].join(", "),
     type: "both",
     use: "home"
   }] : []
@@ -144,7 +144,7 @@ const generatePatientResource = (prescription: Prescription, patientResourceId: 
       system: "https://fhir.nhs.uk/Id/nhs-number",
       value: prescription.nhsNumber
     }],
-    ...(Object.keys(patientName).length ? {name: patientName}: {}),
+    ...(Object.keys(patientName[0]).length ? {name: patientName}: {}),
     birthDate: prescription.birthDate,
     gender: prescription.gender ? GENDER_MAP[prescription.gender] : "unknown",
     ...(patientAddress.length ? {address: patientAddress} : {})
@@ -423,9 +423,7 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
           value: lineItem.quantity,
           unit: lineItem.quantityForm
         },
-        ...(lineItem.dosageInstruction ? {dosageInstruction: [{
-          text: lineItem.dosageInstruction ?? "" // dosage instruction can be missing, but is required in fhir
-        }]}: {}),
+        ...(lineItem.dosageInstruction ? {dosageInstruction: [{text: lineItem.dosageInstruction}]}: {}),
         ...(prescription.daysSupply ? {daysSupply: {
           system: "http://unitsofmeasure.org",
           value: prescription.daysSupply,

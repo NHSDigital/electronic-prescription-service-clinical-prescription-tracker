@@ -32,6 +32,7 @@ const acuteDispensedWithSingleItem: Prescription = {
   prescriptionId: "EA1CBC-A83008-F1F8A8",
   nhsNumber: "5839945242",
   prefix: "MS",
+  suffix: "OBE",
   given: "STACEY",
   family: "TWITCHETT",
   birthDate: "1948-04-30",
@@ -193,6 +194,7 @@ describe("Test parseSpineResponse", () => {
       }],
       name: [{
         prefix: ["MS"],
+        suffix: ["OBE"],
         given: ["STACEY"],
         family: "TWITCHETT"
       }],
@@ -213,6 +215,315 @@ describe("Test parseSpineResponse", () => {
 
     const actual = generateFhirResponse(acuteDispensedWithSingleItem, logger)
     expect(actual.contained).toContainEqual(expected)
+  })
+
+  const partialPatientTestCases = [
+    {
+      patientDetails: {
+        nhsNumber: "5839945242",
+        birthDate: "1948-04-30",
+        gender: 2,
+        address: {
+          line: [
+            "10 HEATHFIELD",
+            "COBHAM",
+            "SURREY"
+          ],
+          postalCode: "KT11 2QY"
+        }
+      },
+      scenario: "a prescription with no patient name",
+      expectedPatientResource: {
+        resourceType: "Patient",
+        id: "PATIENT-123-567-890",
+        identifier: [{
+          system: "https://fhir.nhs.uk/Id/nhs-number",
+          value: "5839945242"
+        }],
+        birthDate:  "1948-04-30",
+        gender: "female",
+        address: [{
+          type: "both",
+          use: "home",
+          line: [
+            "10 HEATHFIELD",
+            "COBHAM",
+            "SURREY"
+          ],
+          text: "10 HEATHFIELD, COBHAM, SURREY, KT11 2QY",
+          postalCode: "KT11 2QY"
+        }]
+      }
+    },
+    {
+      patientDetails: {
+        nhsNumber: "5839945242",
+        prefix: "MS",
+        suffix: "OBE",
+        given: "STACEY",
+        family: "TWITCHETT",
+        birthDate: "1948-04-30",
+        gender: 2,
+        address: {
+          line: [],
+          postalCode: "KT11 2QY"
+        }
+      },
+      scenario: "a prescription with no patient address lines",
+      expectedPatientResource: {
+        resourceType: "Patient",
+        id: "PATIENT-123-567-890",
+        identifier: [{
+          system: "https://fhir.nhs.uk/Id/nhs-number",
+          value: "5839945242"
+        }],
+        name: [{
+          prefix: ["MS"],
+          suffix: ["OBE"],
+          given: ["STACEY"],
+          family: "TWITCHETT"
+        }],
+        birthDate:  "1948-04-30",
+        gender: "female",
+        address: [{
+          type: "both",
+          use: "home",
+          text: "KT11 2QY",
+          postalCode: "KT11 2QY"
+        }]
+      }
+    },
+    {
+      patientDetails: {
+        nhsNumber: "5839945242",
+        prefix: "MS",
+        suffix: "OBE",
+        given: "STACEY",
+        family: "TWITCHETT",
+        birthDate: "1948-04-30",
+        gender: 2,
+        address: {
+          line: [
+            "10 HEATHFIELD",
+            "COBHAM",
+            "SURREY"
+          ]
+        }
+      },
+      scenario: "a prescription with no patient address postcode",
+      expectedPatientResource: {
+        resourceType: "Patient",
+        id: "PATIENT-123-567-890",
+        identifier: [{
+          system: "https://fhir.nhs.uk/Id/nhs-number",
+          value: "5839945242"
+        }],
+        name: [{
+          prefix: ["MS"],
+          suffix: ["OBE"],
+          given: ["STACEY"],
+          family: "TWITCHETT"
+        }],
+        birthDate:  "1948-04-30",
+        gender: "female",
+        address: [{
+          type: "both",
+          use: "home",
+          line: [
+            "10 HEATHFIELD",
+            "COBHAM",
+            "SURREY"
+          ],
+          text: "10 HEATHFIELD, COBHAM, SURREY"
+        }]
+      }
+    },
+    {
+      patientDetails: {
+        nhsNumber: "5839945242",
+        prefix: "MS",
+        suffix: "OBE",
+        given: "STACEY",
+        family: "TWITCHETT",
+        birthDate: "1948-04-30",
+        gender: 2,
+        address: {
+          line: []
+        }
+      },
+      scenario: "a prescription with no patient address",
+      expectedPatientResource: {
+        resourceType: "Patient",
+        id: "PATIENT-123-567-890",
+        identifier: [{
+          system: "https://fhir.nhs.uk/Id/nhs-number",
+          value: "5839945242"
+        }],
+        name: [{
+          prefix: ["MS"],
+          suffix: ["OBE"],
+          given: ["STACEY"],
+          family: "TWITCHETT"
+        }],
+        birthDate:  "1948-04-30",
+        gender: "female"
+      }
+    },
+    {
+      patientDetails: {
+        nhsNumber: "5839945242",
+        prefix: "MS",
+        suffix: "OBE",
+        given: "STACEY",
+        family: "TWITCHETT",
+        birthDate: "1948-04-30",
+        address: {
+          line: [
+            "10 HEATHFIELD",
+            "COBHAM",
+            "SURREY"
+          ],
+          postalCode: "KT11 2QY"
+        }
+      },
+      scenario: "a prescription with no patient gender",
+      expectedPatientResource: {
+        resourceType: "Patient",
+        id: "PATIENT-123-567-890",
+        identifier: [{
+          system: "https://fhir.nhs.uk/Id/nhs-number",
+          value: "5839945242"
+        }],
+        name: [{
+          prefix: ["MS"],
+          suffix: ["OBE"],
+          given: ["STACEY"],
+          family: "TWITCHETT"
+        }],
+        birthDate:  "1948-04-30",
+        gender: "unknown",
+        address: [{
+          type: "both",
+          use: "home",
+          line: [
+            "10 HEATHFIELD",
+            "COBHAM",
+            "SURREY"
+          ],
+          text: "10 HEATHFIELD, COBHAM, SURREY, KT11 2QY",
+          postalCode: "KT11 2QY"
+        }]
+      }
+    }
+  ]
+  partialPatientTestCases.forEach(({patientDetails, scenario, expectedPatientResource}) => {
+    it(`returns a RequestGroup with a contained partial Patient resource when called with ${scenario}`, () => {
+      mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+      mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
+      mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
+      mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
+
+      const acuteDispensedWithIncompletePatientDetails = {
+        ...patientDetails,
+        prescriptionId: "EA1CBC-A83008-F1F8A8",
+        issueDate: "2025-04-29T00:00:00.000Z",
+        issueNumber: 1,
+        status: "0006",
+        prescriptionPendingCancellation: false,
+        itemsPendingCancellation: false,
+        treatmentType: "0001",
+        prescriptionType: "0101",
+        daysSupply: 28,
+        prescriberOrg: "A83008",
+        nominatedDispenserOrg: "FA565",
+        nominatedDisperserType: "P1",
+        dispenserOrg: "FA565",
+        lineItems: {
+          1: {
+            lineItemNo: "1",
+            lineItemId: "101875F7-400C-43FE-AC04-7F29DBF854AF",
+            status: "0001",
+            itemName: "Amoxicillin 250mg capsules",
+            quantity: 20,
+            quantityForm: "tablet",
+            dosageInstruction: "2 times a day for 10 days",
+            pendingCancellation: false
+          }
+        },
+        dispenseNotifications: {
+          "2416B1D1-82D3-4D14-BB34-1F3C6B57CFFB": {
+            dispenseNotificationId: "2416B1D1-82D3-4D14-BB34-1F3C6B57CFFB",
+            timestamp: "2025-04-29T13:26:57.000Z",
+            status: "0006",
+            lineItems: {
+              1: {
+                lineItemNo: "1",
+                lineItemId: "101875F7-400C-43FE-AC04-7F29DBF854AF",
+                status: "0001",
+                itemName: "Amoxicillin 250mg capsules",
+                quantity: 20,
+                quantityForm: "tablet"
+              }
+            }
+          }
+        },
+        history: {
+          2: {
+            eventId: "2",
+            message: "Prescription upload successful",
+            messageId: "09843173-D677-401D-9331-5CCB37768320",
+            timestamp: "2025-04-29T13:26:34.000Z",
+            org: "A83008",
+            newStatus: "0001",
+            isDispenseNotification: false,
+            isPrescriptionUpload: true,
+            lineItems: {
+              1: {
+                lineItemNo: "1",
+                newStatus: "0007"
+              }
+            }
+          },
+          3: {
+            eventId: "3",
+            message: "Release Request successful",
+            messageId: "9ECCD950-623A-4821-81DE-774020DE0331",
+            timestamp: "2025-04-29T13:26:45.000Z",
+            org: "VNFKT",
+            newStatus: "0002",
+            isDispenseNotification: false,
+            isPrescriptionUpload: false,
+            lineItems: {
+              1: {
+                lineItemNo: "1",
+                newStatus: "0008"
+              }
+            }
+          },
+          4: {
+            eventId: "4",
+            message: "Dispense notification successful",
+            messageId: "2416B1D1-82D3-4D14-BB34-1F3C6B57CFFB",
+            timestamp: "2025-04-29T13:27:04.000Z",
+            org: "FA565",
+            newStatus: "0006",
+            isDispenseNotification: true,
+            isPrescriptionUpload: false,
+            lineItems: {
+              1: {
+                lineItemNo: "1",
+                newStatus: "0001"
+              }
+            }
+          }
+        }
+      } as unknown as Prescription
+
+      console.log(acuteDispensedWithIncompletePatientDetails)
+
+      const actual = generateFhirResponse(acuteDispensedWithIncompletePatientDetails, logger)
+      expect(actual.contained).toContainEqual(expectedPatientResource)
+    })
   })
 
   it("returns a RequestGroup with a PrescriptionStatus extension when called", () => {
@@ -317,6 +628,40 @@ describe("Test parseSpineResponse", () => {
     }
 
     const actual = generateFhirResponse(erdCreatedWithSingleItem, logger)
+    expect(actual.extension).toContainEqual(expected)
+  })
+
+  it("returns a RequestGroup without a RepeatInformation extension when called with a acute prescription", () => {
+    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
+
+    const expected = {
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation"
+    } as unknown as MedicationRepeatInformationExtensionType
+
+    const actual = generateFhirResponse(acuteDispensedWithSingleItem, logger)
+    expect(actual.extension).not.toContainEqual(expect.objectContaining(expected))
+  })
+
+  it("returns a RequestGroup without a partial RepeatInformation extension when called with a non acute prescription without a max repeats", () => {
+    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
+    const prescription = {
+      ...acuteDispensedWithSingleItem,
+      ...{treatmentType: "0002"}
+    } as unknown as Prescription
+
+    const expected: MedicationRepeatInformationExtensionType = {
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
+      extension:[
+        {
+          url: "numberOfRepeatsIssued",
+          valueInteger: 1
+        }
+      ]
+    }
+
+    const actual = generateFhirResponse(prescription, logger)
     expect(actual.extension).toContainEqual(expected)
   })
 
@@ -1080,6 +1425,187 @@ describe("Test parseSpineResponse", () => {
     expect(actual.contained).toContainEqual(expectedMedicationRequest4)
   })
 
+  it("returns a RequestGroup with a contained partial MedicationRequest resource called with a prescription with no days supply", () => {
+    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
+
+    const prescription: Prescription = {
+      ...acuteDispensedWithSingleItem
+    }
+    delete prescription.daysSupply
+
+    const expectedMedicationRequest: MedicationRequestType = {
+      resourceType: "MedicationRequest",
+      id: "MEDREQ-111-111-111",
+      identifier: [{
+        system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
+        value: "101875F7-400C-43FE-AC04-7F29DBF854AF"
+      }],
+      subject: {
+        reference: "#PATIENT-123-567-890"
+      },
+      status: "completed",
+      intent: "order",
+      requester: {
+        reference: "#PRESORG-123-567-890"
+      },
+      groupIdentifier: {
+        system: "https://fhir.nhs.uk/Id/prescription-order-number",
+        value: "EA1CBC-A83008-F1F8A8"
+      },
+      medicationCodeableConcept: {
+        text: "Amoxicillin 250mg capsules"
+      },
+      courseOfTherapyType: {
+        coding: [{
+          system: "http://terminology.hl7.org/CodeSystem/medicationrequest-course-of-therapy",
+          code: "acute",
+          display: "Short course (acute) therapy"
+        }]
+      },
+      dispenseRequest: {
+        quantity: {
+          value: 20,
+          unit: "tablet"
+        },
+        performer: {
+          identifier:[{
+            system: "https://fhir.nhs.uk/Id/ods-organization-code",
+            value: "FA565"
+          }]
+        },
+        extension: [{
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PerformerSiteType",
+          valueCoding: {
+            system: "https://fhir.nhs.uk/CodeSystem/dispensing-site-preference",
+            code: "P1",
+            display: "Other (e.g. Community Pharmacy)"
+          }
+        }]
+      },
+      dosageInstruction: [{
+        text: "2 times a day for 10 days"
+      }],
+      substitution: {
+        allowedBoolean: false
+      },
+      extension: [
+        {
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-DispensingInformation",
+          extension: [{
+            url: "dispenseStatus",
+            valueCoding: {
+              system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+              code: "0001",
+              display: "Item fully dispensed"
+            }
+          }]
+        },
+        {
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
+          extension: [{
+            url: "lineItemPendingCancellation",
+            valueBoolean: false
+          }]
+        }
+      ]
+    }
+
+    const actual = generateFhirResponse(prescription, logger)
+    expect(actual.contained).toContainEqual(expectedMedicationRequest)
+  })
+
+  it("returns a RequestGroup with a contained partial MedicationRequest resource called with a prescription with no nominated dispenser", () => {
+    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
+
+    const prescription: Prescription = {
+      ...acuteDispensedWithSingleItem,
+      ...{nominatedDisperserType: "0004"}
+    }
+    delete prescription.nominatedDispenserOrg
+
+    const expectedMedicationRequest: MedicationRequestType = {
+      resourceType: "MedicationRequest",
+      id: "MEDREQ-111-111-111",
+      identifier: [{
+        system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
+        value: "101875F7-400C-43FE-AC04-7F29DBF854AF"
+      }],
+      subject: {
+        reference: "#PATIENT-123-567-890"
+      },
+      status: "completed",
+      intent: "order",
+      requester: {
+        reference: "#PRESORG-123-567-890"
+      },
+      groupIdentifier: {
+        system: "https://fhir.nhs.uk/Id/prescription-order-number",
+        value: "EA1CBC-A83008-F1F8A8"
+      },
+      medicationCodeableConcept: {
+        text: "Amoxicillin 250mg capsules"
+      },
+      courseOfTherapyType: {
+        coding: [{
+          system: "http://terminology.hl7.org/CodeSystem/medicationrequest-course-of-therapy",
+          code: "acute",
+          display: "Short course (acute) therapy"
+        }]
+      },
+      dispenseRequest: {
+        quantity: {
+          value: 20,
+          unit: "tablet"
+        },
+        expectedSupplyDuration: {
+          system: "http://unitsofmeasure.org",
+          value: 28,
+          code: "d",
+          unit: "days"
+        },
+        extension: [{
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PerformerSiteType",
+          valueCoding: {
+            system: "https://fhir.nhs.uk/CodeSystem/dispensing-site-preference",
+            code: "0004",
+            display: "None"
+          }
+        }]
+      },
+      dosageInstruction: [{
+        text: "2 times a day for 10 days"
+      }],
+      substitution: {
+        allowedBoolean: false
+      },
+      extension: [
+        {
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-DispensingInformation",
+          extension: [{
+            url: "dispenseStatus",
+            valueCoding: {
+              system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+              code: "0001",
+              display: "Item fully dispensed"
+            }
+          }]
+        },
+        {
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
+          extension: [{
+            url: "lineItemPendingCancellation",
+            valueBoolean: false
+          }]
+        }
+      ]
+    }
+
+    const actual = generateFhirResponse(prescription, logger)
+    expect(actual.contained).toContainEqual(expectedMedicationRequest)
+  })
+
   it("returns a RequestGroup with a contained dispenser org PractitionerRole resource when called with a dispensed prescription", () => {
     mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
@@ -1099,6 +1625,102 @@ describe("Test parseSpineResponse", () => {
 
     const actual = generateFhirResponse(acuteDispensedWithSingleItem, logger)
     expect(actual.contained).toContainEqual(expected)
+  })
+
+  it("returns a RequestGroup with a contained partial MedicationRequest resource called with a prescription with an item with no dosage instructions", () => {
+    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
+
+    const prescription: Prescription = {
+      ...acuteDispensedWithSingleItem
+    }
+    delete prescription.lineItems[1].dosageInstruction
+
+    const expectedMedicationRequest: MedicationRequestType = {
+      resourceType: "MedicationRequest",
+      id: "MEDREQ-111-111-111",
+      identifier: [{
+        system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
+        value: "101875F7-400C-43FE-AC04-7F29DBF854AF"
+      }],
+      subject: {
+        reference: "#PATIENT-123-567-890"
+      },
+      status: "completed",
+      intent: "order",
+      requester: {
+        reference: "#PRESORG-123-567-890"
+      },
+      groupIdentifier: {
+        system: "https://fhir.nhs.uk/Id/prescription-order-number",
+        value: "EA1CBC-A83008-F1F8A8"
+      },
+      medicationCodeableConcept: {
+        text: "Amoxicillin 250mg capsules"
+      },
+      courseOfTherapyType: {
+        coding: [{
+          system: "http://terminology.hl7.org/CodeSystem/medicationrequest-course-of-therapy",
+          code: "acute",
+          display: "Short course (acute) therapy"
+        }]
+      },
+      dispenseRequest: {
+        quantity: {
+          value: 20,
+          unit: "tablet"
+        },
+        expectedSupplyDuration: {
+          system: "http://unitsofmeasure.org",
+          value: 28,
+          code: "d",
+          unit: "days"
+        },
+        performer: {
+          identifier:[{
+            system: "https://fhir.nhs.uk/Id/ods-organization-code",
+            value: "FA565"
+          }]
+        },
+        extension: [{
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PerformerSiteType",
+          valueCoding: {
+            system: "https://fhir.nhs.uk/CodeSystem/dispensing-site-preference",
+            code: "P1",
+            display: "Other (e.g. Community Pharmacy)"
+          }
+        }]
+      },
+      dosageInstruction: [{
+        text: ""
+      }],
+      substitution: {
+        allowedBoolean: false
+      },
+      extension: [
+        {
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-DispensingInformation",
+          extension: [{
+            url: "dispenseStatus",
+            valueCoding: {
+              system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+              code: "0001",
+              display: "Item fully dispensed"
+            }
+          }]
+        },
+        {
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
+          extension: [{
+            url: "lineItemPendingCancellation",
+            valueBoolean: false
+          }]
+        }
+      ]
+    }
+
+    const actual = generateFhirResponse(prescription, logger)
+    expect(actual.contained).toContainEqual(expectedMedicationRequest)
   })
 
   it("returns a RequestGroup with a contained MedicationDispense resource for each line item in each dispense notification when called with a dispensed prescription", () => {
@@ -1594,6 +2216,58 @@ describe("Test parseSpineResponse", () => {
     expect(actual.contained).toContainEqual(expectedMedicationDispense5)
   })
 
+  it("returns a RequestGroup with a contained partial MedicationDispense called with a prescription with a dispense notification item with no dosage instruction", () => {
+    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
+    mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-111-111-111")
+
+    const expectedMedicationDispense: MedicationDispenseType = {
+      resourceType: "MedicationDispense",
+      id: "MEDDIS-111-111-111",
+      identifier: [{
+        system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
+        value: "101875F7-400C-43FE-AC04-7F29DBF854AF"
+      }],
+      subject: {
+        reference: "#PATIENT-123-567-890"
+      },
+      status: "completed",
+      performer: [{
+        actor: {
+          reference: "#DISORG-123-567-890"
+        }
+      }],
+      authorizingPrescription: [{
+        reference: "#MEDREQ-111-111-111"
+      }],
+      medicationCodeableConcept: {
+        text: "Amoxicillin 250mg capsules"
+      },
+      quantity: {
+        value: 20,
+        unit: "tablet"
+      },
+      daysSupply: {
+        system: "http://unitsofmeasure.org",
+        value: 28,
+        code: "d",
+        unit: "days"
+      },
+      extension:[{
+        url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-TaskBusinessStatus",
+        valueCoding: {
+          system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+          code: "0006",
+          display: "Dispensed"
+        }
+      }]
+    }
+
+    const actual = generateFhirResponse(acuteDispensedWithSingleItem, logger)
+    expect(actual.contained).toContainEqual(expectedMedicationDispense)
+  })
+
   it("returns a RequestGroup with a history Action when called", () => {
     mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
@@ -1714,14 +2388,3 @@ describe("Test parseSpineResponse", () => {
     expect(actual.action[0].action).toEqual(expectedEvents)
   })
 })
-
-/* TODO:
-  - Optional fields in Patient name
-  - Optional fields in Patient address
-  - Optional max repeats
-  - Optional nominated dispenser
-  - Optional days supply
-  - Optional nominated dispenser type ?
-  - Dosage instruction default
-  -
-*/
