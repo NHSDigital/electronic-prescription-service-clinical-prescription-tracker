@@ -62,44 +62,17 @@ export const apiGatewayHandler = async (
     }
   }
 
-  try {
-    logger.info("Calling Spine clinical view interaction...")
-    const spineResponse = await params.spineClient.clinicalView(event.headers, searchParameters)
-    logger.debug("Spine response received.", {response: spineResponse})
+  logger.info("Calling Spine clinical view interaction...")
+  const spineResponse = await params.spineClient.clinicalView(event.headers, searchParameters)
+  logger.debug("Spine response received.", {response: spineResponse})
 
-    logger.info("Parsing Spine response...")
-    const {prescription, spineError}: ParsedSpineResponse = parseSpineResponse(spineResponse.data, logger)
+  logger.info("Parsing Spine response...")
+  const {prescription, spineError}: ParsedSpineResponse = parseSpineResponse(spineResponse.data, logger)
 
-    if (spineError) {
-      logger.error("Spine response contained an error.", {error: spineError.description})
-      logger.info("Generating FHIR error response...")
-      const errorResponseBundle: OperationOutcome = generateFhirErrorResponse([spineError], logger)
-
-      logger.info("Returning FHIR error response.")
-      return {
-        statusCode: 500,
-        body: JSON.stringify(errorResponseBundle),
-        headers: responseHeaders
-      }
-    }
-
-    logger.info("Generating FHIR response...")
-    const responseRequestGroup: RequestGroupType = generateFhirResponse(prescription as Prescription, logger)
-
-    logger.info("Retuning FHIR response.")
-    return {
-      statusCode: 200,
-      body: JSON.stringify(responseRequestGroup),
-      headers: responseHeaders
-    }
-  } catch {
-    // catch all error
-    logger.error("An unknown error occurred whilst processing the request")
+  if (spineError) {
+    logger.error("Spine response contained an error.", {error: spineError.description})
     logger.info("Generating FHIR error response...")
-    const errorResponseBundle: OperationOutcome = generateFhirErrorResponse(
-      [{status: "500", severity: "fatal", description: "Unknown Error."}],
-      logger
-    )
+    const errorResponseBundle: OperationOutcome = generateFhirErrorResponse([spineError], logger)
 
     logger.info("Returning FHIR error response.")
     return {
@@ -107,6 +80,16 @@ export const apiGatewayHandler = async (
       body: JSON.stringify(errorResponseBundle),
       headers: responseHeaders
     }
+  }
+
+  logger.info("Generating FHIR response...")
+  const responseRequestGroup: RequestGroupType = generateFhirResponse(prescription as Prescription, logger)
+
+  logger.info("Retuning FHIR response.")
+  return {
+    statusCode: 200,
+    body: JSON.stringify(responseRequestGroup),
+    headers: responseHeaders
   }
 }
 
