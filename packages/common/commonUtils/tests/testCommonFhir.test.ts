@@ -27,7 +27,7 @@ describe("Test generateFhirErrorResponse", () => {
 
   it("returns a correct issue on the OperationOutcome when called with an error", async () => {
     const mockError: ServiceError = {
-      status: "500",
+      status: 500,
       severity: "error",
       description: "An unknown error."
     }
@@ -53,17 +53,17 @@ describe("Test generateFhirErrorResponse", () => {
   it("returns a correct OperationOutcome with multiple issues when called with a list errors", async () => {
     const mockErrors: Array<ServiceError> = [
       {
-        status: "400",
+        status: 400,
         severity: "error",
         description: "Header A missing."
       },
       {
-        status: "400",
+        status: 400,
         severity: "error",
         description: "Header B missing."
       },
       {
-        status: "400",
+        status: 400,
         severity: "error",
         description: "Header C missing."
       }

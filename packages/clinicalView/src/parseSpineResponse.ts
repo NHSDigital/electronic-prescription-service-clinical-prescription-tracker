@@ -210,14 +210,14 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
 
   if (!xmlSoapBody) {
     logger.error("Failed to parse response, Spine response did not contain valid XML")
-    return {spineError: {status: "500", severity: "error", description: "Unknown Error."}}
+    return {spineError: {status: 500, severity: "error", description: "Unknown Error."}}
   }
 
   if (xmlSoapBody?.prescriptionClinicalViewResponse?.MCCI_IN010000UK13) {
     const error = xmlSoapBody?.prescriptionClinicalViewResponse?.MCCI_IN010000UK13
       ?.acknowledgement?.acknowledgementDetail?.code?.["@_displayName"] ?? "Unknown Error"
 
-    const statusCode = error === "Prescription not found" ? "404" : "500"
+    const statusCode = error === "Prescription not found" ? 404 : 500
 
     return {spineError: {status: statusCode, severity: "error", description: error}}
   }

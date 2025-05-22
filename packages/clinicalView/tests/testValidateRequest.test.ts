@@ -83,7 +83,7 @@ describe("Test validateRequest for ClinicalView Lambda", () => {
     } as unknown as APIGatewayProxyEvent
 
     const expectedErrors: Array<ServiceError> = [{
-      status: "400",
+      status: 400,
       severity: "error",
       description: "Missing required path parameter: prescriptionId."
     }]
@@ -100,7 +100,7 @@ describe("Test validateRequest for ClinicalView Lambda", () => {
     } as unknown as APIGatewayProxyEvent
 
     const expectedErrors: Array<ServiceError> = [{
-      status: "400",
+      status: 400,
       severity: "error",
       description: "Missing required header, x-request-id."
     }]
@@ -117,7 +117,7 @@ describe("Test validateRequest for ClinicalView Lambda", () => {
     } as unknown as APIGatewayProxyEvent
 
     const expectedErrors: Array<ServiceError> = [{
-      status: "400",
+      status: 400,
       severity: "error",
       description: "Missing required header, nhsd-organization-uuid."
     }]
@@ -134,7 +134,7 @@ describe("Test validateRequest for ClinicalView Lambda", () => {
     } as unknown as APIGatewayProxyEvent
 
     const expectedErrors: Array<ServiceError> = [{
-      status: "400",
+      status: 400,
       severity: "error",
       description: "Missing required header, nhsd-session-urid."
     }]
@@ -151,7 +151,7 @@ describe("Test validateRequest for ClinicalView Lambda", () => {
     } as unknown as APIGatewayProxyEvent
 
     const expectedErrors: Array<ServiceError> = [{
-      status: "400",
+      status: 400,
       severity: "error",
       description: "Missing required header, nhsd-identity-uuid."
     }]
@@ -168,7 +168,7 @@ describe("Test validateRequest for ClinicalView Lambda", () => {
     } as unknown as APIGatewayProxyEvent
 
     const expectedErrors: Array<ServiceError> = [{
-      status: "400",
+      status: 400,
       severity: "error",
       description: "Missing required header, nhsd-session-jobrole."
     }]
@@ -185,27 +185,27 @@ describe("Test validateRequest for ClinicalView Lambda", () => {
 
     const expectedErrors: Array<ServiceError> = [
       {
-        status: "400",
+        status: 400,
         severity: "error",
         description: "Missing required header, x-request-id."
       },
       {
-        status: "400",
+        status: 400,
         severity: "error",
         description: "Missing required header, nhsd-organization-uuid."
       },
       {
-        status: "400",
+        status: 400,
         severity: "error",
         description: "Missing required header, nhsd-session-urid."
       },
       {
-        status: "400",
+        status: 400,
         severity: "error",
         description: "Missing required header, nhsd-identity-uuid."
       },
       {
-        status: "400",
+        status: 400,
         severity: "error",
         description: "Missing required header, nhsd-session-jobrole."
       }

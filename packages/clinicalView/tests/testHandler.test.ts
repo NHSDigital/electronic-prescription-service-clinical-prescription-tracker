@@ -204,12 +204,58 @@ describe("test handler", () => {
     expect(actualResponse).toEqual(expectedResponse)
   })
 
-  it("generates a OperationOutcome and returns it and a 500 response when spine returns an error", async () => {
+  it("generates a OperationOutcome and returns it and a 404 response when spine returns a not found error", async () => {
     mockValidate.mockReturnValue([{requestId: "REQ-123-456-789"}, []])
     mockAxios.onPost(clinicalViewUrl).reply(200, {data: "success"})
     mockParseSpineResponse.mockReturnValue({
       spineError: {
-        status: "500",
+        status: 404,
+        severity: "error",
+        description: "Not Found"
+      }
+    })
+    const mockOperationOutcome = {
+      resourceType: "OperationOutcome",
+      meta: {
+        lastUpdated: "2015-04-09T12:34:56.001Z"
+      },
+      issue: [{
+        code: "not-found",
+        severity: "error",
+        diagnostics: "Prescription not found",
+        details: {
+          coding: [{
+            system: "https://fhir.nhs.uk/CodeSystem/http-error-codes",
+            code: "NOT_FOUND",
+            display: "404: The Server was unable to find the specified resource."
+          }]
+        }
+      }]
+    }
+    mockGenerateFhirErrorResponse.mockReturnValue(mockOperationOutcome)
+
+    const expectedResponse = {
+      statusCode: 404,
+      body: JSON.stringify(mockOperationOutcome),
+      headers: {
+        "Content-Type": "application/fhir+json",
+        "Cache-Control": "no-cache",
+        "x-correlation-id": "COR-123-456",
+        "x-request-id": "REQ-123-456-789"
+      }
+    }
+
+    const actualResponse = await handler(mockEvent, mockContext)
+    expect(generateFhirErrorResponse).toHaveBeenCalled()
+    expect(actualResponse).toEqual(expectedResponse)
+  })
+
+  it("generates a OperationOutcome and returns it and a 500 response when spine returns any other error", async () => {
+    mockValidate.mockReturnValue([{requestId: "REQ-123-456-789"}, []])
+    mockAxios.onPost(clinicalViewUrl).reply(200, {data: "success"})
+    mockParseSpineResponse.mockReturnValue({
+      spineError: {
+        status: 500,
         severity: "error",
         description: "Unknown Error."
       }

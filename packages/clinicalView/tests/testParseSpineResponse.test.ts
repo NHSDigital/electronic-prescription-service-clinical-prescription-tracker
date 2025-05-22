@@ -3076,7 +3076,7 @@ describe("Test parseSpineResponse", () => {
     const expected: ServiceError = {
       description: "Prescription not found",
       severity: "error",
-      status: "404"
+      status: 404
     }
 
     const result: ParsedSpineResponse = parseSpineResponse(notFound, logger)
@@ -3087,7 +3087,7 @@ describe("Test parseSpineResponse", () => {
     const expected: ServiceError = {
       description: "Unknown Error",
       severity: "error",
-      status: "500"
+      status: 500
     }
 
     const result: ParsedSpineResponse = parseSpineResponse(unknownError, logger)
@@ -3098,7 +3098,7 @@ describe("Test parseSpineResponse", () => {
     const expected: ServiceError = {
       description: "Unknown Error",
       severity: "error",
-      status: "500"
+      status: 500
     }
 
     const result: ParsedSpineResponse = parseSpineResponse(malformedError, logger)
@@ -3109,7 +3109,7 @@ describe("Test parseSpineResponse", () => {
     const expected: ServiceError = {
       description: "Unknown Error.",
       severity: "error",
-      status: "500"
+      status: 500
     }
 
     const result: ParsedSpineResponse = parseSpineResponse("", logger)

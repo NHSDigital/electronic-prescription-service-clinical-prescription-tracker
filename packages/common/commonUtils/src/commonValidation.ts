@@ -11,7 +11,7 @@ export const validateCommonHeaders = (
   if(!requestId) {
     logger.error("Missing required header, x-request-id.")
     errors.push({
-      status: "400",
+      status: 400,
       severity: "error",
       description: "Missing required header, x-request-id."
     })
@@ -22,7 +22,7 @@ export const validateCommonHeaders = (
   if(!organizationId) {
     logger.error("Missing required header, nhsd-organization-uuid.")
     errors.push({
-      status: "400",
+      status: 400,
       severity: "error",
       description: "Missing required header, nhsd-organization-uuid."
     })
@@ -32,7 +32,7 @@ export const validateCommonHeaders = (
   if(!sdsRoleProfileId) {
     logger.error("Missing required header, nhsd-session-urid.")
     errors.push({
-      status: "400",
+      status: 400,
       severity: "error",
       description: "Missing required header, nhsd-session-urid."
     })
@@ -42,7 +42,7 @@ export const validateCommonHeaders = (
   if(!sdsId) {
     logger.error("Missing required header, nhsd-identity-uuid.")
     errors.push({
-      status: "400",
+      status: 400,
       severity: "error",
       description: "Missing required header, nhsd-identity-uuid."
     })
@@ -52,7 +52,7 @@ export const validateCommonHeaders = (
   if(!jobRoleCode) {
     logger.error("Missing required header, nhsd-session-jobrole.")
     errors.push({
-      status: "400",
+      status: 400,
       severity: "error",
       description: "Missing required header, nhsd-session-jobrole."
     })

@@ -19,7 +19,7 @@ describe("Test validateCommonHeaders", () => {
     const headers: APIGatewayProxyEventHeaders = {...mockHeaders, "x-request-id": undefined}
 
     const expectedErrors: Array<ServiceError> = [{
-      status: "400",
+      status: 400,
       severity: "error",
       description: "Missing required header, x-request-id."
     }]
@@ -41,7 +41,7 @@ describe("Test validateCommonHeaders", () => {
     const headers: APIGatewayProxyEventHeaders = {...mockHeaders, "nhsd-organization-uuid": undefined}
 
     const expectedErrors: Array<ServiceError> = [{
-      status: "400",
+      status: 400,
       severity: "error",
       description: "Missing required header, nhsd-organization-uuid."
     }]
@@ -54,7 +54,7 @@ describe("Test validateCommonHeaders", () => {
     const headers: APIGatewayProxyEventHeaders = {...mockHeaders, "nhsd-session-urid": undefined}
 
     const expectedErrors: Array<ServiceError> = [{
-      status: "400",
+      status: 400,
       severity: "error",
       description: "Missing required header, nhsd-session-urid."
     }]
@@ -67,7 +67,7 @@ describe("Test validateCommonHeaders", () => {
     const headers: APIGatewayProxyEventHeaders = {...mockHeaders, "nhsd-identity-uuid": undefined}
 
     const expectedErrors: Array<ServiceError> = [{
-      status: "400",
+      status: 400,
       severity: "error",
       description: "Missing required header, nhsd-identity-uuid."
     }]
@@ -80,7 +80,7 @@ describe("Test validateCommonHeaders", () => {
     const headers: APIGatewayProxyEventHeaders = {...mockHeaders, "nhsd-session-jobrole": undefined}
 
     const expectedErrors: Array<ServiceError> = [{
-      status: "400",
+      status: 400,
       severity: "error",
       description: "Missing required header, nhsd-session-jobrole."
     }]

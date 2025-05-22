@@ -51,7 +51,7 @@ const validatePathParameters = (
   if (!prescriptionId) {
     logger.error("Missing required path parameter; prescriptionId.")
     errors.push({
-      status: "400",
+      status: 400,
       severity: "error",
       description: "Missing required path parameter: prescriptionId."
     })

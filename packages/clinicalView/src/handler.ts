@@ -76,7 +76,7 @@ export const apiGatewayHandler = async (
 
     logger.info("Returning FHIR error response.")
     return {
-      statusCode: 500,
+      statusCode: spineError.status,
       body: JSON.stringify(errorResponseBundle),
       headers: responseHeaders
     }

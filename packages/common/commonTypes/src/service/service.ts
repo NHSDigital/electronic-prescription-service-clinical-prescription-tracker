@@ -1,6 +1,6 @@
 
 export interface ServiceError {
-  status: string
+  status: number
   severity: "error" | "fatal"
   description: string
 }
