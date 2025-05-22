@@ -11,6 +11,6 @@
       "path": "../commonTypes"
     },
   ],
-  "include": ["src/**/*", "src/**/*.json"],
+  "include": ["src/**/*", "tests/**/*"],
   "exclude": ["node_modules"]
 }

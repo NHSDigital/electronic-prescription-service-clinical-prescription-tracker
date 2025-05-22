@@ -1,19 +1,18 @@
 {
-    "extends": "../../tsconfig.defaults.json",
-    "compilerOptions": {
-      "rootDir": ".",
-      "outDir": "lib",
-      "moduleResolution": "bundler",
+  "extends": "../../tsconfig.defaults.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "lib",
+    "moduleResolution": "bundler",
+  },
+  "references": [
+    {
+      "path": "../common/commonTypes"
     },
-    "references": [
-      {
-        "path": "../common/commonTypes"
-      },
-      {
-        "path": "../common/commonUtils"
-      }
-    ],
-    "include": ["src/**/*", "tests/**/*"],
-    "exclude": ["node_modules"]
-  }
-  
+    {
+      "path": "../common/commonUtils"
+    }
+  ],
+  "include": ["src/**/*", "tests/**/*"],
+  "exclude": ["node_modules"]
+}

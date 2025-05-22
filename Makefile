@@ -71,6 +71,7 @@ lint-specification: compile-specification
 test: compile
 	npm run test --workspace packages/cdk
 	npm run test --workspace packages/clinicalView
+	npm run test --workspace packages/common/commonUtils
 	npm run test --workspace packages/prescriptionSearch
 	npm run test --workspace packages/sandbox
 	npm run test --workspace packages/status
