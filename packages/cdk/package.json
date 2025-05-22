@@ -11,11 +11,11 @@
   },
   "dependencies": {
     "aws-cdk-lib": "^2.197.0",
-    "cdk-nag": "^2.35.103",
+    "cdk-nag": "^2.35.104",
     "constructs": "^10.4.2",
     "source-map-support": "^0.5.21"
   },
   "devDependencies": {
-    "aws-cdk": "^2.1016.0"
+    "aws-cdk": "^2.1016.1"
   }
 }
