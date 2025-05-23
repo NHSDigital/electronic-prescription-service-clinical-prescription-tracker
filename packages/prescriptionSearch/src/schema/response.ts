@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 import {FromSchema, JSONSchema} from "json-schema-to-ts"
 
+/* TODO: move to common types / utils */
 export const operationOutcomeSchema = {
   type: "object",
   description: "A collection of error, warning, or information messages that result from a system action",
@@ -105,6 +106,7 @@ export const operationOutcomeSchema = {
   required: ["resourceType", "issue"]
 } as const satisfies JSONSchema
 
+/* TODO: Update to use common props */
 const patientBundleEntrySchema = {
   type: "object",
   description: "An Patient entry in a bundle resource.",
@@ -192,6 +194,7 @@ const patientBundleEntrySchema = {
   required: ["fullUrl", "search", "resource"]
 } as const satisfies JSONSchema
 
+/* TODO: use common version */
 const prescriptionStatusExtensionSchema = {
   type: "object",
   description: "The prescription status.",
@@ -268,6 +271,7 @@ const prescriptionStatusExtensionSchema = {
   required: ["url", "extension"]
 } as const satisfies JSONSchema
 
+/* TODO: use common version */
 const medicationRepeatInformationExtensionSchema = {
   type: "object",
   description: "Medication repeat information.",
@@ -303,6 +307,7 @@ const medicationRepeatInformationExtensionSchema = {
   required: ["url", "extension"]
 } as const satisfies JSONSchema
 
+/* TODO: use common version */
 const pendingCancellationExtensionSchema = {
   type: "object",
   description: "Pending cancellation information.",
@@ -338,6 +343,7 @@ const pendingCancellationExtensionSchema = {
   required: ["url", "extension"]
 } as const satisfies JSONSchema
 
+/* TODO: use common schema props and elements */
 const requestGroupBundleEntrySchema = {
   type: "object",
   description: "A group of related requests.",

@@ -8,8 +8,6 @@ import {createSpineClient} from "@NHSDigital/eps-spine-client"
 
 const logger = new Logger({serviceName: "status"})
 
-/* eslint-disable  max-len */
-
 /**
  *
  * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
