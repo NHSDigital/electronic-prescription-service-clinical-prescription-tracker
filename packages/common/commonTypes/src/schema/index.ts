@@ -15,6 +15,7 @@ import {
 } from "./extensions"
 import {patientCommonProperties} from "./patient"
 import {requestGroupCommonProperties} from "./requestGroup"
+import {bundleCommonProperties, bundleEntryCommonProperties} from "./bundle"
 
 export {
   intent,
@@ -29,5 +30,7 @@ export {
   PrescriptionStatusExtensionType,
   requestGroupCommonProperties,
   subject,
-  taskBusinessStatus
+  taskBusinessStatus,
+  bundleCommonProperties,
+  bundleEntryCommonProperties
 }

@@ -10,9 +10,10 @@ import {
 } from "@cpt-common/common-types/spine"
 import {format, parse} from "date-fns"
 import {XMLParser} from "fast-xml-parser"
-import {DispenseStatusCoding, PerformerSiteTypeCoding, PrescriptionTypeCoding} from "./schema/extensions"
+import {PerformerSiteTypeCoding, PrescriptionTypeCoding} from "./schema/extensions"
 import {StatusReasonCoding} from "./schema/medicationRequest"
 import {HistoryMessage} from "./schema/actions"
+import {DispenseStatusCoding} from "./schema/elements"
 
 // Constants
 export const SPINE_DOB_FORMAT = "yyyymmdd" as const
@@ -167,7 +168,7 @@ interface HistoryEventDetails {
   timestamp: string
   org: string
   newStatus: PrescriptionStatusCoding["code"]
-  cancellationReason?: StatusReasonCoding["display"] /* TODO: is this the correct coding? are prescription/item level reasons different?*/
+  cancellationReason?: StatusReasonCoding["display"]
   isDispenseNotification: boolean,
   isPrescriptionUpload: boolean,
   lineItems: {

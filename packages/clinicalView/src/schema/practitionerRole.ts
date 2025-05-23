@@ -1,4 +1,5 @@
 import {JSONSchema, FromSchema} from "json-schema-to-ts"
+import {bundleEntryCommonProperties} from "@cpt-common/common-types/schema"
 
 export const practitionerRole = {
   type: "object",
@@ -33,4 +34,13 @@ export const practitionerRole = {
   },
   required: ["resourceType", "id", "organization"]
 } as const satisfies JSONSchema
-export type PractitionerRoleType = FromSchema<typeof practitionerRole>
+
+export const practitionerRoleBundleEntry = {
+  type: "object",
+  properties: {
+    ...bundleEntryCommonProperties,
+    resource: practitionerRole
+  },
+  required: ["fullUrl", "search", "resource"]
+} as const satisfies JSONSchema
+export type PractitionerRoleBundleEntryType = FromSchema<typeof practitionerRoleBundleEntry>

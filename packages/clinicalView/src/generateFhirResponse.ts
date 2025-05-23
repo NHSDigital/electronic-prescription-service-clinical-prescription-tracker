@@ -8,6 +8,8 @@ import {
 import {randomUUID, UUID} from "crypto"
 import {
   Address,
+  Bundle,
+  BundleEntry,
   Extension,
   HumanName,
   MedicationDispense,
@@ -28,18 +30,19 @@ import {
   PRESCRIPTION_TYPE_MAP
 } from "./fhirMaps"
 import {Prescription} from "./parseSpineResponse"
-import {HistoryAction, ReferenceAction} from "./schema/actions"
+import {HistoryAction, PrescriptionLineItemsAction, ReferenceAction} from "./schema/actions"
 import {
   DispensingInformationExtensionType,
   PrescriptionTypeExtensionType,
   TaskBusinessStatusExtensionType
 } from "./schema/extensions"
-import {MedicationDispenseType} from "./schema/medicationDispense"
-import {MedicationRequestType} from "./schema/medicationRequest"
-import {PatientType} from "./schema/patient"
-import {PractitionerRoleType} from "./schema/practitionerRole"
-import {RequestGroupType} from "./schema/requestGroup"
+import {MedicationDispenseBundleEntryType} from "./schema/medicationDispense"
+import {MedicationRequestBundleEntryType} from "./schema/medicationRequest"
+import {PatientBundleEntryType, PatientType} from "./schema/patient"
+import {PractitionerRoleBundleEntryType} from "./schema/practitionerRole"
+import {RequestGroupBundleEntryType} from "./schema/requestGroup"
 import {logger} from "./handler"
+import {BundleType} from "./schema/bundle"
 
 interface MedicationRequestResourceIds {
   [key:string]: UUID
@@ -55,47 +58,62 @@ interface ResourceIds {
 
 }
 
-export const generateFhirResponse = (prescription: Prescription, logger: Logger): RequestGroup & RequestGroupType => {
+export const generateFhirResponse = (prescription: Prescription, logger: Logger): BundleType => {
+  logger.info("Generating the Bundle wrapper...")
+  const responseBundle: Bundle & BundleType = {
+    resourceType: "Bundle",
+    type: "searchset",
+    total: 1,
+    entry: []
+  }
+
   // Generate an ID (UUID) for the patient resource for others to reference
   const patientResourceId = randomUUID()
 
   logger.info("Generating RequestGroup...")
-  const responseRequestGroup: RequestGroup & RequestGroupType = {
-    resourceType: "RequestGroup",
-    id: randomUUID(),
-    identifier: [{
-      system: "https://fhir.nhs.uk/Id/prescription-order-number",
-      value: prescription.prescriptionId
-    }],
-    subject: {
-      reference: `#${patientResourceId}`
+  const requestGroupResourceId = randomUUID()
+  const requestGroup: BundleEntry<RequestGroup> & RequestGroupBundleEntryType = {
+    fullUrl: `urn:uuid:${requestGroupResourceId}`,
+    search: {
+      mode: "match"
     },
-    status: "active",
-    intent: INTENT_MAP[prescription.treatmentType],
-    author: {
-      identifier: {
-        system: "https://fhir.nhs.uk/Id/ods-organization-code",
-        value: prescription.prescriberOrg
-      }
-    },
-    authoredOn: prescription.issueDate,
-    extension: [],
-    action: [],
-    contained: []
+    resource: {
+      resourceType: "RequestGroup",
+      id: requestGroupResourceId,
+      identifier: [{
+        system: "https://fhir.nhs.uk/Id/prescription-order-number",
+        value: prescription.prescriptionId
+      }],
+      subject: {
+        reference: `urn:uuid:${patientResourceId}`
+      },
+      status: "active",
+      intent: INTENT_MAP[prescription.treatmentType],
+      author: {
+        identifier: {
+          system: "https://fhir.nhs.uk/Id/ods-organization-code",
+          value: prescription.prescriberOrg
+        }
+      },
+      authoredOn: prescription.issueDate,
+      extension: [],
+      action: []
+    }
   }
-
-  logger.info("Generating Patient resource...")
-  const patient: PatientType = generatePatientResource(prescription, patientResourceId)
-  responseRequestGroup.contained.push(patient)
 
   logger.info("Generating RequestGroup extensions...")
   const requestGroupExtensions: Array<Extension> = generateRequestGroupExtensions(prescription)
-  responseRequestGroup.extension?.push(...requestGroupExtensions)
+  requestGroup.resource.extension?.push(...requestGroupExtensions)
+
+  logger.info("Generating Patient resource...")
+  const patient: PatientBundleEntryType = generatePatientResource(prescription, patientResourceId)
+  responseBundle.entry.push(patient)
 
   logger.info("Generating MedicationRequest resources...")
   const {prescriberPractitionerRole, medicationRequests, medicationRequestResourceIds}:
     MedicationRequestResources = generateMedicationRequests(prescription, patientResourceId)
-  responseRequestGroup.contained.push(prescriberPractitionerRole, ...medicationRequests)
+  responseBundle.entry.push(prescriberPractitionerRole, ...medicationRequests)
+
   const resourceIds: ResourceIds = {
     medicationRequest: medicationRequestResourceIds
   }
@@ -106,51 +124,20 @@ export const generateFhirResponse = (prescription: Prescription, logger: Logger)
     }:MedicationDispenseResources = generateMedicationDispenses(
       prescription, patientResourceId, medicationRequestResourceIds)
 
-    responseRequestGroup.contained.push(dispenserPractitionerRole, ...medicationDispenses)
+    responseBundle.entry.push(dispenserPractitionerRole, ...medicationDispenses)
     resourceIds.medicationDispense = medicationDispenseResourceIds
   }
 
+  logger.info("Generating prescription line items Action...")
+  const prescriptionLineItemsAction = generatePrescriptionLineItemsAction(prescription, resourceIds.medicationRequest)
+  requestGroup.resource.action.push(prescriptionLineItemsAction)
+
   logger.info("Generating history Action...")
   const historyAction = generateHistoryAction(prescription, resourceIds)
-  responseRequestGroup.action.push(historyAction)
+  requestGroup.resource.action.push(historyAction)
 
-  return responseRequestGroup
-}
-
-const generatePatientResource = (prescription: Prescription, patientResourceId: UUID): PatientType => {
-  logger.info("Generating Patient name...")
-  const patientName: HumanName & PatientType["name"] = [{
-    ...(prescription.prefix ? {prefix: [prescription.prefix]}: {}),
-    ...(prescription.suffix ? {suffix: [prescription.suffix]}: {}),
-    ...(prescription.given ? {given: [prescription.given]}: {}),
-    ...(prescription.family ? {family: prescription.family}: {})
-  }]
-
-  logger.info("Generating Patient address...")
-  const line = prescription.address.line
-  const postalCode = prescription.address.postalCode
-  const patientAddress: Address & PatientType["address"] = line.length || postalCode ? [{
-    ...(line.length ? {line} : {}),
-    ...(postalCode ? {postalCode}: {}),
-    text: [...line, ...(postalCode ? [postalCode]: [])].join(", "),
-    type: "both",
-    use: "home"
-  }] : []
-
-  const patient: Patient & PatientType = {
-    resourceType: "Patient",
-    id: patientResourceId,
-    identifier: [{
-      system: "https://fhir.nhs.uk/Id/nhs-number",
-      value: prescription.nhsNumber
-    }],
-    ...(Object.keys(patientName[0]).length ? {name: patientName}: {}),
-    birthDate: prescription.birthDate,
-    gender: prescription.gender ? GENDER_MAP[prescription.gender] : "unknown",
-    ...(patientAddress.length ? {address: patientAddress} : {})
-  }
-
-  return patient
+  responseBundle.entry.push(requestGroup)
+  return responseBundle
 }
 
 const generateRequestGroupExtensions = (prescription: Prescription): Array<Extension> => {
@@ -188,7 +175,6 @@ const generateRequestGroupExtensions = (prescription: Prescription): Array<Exten
     extensions.push(repeatInformationExtension)
   }
 
-  /* TODO: should this be here? is this the correct format? */
   logger.info("Generating prescription PendingCancellation extension...")
   const prescriptionPendingCancellationExtension: Extension & PendingCancellationExtensionType = {
     url: "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
@@ -213,22 +199,71 @@ const generateRequestGroupExtensions = (prescription: Prescription): Array<Exten
   return extensions
 }
 
+const generatePatientResource = (prescription: Prescription, patientResourceId: UUID): PatientBundleEntryType => {
+  logger.info("Generating Patient name...")
+  const patientName: HumanName & PatientType["name"] = [{
+    ...(prescription.prefix ? {prefix: [prescription.prefix]}: {}),
+    ...(prescription.suffix ? {suffix: [prescription.suffix]}: {}),
+    ...(prescription.given ? {given: [prescription.given]}: {}),
+    ...(prescription.family ? {family: prescription.family}: {})
+  }]
+
+  logger.info("Generating Patient address...")
+  const line = prescription.address.line
+  const postalCode = prescription.address.postalCode
+  const patientAddress: Address & PatientType["address"] = line.length || postalCode ? [{
+    ...(line.length ? {line} : {}),
+    ...(postalCode ? {postalCode}: {}),
+    text: [...line, ...(postalCode ? [postalCode]: [])].join(", "),
+    type: "both",
+    use: "home"
+  }] : []
+
+  const patient: BundleEntry<Patient> & PatientBundleEntryType = {
+    fullUrl: `urn:uuid:${patientResourceId}`,
+    search: {
+      mode: "include"
+    },
+    resource:{
+      resourceType: "Patient",
+      id: patientResourceId,
+      identifier: [{
+        system: "https://fhir.nhs.uk/Id/nhs-number",
+        value: prescription.nhsNumber
+      }],
+      ...(Object.keys(patientName[0]).length ? {name: patientName}: {}),
+      birthDate: prescription.birthDate,
+      gender: prescription.gender ? GENDER_MAP[prescription.gender] : "unknown",
+      ...(patientAddress.length ? {address: patientAddress} : {})
+    }
+  }
+
+  return patient
+}
+
 interface MedicationRequestResources {
-  prescriberPractitionerRole: PractitionerRoleType,
-  medicationRequests: Array<MedicationRequestType>,
+  prescriberPractitionerRole: PractitionerRoleBundleEntryType,
+  medicationRequests: Array<MedicationRequestBundleEntryType>,
   medicationRequestResourceIds: MedicationRequestResourceIds
 }
 
 const generateMedicationRequests = (
   prescription: Prescription, patientResourceId: UUID): MedicationRequestResources => {
   logger.info("Generating prescriber PractitionerRole resource...")
-  const prescriberPractitionerRole: PractitionerRole & PractitionerRoleType = {
-    resourceType: "PractitionerRole",
-    id: randomUUID(),
-    organization: {
-      identifier: {
-        system: "https://fhir.nhs.uk/Id/ods-organization-code",
-        value: prescription.prescriberOrg
+  const prescriberResourceId = randomUUID()
+  const prescriberPractitionerRole: BundleEntry<PractitionerRole> & PractitionerRoleBundleEntryType = {
+    fullUrl: `urn:uuid:${prescriberResourceId}`,
+    search: {
+      mode: "include"
+    },
+    resource: {
+      resourceType: "PractitionerRole",
+      id: prescriberResourceId,
+      organization: {
+        identifier: {
+          system: "https://fhir.nhs.uk/Id/ods-organization-code",
+          value: prescription.prescriberOrg
+        }
       }
     }
   }
@@ -265,80 +300,86 @@ const generateMedicationRequests = (
     const medicationRequestResourceId = randomUUID()
     medicationRequestResourceIds[lineItem.lineItemNo] = medicationRequestResourceId
 
-    const medicationRequest: MedicationRequest & MedicationRequestType= {
-      resourceType: "MedicationRequest",
-      id: medicationRequestResourceId,
-      identifier: [{
-        system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
-        value: lineItem.lineItemId
-      }],
-      subject: {
-        reference: `#${patientResourceId}`
+    const medicationRequest: BundleEntry<MedicationRequest> & MedicationRequestBundleEntryType= {
+      fullUrl: `urn:uuid:${medicationRequestResourceId}`,
+      search: {
+        mode: "include"
       },
-      status: MEDICATION_REQUEST_STATUS_MAP[lineItem.status],
-      ...(lineItem.cancellationReason ? {
-        statusReason: {
-          coding:[{
-            system: "https://fhir.nhs.uk/CodeSystem/medicationrequest-status-reason",
-            code: LINE_ITEM_STATUS_REASON_MAP[lineItem.cancellationReason],
-            display: lineItem.cancellationReason
-          }]
-        }
-      } : {}),
-      intent: INTENT_MAP[prescription.treatmentType],
-      requester: {
-        reference: `#${prescriberPractitionerRole.id}`
-      },
-      groupIdentifier: {
-        system: "https://fhir.nhs.uk/Id/prescription-order-number",
-        value: prescription.prescriptionId
-      },
-      medicationCodeableConcept: {
-        text: lineItem.itemName
-      },
-      courseOfTherapyType: {
-        coding: [{
-          system: "http://terminology.hl7.org/CodeSystem/medicationrequest-course-of-therapy",
-          code: COURSE_OF_THERAPY_TYPE_MAP[prescription.treatmentType].code,
-          display: COURSE_OF_THERAPY_TYPE_MAP[prescription.treatmentType].display
-        }]
-      },
-      dispenseRequest: {
-        quantity: {
-          value: lineItem.quantity,
-          unit: lineItem.quantityForm
+      resource: {
+        resourceType: "MedicationRequest",
+        id: medicationRequestResourceId,
+        identifier: [{
+          system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
+          value: lineItem.lineItemId
+        }],
+        subject: {
+          reference: `urn:uuid:${patientResourceId}`
         },
-        ...(prescription.nominatedDispenserOrg ? {performer: {
-          identifier: [{
-            system: "https://fhir.nhs.uk/Id/ods-organization-code",
-            value: prescription.nominatedDispenserOrg
-          }]
-        }} : {}),
-        ...(prescription.daysSupply ? {expectedSupplyDuration :{
-          system: "http://unitsofmeasure.org",
-          value: prescription.daysSupply,
-          code: "d",
-          unit: "days"
-        }} : {}),
-        extension: [{
-          url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PerformerSiteType",
-          valueCoding: {
-            system: "https://fhir.nhs.uk/CodeSystem/dispensing-site-preference",
-            code: prescription.nominatedDisperserType,
-            display: PERFORMER_SITE_TYPE_MAP[prescription.nominatedDisperserType]
+        status: MEDICATION_REQUEST_STATUS_MAP[lineItem.status],
+        ...(lineItem.cancellationReason ? {
+          statusReason: {
+            coding:[{
+              system: "https://fhir.nhs.uk/CodeSystem/medicationrequest-status-reason",
+              code: LINE_ITEM_STATUS_REASON_MAP[lineItem.cancellationReason],
+              display: lineItem.cancellationReason
+            }]
           }
-        }]
-      },
-      dosageInstruction:[{
-        text: lineItem.dosageInstruction ?? "" // dosage instruction can be missing, but is required in fhir
-      }],
-      substitution: {
-        allowedBoolean: false
-      },
-      extension: [
-        dispensingInformationExtension,
-        lineItemPendingCancellationExtension
-      ]
+        } : {}),
+        intent: INTENT_MAP[prescription.treatmentType],
+        requester: {
+          reference: `urn:uuid:${prescriberResourceId}`
+        },
+        groupIdentifier: {
+          system: "https://fhir.nhs.uk/Id/prescription-order-number",
+          value: prescription.prescriptionId
+        },
+        medicationCodeableConcept: {
+          text: lineItem.itemName
+        },
+        courseOfTherapyType: {
+          coding: [{
+            system: "http://terminology.hl7.org/CodeSystem/medicationrequest-course-of-therapy",
+            code: COURSE_OF_THERAPY_TYPE_MAP[prescription.treatmentType].code,
+            display: COURSE_OF_THERAPY_TYPE_MAP[prescription.treatmentType].display
+          }]
+        },
+        dispenseRequest: {
+          quantity: {
+            value: lineItem.quantity,
+            unit: lineItem.quantityForm
+          },
+          ...(prescription.nominatedDispenserOrg ? {performer: {
+            identifier: [{
+              system: "https://fhir.nhs.uk/Id/ods-organization-code",
+              value: prescription.nominatedDispenserOrg
+            }]
+          }} : {}),
+          ...(prescription.daysSupply ? {expectedSupplyDuration :{ // move to action with med req references for timing timing
+            system: "http://unitsofmeasure.org",
+            value: prescription.daysSupply,
+            code: "d",
+            unit: "days"
+          }} : {}),
+          extension: [{
+            url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PerformerSiteType",
+            valueCoding: {
+              system: "https://fhir.nhs.uk/CodeSystem/dispensing-site-preference",
+              code: prescription.nominatedDisperserType,
+              display: PERFORMER_SITE_TYPE_MAP[prescription.nominatedDisperserType]
+            }
+          }]
+        },
+        dosageInstruction:[{
+          text: lineItem.dosageInstruction ?? "" // dosage instruction can be missing, but is required in fhir
+        }],
+        substitution: {
+          allowedBoolean: false
+        },
+        extension: [
+          dispensingInformationExtension,
+          lineItemPendingCancellationExtension
+        ]
+      }
     }
     medicationRequests.push(medicationRequest)
   }
@@ -351,24 +392,30 @@ const generateMedicationRequests = (
 }
 
 interface MedicationDispenseResources {
-  dispenserPractitionerRole: PractitionerRoleType,
-  medicationDispenses: Array<MedicationDispenseType>,
+  dispenserPractitionerRole: PractitionerRoleBundleEntryType,
+  medicationDispenses: Array<MedicationDispenseBundleEntryType>,
   medicationDispenseResourceIds: MedicationDispenseResourceIds
 }
 
 const generateMedicationDispenses = (prescription: Prescription, patientResourceId: UUID,
   medicationRequestResourceIds: MedicationRequestResourceIds): MedicationDispenseResources => {
-  const medicationDispenses: Array<MedicationDispenseType> = []
+  const medicationDispenses: Array<MedicationDispenseBundleEntryType> = []
   const medicationDispenseResourceIds: MedicationDispenseResourceIds = {}
-
   logger.info("Generating dispenser PractitionerRole resource...")
-  const dispenserPractitionerRole: PractitionerRole & PractitionerRoleType = {
-    resourceType: "PractitionerRole",
-    id: randomUUID(),
-    organization: {
-      identifier: {
-        system: "https://fhir.nhs.uk/Id/ods-organization-code",
-        value: prescription.dispenserOrg as string
+  const dispenserResourceId = randomUUID()
+  const dispenserPractitionerRole: BundleEntry<PractitionerRole> & PractitionerRoleBundleEntryType = {
+    fullUrl: `urn:uuid:${dispenserResourceId}`,
+    search: {
+      mode: "include"
+    },
+    resource:{
+      resourceType: "PractitionerRole",
+      id: dispenserResourceId,
+      organization: {
+        identifier: {
+          system: "https://fhir.nhs.uk/Id/ods-organization-code",
+          value: prescription.dispenserOrg as string
+        }
       }
     }
   }
@@ -383,7 +430,6 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
     }
   }
 
-  /* TODO: do we need a prescriptionNonDispensingReason extension for a hl7 prescription level cancellation?*/
   // Generate a medication dispense resource for each line item of each dispense notification
   for (const dispenseNotification of Object.values(prescription.dispenseNotifications)){
     medicationDispenseResourceIds[dispenseNotification.dispenseNotificationId] = {}
@@ -397,48 +443,91 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
       medicationDispenseResourceIds[
         dispenseNotification.dispenseNotificationId][lineItem.lineItemNo] = medicationDispenseResourceId
 
-      const medicationDispense: MedicationDispense & MedicationDispenseType= {
-        resourceType: "MedicationDispense",
-        id: medicationDispenseResourceId,
-        identifier: [{
-          system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
-          value: lineItem.lineItemId
-        }],
-        subject: {
-          reference: `#${patientResourceId}`
+      const medicationDispense: BundleEntry<MedicationDispense> & MedicationDispenseBundleEntryType= {
+        fullUrl: `urn:uuid:${medicationDispenseResourceId}`,
+        search: {
+          mode: "include"
         },
-        status: MEDICATION_DISPENSE_STATUS_MAP[lineItem.status],
-        performer: [{
-          actor: {
-            reference: `#${dispenserPractitionerRole.id}`
-          }
-        }],
-        authorizingPrescription: [{
-          reference: `#${medicationRequestResourceIds[lineItem.lineItemNo]}`
-        }],
-        medicationCodeableConcept: {
-          text: lineItem.itemName
-        },
-        quantity: {
-          value: lineItem.quantity,
-          unit: lineItem.quantityForm
-        },
-        ...(lineItem.dosageInstruction ? {dosageInstruction: [{text: lineItem.dosageInstruction}]}: {}),
-        ...(prescription.daysSupply ? {daysSupply: {
-          system: "http://unitsofmeasure.org",
-          value: prescription.daysSupply,
-          code: "d",
-          unit: "days"
-        }}: {}),
-        extension: [
-          taskBusinessStatusExtension
-        ]
+        resource:{
+          resourceType: "MedicationDispense",
+          id: medicationDispenseResourceId,
+          identifier: [{
+            system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
+            value: lineItem.lineItemId
+          }],
+          subject: {
+            reference: `urn:uuid:${patientResourceId}`
+          },
+          status: MEDICATION_DISPENSE_STATUS_MAP[lineItem.status],
+          performer: [{
+            actor: {
+              reference: `urn:uuid:${dispenserResourceId}`
+            }
+          }],
+          type:{
+            coding: [{
+              system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+              code: lineItem.status,
+              display: LINE_ITEM_STATUS_MAP[lineItem.status]
+            }]
+          },
+          authorizingPrescription: [{
+            reference: `urn:uuid:${medicationRequestResourceIds[lineItem.lineItemNo]}`
+          }],
+          medicationCodeableConcept: {
+            text: lineItem.itemName
+          },
+          quantity: {
+            value: lineItem.quantity,
+            unit: lineItem.quantityForm
+          },
+          ...(lineItem.dosageInstruction ? {dosageInstruction: [{text: lineItem.dosageInstruction}]}: {}),
+          ...(prescription.daysSupply ? {daysSupply: {
+            system: "http://unitsofmeasure.org",
+            value: prescription.daysSupply,
+            code: "d",
+            unit: "days"
+          }}: {}),
+          extension: [
+            taskBusinessStatusExtension
+          ]
+        }
       }
       medicationDispenses.push(medicationDispense)
     }
   }
 
   return {dispenserPractitionerRole, medicationDispenses, medicationDispenseResourceIds}
+}
+
+const generatePrescriptionLineItemsAction = (prescription: Prescription, resourceIds: MedicationRequestResourceIds):
+  RequestGroupAction & PrescriptionLineItemsAction => {
+  logger.info("Generating Action for prescription line items...")
+  const prescriptionLineItemsAction: RequestGroupAction & PrescriptionLineItemsAction = {
+    id: randomUUID(),
+    title: "Prescription Line Items(Medications)",
+    ...(prescription.daysSupply ? {timingTiming: {
+      repeat: {
+        frequency: 1,
+        period: prescription.daysSupply,
+        periodUnit: "d"
+      }
+    }} : {}), // TODO: days supply could be missing, should we not include the timing or default its value?
+    action:[]
+  }
+
+  // Generate a reference sub Action for each MedicationRequest
+  for (const medicationRequestResourceId of Object.values(resourceIds)){
+    const referenceAction: RequestGroupAction & ReferenceAction = {
+      id: randomUUID(),
+      resource: {
+        reference: `urn:uuid:${medicationRequestResourceId}`
+      }
+    }
+    prescriptionLineItemsAction.action?.push(referenceAction)
+  }
+
+  return prescriptionLineItemsAction
 }
 
 const generateHistoryAction = (
@@ -455,26 +544,14 @@ const generateHistoryAction = (
   for (const event of Object.values(prescription.history)){
     const referenceActions: Array<ReferenceAction> = []
 
-    if (event.isPrescriptionUpload) {
-      logger.info("Generating reference Actions for MedicationRequests...")
-      // Generate a reference sub Action of the event sub Action for each MedicationRequest
-      for (const medicationRequestResourceId of Object.values(resourceIds.medicationRequest)){
-        const referenceAction: RequestGroupAction & ReferenceAction = {
-          resource: {
-            reference: `#${medicationRequestResourceId}`
-          }
-        }
-        referenceActions.push(referenceAction)
-      }
-    }
-
     if (event.isDispenseNotification && resourceIds.medicationDispense){
       logger.info("Generating reference Actions for MedicationDispenses...")
       // Generate a reference sub Action of the event sub Action for each MedicationDispense
       for (const medicationDispenseResourceId of Object.values(resourceIds.medicationDispense[event.messageId])){
         const referenceAction: RequestGroupAction & ReferenceAction = {
+          id: randomUUID(),
           resource: {
-            reference: `#${medicationDispenseResourceId}`
+            reference: `urn:uuid:${medicationDispenseResourceId}`
           }
         }
         referenceActions.push(referenceAction)

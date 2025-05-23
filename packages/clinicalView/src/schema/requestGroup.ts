@@ -1,16 +1,13 @@
 import {
+  bundleEntryCommonProperties,
   medicationRepeatInformationExtension,
   pendingCancellationExtension,
   prescriptionStatusExtension,
   requestGroupCommonProperties
 } from "@cpt-common/common-types/schema"
 import {FromSchema, JSONSchema} from "json-schema-to-ts"
-import {historyAction} from "./actions"
+import {historyAction, prescriptionLineItemsAction} from "./actions"
 import {prescriptionTypeExtension} from "./extensions"
-import {medicationDispense} from "./medicationDispense"
-import {medicationRequest} from "./medicationRequest"
-import {patient} from "./patient"
-import {practitionerRole} from "./practitionerRole"
 
 export const requestGroup = {
   type: "object",
@@ -56,18 +53,8 @@ export const requestGroup = {
       type: "array",
       items: {
         oneOf: [
+          prescriptionLineItemsAction,
           historyAction
-        ]
-      }
-    },
-    contained: {
-      type: "array",
-      items: {
-        oneOf: [
-          patient,
-          practitionerRole,
-          medicationRequest,
-          medicationDispense
         ]
       }
     }
@@ -80,8 +67,16 @@ export const requestGroup = {
     "author",
     "authoredOn",
     "subject",
-    "action",
-    "contained"
+    "action"
   ]
 } as const satisfies JSONSchema
-export type RequestGroupType = FromSchema<typeof requestGroup>
+
+export const requestGroupBundleEntry = {
+  type: "object",
+  properties: {
+    ...bundleEntryCommonProperties,
+    resource: requestGroup
+  },
+  required: ["fullUrl", "search", "resource"]
+} as const satisfies JSONSchema
+export type RequestGroupBundleEntryType = FromSchema<typeof requestGroupBundleEntry>

@@ -1,4 +1,9 @@
-import {intent, pendingCancellationExtension, subject} from "@cpt-common/common-types/schema"
+import {
+  bundleEntryCommonProperties,
+  intent,
+  pendingCancellationExtension,
+  subject
+} from "@cpt-common/common-types/schema"
 import {FromSchema, JSONSchema} from "json-schema-to-ts"
 import {
   daysSupply,
@@ -217,4 +222,13 @@ export const medicationRequest = {
     "extension"
   ]
 } as const satisfies JSONSchema
-export type MedicationRequestType = FromSchema<typeof medicationRequest>
+
+export const medicationRequestBundleEntry = {
+  type: "object",
+  properties: {
+    ...bundleEntryCommonProperties,
+    resource: medicationRequest
+  },
+  required: ["fullUrl", "search", "resource"]
+} as const satisfies JSONSchema
+export type MedicationRequestBundleEntryType = FromSchema<typeof medicationRequestBundleEntry>

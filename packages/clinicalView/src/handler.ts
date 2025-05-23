@@ -13,8 +13,9 @@ import {APIGatewayEvent, APIGatewayProxyResult} from "aws-lambda"
 import {OperationOutcome} from "fhir/r4"
 import {generateFhirResponse} from "./generateFhirResponse"
 import {ParsedSpineResponse, parseSpineResponse, Prescription} from "./parseSpineResponse"
-import {requestGroup, RequestGroupType} from "./schema/requestGroup"
+import {requestGroup} from "./schema/requestGroup"
 import {validateRequest} from "./validateRequest"
+import {BundleType} from "./schema/bundle"
 
 // Config
 const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
@@ -83,12 +84,12 @@ export const apiGatewayHandler = async (
   }
 
   logger.info("Generating FHIR response...")
-  const responseRequestGroup: RequestGroupType = generateFhirResponse(prescription as Prescription, logger)
+  const responseBundle: BundleType = generateFhirResponse(prescription as Prescription, logger)
 
   logger.info("Retuning FHIR response.")
   return {
     statusCode: 200,
-    body: JSON.stringify(responseRequestGroup),
+    body: JSON.stringify(responseBundle),
     headers: responseHeaders
   }
 }

@@ -1,5 +1,6 @@
 import {taskBusinessStatus} from "@cpt-common/common-types/schema"
 import {FromSchema, JSONSchema} from "json-schema-to-ts"
+import {dispenseStatusCoding} from "./elements"
 export const prescriptionTypeExtension = {
   type: "object",
   properties: {
@@ -201,46 +202,10 @@ const dispenseStatus = {
       type: "string",
       enum: ["dispenseStatus"]
     },
-    valueCoding: {
-      type: "object",
-      properties: {
-        system: {
-          type: "string",
-          enum: ["https://fhir.nhs.uk/CodeSystem/medicationdispense-type"]
-        },
-        code: {
-          type: "string",
-          enum: [
-            "0001",
-            "0002",
-            "0003",
-            "0004",
-            "0005",
-            "0006",
-            "0007",
-            "0008"
-          ]
-        },
-        display: {
-          type: "string",
-          enum: [
-            "Item fully dispensed",
-            "Item not dispensed",
-            "Item dispensed - partial",
-            "Item not dispensed - owing",
-            "Item Cancelled",
-            "Expired",
-            "Item to be dispensed",
-            "Item with dispenser"
-          ]
-        }
-      },
-      required: ["system", "code", "display"]
-    }
+    valueCoding: dispenseStatusCoding
   },
   required: ["url", "valueCoding"]
 } as const satisfies JSONSchema
-export type DispenseStatusCoding = FromSchema<typeof dispenseStatus>["valueCoding"]
 
 export const dispensingInformationExtension = {
   type: "object",

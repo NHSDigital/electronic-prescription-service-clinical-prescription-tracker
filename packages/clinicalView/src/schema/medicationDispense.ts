@@ -1,7 +1,8 @@
-import {subject} from "@cpt-common/common-types/schema"
+import {bundleEntryCommonProperties, subject} from "@cpt-common/common-types/schema"
 import {FromSchema, JSONSchema} from "json-schema-to-ts"
 import {
   daysSupply,
+  dispenseStatusCoding,
   dosageInstruction,
   id,
   identifier,
@@ -51,6 +52,15 @@ export const medicationDispense = {
         required: ["actor"]
       }
     },
+    type: {
+      type: "object",
+      properties: {
+        coding: {
+          type: "array",
+          items: dispenseStatusCoding
+        }
+      }
+    },
     authorizingPrescription: {
       type: "array",
       items:{
@@ -79,10 +89,20 @@ export const medicationDispense = {
     "subject",
     "status",
     "performer",
+    "type",
     "authorizingPrescription",
     "medicationCodeableConcept",
     "quantity",
     "extension"
   ]
 } as const satisfies JSONSchema
-export type MedicationDispenseType = FromSchema<typeof medicationDispense>
+
+export const medicationDispenseBundleEntry = {
+  type: "object",
+  properties: {
+    ...bundleEntryCommonProperties,
+    resource: medicationDispense
+  },
+  required: ["fullUrl", "search", "resource"]
+} as const satisfies JSONSchema
+export type MedicationDispenseBundleEntryType = FromSchema<typeof medicationDispenseBundleEntry>

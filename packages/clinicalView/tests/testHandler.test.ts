@@ -128,7 +128,7 @@ describe("test handler", () => {
     expect(parseSpineResponse).toHaveBeenCalled()
   })
 
-  it("generates the FHIR RequestGroup when spine returns a successful response", async () => {
+  it("generates the FHIR Bundle when spine returns a successful response", async () => {
     mockValidate.mockReturnValue([{}, []])
     mockAxios.onPost(clinicalViewUrl).reply(200, {data: "success"})
     mockParseSpineResponse.mockReturnValue({})
@@ -138,18 +138,20 @@ describe("test handler", () => {
     expect(generateFhirResponse).toHaveBeenCalled()
   })
 
-  it("returns the FHIR RequestGroup and a 200 response when pine returns a successful response", async () => {
+  it("returns the FHIR Bundle and a 200 response when pine returns a successful response", async () => {
     mockValidate.mockReturnValue([{requestId: "REQ-123-456-789"}, []])
     mockAxios.onPost(clinicalViewUrl).reply(200, {data: "success"})
     mockParseSpineResponse.mockReturnValue({})
     mockGenerateFhirResponse.mockReturnValue({
-      resourceType: "RequestGroup",
-      id: "RGROUP-123-567-890"
+      resourceType: "Bundle",
+      type: "searchset",
+      total: 1,
+      entry: []
     })
 
     const expectedResponse = {
       statusCode: 200,
-      body: "{\"resourceType\":\"RequestGroup\",\"id\":\"RGROUP-123-567-890\"}",
+      body: "{\"resourceType\":\"Bundle\",\"type\":\"searchset\",\"total\":1,\"entry\":[]}",
       headers: {
         "Content-Type": "application/fhir+json",
         "Cache-Control": "no-cache",

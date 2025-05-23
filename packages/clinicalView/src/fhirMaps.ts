@@ -1,10 +1,11 @@
 import {TreatmentType} from "@cpt-common/common-types/fhir"
 import {SpineTreatmentTypeCode} from "@cpt-common/common-types/spine"
 import {SpineGenderCode} from "./parseSpineResponse"
-import {DispenseStatusCoding, PerformerSiteTypeCoding, PrescriptionTypeCoding} from "./schema/extensions"
+import {PerformerSiteTypeCoding, PrescriptionTypeCoding} from "./schema/extensions"
 import {MedicationDispenseStatusType} from "./schema/medicationDispense"
 import {CourseOfTherapyTypeCoding, MedicationRequestStatusType, StatusReasonCoding} from "./schema/medicationRequest"
 import {GenderType} from "./schema/patient"
+import {DispenseStatusCoding} from "./schema/elements"
 
 export const GENDER_MAP: Record<SpineGenderCode, GenderType> = {
   1 : "male",
