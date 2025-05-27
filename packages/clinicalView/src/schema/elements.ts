@@ -45,27 +45,6 @@ export const quantity ={
   required: ["value", "unit"]
 } as const satisfies JSONSchema
 
-export const daysSupply = {
-  type: "object",
-  properties: {
-    value: {
-      type: "integer"
-    },
-    unit: {
-      type: "string",
-      enum: ["days"]
-    },
-    system: {
-      type: "string",
-      enum: ["http://unitsofmeasure.org"]
-    },
-    code: {
-      type: "string",
-      enum: ["d"]
-    }
-  }
-} as const satisfies JSONSchema
-
 export const dosageInstruction = {
   type: "array",
   items: {

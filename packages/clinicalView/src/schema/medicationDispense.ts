@@ -1,7 +1,6 @@
 import {bundleEntryCommonProperties, subject} from "@cpt-common/common-types/schema"
 import {FromSchema, JSONSchema} from "json-schema-to-ts"
 import {
-  daysSupply,
   dispenseStatusCoding,
   dosageInstruction,
   id,
@@ -76,7 +75,6 @@ export const medicationDispense = {
     medicationCodeableConcept,
     quantity,
     dosageInstruction,
-    daysSupply, /* TODO: seemed to be missing added here */
     extension: {
       type: "array",
       items: taskBusinessStatusExtension

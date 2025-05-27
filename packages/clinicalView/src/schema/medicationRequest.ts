@@ -6,7 +6,6 @@ import {
 } from "@cpt-common/common-types/schema"
 import {FromSchema, JSONSchema} from "json-schema-to-ts"
 import {
-  daysSupply,
   dosageInstruction,
   id,
   identifier,
@@ -176,7 +175,6 @@ export const medicationRequest = {
           },
           required: ["identifier"]
         },
-        expectedSupplyDuration: daysSupply, /* TODO: seemed to be missing added here */
         extension: {
           type: "array",
           items: performerSiteTypeExtension

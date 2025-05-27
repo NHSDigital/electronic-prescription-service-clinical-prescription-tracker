@@ -45,7 +45,7 @@ import {logger} from "./handler"
 import {BundleType} from "./schema/bundle"
 
 interface MedicationRequestResourceIds {
-  [key:string]: UUID
+  [key: string]: UUID
 }
 interface MedicationDispenseResourceIds {
   [key: string]: {
@@ -110,8 +110,9 @@ export const generateFhirResponse = (prescription: Prescription, logger: Logger)
   responseBundle.entry.push(patient)
 
   logger.info("Generating MedicationRequest resources...")
-  const {prescriberPractitionerRole, medicationRequests, medicationRequestResourceIds}:
-    MedicationRequestResources = generateMedicationRequests(prescription, patientResourceId)
+  const medicationRequestResources: MedicationRequestResources = generateMedicationRequests(
+    prescription, patientResourceId)
+  const {prescriberPractitionerRole, medicationRequests, medicationRequestResourceIds} = medicationRequestResources
   responseBundle.entry.push(prescriberPractitionerRole, ...medicationRequests)
 
   const resourceIds: ResourceIds = {
@@ -120,9 +121,9 @@ export const generateFhirResponse = (prescription: Prescription, logger: Logger)
 
   logger.info("Generating MedicationDispense resources...")
   if (Object.keys(prescription.dispenseNotifications).length){
-    const {dispenserPractitionerRole, medicationDispenses, medicationDispenseResourceIds
-    }:MedicationDispenseResources = generateMedicationDispenses(
+    const medicationDispenseResources :MedicationDispenseResources = generateMedicationDispenses(
       prescription, patientResourceId, medicationRequestResourceIds)
+    const {dispenserPractitionerRole, medicationDispenses, medicationDispenseResourceIds} = medicationDispenseResources
 
     responseBundle.entry.push(dispenserPractitionerRole, ...medicationDispenses)
     resourceIds.medicationDispense = medicationDispenseResourceIds
@@ -268,8 +269,8 @@ const generateMedicationRequests = (
     }
   }
 
-  const medicationRequests = []
-  const medicationRequestResourceIds: {[key: string]: UUID} = {}
+  const medicationRequests: Array<MedicationRequestBundleEntryType> = []
+  const medicationRequestResourceIds: MedicationRequestResourceIds = {}
   // Generate a medication request resource for each line item
   for (const lineItem of Object.values(prescription.lineItems)){
     console.log("Generating DispensingInformation extension for line item...", {lineItemNo: lineItem.lineItemNo})
@@ -353,12 +354,6 @@ const generateMedicationRequests = (
               system: "https://fhir.nhs.uk/Id/ods-organization-code",
               value: prescription.nominatedDispenserOrg
             }]
-          }} : {}),
-          ...(prescription.daysSupply ? {expectedSupplyDuration :{ // move to action with med req references for timing timing
-            system: "http://unitsofmeasure.org",
-            value: prescription.daysSupply,
-            code: "d",
-            unit: "days"
           }} : {}),
           extension: [{
             url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PerformerSiteType",
@@ -482,12 +477,6 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
             unit: lineItem.quantityForm
           },
           ...(lineItem.dosageInstruction ? {dosageInstruction: [{text: lineItem.dosageInstruction}]}: {}),
-          ...(prescription.daysSupply ? {daysSupply: {
-            system: "http://unitsofmeasure.org",
-            value: prescription.daysSupply,
-            code: "d",
-            unit: "days"
-          }}: {}),
           extension: [
             taskBusinessStatusExtension
           ]

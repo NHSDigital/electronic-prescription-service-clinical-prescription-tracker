@@ -1227,12 +1227,6 @@ describe("Test parseSpineResponse", () => {
               value: "FA565"
             }]
           },
-          expectedSupplyDuration: {
-            system: "http://unitsofmeasure.org",
-            value: 28,
-            code: "d",
-            unit: "days"
-          },
           extension: [{
             url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PerformerSiteType",
             valueCoding: {
@@ -1314,12 +1308,6 @@ describe("Test parseSpineResponse", () => {
               system: "https://fhir.nhs.uk/Id/ods-organization-code",
               value: "FA565"
             }]
-          },
-          expectedSupplyDuration: {
-            system: "http://unitsofmeasure.org",
-            value: 28,
-            code: "d",
-            unit: "days"
           },
           extension: [{
             url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PerformerSiteType",
@@ -1403,12 +1391,6 @@ describe("Test parseSpineResponse", () => {
               value: "FA565"
             }]
           },
-          expectedSupplyDuration: {
-            system: "http://unitsofmeasure.org",
-            value: 28,
-            code: "d",
-            unit: "days"
-          },
           extension: [{
             url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PerformerSiteType",
             valueCoding: {
@@ -1491,12 +1473,6 @@ describe("Test parseSpineResponse", () => {
               value: "FA565"
             }]
           },
-          expectedSupplyDuration: {
-            system: "http://unitsofmeasure.org",
-            value: 28,
-            code: "d",
-            unit: "days"
-          },
           extension: [{
             url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PerformerSiteType",
             valueCoding: {
@@ -1540,102 +1516,6 @@ describe("Test parseSpineResponse", () => {
     expect(actual.entry).toContainEqual(expectedMedicationRequest2)
     expect(actual.entry).toContainEqual(expectedMedicationRequest3)
     expect(actual.entry).toContainEqual(expectedMedicationRequest4)
-  })
-
-  it("returns a Bundle containing a partial MedicationRequest Bundle Entry resource called with a prescription with no days supply", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
-    mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
-
-    const prescription: Prescription = {
-      ...acuteDispensedWithSingleItem
-    }
-    delete prescription.daysSupply
-
-    const expectedMedicationRequest: MedicationRequestBundleEntryType = {
-      fullUrl: "urn:uuid:MEDREQ-111-111-111",
-      search: {
-        mode: "include"
-      },
-      resource:{
-        resourceType: "MedicationRequest",
-        id: "MEDREQ-111-111-111",
-        identifier: [{
-          system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
-          value: "101875F7-400C-43FE-AC04-7F29DBF854AF"
-        }],
-        subject: {
-          reference: "urn:uuid:PATIENT-123-567-890"
-        },
-        status: "completed",
-        intent: "order",
-        requester: {
-          reference: "urn:uuid:PRESORG-123-567-890"
-        },
-        groupIdentifier: {
-          system: "https://fhir.nhs.uk/Id/prescription-order-number",
-          value: "EA1CBC-A83008-F1F8A8"
-        },
-        medicationCodeableConcept: {
-          text: "Amoxicillin 250mg capsules"
-        },
-        courseOfTherapyType: {
-          coding: [{
-            system: "http://terminology.hl7.org/CodeSystem/medicationrequest-course-of-therapy",
-            code: "acute",
-            display: "Short course (acute) therapy"
-          }]
-        },
-        dispenseRequest: {
-          quantity: {
-            value: 20,
-            unit: "tablet"
-          },
-          performer: {
-            identifier:[{
-              system: "https://fhir.nhs.uk/Id/ods-organization-code",
-              value: "FA565"
-            }]
-          },
-          extension: [{
-            url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PerformerSiteType",
-            valueCoding: {
-              system: "https://fhir.nhs.uk/CodeSystem/dispensing-site-preference",
-              code: "P1",
-              display: "Other (e.g. Community Pharmacy)"
-            }
-          }]
-        },
-        dosageInstruction: [{
-          text: "2 times a day for 10 days"
-        }],
-        substitution: {
-          allowedBoolean: false
-        },
-        extension: [
-          {
-            url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-DispensingInformation",
-            extension: [{
-              url: "dispenseStatus",
-              valueCoding: {
-                system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
-                code: "0001",
-                display: "Item fully dispensed"
-              }
-            }]
-          },
-          {
-            url: "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
-            extension: [{
-              url: "lineItemPendingCancellation",
-              valueBoolean: false
-            }]
-          }
-        ]
-      }
-    }
-
-    const actual = generateFhirResponse(prescription, logger)
-    expect(actual.entry).toContainEqual(expectedMedicationRequest)
   })
 
   it("returns a Bundle containing a partial MedicationRequest Bundle Entry resource called with a prescription with no nominated dispenser", () => {
@@ -1686,12 +1566,6 @@ describe("Test parseSpineResponse", () => {
           quantity: {
             value: 20,
             unit: "tablet"
-          },
-          expectedSupplyDuration: {
-            system: "http://unitsofmeasure.org",
-            value: 28,
-            code: "d",
-            unit: "days"
           },
           extension: [{
             url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PerformerSiteType",
@@ -1809,12 +1683,6 @@ describe("Test parseSpineResponse", () => {
           quantity: {
             value: 20,
             unit: "tablet"
-          },
-          expectedSupplyDuration: {
-            system: "http://unitsofmeasure.org",
-            value: 28,
-            code: "d",
-            unit: "days"
           },
           performer: {
             identifier:[{
@@ -2165,12 +2033,6 @@ describe("Test parseSpineResponse", () => {
         dosageInstruction: [{
           text: "2 times a day for 10 days"
         }],
-        daysSupply: {
-          system: "http://unitsofmeasure.org",
-          value: 28,
-          code: "d",
-          unit: "days"
-        },
         extension:[{
           url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-TaskBusinessStatus",
           valueCoding: {
@@ -2223,12 +2085,6 @@ describe("Test parseSpineResponse", () => {
         dosageInstruction: [{
           text: "2 times a day for 10 days"
         }],
-        daysSupply: {
-          system: "http://unitsofmeasure.org",
-          value: 28,
-          code: "d",
-          unit: "days"
-        },
         extension:[{
           url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-TaskBusinessStatus",
           valueCoding: {
@@ -2281,12 +2137,6 @@ describe("Test parseSpineResponse", () => {
         dosageInstruction: [{
           text: "3 times a day for 10 days"
         }],
-        daysSupply: {
-          system: "http://unitsofmeasure.org",
-          value: 28,
-          code: "d",
-          unit: "days"
-        },
         extension:[{
           url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-TaskBusinessStatus",
           valueCoding: {
@@ -2339,12 +2189,6 @@ describe("Test parseSpineResponse", () => {
         dosageInstruction: [{
           text: "3 times a day for 10 days"
         }],
-        daysSupply: {
-          system: "http://unitsofmeasure.org",
-          value: 28,
-          code: "d",
-          unit: "days"
-        },
         extension:[{
           url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-TaskBusinessStatus",
           valueCoding: {
@@ -2397,12 +2241,6 @@ describe("Test parseSpineResponse", () => {
         dosageInstruction: [{
           text: "2 times a day for 10 days"
         }],
-        daysSupply: {
-          system: "http://unitsofmeasure.org",
-          value: 28,
-          code: "d",
-          unit: "days"
-        },
         extension:[{
           url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-TaskBusinessStatus",
           valueCoding: {
@@ -2466,12 +2304,6 @@ describe("Test parseSpineResponse", () => {
           value: 20,
           unit: "tablet"
         },
-        daysSupply: {
-          system: "http://unitsofmeasure.org",
-          value: 28,
-          code: "d",
-          unit: "days"
-        },
         extension:[{
           url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-TaskBusinessStatus",
           valueCoding: {
@@ -2517,6 +2349,57 @@ describe("Test parseSpineResponse", () => {
       resource: expect.objectContaining({
         resourceType: "RequestGroup",
         action: expect.arrayContaining([expect.objectContaining(expected)])
+      })
+    }))
+  })
+
+  it("returns a RequestGroup with a partial prescription line items Action when called with a prescription with a missing days supply", () => {
+    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
+    mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
+    mockUUID.mockImplementationOnce(() => "LITEMS-123-567-890")
+    mockUUID.mockImplementationOnce(() => "LITEM-111-111-111")
+    mockUUID.mockImplementationOnce(() => "HISTORY-123-567-890")
+    mockUUID.mockImplementationOnce(() => "EVENT-111-111-111")
+    mockUUID.mockImplementationOnce(() => "EVENT-222-222-222")
+    mockUUID.mockImplementationOnce(() => "EVENTDN-123-456-789")
+    mockUUID.mockImplementationOnce(() => "EVENT-333-333-333")
+
+    const prescription = {
+      ...acuteDispensedWithSingleItem
+    }
+    delete prescription.daysSupply
+
+    const expected = {
+      id: "LITEMS-123-567-890",
+      title: "Prescription Line Items(Medications)"
+    }
+
+    const notExpected = {
+      id: "LITEMS-123-567-890",
+      title: "Prescription Line Items(Medications)",
+      timingTiming: {
+        repeat: {
+          frequency: 1,
+          period: 28,
+          periodUnit: "d"
+        }
+      }
+    }
+
+    const actual = generateFhirResponse(prescription, logger)
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "RequestGroup",
+        action: expect.arrayContaining([expect.objectContaining(expected)])
+      })
+    }))
+
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "RequestGroup",
+        action: expect.arrayContaining([expect.not.objectContaining(notExpected)])
       })
     }))
   })
