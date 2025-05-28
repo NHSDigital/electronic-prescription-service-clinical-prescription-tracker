@@ -48,9 +48,7 @@ interface MedicationRequestResourceIds {
   [key: string]: UUID
 }
 interface MedicationDispenseResourceIds {
-  [key: string]: {
-    [key: string]: UUID
-  }
+  [key: string]: Array<UUID>
 }
 interface ResourceIds {
   medicationRequest: MedicationRequestResourceIds
@@ -427,7 +425,7 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
 
   // Generate a medication dispense resource for each line item of each dispense notification
   for (const dispenseNotification of Object.values(prescription.dispenseNotifications)){
-    medicationDispenseResourceIds[dispenseNotification.dispenseNotificationId] = {}
+    medicationDispenseResourceIds[dispenseNotification.dispenseNotificationId] = []
     for (const lineItem of Object.values(dispenseNotification.lineItems)){
 
       logger.info("Generating MedicationDispense resource for DN line item...", {
@@ -436,7 +434,7 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
       })
       const medicationDispenseResourceId = randomUUID()
       medicationDispenseResourceIds[
-        dispenseNotification.dispenseNotificationId][lineItem.lineItemNo] = medicationDispenseResourceId
+        dispenseNotification.dispenseNotificationId].push(medicationDispenseResourceId)
 
       const medicationDispense: BundleEntry<MedicationDispense> & MedicationDispenseBundleEntryType= {
         fullUrl: `urn:uuid:${medicationDispenseResourceId}`,
@@ -493,7 +491,6 @@ const generatePrescriptionLineItemsAction = (prescription: Prescription, resourc
   RequestGroupAction & PrescriptionLineItemsAction => {
   logger.info("Generating Action for prescription line items...")
   const prescriptionLineItemsAction: RequestGroupAction & PrescriptionLineItemsAction = {
-    id: randomUUID(),
     title: "Prescription Line Items(Medications)",
     ...(prescription.daysSupply ? {timingTiming: {
       repeat: {
@@ -501,14 +498,13 @@ const generatePrescriptionLineItemsAction = (prescription: Prescription, resourc
         period: prescription.daysSupply,
         periodUnit: "d"
       }
-    }} : {}), // TODO: days supply could be missing, should we not include the timing or default its value?
+    }} : {}),
     action:[]
   }
 
   // Generate a reference sub Action for each MedicationRequest
   for (const medicationRequestResourceId of Object.values(resourceIds)){
     const referenceAction: RequestGroupAction & ReferenceAction = {
-      id: randomUUID(),
       resource: {
         reference: `urn:uuid:${medicationRequestResourceId}`
       }
@@ -524,7 +520,6 @@ const generateHistoryAction = (
 
   logger.info("Generating Action for prescription history...")
   const historyAction: RequestGroupAction & HistoryAction = {
-    id: randomUUID(),
     title: "Prescription status transitions",
     action: []
   }
@@ -536,9 +531,8 @@ const generateHistoryAction = (
     if (event.isDispenseNotification && resourceIds.medicationDispense){
       logger.info("Generating reference Actions for MedicationDispenses...")
       // Generate a reference sub Action of the event sub Action for each MedicationDispense
-      for (const medicationDispenseResourceId of Object.values(resourceIds.medicationDispense[event.messageId])){
+      for (const medicationDispenseResourceId of resourceIds.medicationDispense[event.messageId]){
         const referenceAction: RequestGroupAction & ReferenceAction = {
-          id: randomUUID(),
           resource: {
             reference: `urn:uuid:${medicationDispenseResourceId}`
           }
@@ -549,7 +543,6 @@ const generateHistoryAction = (
 
     logger.info("Generating sub Action for history event...")
     const eventAction: RequestGroupAction & HistoryAction["action"][0] = {
-      id: randomUUID(),
       title: event.message,
       timingDateTime: event.timestamp,
       code: [

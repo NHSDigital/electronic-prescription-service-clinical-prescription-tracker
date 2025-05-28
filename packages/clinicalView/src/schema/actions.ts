@@ -5,9 +5,6 @@ import {FromSchema, JSONSchema} from "json-schema-to-ts"
 export const referenceAction = {
   type: "object",
   properties: {
-    id: {
-      type: "string"
-    },
     resource: {
       type: "object",
       properties: {
@@ -18,16 +15,13 @@ export const referenceAction = {
       required: ["reference"]
     }
   },
-  required: ["id", "resource"]
+  required: ["resource"]
 } as const satisfies JSONSchema
 export type ReferenceAction = FromSchema<typeof referenceAction>
 
 export const prescriptionLineItemsAction = {
   type: "object",
   properties: {
-    id: {
-      type: "string"
-    },
     title: {
       type: "string",
       enum: ["Prescription Line Items(Medications)"]
@@ -60,16 +54,13 @@ export const prescriptionLineItemsAction = {
       items: referenceAction
     }
   },
-  required: ["id", "title", "action"]
+  required: ["title", "action"]
 } as const satisfies JSONSchema
 export type PrescriptionLineItemsAction = FromSchema<typeof prescriptionLineItemsAction>
 
 export const historyAction = {
   type: "object",
   properties: {
-    id: {
-      type: "string"
-    },
     title: {
       type: "string",
       enum: ["Prescription status transitions"]
@@ -79,9 +70,6 @@ export const historyAction = {
       items: {
         type: "object",
         properties: {
-          id: {
-            type: "string"
-          },
           title: {
             type: "string",
             enum: [
@@ -193,7 +181,6 @@ export const historyAction = {
           items: referenceAction
         },
         required: [
-          "id",
           "title",
           "timingDateTime",
           "code",
@@ -202,7 +189,7 @@ export const historyAction = {
       }
     }
   },
-  required: ["id", "title", "action"]
+  required: ["title", "action"]
 } as const satisfies JSONSchema
 export type HistoryAction = FromSchema<typeof historyAction>
 export type HistoryMessage = HistoryAction["action"][0]["title"]

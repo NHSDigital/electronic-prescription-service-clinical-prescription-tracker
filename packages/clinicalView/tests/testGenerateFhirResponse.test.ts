@@ -2324,16 +2324,8 @@ describe("Test parseSpineResponse", () => {
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
-    mockUUID.mockImplementationOnce(() => "LITEMS-123-567-890")
-    mockUUID.mockImplementationOnce(() => "LITEM-111-111-111")
-    mockUUID.mockImplementationOnce(() => "HISTORY-123-567-890")
-    mockUUID.mockImplementationOnce(() => "EVENT-111-111-111")
-    mockUUID.mockImplementationOnce(() => "EVENT-222-222-222")
-    mockUUID.mockImplementationOnce(() => "EVENTDN-123-456-789")
-    mockUUID.mockImplementationOnce(() => "EVENT-333-333-333")
 
     const expected = {
-      id: "LITEMS-123-567-890",
       title: "Prescription Line Items(Medications)",
       timingTiming: {
         repeat: {
@@ -2358,13 +2350,6 @@ describe("Test parseSpineResponse", () => {
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
-    mockUUID.mockImplementationOnce(() => "LITEMS-123-567-890")
-    mockUUID.mockImplementationOnce(() => "LITEM-111-111-111")
-    mockUUID.mockImplementationOnce(() => "HISTORY-123-567-890")
-    mockUUID.mockImplementationOnce(() => "EVENT-111-111-111")
-    mockUUID.mockImplementationOnce(() => "EVENT-222-222-222")
-    mockUUID.mockImplementationOnce(() => "EVENTDN-123-456-789")
-    mockUUID.mockImplementationOnce(() => "EVENT-333-333-333")
 
     const prescription = {
       ...acuteDispensedWithSingleItem
@@ -2372,12 +2357,10 @@ describe("Test parseSpineResponse", () => {
     delete prescription.daysSupply
 
     const expected = {
-      id: "LITEMS-123-567-890",
       title: "Prescription Line Items(Medications)"
     }
 
     const notExpected = {
-      id: "LITEMS-123-567-890",
       title: "Prescription Line Items(Medications)",
       timingTiming: {
         repeat: {
@@ -2410,35 +2393,24 @@ describe("Test parseSpineResponse", () => {
     mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
     mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")
     mockUUID.mockImplementationOnce(() => "MEDREQ-444-444-444")
-    mockUUID.mockImplementationOnce(() => "LITEMS-123-567-890")
-    mockUUID.mockImplementationOnce(() => "LITEM-111-111-111")
-    mockUUID.mockImplementationOnce(() => "LITEM-222-222-222")
-    mockUUID.mockImplementationOnce(() => "LITEM-333-333-333")
-    mockUUID.mockImplementationOnce(() => "LITEM-444-444-444")
-    mockUUID.mockImplementationOnce(() => "HISTORY-123-567-890")
-    mockUUID.mockImplementationOnce(() => "EVENT-111-111-111")
 
     const expected = [
       {
-        id: "LITEM-111-111-111",
         resource: {
           reference: "urn:uuid:MEDREQ-111-111-111"
         }
       },
       {
-        id: "LITEM-222-222-222",
         resource: {
           reference: "urn:uuid:MEDREQ-222-222-222"
         }
       },
       {
-        id: "LITEM-333-333-333",
         resource: {
           reference: "urn:uuid:MEDREQ-333-333-333"
         }
       },
       {
-        id: "LITEM-444-444-444",
         resource: {
           reference: "urn:uuid:MEDREQ-444-444-444"
         }
@@ -2450,7 +2422,6 @@ describe("Test parseSpineResponse", () => {
       resource: expect.objectContaining({
         resourceType: "RequestGroup",
         action: expect.arrayContaining([expect.objectContaining({
-          id: "LITEMS-123-567-890",
           title: "Prescription Line Items(Medications)",
           action: expected
         })])
@@ -2464,16 +2435,8 @@ describe("Test parseSpineResponse", () => {
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
-    mockUUID.mockImplementationOnce(() => "LITEMS-123-567-890")
-    mockUUID.mockImplementationOnce(() => "LITEM-111-111-111")
-    mockUUID.mockImplementationOnce(() => "HISTORY-123-567-890")
-    mockUUID.mockImplementationOnce(() => "EVENT-111-111-111")
-    mockUUID.mockImplementationOnce(() => "EVENT-222-222-222")
-    mockUUID.mockImplementationOnce(() => "EVENTDN-123-456-789")
-    mockUUID.mockImplementationOnce(() => "EVENT-333-333-333")
 
     const expected = {
-      id: "HISTORY-123-567-890",
       title: "Prescription status transitions"
     }
 
@@ -2491,17 +2454,9 @@ describe("Test parseSpineResponse", () => {
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
-    mockUUID.mockImplementationOnce(() => "LITEMS-123-567-890")
-    mockUUID.mockImplementationOnce(() => "LITEM-111-111-111")
-    mockUUID.mockImplementationOnce(() => "HISTORY-123-567-890")
-    mockUUID.mockImplementationOnce(() => "EVENT-111-111-111")
-    mockUUID.mockImplementationOnce(() => "EVENT-222-222-222")
-    mockUUID.mockImplementationOnce(() => "EVENTDN-123-456-789")
-    mockUUID.mockImplementationOnce(() => "EVENT-333-333-333")
 
     const expectedEvents: HistoryAction["action"] = [
       {
-        id: "EVENT-111-111-111",
         title: "Prescription upload successful",
         timingDateTime: "2025-04-29T13:26:34.000Z",
         code: [{
@@ -2524,7 +2479,6 @@ describe("Test parseSpineResponse", () => {
         }]
       },
       {
-        id: "EVENT-222-222-222",
         title: "Release Request successful",
         timingDateTime: "2025-04-29T13:26:45.000Z",
         code: [{
@@ -2547,7 +2501,6 @@ describe("Test parseSpineResponse", () => {
         }]
       },
       {
-        id: "EVENT-333-333-333",
         title: "Dispense notification successful",
         timingDateTime: "2025-04-29T13:27:04.000Z",
         code: [
@@ -2577,7 +2530,6 @@ describe("Test parseSpineResponse", () => {
           }]
         }],
         action: [{
-          id: "EVENTDN-123-456-789",
           resource: {
             reference: "urn:uuid:MEDDIS-123-567-890"
           }
@@ -2590,7 +2542,6 @@ describe("Test parseSpineResponse", () => {
       resource: expect.objectContaining({
         resourceType: "RequestGroup",
         action: expect.arrayContaining([expect.objectContaining({
-          id: "HISTORY-123-567-890",
           title: "Prescription status transitions",
           action: expectedEvents
         })])
