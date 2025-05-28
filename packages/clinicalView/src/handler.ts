@@ -16,6 +16,7 @@ import {ParsedSpineResponse, parseSpineResponse, Prescription} from "./parseSpin
 import {requestGroup} from "./schema/requestGroup"
 import {validateRequest} from "./validateRequest"
 import {BundleType} from "./schema/bundle"
+import httpHeaderNormalizer from "@middy/http-header-normalizer"
 
 // Config
 const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
@@ -97,6 +98,7 @@ export const apiGatewayHandler = async (
 export const newHandler = (params: HandlerParams) => {
   const newHandler = middy((event: APIGatewayEvent) => apiGatewayHandler(params, event))
     .use(injectLambdaContext(logger, {clearState: true}))
+    .use(httpHeaderNormalizer())
     .use(inputOutputLogger({
       logger: (request) => {
         logger.info(request)

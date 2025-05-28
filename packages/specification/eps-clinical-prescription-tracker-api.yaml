@@ -241,7 +241,7 @@ components:
         The user role ID (URID) for the current session. Also known as a user role profile ID (URPID).
 
         This field is optional.
-      required: false
+      required: true
       schema:
         type: string
         pattern: "^[0-9]+$"
@@ -251,7 +251,7 @@ components:
       name: nhsd-organization-uuid
       description: |
         The users organization ID (UOID) for the current session.
-      required: false
+      required: true
       schema:
         type: string
         example: "555254240100"
@@ -310,3 +310,10 @@ x-nhsd-apim:
       header: "nhsd-identity-uuid"
     - name: cis2-urid
       header: "nhsd-session-urid"
+  ratelimiting:
+    proxy:
+      limit: 20000
+      timeunit: minute
+    app-default:
+      limit: 20000
+      timeunit: minute
