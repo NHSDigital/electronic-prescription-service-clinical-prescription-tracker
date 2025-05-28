@@ -130,7 +130,7 @@ paths:
           name: prescriptionId
           schema:
             type: string
-          description: The Prescription ID to search prescriptions for.
+          description: The Prescription ID to search prescriptions for. Please ensure to url encode this value, as + is a valid prescription ID checksum character but is a reserved character in query parameters, otherwise it will be interpreted as a space and will result in an invalid checksum error.
         - in: query
           name: nhsNumber
           schema:

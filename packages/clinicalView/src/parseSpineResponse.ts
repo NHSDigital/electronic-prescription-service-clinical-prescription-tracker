@@ -8,7 +8,7 @@ import {
   SpineXmlError,
   SpineXmlResponse
 } from "@cpt-common/common-types/spine"
-import {format, parse} from "date-fns"
+import * as DateFns from "date-fns"
 import {XMLParser} from "fast-xml-parser"
 import {PerformerSiteTypeCoding, PrescriptionTypeCoding} from "./schema/extensions"
 import {StatusReasonCoding} from "./schema/medicationRequest"
@@ -196,27 +196,24 @@ interface PrescriptionDetails extends PrescriptionDetailsSummary, IssueDetails {
 
 export type Prescription = PatientDetails & PrescriptionDetails
 
-export interface ParsedSpineResponse {
-  prescription?: Prescription | undefined
-  spineError?: ServiceError | undefined
-}
+export type ParsedSpineResponse = {
+  prescription: Prescription} | { spineError: ServiceError}
 
 export const parseSpineResponse = (spineResponse: string, logger: Logger): ParsedSpineResponse => {
   const xmlParser = new XMLParser({ignoreAttributes: false, parseTagValue: false})
   const xmlResponse = xmlParser.parse(spineResponse) as SpineXmlResponse<SpineXmlClinicalViewResponse>
 
   logger.info("Parsing XML SOAP body...")
-  const xmlSoapBody = xmlResponse["SOAP:Envelope"]?.["SOAP:Body"] as SpineXmlClinicalViewResponse | undefined
-    || xmlResponse["SOAP-ENV:Envelope"]?.["SOAP-ENV:Body"] as SpineXmlClinicalViewResponse | undefined
+  const xmlSoapBody = xmlResponse["SOAP:Envelope"]?.["SOAP:Body"] || xmlResponse["SOAP-ENV:Envelope"]?.["SOAP-ENV:Body"]
 
   if (!xmlSoapBody) {
     logger.error("Failed to parse response, Spine response did not contain valid XML")
     return {spineError: {status: 500, severity: "error", description: "Unknown Error."}}
   }
 
-  if (xmlSoapBody?.prescriptionClinicalViewResponse?.MCCI_IN010000UK13) {
-    const error = xmlSoapBody?.prescriptionClinicalViewResponse?.MCCI_IN010000UK13
-      ?.acknowledgement?.acknowledgementDetail?.code?.["@_displayName"] ?? "Unknown Error"
+  if (xmlSoapBody.prescriptionClinicalViewResponse.MCCI_IN010000UK13) {
+    const error = xmlSoapBody.prescriptionClinicalViewResponse.MCCI_IN010000UK13
+      .acknowledgement.acknowledgementDetail.code?.["@_displayName"] ?? "Unknown Error"
 
     const statusCode = error === "Prescription not found" ? 404 : 500
 
@@ -234,7 +231,8 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     ...(xmlParentPrescription.suffix ? {suffix: xmlParentPrescription.suffix} : {}),
     ...(xmlParentPrescription.given ? {given: xmlParentPrescription.given} : {}),
     ...(xmlParentPrescription.family ? {family: xmlParentPrescription.family} : {}),
-    birthDate: format(parse(xmlEpsRecord.patientBirthTime, SPINE_DOB_FORMAT, new Date()), FHIR_DATE_FORMAT),
+    birthDate: DateFns.format(DateFns.parse(
+      xmlEpsRecord.patientBirthTime, SPINE_DOB_FORMAT, new Date()), FHIR_DATE_FORMAT),
     ...(xmlParentPrescription.administrativeGenderCode ?
       {gender: Number(xmlParentPrescription.administrativeGenderCode) as SpineGenderCode} : {}),
     address: {
@@ -251,7 +249,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
   console.log(xmlEpsRecord)
   const prescriptionDetails: PrescriptionDetails = {
     prescriptionId: xmlEpsRecord.prescriptionID,
-    issueDate: parse(xmlEpsRecord.prescriptionTime, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
+    issueDate: DateFns.parse(xmlEpsRecord.prescriptionTime, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
     issueNumber: Number(xmlEpsRecord.instanceNumber),
     status: xmlEpsRecord.prescriptionStatus as PrescriptionStatusCoding["code"],
     treatmentType: xmlEpsRecord.prescriptionTreatmentType as SpineTreatmentTypeCode,
@@ -305,7 +303,8 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     logger.info("Parsing dispense notification...", {dispenseNotificationId})
     const dispenseNotification: DispenseNotificationDetails = {
       dispenseNotificationId,
-      timestamp: parse(xmlDispenseNotification.dispenseNotifDateTime, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
+      timestamp: DateFns.parse(
+        xmlDispenseNotification.dispenseNotifDateTime, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
       status: xmlDispenseNotification.statusPrescription as PrescriptionStatusCoding["code"],
       lineItems: {}
     }
@@ -367,7 +366,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
       eventId,
       message: message as HistoryMessage,
       messageId: xmlHistoryEvent.messageID.slice(1, -1), // This id matches the DN ID for relevant events. Strip unnecessary "" from value
-      timestamp: parse(xmlFilteredHistoryEvent.timestamp, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
+      timestamp: DateFns.parse(xmlFilteredHistoryEvent.timestamp, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
       org: xmlFilteredHistoryEvent.agentPersonOrgCode,
       newStatus: xmlFilteredHistoryEvent.toStatus as PrescriptionStatusCoding["code"],
       ...(cancellationReason ? {cancellationReason} : {}),

@@ -69,23 +69,23 @@ export const apiGatewayHandler = async (
   logger.debug("Spine response received.", {response: spineResponse})
 
   logger.info("Parsing Spine response...")
-  const {prescription, spineError}: ParsedSpineResponse = parseSpineResponse(spineResponse.data, logger)
+  const parsedSpineResponse: ParsedSpineResponse = parseSpineResponse(spineResponse.data, logger)
 
-  if (spineError) {
-    logger.error("Spine response contained an error.", {error: spineError.description})
+  if ("spineError" in parsedSpineResponse) {
+    logger.error("Spine response contained an error.", {error: parsedSpineResponse.spineError.description})
     logger.info("Generating FHIR error response...")
-    const errorResponseBundle: OperationOutcome = generateFhirErrorResponse([spineError], logger)
+    const errorResponseBundle: OperationOutcome = generateFhirErrorResponse([parsedSpineResponse.spineError], logger)
 
     logger.info("Returning FHIR error response.")
     return {
-      statusCode: spineError.status,
+      statusCode: parsedSpineResponse.spineError.status,
       body: JSON.stringify(errorResponseBundle),
       headers: responseHeaders
     }
   }
 
   logger.info("Generating FHIR response...")
-  const responseBundle: BundleType = generateFhirResponse(prescription as Prescription, logger)
+  const responseBundle: BundleType = generateFhirResponse(parsedSpineResponse.prescription as Prescription, logger)
 
   logger.info("Retuning FHIR response.")
   return {
