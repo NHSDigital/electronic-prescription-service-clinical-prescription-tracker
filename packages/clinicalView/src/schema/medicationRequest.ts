@@ -8,7 +8,7 @@ import {FromSchema, JSONSchema} from "json-schema-to-ts"
 import {
   dosageInstruction,
   id,
-  identifier,
+  lineItemIdentifier,
   medicationCodeableConcept,
   quantity
 } from "./elements"
@@ -120,7 +120,7 @@ export const medicationRequest = {
       enum: ["MedicationRequest"]
     },
     id,
-    identifier,
+    identifier: lineItemIdentifier,
     subject,
     status,
     statusReason,

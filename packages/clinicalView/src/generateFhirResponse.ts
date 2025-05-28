@@ -540,7 +540,7 @@ const generateHistoryAction = (
         referenceActions.push(referenceAction)
       }
     }
-
+    // satisfies Extension & MedicationRepeatInformationExtensionType["extension"][0]]
     logger.info("Generating sub Action for history event...")
     const eventAction: RequestGroupAction & HistoryAction["action"][0] = {
       title: event.message,
@@ -558,7 +558,7 @@ const generateHistoryAction = (
             system: "https://tools.ietf.org/html/rfc4122",
             code: event.messageId
           }]
-        }] : [])
+        }] satisfies HistoryAction["action"][0]["code"]: [])
       ],
       participant: [{
         extension: [{

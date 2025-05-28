@@ -1,6 +1,6 @@
 import {JSONSchema} from "json-schema-to-ts"
 
-export const bundleCommonProperties = {
+export const searchsetBundleCommonProperties = {
   resourceType: {
     type: "string",
     description: "The resource type.",

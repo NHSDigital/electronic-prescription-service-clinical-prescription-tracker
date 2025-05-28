@@ -4,7 +4,7 @@ import {
   dispenseStatusCoding,
   dosageInstruction,
   id,
-  identifier,
+  lineItemIdentifier,
   medicationCodeableConcept,
   quantity
 } from "./elements"
@@ -30,7 +30,7 @@ export const medicationDispense = {
       enum: ["MedicationDispense"]
     },
     id,
-    identifier,
+    identifier: lineItemIdentifier,
     subject,
     status,
     performer: {

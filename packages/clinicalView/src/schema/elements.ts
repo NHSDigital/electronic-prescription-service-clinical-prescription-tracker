@@ -1,12 +1,13 @@
+/* eslint-disable max-len */
 import {FromSchema, JSONSchema} from "json-schema-to-ts"
 
 export const id = {
   type: "string",
-  description: "Logical id of this artifact"
+  description: "Temporary id for this resource within the context of this request (not related to longer term identifiers such as short-form prescription id)"
 } as const satisfies JSONSchema
 
 // Line item ID
-export const identifier = {
+export const lineItemIdentifier = {
   type: "array",
   items: {
     type: "object",

@@ -15,7 +15,7 @@ import {
 } from "./extensions"
 import {patientCommonProperties} from "./patient"
 import {requestGroupCommonProperties} from "./requestGroup"
-import {bundleCommonProperties, bundleEntryCommonProperties} from "./bundle"
+import {searchsetBundleCommonProperties, bundleEntryCommonProperties} from "./bundle"
 
 export {
   intent,
@@ -31,6 +31,6 @@ export {
   requestGroupCommonProperties,
   subject,
   taskBusinessStatus,
-  bundleCommonProperties,
+  searchsetBundleCommonProperties,
   bundleEntryCommonProperties
 }

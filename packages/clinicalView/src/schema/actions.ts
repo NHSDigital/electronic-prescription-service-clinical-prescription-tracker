@@ -94,7 +94,8 @@ export const historyAction = {
             ]
           },
           timingDateTime: {
-            type: "string"
+            type: "string",
+            format: "date-time"
           },
           code: {
             type: "array",
@@ -116,6 +117,7 @@ export const historyAction = {
                     coding: {
                       type: "array",
                       items: {
+                        type: "object",
                         properties: {
                           system: {
                             type: "string",

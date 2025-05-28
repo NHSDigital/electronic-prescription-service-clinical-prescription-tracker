@@ -52,7 +52,6 @@ describe("Test parseSpineResponse", () => {
       issueNumber: 1,
       status: "0001",
       prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false,
       treatmentType: "0001",
       prescriptionType: "0101",
       daysSupply: 28,
@@ -110,26 +109,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T11:10:05.000Z",
           org: "A83008",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: true,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0007"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0007"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0007"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         }
       }
     }
@@ -159,7 +139,6 @@ describe("Test parseSpineResponse", () => {
       issueNumber: 1,
       status: "0001",
       prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false,
       treatmentType: "0001",
       prescriptionType: "0101",
       daysSupply: 28,
@@ -186,14 +165,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-29T14:13:02.000Z",
           org: "A83008",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: true,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         }
       }
     }
@@ -223,7 +195,6 @@ describe("Test parseSpineResponse", () => {
       issueNumber: 1,
       status: "0002",
       prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false,
       treatmentType: "0001",
       prescriptionType: "0101",
       daysSupply: 28,
@@ -282,26 +253,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T11:10:05.000Z",
           org: "A83008",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: true,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0007"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0007"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0007"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         },
         3: {
           eventId: "3",
@@ -310,26 +262,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T11:12:44.000Z",
           org: "VNFKT",
           newStatus: "0002",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0008"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0008"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0008"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0008"
-            }
-          }
+          isDispenseNotification: false
         }
       }
     }
@@ -359,7 +292,6 @@ describe("Test parseSpineResponse", () => {
       issueNumber: 1,
       status: "0006",
       prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false,
       treatmentType: "0001",
       prescriptionType: "0101",
       daysSupply: 28,
@@ -462,26 +394,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T11:10:05.000Z",
           org: "A83008",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: true,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0007"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0007"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0007"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         },
         3: {
           eventId: "3",
@@ -490,26 +403,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T11:12:44.000Z",
           org: "VNFKT",
           newStatus: "0002",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0008"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0008"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0008"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0008"
-            }
-          }
+          isDispenseNotification: false
         },
         4: {
           eventId: "4",
@@ -518,26 +412,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T11:16:02.000Z",
           org: "FA565",
           newStatus: "0006",
-          isDispenseNotification: true,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0001"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0001"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0001"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0001"
-            }
-          }
+          isDispenseNotification: true
         }
       }
     }
@@ -567,7 +442,6 @@ describe("Test parseSpineResponse", () => {
       issueNumber: 1,
       status: "0006",
       prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false,
       treatmentType: "0001",
       prescriptionType: "0101",
       daysSupply: 28,
@@ -612,14 +486,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-29T13:26:34.000Z",
           org: "A83008",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: true,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         },
         3: {
           eventId: "3",
@@ -628,14 +495,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-29T13:26:45.000Z",
           org: "VNFKT",
           newStatus: "0002",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0008"
-            }
-          }
+          isDispenseNotification: false
         },
         4: {
           eventId: "4",
@@ -644,14 +504,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-29T13:27:04.000Z",
           org: "FA565",
           newStatus: "0006",
-          isDispenseNotification: true,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0001"
-            }
-          }
+          isDispenseNotification: true
         }
       }
     }
@@ -681,7 +534,6 @@ describe("Test parseSpineResponse", () => {
       issueNumber: 1,
       status: "0005",
       prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false,
       treatmentType: "0001",
       prescriptionType: "0101",
       daysSupply: 28,
@@ -743,26 +595,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T12:26:12.000Z",
           org: "A83008",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: true,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0007"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0007"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0007"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         },
         3: {
           eventId: "3",
@@ -771,27 +604,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T12:26:21.000Z",
           org: "A83008",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0005",
-              cancellationReason: "Prescribing Error"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0007"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0007"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         },
         4: {
           eventId: "4",
@@ -800,28 +613,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T12:26:30.000Z",
           org: "A83008",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0005",
-              cancellationReason: "Prescribing Error"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0005",
-              cancellationReason: "Prescribing Error"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0007"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         },
         5: {
           eventId: "5",
@@ -830,29 +622,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T12:26:40.000Z",
           org: "A83008",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0005",
-              cancellationReason: "Prescribing Error"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0005",
-              cancellationReason: "Prescribing Error"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0005",
-              cancellationReason: "Prescribing Error"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         },
         6: {
           eventId: "6",
@@ -861,30 +631,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T12:26:47.000Z",
           org: "A83008",
           newStatus: "0005",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0005",
-              cancellationReason: "Prescribing Error"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0005",
-              cancellationReason: "Prescribing Error"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0005",
-              cancellationReason: "Prescribing Error"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0005",
-              cancellationReason: "Prescribing Error"
-            }
-          }
+          isDispenseNotification: false
         }
       }
     }
@@ -914,7 +661,6 @@ describe("Test parseSpineResponse", () => {
       issueNumber: 1,
       status: "0001",
       prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false,
       treatmentType: "0001",
       prescriptionType: "0101",
       daysSupply: 28,
@@ -973,26 +719,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T11:20:54.000Z",
           org: "A83008",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: true,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0007"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0007"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0007"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         },
         3: {
           eventId: "3",
@@ -1001,27 +728,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T11:21:32.000Z",
           org: "A83008",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0005",
-              cancellationReason: "Prescribing Error"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0007"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0007"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         }
       }
     }
@@ -1051,7 +758,6 @@ describe("Test parseSpineResponse", () => {
       issueNumber: 1,
       status: "0003",
       prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false,
       treatmentType: "0001",
       prescriptionType: "0101",
       daysSupply: 28,
@@ -1134,26 +840,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T11:35:25.000Z",
           org: "A83008",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: true,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0007"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0007"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0007"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         },
         3: {
           eventId: "3",
@@ -1162,26 +849,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T11:35:30.000Z",
           org: "VNFKT",
           newStatus: "0002",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0008"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0008"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0008"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0008"
-            }
-          }
+          isDispenseNotification: false
         },
         4: {
           eventId: "4",
@@ -1190,26 +858,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T11:36:58.000Z",
           org: "FA565",
           newStatus: "0003",
-          isDispenseNotification: true,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0001"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0001"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0004"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0004"
-            }
-          }
+          isDispenseNotification: true
         }
       }
     }
@@ -1239,7 +888,6 @@ describe("Test parseSpineResponse", () => {
       issueNumber: 1,
       status: "0003",
       prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false,
       treatmentType: "0001",
       prescriptionType: "0101",
       daysSupply: 28,
@@ -1338,26 +986,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T11:44:57.000Z",
           org: "A83008",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: true,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0007"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0007"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0007"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         },
         3: {
           eventId: "3",
@@ -1366,26 +995,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T11:45:12.000Z",
           org: "VNFKT",
           newStatus: "0002",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0008"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0008"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0008"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0008"
-            }
-          }
+          isDispenseNotification: false
         },
         4: {
           eventId: "4",
@@ -1394,26 +1004,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T11:45:32.000Z",
           org: "FA565",
           newStatus: "0003",
-          isDispenseNotification: true,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0003"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0001"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0001"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0001"
-            }
-          }
+          isDispenseNotification: true
         }
       }
     }
@@ -1443,7 +1034,6 @@ describe("Test parseSpineResponse", () => {
       issueNumber: 1,
       status: "0006",
       prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false,
       treatmentType: "0001",
       prescriptionType: "0101",
       daysSupply: 28,
@@ -1557,26 +1147,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T11:44:57.000Z",
           org: "A83008",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: true,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0007"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0007"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0007"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         },
         3: {
           eventId: "3",
@@ -1585,26 +1156,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T11:45:12.000Z",
           org: "VNFKT",
           newStatus: "0002",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0008"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0008"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0008"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0008"
-            }
-          }
+          isDispenseNotification: false
         },
         4: {
           eventId: "4",
@@ -1613,26 +1165,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T11:45:32.000Z",
           org: "FA565",
           newStatus: "0003",
-          isDispenseNotification: true,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0003"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0001"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0001"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0001"
-            }
-          }
+          isDispenseNotification: true
         },
         5: {
           eventId: "5",
@@ -1641,26 +1174,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T11:49:41.000Z",
           org: "FA565",
           newStatus: "0006",
-          isDispenseNotification: true,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0001"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0001"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0001"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0001"
-            }
-          }
+          isDispenseNotification: true
         }
       }
     }
@@ -1690,7 +1204,6 @@ describe("Test parseSpineResponse", () => {
       issueNumber: 1,
       status: "0002",
       prescriptionPendingCancellation: false,
-      itemsPendingCancellation: true,
       treatmentType: "0001",
       prescriptionType: "0101",
       daysSupply: 28,
@@ -1753,26 +1266,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T12:09:53.000Z",
           org: "A83008",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: true,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0007"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0007"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0007"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         },
         3: {
           eventId: "3",
@@ -1781,26 +1275,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T12:09:58.000Z",
           org: "VNFKT",
           newStatus: "0002",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0008"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0008"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0008"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0008"
-            }
-          }
+          isDispenseNotification: false
         },
         4: {
           eventId: "4",
@@ -1809,27 +1284,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T12:11:13.000Z",
           org: "A83008",
           newStatus: "0002",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0008",
-              cancellationReason: "Prescribing Error"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0008"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0008"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0008"
-            }
-          }
+          isDispenseNotification: false
         },
         5: {
           eventId: "5",
@@ -1838,28 +1293,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T12:14:37.000Z",
           org: "A83008",
           newStatus: "0002",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0008",
-              cancellationReason: "Prescribing Error"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0008",
-              cancellationReason: "Prescribing Error"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0008"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0008"
-            }
-          }
+          isDispenseNotification: false
         },
         6: {
           eventId: "6",
@@ -1868,29 +1302,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T12:14:46.000Z",
           org: "A83008",
           newStatus: "0002",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0008",
-              cancellationReason: "Prescribing Error"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0008",
-              cancellationReason: "Prescribing Error"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0008",
-              cancellationReason: "Prescribing Error"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0008"
-            }
-          }
+          isDispenseNotification: false
         },
         7: {
           eventId: "7",
@@ -1899,30 +1311,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T12:14:57.000Z",
           org: "A83008",
           newStatus: "0002",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0008",
-              cancellationReason: "Prescribing Error"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0008",
-              cancellationReason: "Prescribing Error"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0008",
-              cancellationReason: "Prescribing Error"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0008",
-              cancellationReason: "Prescribing Error"
-            }
-          }
+          isDispenseNotification: false
         }
       }
     }
@@ -1952,7 +1341,6 @@ describe("Test parseSpineResponse", () => {
       issueNumber: 1,
       status: "0002",
       prescriptionPendingCancellation: false,
-      itemsPendingCancellation: true,
       treatmentType: "0001",
       prescriptionType: "0101",
       daysSupply: 28,
@@ -2012,26 +1400,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T12:09:53.000Z",
           org: "A83008",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: true,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0007"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0007"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0007"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         },
         3: {
           eventId: "3",
@@ -2040,26 +1409,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T12:09:58.000Z",
           org: "VNFKT",
           newStatus: "0002",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0008"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0008"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0008"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0008"
-            }
-          }
+          isDispenseNotification: false
         },
         4: {
           eventId: "4",
@@ -2068,27 +1418,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T12:11:13.000Z",
           org: "A83008",
           newStatus: "0002",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0008",
-              cancellationReason: "Prescribing Error"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0008"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0008"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0008"
-            }
-          }
+          isDispenseNotification: false
         }
       }
     }
@@ -2118,7 +1448,6 @@ describe("Test parseSpineResponse", () => {
       issueNumber: 1,
       status: "0005",
       prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false,
       treatmentType: "0001",
       prescriptionType: "0101",
       daysSupply: 28,
@@ -2180,26 +1509,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T12:26:12.000Z",
           org: "A83008",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: true,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0007"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0007"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0007"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         },
         3: {
           eventId: "3",
@@ -2208,27 +1518,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T12:26:21.000Z",
           org: "A83008",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0005",
-              cancellationReason: "Prescribing Error"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0007"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0007"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         },
         4: {
           eventId: "4",
@@ -2237,28 +1527,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T12:26:30.000Z",
           org: "A83008",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0005",
-              cancellationReason: "Prescribing Error"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0005",
-              cancellationReason: "Prescribing Error"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0007"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         },
         5: {
           eventId: "5",
@@ -2267,29 +1536,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T12:26:40.000Z",
           org: "A83008",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0005",
-              cancellationReason: "Prescribing Error"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0005",
-              cancellationReason: "Prescribing Error"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0005",
-              cancellationReason: "Prescribing Error"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         },
         6: {
           eventId: "6",
@@ -2299,30 +1546,7 @@ describe("Test parseSpineResponse", () => {
           org: "A83008",
           newStatus: "0005",
           cancellationReason: "Prescribing Error",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0005",
-              cancellationReason: "Prescribing Error"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0005",
-              cancellationReason: "Prescribing Error"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0005",
-              cancellationReason: "Prescribing Error"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0005",
-              cancellationReason: "Prescribing Error"
-            }
-          }
+          isDispenseNotification: false
         }
       }
     }
@@ -2352,7 +1576,6 @@ describe("Test parseSpineResponse", () => {
       issueNumber: 1,
       status: "0002",
       prescriptionPendingCancellation: true,
-      itemsPendingCancellation: true,
       treatmentType: "0001",
       prescriptionType: "0101",
       daysSupply: 28,
@@ -2415,26 +1638,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T12:09:53.000Z",
           org: "A83008",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: true,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0007"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0007"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0007"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         },
         3: {
           eventId: "3",
@@ -2443,26 +1647,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T12:09:58.000Z",
           org: "VNFKT",
           newStatus: "0002",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0008"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0008"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0008"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0008"
-            }
-          }
+          isDispenseNotification: false
         },
         4: {
           eventId: "4",
@@ -2471,27 +1656,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T12:11:13.000Z",
           org: "A83008",
           newStatus: "0002",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0008",
-              cancellationReason: "Prescribing Error"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0008"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0008"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0008"
-            }
-          }
+          isDispenseNotification: false
         },
         5: {
           eventId: "5",
@@ -2500,28 +1665,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T12:14:37.000Z",
           org: "A83008",
           newStatus: "0002",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0008",
-              cancellationReason: "Prescribing Error"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0008",
-              cancellationReason: "Prescribing Error"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0008"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0008"
-            }
-          }
+          isDispenseNotification: false
         },
         6: {
           eventId: "6",
@@ -2530,29 +1674,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T12:14:46.000Z",
           org: "A83008",
           newStatus: "0002",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0008",
-              cancellationReason: "Prescribing Error"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0008",
-              cancellationReason: "Prescribing Error"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0008",
-              cancellationReason: "Prescribing Error"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0008"
-            }
-          }
+          isDispenseNotification: false
         },
         7: {
           eventId: "7",
@@ -2562,30 +1684,7 @@ describe("Test parseSpineResponse", () => {
           org: "A83008",
           newStatus: "0002",
           cancellationReason: "Prescribing Error",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0008",
-              cancellationReason: "Prescribing Error"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0008",
-              cancellationReason: "Prescribing Error"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0008",
-              cancellationReason: "Prescribing Error"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0008",
-              cancellationReason: "Prescribing Error"
-            }
-          }
+          isDispenseNotification: false
         }
       }
     }
@@ -2606,7 +1705,6 @@ describe("Test parseSpineResponse", () => {
       issueNumber: 1,
       status: "0006",
       prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false,
       treatmentType: "0001",
       prescriptionType: "0101",
       daysSupply: 28,
@@ -2651,14 +1749,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-29T13:26:34.000Z",
           org: "A83008",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: true,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         },
         3: {
           eventId: "3",
@@ -2667,14 +1758,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-29T13:26:45.000Z",
           org: "VNFKT",
           newStatus: "0002",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0008"
-            }
-          }
+          isDispenseNotification: false
         },
         4: {
           eventId: "4",
@@ -2683,14 +1767,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-29T13:27:04.000Z",
           org: "FA565",
           newStatus: "0006",
-          isDispenseNotification: true,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0001"
-            }
-          }
+          isDispenseNotification: true
         }
       }
     }
@@ -2721,7 +1798,6 @@ describe("Test parseSpineResponse", () => {
       issueNumber: 1,
       status: "0001",
       prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false,
       treatmentType: "0001",
       prescriptionType: "0101",
       prescriberOrg: "A83008",
@@ -2778,26 +1854,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T11:10:05.000Z",
           org: "A83008",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: true,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0007"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0007"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0007"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         }
       }
     }
@@ -2827,7 +1884,6 @@ describe("Test parseSpineResponse", () => {
       issueNumber: 1,
       status: "0006",
       prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false,
       treatmentType: "0001",
       prescriptionType: "0101",
       daysSupply: 28,
@@ -2922,26 +1978,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T11:10:05.000Z",
           org: "A83008",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: true,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0007"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0007"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0007"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         },
         3: {
           eventId: "3",
@@ -2950,26 +1987,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T11:12:44.000Z",
           org: "VNFKT",
           newStatus: "0002",
-          isDispenseNotification: false,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0008"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0008"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0008"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0008"
-            }
-          }
+          isDispenseNotification: false
         },
         4: {
           eventId: "4",
@@ -2978,26 +1996,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-24T11:16:02.000Z",
           org: "FA565",
           newStatus: "0006",
-          isDispenseNotification: true,
-          isPrescriptionUpload: false,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0001"
-            },
-            2: {
-              lineItemNo: "2",
-              newStatus: "0001"
-            },
-            3: {
-              lineItemNo: "3",
-              newStatus: "0001"
-            },
-            4: {
-              lineItemNo: "4",
-              newStatus: "0001"
-            }
-          }
+          isDispenseNotification: true
         }
       }
     }
@@ -3027,7 +2026,6 @@ describe("Test parseSpineResponse", () => {
       issueNumber: 1,
       status: "0001",
       prescriptionPendingCancellation: false,
-      itemsPendingCancellation: false,
       treatmentType: "0003",
       prescriptionType: "0101",
       maxRepeats: 7,
@@ -3056,14 +2054,7 @@ describe("Test parseSpineResponse", () => {
           timestamp: "2025-04-29T16:29:13.000Z",
           org: "A99968",
           newStatus: "0001",
-          isDispenseNotification: false,
-          isPrescriptionUpload: true,
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              newStatus: "0007"
-            }
-          }
+          isDispenseNotification: false
         }
       }
     }
