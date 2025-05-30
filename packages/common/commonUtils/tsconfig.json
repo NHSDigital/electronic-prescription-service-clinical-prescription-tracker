@@ -1,0 +1,16 @@
+{
+  "extends": "../../../tsconfig.defaults.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "lib",
+    "esModuleInterop": true,
+    "moduleResolution": "bundler",
+  },
+  "references": [
+    {
+      "path": "../commonTypes"
+    },
+  ],
+  "include": ["src/**/*", "tests/**/*"],
+  "exclude": ["node_modules"]
+}

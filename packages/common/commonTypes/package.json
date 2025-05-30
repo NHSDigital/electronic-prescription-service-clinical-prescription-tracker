@@ -1,0 +1,48 @@
+{
+  "name": "@cpt-common/common-types",
+  "version": "1.0.0",
+  "description": "Common type resources",
+  "author": "NHS Digital",
+  "license": "MIT",
+  "main": "lib/src/index.js",
+  "types": "lib/src/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "unit": "jest",
+    "lint": "eslint  --max-warnings 0 --fix --config ../../../eslint.config.mjs .",
+    "compile": "tsc",
+    "test": "npm run compile && npm run unit",
+    "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
+  },
+  "dependencies": {},
+  "devDependencies": {
+        "@types/fhir": "^0.0.41"
+  },
+  "exports": {
+    ".": {
+      "default": "./lib/src/index.js",
+      "import": "./lib/src/index.js"
+    },
+    "./service": {
+      "default": "./lib/src/service/index.js",
+      "import": "./lib/src/service/index.js"
+    },
+    "./prescription": {
+      "default": "./lib/src/prescription/index.js",
+      "import": "./lib/src/prescription/index.js"
+    },
+    "./spine": {
+      "default": "./lib/src/spine/index.js",
+      "import": "./lib/src/spine/index.js"
+    },
+    "./fhir": {
+      "default": "./lib/src/fhir/index.js",
+      "import": "./lib/src/fhir/index.js"
+      
+    },
+    "./schema": {
+      "default": "./lib/src/schema/index.js",
+      "import": "./lib/src/schema/index.js"
+    }
+  }
+}

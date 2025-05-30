@@ -68,7 +68,7 @@ const commonConfig = {
       },
     ],
 
-    "max-len": ["error", 120],
+    "max-len": ["error", 120, {ignoreComments: true}],
     "no-multi-spaces": "error",
 
     "no-multiple-empty-lines": [

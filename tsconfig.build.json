@@ -6,7 +6,9 @@
   "references": [
     { "path": "packages/cdk"},
     { "path": "packages/clinicalView" },
+    { "path": "packages/common/commonTypes" },
     { "path": "packages/common/testing" },
+    { "path": "packages/common/commonUtils" },
     { "path": "packages/prescriptionSearch" },
     { "path": "packages/sandbox" },
     { "path": "packages/specification" },

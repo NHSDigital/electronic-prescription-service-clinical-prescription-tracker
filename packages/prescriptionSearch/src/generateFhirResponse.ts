@@ -23,20 +23,23 @@ export interface IntentMap {
   [key: string]: RequestGroupBundleEntryType["resource"]["intent"]
 }
 
+/* TODO: use common version */
 export enum TreatmentType {
   ACUTE = "0001",
   REPEAT = "0002",
   ERD = "0003"
 }
 
+/* TODO: use common version */
 const intentMap: IntentMap = {
   [TreatmentType.ACUTE]: "order",
   [TreatmentType.REPEAT]: "instance-order",
   [TreatmentType.ERD] : "reflex-order"
 }
-
+/* TODO: use common version */
 type PrescriptionStatusCoding = PrescriptionStatusExtensionType["extension"][0]["valueCoding"]
 
+/* TODO: use common version */
 const statusDisplayMap: Record<PrescriptionStatusCoding["code"], PrescriptionStatusCoding["display"]> = {
   "0001": "To be Dispensed",
   "0002": "With Dispenser",
@@ -213,6 +216,7 @@ const errorMap: ErrorMap = {
   }
 }
 
+/* Use the common version */
 export const generateFhirErrorResponse = (errors: Array<SearchError>, logger: Logger): OperationOutcome => {
   logger.info("Generating the OperationOutcome wrapper...")
   // Generate the OperationOutcome wrapper
