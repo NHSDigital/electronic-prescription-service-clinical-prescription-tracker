@@ -24,7 +24,7 @@
         "@xmldom/xmldom": "^0.9.8",
         "axios": "^1.9.0",
         "date-fns": "^4.1.0",
-        "fast-xml-parser": "^4.5.1",
+        "fast-xml-parser": "^5.2.3",
         "json-schema-to-ts": "^3.1.0"
     },
     "devDependencies": {
