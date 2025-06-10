@@ -12,7 +12,9 @@ info:
     email: api.management@nhs.net
   description: |
     ## Overview
-    The Clinical Prescription Tracker API
+    The Clinical Prescription Tracker API provides real-time tracking of prescriptions within the Electronic Prescription Service (EPS). It enables authorized users to retrieve details about prescription status, dispensation progress, and other essential prescription lifecycle information.
+
+    This API is designed to be used by healthcare providers, dispensers, and authorized NHS applications to track prescriptions from issuance to fulfillment.
 
     ## Who can use this API
     The Clinical Prescription Tracker query API is intended for NHS England internal use only.
@@ -128,7 +130,7 @@ paths:
           name: prescriptionId
           schema:
             type: string
-          description: The Prescription ID to search prescriptions for.
+          description: The Prescription ID to search prescriptions for. Please ensure to url encode this value, as + is a valid prescription ID checksum character but is a reserved character in query parameters, otherwise it will be interpreted as a space and will result in an invalid checksum error.
         - in: query
           name: nhsNumber
           schema:
@@ -155,6 +157,7 @@ paths:
             | ----------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
             | 400         | `value`             | The Server was unable to process the request                                                                                              |
             | 404         | `not-found`         | The Server was unable to find the specified resource.                                                                                     |
+            | 408         | `timeout`           | The server has timed out whilst processing the request.                                                                                   |
 
             Any errors will be included in the returned OperationOutcome (below).
           content:
@@ -168,7 +171,6 @@ paths:
             | HTTP status | Error code          | Description                                                                                                                               |
             | ----------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
             | 500         | `exception`         | The Server has encountered an error processing the request.                                                                               |
-            | 404         | `timeout`           | The server has timed out whilst processing the request.                                                                                   |
 
             Any errors will be included in the returned OperationOutcome (below).
           content:
@@ -177,6 +179,46 @@ paths:
                 $ref: schemas/resources/OperationOutcome.json
       security:
         - nhs-cis2-aal3: []
+  /RequestGroup/{prescriptionId}:
+    get:
+      operationId: prescription-details-bundle
+      summary: Retrieve prescription details
+      description: |
+        ## Overview
+        Use this endpoint to retrieve prescription details for a given prescription ID.
+      parameters:
+        - name: prescriptionId
+          in: path
+          required: true
+          description: The EPS Prescription ID.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful retrieval.
+          content:
+            application/fhir+json:
+              schema:
+                $ref: schemas/resources/requestGroupSchema.json
+        "4XX":
+          description: |
+            An error occurred as follows:
+
+            | HTTP status | Error code          | Description                                                                                               |
+            | ----------- | ------------------- | ----------------------------------------------------------------------------------------------------------|
+            | 400         | `value`             | Missing values or invalid JSON in request                                                                 |
+            | 401         | `processing`        | Missing or invalid OAuth 2.0 bearer token in request                                                      |
+            | 404         | `not-found`         | Prescription not found                                                                                    |
+            | 408         | `timeout`           | Request timed out                                                                                         |
+
+            The error code will be included in the returned OperationOutcome (below).
+          content:
+            application/fhir+json:
+              schema:
+                $ref: schemas/resources/OperationOutcome.json
+      security:
+        - nhs-cis2-aal3: []
+
 components:
   securitySchemes:
     nhs-cis2-aal3:
@@ -199,7 +241,7 @@ components:
         The user role ID (URID) for the current session. Also known as a user role profile ID (URPID).
 
         This field is optional.
-      required: false
+      required: true
       schema:
         type: string
         pattern: "^[0-9]+$"
@@ -209,7 +251,7 @@ components:
       name: nhsd-organization-uuid
       description: |
         The users organization ID (UOID) for the current session.
-      required: false
+      required: true
       schema:
         type: string
         example: "555254240100"
@@ -268,3 +310,10 @@ x-nhsd-apim:
       header: "nhsd-identity-uuid"
     - name: cis2-urid
       header: "nhsd-session-urid"
+  ratelimiting:
+    proxy:
+      limit: 20000
+      timeunit: minute
+    app-default:
+      limit: 20000
+      timeunit: minute

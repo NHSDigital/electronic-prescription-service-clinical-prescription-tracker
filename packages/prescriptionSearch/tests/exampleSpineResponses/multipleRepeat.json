@@ -1,0 +1,92 @@
+{
+  "Response": {
+    "prescriptions": [
+      {
+        "prescriptionID": "1CFAAA-A83008-BE0B3Y",
+        "messageID": "B0A8DA37-CEB1-4771-B24A-C7402B4A8420",
+        "patientID": "9732730684",
+        "prefix": "MISS",
+        "suffix": "",
+        "given": "ETTA",
+        "family": "CORY",
+        "prescriberOrg": "A99968",
+        "nominatedOrg": "X25",
+        "dispenserOrg": "X25",
+        "nextActivity": "expire",
+        "issueDetail": [
+          {
+            "instanceNumber": "1",
+            "releaseDate": "False",
+            "prescriptionStatus": "0001",
+            "cancellations": "0",
+            "prescCancPending": "False",
+            "liCancPending": "False"
+          }
+        ],
+        "instanceNumbers": [
+          {
+            "instanceNumber": "1",
+            "releaseDate": "False"
+          }
+        ],
+        "prescriptionStatuses": [
+          {
+            "status": "0001"
+          }
+        ],
+        "prescribedDate": "20250212122302",
+        "completedDate": "",
+        "prescriptionTreatmentType": "0002",
+        "maxRepeats": "1"
+      },
+      {
+        "prescriptionID": "5ABA40-000X26-D48018",
+        "messageID": "DDDEAF23-3C09-4F3C-8338-EA0C966FAC40",
+        "patientID": "9732730684",
+        "prefix": "MISS",
+        "suffix": "",
+        "given": "ETTA",
+        "family": "CORY",
+        "prescriberOrg": "A99968",
+        "nominatedOrg": "X25",
+        "dispenserOrg": "X25",
+        "nextActivity": "expire",
+        "issueDetail": [
+          {
+            "instanceNumber": "1",
+            "releaseDate": "False",
+            "prescriptionStatus": "0001",
+            "cancellations": "0",
+            "prescCancPending": "False",
+            "liCancPending": "False"
+          }
+        ],
+        "instanceNumbers": [
+          {
+            "instanceNumber": "1",
+            "releaseDate": "False"
+          }
+        ],
+        "prescriptionStatuses": [
+          {
+            "status": "0001"
+          }
+        ],
+        "prescribedDate": "20250212122302",
+        "completedDate": "",
+        "prescriptionTreatmentType": "0002",
+        "maxRepeats": "1"
+      }
+    ],
+    "allPrescriptions": [
+      {
+        "id": "1CFAAA-A83008-BE0B3Y",
+        "includedInResults": "True"
+      },
+      {
+        "id": "5ABA40-000X26-D48018",
+        "includedInResults": "True"
+      }
+    ]
+  }
+}

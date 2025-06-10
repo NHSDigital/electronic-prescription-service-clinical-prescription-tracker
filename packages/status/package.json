@@ -13,16 +13,16 @@
     "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
   },
   "dependencies": {
-    "@aws-lambda-powertools/commons": "^2.16.0",
-    "@aws-lambda-powertools/logger": "^2.17.0",
-    "@aws-lambda-powertools/parameters": "^2.17.0",
-    "@middy/core": "^6.1.6",
-    "@middy/input-output-logger": "^6.1.6",
-    "@nhs/fhir-middy-error-handler": "^2.1.26",
-    "@NHSDigital/eps-spine-client": "^2.1.28"
+    "@aws-lambda-powertools/commons": "^2.21.0",
+    "@aws-lambda-powertools/logger": "^2.21.0",
+    "@aws-lambda-powertools/parameters": "^2.21.0",
+    "@middy/core": "^6.3.1",
+    "@middy/input-output-logger": "^6.3.1",
+    "@nhs/fhir-middy-error-handler": "^2.1.34",
+    "@NHSDigital/eps-spine-client": "^2.1.39"
   },
   "devDependencies": {
     "axios-mock-adapter": "^2.1.0",
-    "esbuild": "^0.25.1"
+    "esbuild": "^0.25.5"
   }
 }

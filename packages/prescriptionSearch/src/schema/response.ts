@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 import {FromSchema, JSONSchema} from "json-schema-to-ts"
 
+/* TODO: move to common types / utils */
 export const operationOutcomeSchema = {
   type: "object",
   description: "A collection of error, warning, or information messages that result from a system action",
@@ -86,15 +87,18 @@ export const operationOutcomeSchema = {
                         "504: The server has timed out whilst processing the request."
                       ]
                     }
-                  }
+                  },
+                  required: ["system", "code", "display"]
                 }
               }
-            }
+            },
+            required: ["coding"]
           }
         },
         required: [
           "code",
-          "severity"
+          "severity",
+          "details"
         ]
       }
     }
@@ -102,6 +106,7 @@ export const operationOutcomeSchema = {
   required: ["resourceType", "issue"]
 } as const satisfies JSONSchema
 
+/* TODO: Update to use common props */
 const patientBundleEntrySchema = {
   type: "object",
   description: "An Patient entry in a bundle resource.",
@@ -119,7 +124,8 @@ const patientBundleEntrySchema = {
           description: "Why this entry is in the result set.",
           enum: ["include"]
         }
-      }
+      },
+      required: ["mode"]
     },
     resource: {
       type: "object",
@@ -147,7 +153,8 @@ const patientBundleEntrySchema = {
                 description: "The value that is unique."
 
               }
-            }
+            },
+            required: ["system", "value"]
           }
         },
         name: {
@@ -158,29 +165,36 @@ const patientBundleEntrySchema = {
             description: "Name of a human - parts and usage.",
             properties: {
               prefix: {
-                type: "string",
+                type: "array",
+                items: {type: "string"},
                 description: "Parts that come before the name."
               },
               suffix: {
-                type: "string",
+                type: "array",
+                items: {type: "string"},
                 description: "Parts that come after the name."
               },
               given: {
-                type: "string",
+                type: "array",
+                items: {type: "string"},
                 description: "Given names (not always 'first'). Includes middle names."
               },
               family: {
                 type: "string",
                 description: "Family name (often called 'Surname')."
               }
-            }
+            },
+            required: ["family", "given", "prefix", "suffix"]
           }
         }
-      }
+      },
+      required: ["resourceType", "identifier", "name"]
     }
-  }
+  },
+  required: ["fullUrl", "search", "resource"]
 } as const satisfies JSONSchema
 
+/* TODO: use common version */
 const prescriptionStatusExtensionSchema = {
   type: "object",
   description: "The prescription status.",
@@ -247,16 +261,17 @@ const prescriptionStatusExtensionSchema = {
                 ]
               }
             },
-            required: ["system", "code"]
+            required: ["system", "code", "display"]
           }
         },
-        required: ["url"]
+        required: ["url", "valueCoding"]
       }
     }
   },
-  required: ["url"]
+  required: ["url", "extension"]
 } as const satisfies JSONSchema
 
+/* TODO: use common version */
 const medicationRepeatInformationExtensionSchema = {
   type: "object",
   description: "Medication repeat information.",
@@ -285,13 +300,14 @@ const medicationRepeatInformationExtensionSchema = {
             description: "A whole number."
           }
         },
-        required: ["url"]
+        required: ["url", "valueInteger"]
       }
     }
   },
-  required: ["url"]
+  required: ["url", "extension"]
 } as const satisfies JSONSchema
 
+/* TODO: use common version */
 const pendingCancellationExtensionSchema = {
   type: "object",
   description: "Pending cancellation information.",
@@ -320,13 +336,14 @@ const pendingCancellationExtensionSchema = {
             description: "Value of 'true' or 'false'."
           }
         },
-        required: ["url"]
+        required: ["url", "valueBoolean"]
       }
     }
   },
-  required: ["url"]
+  required: ["url", "extension"]
 } as const satisfies JSONSchema
 
+/* TODO: use common schema props and elements */
 const requestGroupBundleEntrySchema = {
   type: "object",
   description: "A group of related requests.",
@@ -344,7 +361,8 @@ const requestGroupBundleEntrySchema = {
           description: "Why this entry is in the result set.",
           enum: ["match"]
         }
-      }
+      },
+      required: ["mode"]
     },
     resource: {
       type: "object",
@@ -370,9 +388,9 @@ const requestGroupBundleEntrySchema = {
               value: {
                 type: "string",
                 description: "The value that is unique."
-
               }
-            }
+            },
+            required: ["system", "value"]
           }
         },
         subject: {
@@ -383,7 +401,8 @@ const requestGroupBundleEntrySchema = {
               type: "string",
               description: "Type the reference refers to (e.g. 'Patient')."
             }
-          }
+          },
+          required: ["reference"]
         },
         status: {
           type: "string",
@@ -416,11 +435,17 @@ const requestGroupBundleEntrySchema = {
         }
       },
       required: [
+        "resourceType",
+        "identifier",
+        "subject",
         "status",
-        "intent"
+        "intent",
+        "authoredOn",
+        "extension"
       ]
     }
-  }
+  },
+  required: ["fullUrl", "search", "resource"]
 } as const satisfies JSONSchema
 
 export const requestGroupBundleSchema = {
@@ -452,9 +477,12 @@ export const requestGroupBundleSchema = {
       }
     }
   },
-  required: ["resourceType", "type"]
+  required: ["resourceType", "type", "total", "entry"]
 } as const satisfies JSONSchema
 
+export type PrescriptionStatusExtensionType = FromSchema<typeof prescriptionStatusExtensionSchema>
+export type MedicationRepeatInformationExtensionType = FromSchema<typeof medicationRepeatInformationExtensionSchema>
+export type PendingCancellationExtensionType = FromSchema<typeof pendingCancellationExtensionSchema>
 export type OperationOutcomeType = FromSchema<typeof operationOutcomeSchema>
 export type PatientBundleEntryType = FromSchema<typeof patientBundleEntrySchema>
 export type RequestGroupBundleEntryType = FromSchema<typeof requestGroupBundleEntrySchema>

@@ -19,6 +19,7 @@ import {Bundle, OperationOutcome} from "fhir/r4"
 import {ParsedSpineResponse, SearchError} from "./parseSpineResponse"
 import {Prescription} from "./parseSpineResponse"
 import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
+import httpHeaderNormalizer from "@middy/http-header-normalizer"
 
 // Config
 export const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
@@ -70,6 +71,7 @@ export const apiGatewayHandler = async (
   try{
     logger.info("Calling Spine prescription search interaction...")
     const spineResponse = await params.spineClient.prescriptionSearch(event.headers, searchParameters)
+    logger.debug("spine response", {response: spineResponse})
 
     logger.info("Parsing Spine Response...")
     const {prescriptions, searchError}: ParsedSpineResponse = parseSpineResponse(spineResponse.data, logger)
@@ -117,6 +119,7 @@ export const apiGatewayHandler = async (
 export const newHandler = (params: HandlerParams) => {
   const newHandler = middy((event: APIGatewayEvent) => apiGatewayHandler(params, event))
     .use(injectLambdaContext(logger, {clearState: true}))
+    .use(httpHeaderNormalizer())
     .use(
       inputOutputLogger({
         logger: (request) => {

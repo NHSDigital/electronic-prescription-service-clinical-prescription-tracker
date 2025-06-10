@@ -8,8 +8,6 @@ import successData from "../examples/GetMyPrescriptions/Bundle/success.json"
 
 const logger = new Logger({serviceName: "sandbox"})
 
-/* eslint-disable  max-len */
-
 /**
  *
  * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
