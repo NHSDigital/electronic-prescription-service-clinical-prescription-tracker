@@ -25,7 +25,11 @@
       "../../node_modules/@types"
     ]
   },
-  "references": [],
+  "references": [
+    {
+      "path": "../clinicalView"
+    }
+  ],
   "include": ["resources/**/*", "constructs/**/*", "policies/**/*", "stacks/**/*", "tests/**/*", "nagSuppressions.ts"],
   "exclude": ["node_modules", "cdk.out"]
 }

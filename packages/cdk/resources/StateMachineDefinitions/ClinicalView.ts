@@ -11,6 +11,11 @@ import {
 } from "aws-cdk-lib/aws-stepfunctions"
 import {Fn} from "aws-cdk-lib"
 import {CatchAllErrorPass} from "../../constructs/StateMachine/CatchAllErrorPass"
+import {
+  extractPrescriptionIdExpression,
+  extractAuthorOdsCodeExpression,
+  enrichResponseExpression
+} from "../../../clinicalView/src/enrichResponseJsonata.cjs"
 
 export interface DefinitionProps {
   readonly clinicalViewFunction: IFunction
@@ -32,6 +37,9 @@ export class ClinicalView extends Construct {
     const invokeClinicalView = new LambdaInvoke(this, "Invoke Clinical View", {
       lambdaFunction: props.clinicalViewFunction,
       assign: {
+        /* $parse is a Step Function specific jsonata function and handles JSON deserializing,
+        this is usually handled by $eval in standard jsonata however this is not supported
+        in Step Functions workflows. */
         clinicalViewResponseBody: "{% $parse($states.result.Payload.body) %}",
         responseHeaders: "{% $states.result.Payload.headers %}"
       }
@@ -41,15 +49,17 @@ export class ClinicalView extends Construct {
     const invokeGetStatusUpdates = new LambdaInvoke(this, "Invoke Get Status Updates", {
       lambdaFunction: getStatusUpdates,
       payload: TaskInput.fromObject({
-        schemaVersion: 2,
+        schemaVersion: 1,
         prescriptions: [{
-          prescriptionID: "{% $clinicalViewResponseBody.identifier[0].value %}",
-          odsCode: "{% $clinicalViewResponseBody.author.identifier.value %}"
+          prescriptionID: `{% ${extractPrescriptionIdExpression} %}`,
+          odsCode: `{% ${extractAuthorOdsCodeExpression} %}`
         }]
       }),
       assign: {
-        getStatusUpdatesResponse: "{% $states.result.Payload %}"
+        getStatusUpdatesResponse: "{% $states.result.Payload %}",
+        prescriptionId: `{% ${extractPrescriptionIdExpression} %}`
       }
+
     })
     invokeGetStatusUpdates.addCatch(catchAllError.state)
 
@@ -58,30 +68,7 @@ export class ClinicalView extends Construct {
         Payload:{
           statusCode: 200,
           headers: "{% $responseHeaders %}",
-          body: `{% $string(
-          $clinicalViewResponseBody ~> | contained[resourceType="MedicationRequest"]) |
-          identifier[0].value@$id
-          {
-            "extension": [
-                extension,
-                {
-                  "url": "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
-                  "extension": [
-                    {
-                      "url": "status",
-                      "valueCoding: {
-                        "system": "https://fhir.nhs.uk/ValueSet/DM-prescription-task-status-reason",
-                        "code": $getStatusUpdatesResponse.items[itemId=$id].latestStatus,
-                      }
-                    },
-                    {
-                      "url": "statusDate",
-                      "valueDateTime": $getStatusUpdatesResponse.items[itemId=$id].lastUpdatedDateTime
-                    }
-                  ]
-                }
-              ]
-          }|) %}`
+          body: `{% ${enrichResponseExpression} %}`
         }
       }
     })

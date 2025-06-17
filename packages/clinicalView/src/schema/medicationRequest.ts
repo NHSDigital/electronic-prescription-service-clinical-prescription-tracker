@@ -12,7 +12,7 @@ import {
   medicationCodeableConcept,
   quantity
 } from "./elements"
-import {dispensingInformationExtension, performerSiteTypeExtension} from "./extensions"
+import {dispensingInformationExtension, performerSiteTypeExtension, taskBusinessStatusNpptExtension} from "./extensions"
 
 const status = {
   type: "string",
@@ -198,7 +198,8 @@ export const medicationRequest = {
       items: {
         oneOf: [
           dispensingInformationExtension,
-          pendingCancellationExtension
+          pendingCancellationExtension,
+          taskBusinessStatusNpptExtension
         ]
       }
     }

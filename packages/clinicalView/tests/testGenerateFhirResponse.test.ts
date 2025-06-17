@@ -199,7 +199,7 @@ const acuteCreatedWithMultipleItems: Prescription = {
   }
 }
 
-describe("Test parseSpineResponse", () => {
+describe("Test generateFhirResponse", () => {
   beforeEach(() => {
     mockUUID.mockImplementationOnce(() => "PATIENT-123-567-890")
     mockUUID.mockImplementationOnce(() => "RGROUP-123-567-890")
@@ -259,6 +259,7 @@ describe("Test parseSpineResponse", () => {
     } as unknown as RequestGroupBundleEntryType
 
     const actual = generateFhirResponse(acuteDispensedWithSingleItem, logger)
+    logger.info("", {thing: actual})
     expect(actual.entry).toContainEqual(expect.objectContaining(expected))
   })
 
