@@ -8,7 +8,9 @@ export const nagSuppressions = (stack: Stack) => {
     [
       "/CptsApiStack/Functions/PrescriptionSearchLambda/LambdaPutLogsManagedPolicy/Resource",
       "/CptsApiStack/Functions/ClinicalViewLambda/LambdaPutLogsManagedPolicy/Resource",
-      "/CptsApiStack/Functions/StatusLambda/LambdaPutLogsManagedPolicy/Resource"
+      "/CptsApiStack/Functions/StatusLambda/LambdaPutLogsManagedPolicy/Resource",
+      "/CptsApiStack/StateMachines/ClinicalViewStateMachine/StateMachinePutLogsManagedPolicy",
+      "/CptsApiStack/StateMachines/ClinicalViewStateMachine/StateMachineRole/DefaultPolicy/Resource"
     ],
     [
       {
@@ -25,17 +27,6 @@ export const nagSuppressions = (stack: Stack) => {
       {
         id: "AwsSolutions-APIG2",
         reason: "Suppress error for request validation not being enabled. Validation will be handled by the service logic."
-      }
-    ]
-  )
-
-  safeAddNagSuppression(
-    stack,
-    "/CptsApiStack/Apis/ApiGateway/ApiGateway/CloudWatchRole/Resource",
-    [
-      {
-        id: "AwsSolutions-IAM4",
-        reason: "Suppress error for using AWS managed policy. This is an auto generated one for cognito domain"
       }
     ]
   )
