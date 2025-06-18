@@ -39,7 +39,7 @@ export const apiGatewayHandler = async (
     "nhsd-correlation-id": event.headers?.["nhsd-correlation-id"],
     "nhsd-request-id": event.headers?.["nhsd-request-id"],
     "x-correlation-id": event.headers?.["x-correlation-id"],
-    "apigw-request-id": event.requestContext.requestId /* TODO: Change to event.headers?.["apigw-request-id"] when State machine */
+    "apigw-request-id": event.headers?.["apigw-request-id"]
   })
 
   const [searchParameters, validationErrors]:
