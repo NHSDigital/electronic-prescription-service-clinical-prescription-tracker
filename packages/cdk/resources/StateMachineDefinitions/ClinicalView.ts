@@ -29,7 +29,7 @@ export class ClinicalView extends Construct {
 
     // Imports
     const getStatusUpdates = Function.fromFunctionArn(
-      this, "GetStatusUpdates", `${Fn.importValue("psu:GetStatusUpdates:FunctionArn")}:$LATEST`)
+      this, "GetStatusUpdates", `${Fn.importValue("psu:functions:GetStatusUpdates:FunctionArn")}:$LATEST`)
 
     // States
     const catchAllError = new CatchAllErrorPass(this, "Catch All Error")

@@ -186,8 +186,7 @@ interface PrescriptionDetails extends PrescriptionDetailsSummary, IssueDetails {
 
 export type Prescription = PatientDetails & PrescriptionDetails
 
-export type ParsedSpineResponse = {
-  prescription: Prescription} | { spineError: ServiceError}
+export type ParsedSpineResponse = {prescription: Prescription} | { spineError: ServiceError}
 
 export const parseSpineResponse = (spineResponse: string, logger: Logger): ParsedSpineResponse => {
   const xmlParser = new XMLParser({ignoreAttributes: false, parseTagValue: false})

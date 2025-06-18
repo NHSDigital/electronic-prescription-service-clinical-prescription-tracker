@@ -15,6 +15,8 @@
   },
   "dependencies": {
     "@aws-lambda-powertools/logger": "^2.21.0",
+    "@cpt-common/common-types": "^1.0.0",
+    "@cpt-common/common-utils": "^1.0.0",
     "@middy/http-header-normalizer": "^6.3.2",
     "@NHSDigital/eps-spine-client": "^2.1.40",
     "date-fns": "^4.1.0",

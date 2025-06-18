@@ -1,25 +1,22 @@
-import middy from "@middy/core"
-import inputOutputLogger from "@middy/input-output-logger"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {injectLambdaContext} from "@aws-lambda-powertools/logger/middleware"
-import errorHandler from "@nhs/fhir-middy-error-handler"
-
-import {createSpineClient} from "@NHSDigital/eps-spine-client"
-
-import {validateRequest} from "./validateRequest"
-import {parseSpineResponse} from "./parseSpineResponse"
-import {generateFhirErrorResponse, generateFhirResponse} from "./generateFhirResponse"
-import {requestGroupBundleSchema, operationOutcomeSchema} from "./schema/response"
-
-// Types
 import {LogLevel} from "@aws-lambda-powertools/logger/types"
-import {APIGatewayEvent, APIGatewayProxyResult} from "aws-lambda"
-import {PrescriptionSearchParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
-import {Bundle, OperationOutcome} from "fhir/r4"
-import {ParsedSpineResponse, SearchError} from "./parseSpineResponse"
-import {Prescription} from "./parseSpineResponse"
-import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
+import {operationOutcome, OperationOutcomeType} from "@cpt-common/common-types/schema"
+import {ServiceError} from "@cpt-common/common-types/service"
+import {generateFhirErrorResponse} from "@cpt-common/common-utils"
+import middy from "@middy/core"
 import httpHeaderNormalizer from "@middy/http-header-normalizer"
+import inputOutputLogger from "@middy/input-output-logger"
+import errorHandler from "@nhs/fhir-middy-error-handler"
+import {createSpineClient} from "@NHSDigital/eps-spine-client"
+import {PrescriptionSearchParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
+import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
+import {APIGatewayEvent, APIGatewayProxyResult} from "aws-lambda"
+import {generateFhirResponse} from "./generateFhirResponse"
+import {ParsedSpineResponse, parseSpineResponse, Prescription} from "./parseSpineResponse"
+import {BundleType} from "./schema/bundle"
+import {validateRequest} from "./validateRequest"
+import {requestGroup} from "./schema/requestGroup"
 
 // Config
 export const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
@@ -31,7 +28,6 @@ const commonHeaders = {
   "Cache-Control": "no-cache"
 }
 
-// Types
 export interface HandlerParams {
   logger: Logger
   spineClient: SpineClient
@@ -47,7 +43,7 @@ export const apiGatewayHandler = async (
   })
 
   const [searchParameters, validationErrors]:
-    [PrescriptionSearchParams, Array<SearchError>] = validateRequest(event, logger)
+    [PrescriptionSearchParams, Array<ServiceError>] = validateRequest(event, logger)
 
   const responseHeaders = {
     ...commonHeaders,
@@ -58,7 +54,7 @@ export const apiGatewayHandler = async (
   if(validationErrors.length > 0){
     logger.error("Error validating request.")
     logger.info("Generating FHIR error response...")
-    const errorResponseBundle: OperationOutcome = generateFhirErrorResponse(validationErrors, logger)
+    const errorResponseBundle: OperationOutcomeType = generateFhirErrorResponse(validationErrors, logger)
 
     logger.info("Returning FHIR error response.")
     return {
@@ -68,51 +64,36 @@ export const apiGatewayHandler = async (
     }
   }
 
-  try{
-    logger.info("Calling Spine prescription search interaction...")
-    const spineResponse = await params.spineClient.prescriptionSearch(event.headers, searchParameters)
-    logger.debug("spine response", {response: spineResponse})
+  logger.info("Calling Spine prescription search interaction...")
+  const spineResponse = await params.spineClient.prescriptionSearch(event.headers, searchParameters)
+  logger.debug("spine response", {response: spineResponse})
 
-    logger.info("Parsing Spine Response...")
-    const {prescriptions, searchError}: ParsedSpineResponse = parseSpineResponse(spineResponse.data, logger)
+  logger.info("Parsing Spine Response...")
+  const parsedSpineResponse: ParsedSpineResponse = parseSpineResponse(spineResponse.data, logger)
 
-    if (searchError){
-      logger.error("Spine response contained an error.", {error: searchError.description})
-      logger.info("Generating FHIR error response...")
-      const errorResponseBundle: OperationOutcome = generateFhirErrorResponse([searchError], logger)
-
-      logger.info("Returning FHIR error response.")
-      return {
-        statusCode: 500,
-        body: JSON.stringify(errorResponseBundle),
-        headers: responseHeaders
-      }
-    }
-
-    logger.info("Generating FHIR response...")
-    const responseBundle: Bundle = generateFhirResponse(prescriptions as Array<Prescription>, logger)
-
-    logger.info("Retuning FHIR response.")
-    return{
-      statusCode: 200,
-      body: JSON.stringify(responseBundle),
-      headers: responseHeaders
-    }
-  } catch {
-    // catch all error
-    logger.error("An unknown error occurred whilst processing the request")
+  if ("spineError" in parsedSpineResponse) {
+    logger.error("Spine response contained an error.", {error: parsedSpineResponse.spineError.description})
     logger.info("Generating FHIR error response...")
-    const errorResponseBundle: OperationOutcome = generateFhirErrorResponse(
-      [{status: "500", severity: "fatal", description: "Unknown Error."}],
-      logger
-    )
+    const errorResponseBundle: OperationOutcomeType =
+      generateFhirErrorResponse([parsedSpineResponse.spineError], logger)
 
     logger.info("Returning FHIR error response.")
     return {
-      statusCode: 500,
+      statusCode: parsedSpineResponse.spineError.status,
       body: JSON.stringify(errorResponseBundle),
       headers: responseHeaders
     }
+  }
+
+  logger.info("Generating FHIR response...")
+  const responseBundle: BundleType =
+    generateFhirResponse(parsedSpineResponse.prescriptions as Array<Prescription>, logger)
+
+  logger.info("Retuning FHIR response.")
+  return{
+    statusCode: 200,
+    body: JSON.stringify(responseBundle),
+    headers: responseHeaders
   }
 }
 
@@ -127,11 +108,15 @@ export const newHandler = (params: HandlerParams) => {
         }
       })
     )
-    .use(errorHandler({logger: logger}))
+    .use(errorHandler({logger}))
   return newHandler
 }
 
 const DEFAULT_HANDLER_PARAMS: HandlerParams = {logger, spineClient}
 export const handler = newHandler(DEFAULT_HANDLER_PARAMS)
 
-export {requestGroupBundleSchema, operationOutcomeSchema}
+// TODO: fix schema generation, use from /schema and common rather than importing and re-exporting here
+export {
+  requestGroup as requestGroupBundleSchema,
+  operationOutcome as operationOutcomeSchema
+}

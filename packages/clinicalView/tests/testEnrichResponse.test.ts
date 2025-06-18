@@ -74,7 +74,6 @@ describe("Enrich clinical view response", () => {
 
     const parsedResult: BundleType = JSON.parse(result)
 
-    // TODO: add type for extension
     const expectedExtension: TaskBusinessStatusNpptExtensionType = {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
       extension: [
@@ -305,7 +304,6 @@ describe("Enrich clinical view response", () => {
 
     const parsedResult: BundleType = JSON.parse(result)
 
-    // TODO: add type for extension
     const expectedExtension: TaskBusinessStatusNpptExtensionType = {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
       extension: [
@@ -345,7 +343,6 @@ describe("Enrich clinical view response", () => {
 
     const parsedResult: BundleType = JSON.parse(result)
 
-    // TODO: add type for extension
     const expectedExtension: TaskBusinessStatusNpptExtensionType = {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
       extension: [
