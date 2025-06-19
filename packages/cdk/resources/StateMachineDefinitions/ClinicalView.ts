@@ -90,7 +90,7 @@ export class ClinicalView extends Construct {
 
     const startState = invokeClinicalView.next(checkClinicalViewResult)
     checkClinicalViewResult.when(statusOK, invokeGetStatusUpdates)
-    checkClinicalViewResult.afterwards().next(returnResponse)
+    checkClinicalViewResult.afterwards()//.next(returnResponse)
 
     invokeGetStatusUpdates.next(checkGetStatusUpdatesResult)
 
