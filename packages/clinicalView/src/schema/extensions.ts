@@ -228,7 +228,7 @@ export const taskBusinessStatusNpptExtension = {
   properties: {
     url: {
       type: "string",
-      enum: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory"
+      enum: ["https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory"]
     },
     extension: {
       type: "array",
@@ -239,14 +239,14 @@ export const taskBusinessStatusNpptExtension = {
             properties: {
               url: {
                 type: "string",
-                enum: "status"
+                enum: ["status"]
               },
               valueCoding: {
                 type: "object",
                 properties: {
                   system: {
                     type: "string",
-                    enum: "https://fhir.nhs.uk/CodeSystem/task-businessStatus-nppt"
+                    enum: ["https://fhir.nhs.uk/CodeSystem/task-businessStatus-nppt"]
                   },
                   code: {
                     type: "string",
@@ -273,7 +273,7 @@ export const taskBusinessStatusNpptExtension = {
             properties: {
               url: {
                 type: "string",
-                enum: "statusDate"
+                enum: ["statusDate"]
               },
               valueDateTime: {
                 type: "string",
