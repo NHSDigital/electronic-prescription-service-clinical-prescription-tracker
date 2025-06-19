@@ -1,7 +1,7 @@
 import {Logger} from "@aws-lambda-powertools/logger"
 import {injectLambdaContext} from "@aws-lambda-powertools/logger/middleware"
 import {LogLevel} from "@aws-lambda-powertools/logger/types"
-import {operationOutcome, OperationOutcomeType} from "@cpt-common/common-types/schema"
+import {OperationOutcomeType} from "@cpt-common/common-types/schema"
 import {ServiceError} from "@cpt-common/common-types/service"
 import {generateFhirErrorResponse} from "@cpt-common/common-utils"
 import middy from "@middy/core"
@@ -14,9 +14,8 @@ import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
 import {APIGatewayEvent, APIGatewayProxyResult} from "aws-lambda"
 import {generateFhirResponse} from "./generateFhirResponse"
 import {ParsedSpineResponse, parseSpineResponse, Prescription} from "./parseSpineResponse"
-import {BundleType} from "./schema/bundle"
+import {bundle, BundleType} from "./schema/bundle"
 import {validateRequest} from "./validateRequest"
-import {requestGroup} from "./schema/requestGroup"
 
 // Config
 export const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
@@ -115,8 +114,6 @@ export const newHandler = (params: HandlerParams) => {
 const DEFAULT_HANDLER_PARAMS: HandlerParams = {logger, spineClient}
 export const handler = newHandler(DEFAULT_HANDLER_PARAMS)
 
-// TODO: fix schema generation, use from /schema and common rather than importing and re-exporting here
 export {
-  requestGroup as requestGroupBundleSchema,
-  operationOutcome as operationOutcomeSchema
+  bundle as prescriptionSearchBundle
 }

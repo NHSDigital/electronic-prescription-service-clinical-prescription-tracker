@@ -14,8 +14,7 @@ import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
 import {APIGatewayEvent, APIGatewayProxyResult} from "aws-lambda"
 import {generateFhirResponse} from "./generateFhirResponse"
 import {ParsedSpineResponse, parseSpineResponse, Prescription} from "./parseSpineResponse"
-import {BundleType} from "./schema/bundle"
-import {requestGroup} from "./schema/requestGroup"
+import {bundle, BundleType} from "./schema/bundle"
 import {validateRequest} from "./validateRequest"
 
 // Config
@@ -112,7 +111,6 @@ export const newHandler = (params: HandlerParams) => {
 const DEFAULT_HANDLER_PARAMS: HandlerParams = {logger, spineClient}
 export const handler = newHandler(DEFAULT_HANDLER_PARAMS)
 
-// TODO: fix schema generation, use from /schema rather than importing and re-exporting here
 export {
-  requestGroup as requestGroupSchema
+  bundle as clinicalViewBundle
 }
