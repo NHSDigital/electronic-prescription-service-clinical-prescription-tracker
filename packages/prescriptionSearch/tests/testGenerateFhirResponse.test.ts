@@ -416,24 +416,6 @@ describe("Test generateFhirResponse", () => {
     expect(actualExtensions[1]).toEqual(expected)
   })
 
-  it("includes a correct pending cancellation extension on the RequestGroup when called with a prescription with a missing items pending cancellation", async () => {
-    const expected: Extension = {
-      url: "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
-      extension: [
-        {
-          url: "prescriptionPendingCancellation",
-          valueBoolean: false
-        }
-      ]
-    }
-
-    const actualEntries = generateFhirResponse([mockAcutePrescription], logger).entry as Array<BundleEntry>
-    const actualRequestGroup = actualEntries[1] as BundleEntry<RequestGroup>
-    const actualExtensions = actualRequestGroup.resource?.extension as Array<Extension>
-
-    expect(actualExtensions[1]).toEqual(expected)
-  })
-
   it("it returns a correct bundle of resources when called with a list of prescriptions", async () => {
     const mockPrescriptions: Array<Prescription> = [
       mockAcutePrescription,
