@@ -73,7 +73,9 @@ export class ClinicalView extends Construct {
 
     })
     /* To invoke GSUL Clinical View has to have succeeded, so if GSUL fails for any reason
-    just return the Clinical View response rather than a catch all error*/
+    just return the Clinical View response rather than a catch all error. The Invoke GSUL state
+    will always fail if the prescription is not yet released to a dispenser as there is no
+    dispenser org to extract*/
     invokeGetStatusUpdates.addCatch(returnClinicalViewResponse)
 
     const enrichResponse = new Pass(this, "Enrich Response", {
