@@ -3,21 +3,21 @@ import {Construct} from "constructs"
 
 const severErrorOperationOutcome = `{% $string(
   {
-    ResourceType: "OperationOutcome",
-    meta: {
-      lastUpdated: "{% $now() %}"
+    "ResourceType": "OperationOutcome",
+    "meta": {
+      "lastUpdated": "{% $now() %}"
     },
-    issue: [
+    "issue": [
       {
-        code: "exception",
-        severity: "fatal",
-        diagnostics: "Unknown Error.",
-        details: {
-          coding: [
+        "code": "exception",
+        "severity": "fatal",
+        "diagnostics": "Unknown Error.",
+        "details": {
+          "coding": [
             {
-              system: "https://fhir.nhs.uk/CodeSystem/http-error-codes",
-              code: "SERVER_ERROR",
-              display: "500: The Server has encountered an error processing the request."
+              "system": "https://fhir.nhs.uk/CodeSystem/http-error-codes",
+              "code": "SERVER_ERROR",
+              "display": "500: The Server has encountered an error processing the request."
             }
           ]
         }
