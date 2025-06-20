@@ -74,6 +74,7 @@ jobs:
       LOG_LEVEL: DEBUG
       ENABLE_MUTUAL_TLS: false
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
+      RUN_REGRESSION_TESTS: true
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}
@@ -102,24 +103,24 @@ jobs:
   #     TARGET_SPINE_SERVER: sandbox
   #     REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
 
-  # TODO: remove below before merging
-  release_ref:
-    needs: [get_commit_id, get_issue_number, package_code, release_code]
-    uses: ./.github/workflows/cdk_release_code.yml
-    with:
-      STACK_NAME: cpt
-      AWS_ENVIRONMENT: ref
-      APIGEE_ENVIRONMENT: ref
-      VERSION_NUMBER: PR-${{ needs.get_issue_number.outputs.issue_number }}
-      COMMIT_ID: ${{ needs.get_commit_id.outputs.commit_id }}
-      CDK_APP_Name: CptsApiApp
-      LOG_RETENTION_IN_DAYS: 30
-      LOG_LEVEL: DEBUG
-      ENABLE_MUTUAL_TLS: false
-      TRUSTSTORE_FILE: clinical-tracker-truststore.pem
-    secrets:
-      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
-      CDK_PULL_IMAGE_ROLE: ${{ secrets.REF_CDK_PULL_IMAGE_ROLE }}
-      PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
-      TARGET_SPINE_SERVER: ${{ secrets.REF_TARGET_SPINE_SERVER }}
-      REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
+  # uncomment this if we want to release to ref from a pull request
+  # release_ref:
+  #   needs: [get_commit_id, get_issue_number, package_code, release_code]
+  #   uses: ./.github/workflows/cdk_release_code.yml
+  #   with:
+  #     STACK_NAME: cpt
+  #     AWS_ENVIRONMENT: ref
+  #     APIGEE_ENVIRONMENT: ref
+  #     VERSION_NUMBER: PR-${{ needs.get_issue_number.outputs.issue_number }}
+  #     COMMIT_ID: ${{ needs.get_commit_id.outputs.commit_id }}
+  #     CDK_APP_Name: CptsApiApp
+  #     LOG_RETENTION_IN_DAYS: 30
+  #     LOG_LEVEL: DEBUG
+  #     ENABLE_MUTUAL_TLS: false
+  #     TRUSTSTORE_FILE: clinical-tracker-truststore.pem
+  #   secrets:
+  #     CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
+  #     CDK_PULL_IMAGE_ROLE: ${{ secrets.REF_CDK_PULL_IMAGE_ROLE }}
+  #     PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
+  #     TARGET_SPINE_SERVER: ${{ secrets.REF_TARGET_SPINE_SERVER }}
+  #     REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
