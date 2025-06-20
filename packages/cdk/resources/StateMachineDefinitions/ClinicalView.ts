@@ -2,6 +2,7 @@ import {Function, IFunction} from "aws-cdk-lib/aws-lambda"
 import {LambdaInvoke} from "aws-cdk-lib/aws-stepfunctions-tasks"
 import {Construct} from "constructs"
 import {
+  Chain,
   Choice,
   Condition,
   IChainable,
@@ -88,13 +89,23 @@ export class ClinicalView extends Construct {
     //     .afterwards())
     //   .next(returnResponse)
 
-    const startState = invokeClinicalView.next(checkClinicalViewResult)
-    checkClinicalViewResult.when(statusOK, invokeGetStatusUpdates.next(checkGetStatusUpdatesResult))
-    checkClinicalViewResult.afterwards().next(returnResponse)
+    // const startState = invokeClinicalView.next(checkClinicalViewResult)
+    // checkClinicalViewResult.when(statusOK, invokeGetStatusUpdates.next(checkGetStatusUpdatesResult))
+    // checkClinicalViewResult.afterwards().next(returnResponse)
 
-    checkGetStatusUpdatesResult.when(statusOK, enrichResponse)
-    checkGetStatusUpdatesResult.afterwards().next(returnResponse)
+    // checkGetStatusUpdatesResult.when(statusOK, enrichResponse)
+    // checkGetStatusUpdatesResult.afterwards().next(returnResponse)
 
-    this.definition = startState
+    const definition = Chain
+      .start(invokeClinicalView)
+      .next(checkClinicalViewResult
+        .when(statusOK, invokeGetStatusUpdates
+          .next(checkGetStatusUpdatesResult
+            .when(statusOK, enrichResponse
+              .next(returnResponse))
+            .otherwise(returnResponse)))
+        .otherwise(returnResponse))
+
+    this.definition = definition
   }
 }
