@@ -74,12 +74,12 @@ export class ClinicalView extends Construct {
       }
     })
 
-    const returnClinicalViewResponse = new Pass(this, "Return response", {
+    const returnClinicalViewResponse = new Pass(this, "Return Clinical View response", {
       outputs: {
         Payload: {
           statusCode: "{% $clinicalViewStatusCode %}",
           headers: "{% $responseHeaders %}",
-          body: "{% $string($clinicalViewResponseBody) $}"
+          body: "{% $string($clinicalViewResponseBody) %}"
         }
       }
     })
