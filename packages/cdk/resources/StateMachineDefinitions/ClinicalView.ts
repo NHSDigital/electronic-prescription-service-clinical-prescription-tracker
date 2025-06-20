@@ -72,7 +72,9 @@ export class ClinicalView extends Construct {
       }
 
     })
-    invokeGetStatusUpdates.addCatch(catchAllError.state)
+    /* To invoke GSUL Clinical View has to have succeeded, so if GSUL fails for any reason
+    just return the Clinical View response rather than a catch all error*/
+    invokeGetStatusUpdates.addCatch(returnClinicalViewResponse)
 
     const enrichResponse = new Pass(this, "Enrich Response", {
       outputs: {

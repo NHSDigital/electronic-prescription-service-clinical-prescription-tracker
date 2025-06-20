@@ -134,6 +134,28 @@ export const medicationRequest = {
       },
       required: ["reference"]
     },
+    performer: {
+      type: "object",
+      properties: {
+        identifier: {
+          type: "array",
+          items:{
+            type: "object",
+            properties: {
+              system: {
+                type: "string",
+                enum: ["https://fhir.nhs.uk/Id/ods-organization-code"]
+              },
+              value: {
+                type: "string"
+              }
+            },
+            required: ["system", "value"]
+          }
+        }
+      },
+      required: ["identifier"]
+    },
     groupIdentifier: {
       type: "object",
       properties: {

@@ -328,6 +328,12 @@ const generateMedicationRequests = (
         requester: {
           reference: `urn:uuid:${prescriberResourceId}`
         },
+        ...(prescription.dispenserOrg ? {performer: {
+          identifier: [{
+            system: "https://fhir.nhs.uk/Id/ods-organization-code",
+            value: prescription.dispenserOrg
+          }]
+        }} : {}),
         groupIdentifier: {
           system: "https://fhir.nhs.uk/Id/prescription-order-number",
           value: prescription.prescriptionId

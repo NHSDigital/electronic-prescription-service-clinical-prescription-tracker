@@ -56,6 +56,8 @@ describe("Enrich clinical view response", () => {
 
   it("correctly extracts the Dispenser ODS code from the clinicalView response", async () => {
     const expression = jsonata(extractDispenserOdsCodeExpression)
+    const x = generateFhirFromExample(acuteDispensedWithASingleItem)
+    logger.info("thing-------", {x})
     const result = await expression.evaluate(
       {}, {clinicalViewResponseBody: generateFhirFromExample(acuteDispensedWithASingleItem)})
 

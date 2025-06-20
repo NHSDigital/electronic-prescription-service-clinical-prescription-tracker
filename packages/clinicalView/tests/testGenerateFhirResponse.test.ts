@@ -1374,6 +1374,12 @@ describe("Test generateFhirResponse", () => {
         requester: {
           reference: "urn:uuid:PRESORG-123-567-890"
         },
+        performer: {
+          identifier: [{
+            system: "https://fhir.nhs.uk/Id/ods-organization-code",
+            value: "FA565"
+          }]
+        },
         groupIdentifier: {
           system: "https://fhir.nhs.uk/Id/prescription-order-number",
           value: "EA1CBC-A83008-F1F8A8"
@@ -1490,6 +1496,12 @@ describe("Test generateFhirResponse", () => {
         intent: "order",
         requester: {
           reference: "urn:uuid:PRESORG-123-567-890"
+        },
+        performer: {
+          identifier: [{
+            system: "https://fhir.nhs.uk/Id/ods-organization-code",
+            value: "FA565"
+          }]
         },
         groupIdentifier: {
           system: "https://fhir.nhs.uk/Id/prescription-order-number",
