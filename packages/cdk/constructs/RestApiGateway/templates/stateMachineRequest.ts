@@ -25,7 +25,7 @@ export const stateMachineRequestTemplate = (stateMachineArn: string) => {
         #set($inputString = "$inputString }")
     #end
     #if ($includeQueryString)
-        #set($inputString = "$inputString, @@querystring@@:{")
+        #set($inputString = "$inputString, @@queryStringParameters@@:{")
         #foreach($paramName in $allParams.querystring.keySet())
             #set($inputString = "$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.querystring.get($paramName))@@")
             #if($foreach.hasNext)
@@ -35,7 +35,7 @@ export const stateMachineRequestTemplate = (stateMachineArn: string) => {
         #set($inputString = "$inputString }")
     #end
     #if ($includePath)
-        #set($inputString = "$inputString, @@path@@:{")
+        #set($inputString = "$inputString, @@pathParameters@@:{")
         #foreach($paramName in $allParams.path.keySet())
             #set($inputString = "$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.path.get($paramName))@@")
             #if($foreach.hasNext)

@@ -41,6 +41,7 @@ export class ClinicalView extends Construct {
         this is usually handled by $eval in standard jsonata however this is not supported
         in Step Functions workflows. */
         clinicalViewResponseBody: "{% $parse($states.result.Payload.body) %}",
+        clinicalViewStatusCode: "{% $states.input.Payload.statusCode %}",
         responseHeaders: "{% $states.result.Payload.headers %}"
       }
     })
@@ -73,38 +74,31 @@ export class ClinicalView extends Construct {
       }
     })
 
-    const statusOK = Condition.jsonata("{% $states.input.Payload.statusCode = 200 %}")
+    const returnClinicalViewResponse = new Pass(this, "Return response", {
+      outputs: {
+        Payload: {
+          statusCode: "{% $clinicalViewStatusCode %}",
+          headers: "{% $responseHeaders %}",
+          body: "{% $string($clinicalViewResponseBody) $}"
+        }
+      }
+    })
+
+    const statusOK = Condition.jsonata("{% $clinicalViewStatusCode = 200 %}")
+    const getStatusUpdatesIsSuccess = Condition.jsonata("{% $states.input.Payload.isSuccess = true %}")
     const checkClinicalViewResult = new Choice(this, "Check Clinical View Result")
     const checkGetStatusUpdatesResult = new Choice(this, "Check Get Status Updates Result")
-    const returnResponse = new Pass(this, "Return response")
+    // const returnResponse = new Pass(this, "Return response")
 
     // Definition Chain
-    // const definition = Chain
-    //   .start(invokeClinicalView)
-    //   .next(checkClinicalViewResult
-    //     .when(statusOK, invokeGetStatusUpdates
-    //       .next(checkGetStatusUpdatesResult
-    //         .when(statusOK, enrichResponse)
-    //         .afterwards()))
-    //     .afterwards())
-    //   .next(returnResponse)
-
-    // const startState = invokeClinicalView.next(checkClinicalViewResult)
-    // checkClinicalViewResult.when(statusOK, invokeGetStatusUpdates.next(checkGetStatusUpdatesResult))
-    // checkClinicalViewResult.afterwards().next(returnResponse)
-
-    // checkGetStatusUpdatesResult.when(statusOK, enrichResponse)
-    // checkGetStatusUpdatesResult.afterwards().next(returnResponse)
-
     const definition = Chain
       .start(invokeClinicalView)
       .next(checkClinicalViewResult
         .when(statusOK, invokeGetStatusUpdates
           .next(checkGetStatusUpdatesResult
-            .when(statusOK, enrichResponse
-              .next(returnResponse))
-            .otherwise(returnResponse)))
-        .otherwise(returnResponse))
+            .when(getStatusUpdatesIsSuccess, enrichResponse)
+            .otherwise(returnClinicalViewResponse)))
+        .otherwise(returnClinicalViewResponse))
 
     this.definition = definition
   }

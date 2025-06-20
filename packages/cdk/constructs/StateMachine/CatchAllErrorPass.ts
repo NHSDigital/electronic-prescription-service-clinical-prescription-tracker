@@ -33,9 +33,6 @@ export class CatchAllErrorPass extends Construct {
     super(scope, id)
 
     const state = new Pass(this, "Catch All Error", {
-      // assign: {
-      //   bodyTemplate: severErrorOperationOutcome
-      // },
       outputs: {
         Payload: {
           statusCode: 500,

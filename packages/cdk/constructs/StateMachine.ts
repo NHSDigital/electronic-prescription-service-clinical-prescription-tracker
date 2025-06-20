@@ -118,7 +118,8 @@ export class ExpressStateMachine extends Construct {
       role: role,
       logs: {
         destination: logGroup,
-        level: LogLevel.ALL
+        level: LogLevel.ALL,
+        includeExecutionData: true
       },
       tracingEnabled: true
     })

@@ -271,7 +271,7 @@ const generateMedicationRequests = (
   const medicationRequestResourceIds: MedicationRequestResourceIds = {}
   // Generate a medication request resource for each line item
   for (const lineItem of Object.values(prescription.lineItems)){
-    console.log("Generating DispensingInformation extension for line item...", {lineItemNo: lineItem.lineItemNo})
+    logger.debug("Generating DispensingInformation extension for line item...", {lineItemNo: lineItem.lineItemNo})
     const dispensingInformationExtension: Extension & DispensingInformationExtensionType = {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-DispensingInformation",
       extension:[
@@ -286,7 +286,7 @@ const generateMedicationRequests = (
       ]
     }
 
-    console.log("Generating PendingCancellation extension for line item...", {lineItemNo: lineItem.lineItemNo})
+    logger.debug("Generating PendingCancellation extension for line item...", {lineItemNo: lineItem.lineItemNo})
     const lineItemPendingCancellationExtension: Extension & PendingCancellationExtensionType = {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
       extension:[{
