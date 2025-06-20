@@ -72,7 +72,7 @@ export class ClinicalView extends Construct {
       }
     })
 
-    const statusOK = Condition.jsonata("{% $state.input.Payload.statusCode = 200 %}")
+    const statusOK = Condition.jsonata("{% $states.input.Payload.statusCode = 200 %}")
     const checkClinicalViewResult = new Choice(this, "Check Clinical View Result")
     const checkGetStatusUpdatesResult = new Choice(this, "Check Get Status Updates Result")
     const returnResponse = new Pass(this, "Return response")
@@ -89,10 +89,8 @@ export class ClinicalView extends Construct {
     //   .next(returnResponse)
 
     const startState = invokeClinicalView.next(checkClinicalViewResult)
-    checkClinicalViewResult.when(statusOK, invokeGetStatusUpdates)
-    checkClinicalViewResult.afterwards()//.next(returnResponse)
-
-    invokeGetStatusUpdates.next(checkGetStatusUpdatesResult)
+    checkClinicalViewResult.when(statusOK, invokeGetStatusUpdates.next(checkGetStatusUpdatesResult))
+    checkClinicalViewResult.afterwards().next(returnResponse)
 
     checkGetStatusUpdatesResult.when(statusOK, enrichResponse)
     checkGetStatusUpdatesResult.afterwards().next(returnResponse)
