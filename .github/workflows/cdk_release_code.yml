@@ -35,6 +35,9 @@ on:
       DEPLOY_APIGEE:
         type: boolean
         default: true
+      RUN_REGRESSION_TESTS:
+        type: boolean
+        default: true
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE:
         required: true
@@ -211,7 +214,7 @@ jobs:
   regression_tests:
     name: Regression Tests
     uses: ./.github/workflows/run_regression_tests.yml
-    if: ${{ always() && !failure() && !cancelled() }}
+    if: ${{ always() && !failure() && !cancelled() && inputs.RUN_REGRESSION_TESTS == true }}
     needs: [release_code_and_api]
     with:
       ENVIRONMENT: ${{ inputs.AWS_ENVIRONMENT }}
