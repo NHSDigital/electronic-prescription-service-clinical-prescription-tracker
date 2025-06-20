@@ -41,7 +41,7 @@ export class ClinicalView extends Construct {
         this is usually handled by $eval in standard jsonata however this is not supported
         in Step Functions workflows. */
         clinicalViewResponseBody: "{% $parse($states.result.Payload.body) %}",
-        clinicalViewStatusCode: "{% $states.input.Payload.statusCode %}",
+        clinicalViewStatusCode: "{% $states.result.Payload.statusCode %}",
         responseHeaders: "{% $states.result.Payload.headers %}"
       }
     })
