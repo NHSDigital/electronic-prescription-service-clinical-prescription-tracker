@@ -2,27 +2,29 @@ import {Pass} from "aws-cdk-lib/aws-stepfunctions"
 import {Construct} from "constructs"
 
 const severErrorOperationOutcome = `{% $string(
-  ResourceType: "OperationOutcome",
-  meta: {
-    lastUpdated: "{% $now() %}"
-  },
-  issue: [
-    {
-      code: "exception",
-      severity: "fatal",
-      diagnostics: "Unknown Error.",
-      details: {
-        coding: [
-          {
-            system: "https://fhir.nhs.uk/CodeSystem/http-error-codes",
-            code: "SERVER_ERROR",
-            display: "500: The Server has encountered an error processing the request."
-          }
-        ]
+  {
+    ResourceType: "OperationOutcome",
+    meta: {
+      lastUpdated: "{% $now() %}"
+    },
+    issue: [
+      {
+        code: "exception",
+        severity: "fatal",
+        diagnostics: "Unknown Error.",
+        details: {
+          coding: [
+            {
+              system: "https://fhir.nhs.uk/CodeSystem/http-error-codes",
+              code: "SERVER_ERROR",
+              display: "500: The Server has encountered an error processing the request."
+            }
+          ]
+        }
       }
-    }
-  ]
-}) %}`
+    ]
+  }
+) %}`
 
 export class CatchAllErrorPass extends Construct {
   public readonly state
