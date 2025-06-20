@@ -19,15 +19,13 @@ const mockHeaders: APIGatewayProxyEventHeaders = {
   "nhsd-organization-uuid": "ORG-123-456-789",
   "nhsd-session-urid": "SESS-123-456-789",
   "nhsd-identity-uuid": "ID-123-456-789",
-  "nhsd-session-jobrole": "JOB-123-456-789"
+  "nhsd-session-jobrole": "JOB-123-456-789",
+  "apigw-request-id": "API-GW-REQ-123"
 }
 const mockEvent = {
   headers: mockHeaders,
   pathParameters: {
     prescriptionId: "PRES-1234-5678"
-  },
-  requestContext: {
-    requestId: "API-GW-REQ-123"
   }
 } as unknown as APIGatewayProxyEvent
 const mockContext = {} as unknown as Context

@@ -6,56 +6,20 @@ import {
   Extension,
   RequestGroup,
   Patient,
-  OperationOutcome
+  HumanName
 } from "fhir/r4"
-import {Prescription, SearchError} from "./parseSpineResponse"
+import {Prescription} from "./parseSpineResponse"
+import {BundleType} from "./schema/bundle"
+import {PatientBundleEntryType, PatientType} from "./schema/patient"
+import {RequestGroupBundleEntryType} from "./schema/requestGroup"
 import {
-  BundleType,
   MedicationRepeatInformationExtensionType,
-  OperationOutcomeType,
-  PatientBundleEntryType,
   PendingCancellationExtensionType,
-  PrescriptionStatusExtensionType,
-  RequestGroupBundleEntryType
-} from "./schema/response"
+  PrescriptionStatusExtensionType
+} from "@cpt-common/common-types/schema"
+import {INTENT_MAP, PRESCRIPTION_STATUS_MAP, TreatmentType} from "@cpt-common/common-types/fhir"
 
-export interface IntentMap {
-  [key: string]: RequestGroupBundleEntryType["resource"]["intent"]
-}
-
-/* TODO: use common version */
-export enum TreatmentType {
-  ACUTE = "0001",
-  REPEAT = "0002",
-  ERD = "0003"
-}
-
-/* TODO: use common version */
-const intentMap: IntentMap = {
-  [TreatmentType.ACUTE]: "order",
-  [TreatmentType.REPEAT]: "instance-order",
-  [TreatmentType.ERD] : "reflex-order"
-}
-/* TODO: use common version */
-type PrescriptionStatusCoding = PrescriptionStatusExtensionType["extension"][0]["valueCoding"]
-
-/* TODO: use common version */
-const statusDisplayMap: Record<PrescriptionStatusCoding["code"], PrescriptionStatusCoding["display"]> = {
-  "0001": "To be Dispensed",
-  "0002": "With Dispenser",
-  "0003": "With Dispenser - Active",
-  "0004": "Expired",
-  "0005": "Cancelled",
-  "0006": "Dispensed",
-  "0007": "Not Dispensed",
-  "0008": "Claimed",
-  "0009": "No-Claimed",
-  "9000": "Repeat Dispense future instance",
-  "9001": "Prescription future instance",
-  "9005": "Cancelled future instance"
-}
-
-export const generateFhirResponse = (prescriptions: Array<Prescription>, logger: Logger): Bundle => {
+export const generateFhirResponse = (prescriptions: Array<Prescription>, logger: Logger): Bundle & BundleType => {
   // Generate the Bundle wrapper
   logger.info("Generating the Bundle wrapper...")
   const responseBundle: Bundle & BundleType = {
@@ -71,6 +35,12 @@ export const generateFhirResponse = (prescriptions: Array<Prescription>, logger:
     // Generate the Patient bundle entry if there are prescriptions to process
     logger.info("Generating the Patient bundle entry...")
     if (responseBundle.entry?.length === 0){
+      const patientName: HumanName & PatientType["name"] = [{
+        ...(prescriptions[0].prefix ? {prefix: [prescriptions[0].prefix]} : {}),
+        ...(prescriptions[0].suffix ? {suffix: [prescriptions[0].suffix]} : {}),
+        ...(prescriptions[0].given ? {given: [prescriptions[0].given]} : {}),
+        ...(prescriptions[0].family ? {family: prescriptions[0].family} : {})
+      }]
       const patient: BundleEntry<Patient> & PatientBundleEntryType = {
         fullUrl: `urn:uuid:${patientUuid}`,
         search: {
@@ -82,12 +52,7 @@ export const generateFhirResponse = (prescriptions: Array<Prescription>, logger:
             system: "https://fhir.nhs.uk/Id/nhs-number",
             value: prescriptions[0].nhsNumber
           }],
-          name: [{
-            prefix: [prescriptions[0].prefix],
-            suffix: [prescriptions[0].suffix],
-            given: [prescriptions[0].given],
-            family: prescriptions[0].family
-          }]
+          ...(Object.keys(patientName[0]).length ? {name: patientName}: {})
         }
       }
       responseBundle.entry?.push(patient)
@@ -113,7 +78,7 @@ export const generateFhirResponse = (prescriptions: Array<Prescription>, logger:
           reference: `urn:uuid:${patientUuid}`
         },
         status: "active",
-        intent: intentMap[prescription.treatmentType],
+        intent: INTENT_MAP[prescription.treatmentType],
         authoredOn: prescription.issueDate,
         extension: []
       }
@@ -123,13 +88,13 @@ export const generateFhirResponse = (prescriptions: Array<Prescription>, logger:
     logger.info("Generating the PrescriptionStatus extension...",
       {prescriptionId: prescription.prescriptionId})
     const prescriptionStatus: Extension & PrescriptionStatusExtensionType = {
-      url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
       extension: [{
         url: "status",
         valueCoding : {
           system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
           code: prescription.status,
-          display: statusDisplayMap[prescription.status]
+          display: PRESCRIPTION_STATUS_MAP[prescription.status]
         }
       }]
     }
@@ -160,7 +125,7 @@ export const generateFhirResponse = (prescriptions: Array<Prescription>, logger:
     // Generate the PendingCancellation extension
     logger.info("Generating the PendingCancellation extension...", {prescriptionId: prescription.prescriptionId})
     const pendingCancellation: Extension & PendingCancellationExtensionType = {
-      url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PendingCancellation",
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
       extension: [
         {
           url: "prescriptionPendingCancellation",
@@ -169,75 +134,12 @@ export const generateFhirResponse = (prescriptions: Array<Prescription>, logger:
         {
           url: "lineItemPendingCancellation",
           valueBoolean: prescription.itemsPendingCancellation
-        }]
+        }
+      ]
     }
     requestGroup.resource?.extension?.push(pendingCancellation)
     responseBundle.entry?.push(requestGroup)
   }
 
   return responseBundle
-}
-
-export interface FhirErrorDetails {
-  status: string
-  code: OperationOutcomeType["issue"][0]["code"]
-  detailsCode: OperationOutcomeType["issue"][0]["details"]["coding"][0]["code"]
-  detailsDisplay: OperationOutcomeType["issue"][0]["details"]["coding"][0]["display"]
-}
-
-export interface ErrorMap {
-  [key: string]: FhirErrorDetails
-}
-
-const errorMap: ErrorMap = {
-  400: {
-    status: "400 Bad Request",
-    code: "value",
-    detailsCode: "BAD_REQUEST",
-    detailsDisplay: "400: The Server was unable to process the request."
-  },
-  404: {
-    status: "404 Not Found",
-    code: "not-found",
-    detailsCode: "NOT_FOUND",
-    detailsDisplay: "404: The Server was unable to find the specified resource."
-  },
-  500: {
-    status: "500 Internal Server Error",
-    code: "exception",
-    detailsCode: "SERVER_ERROR",
-    detailsDisplay: "500: The Server has encountered an error processing the request."
-  },
-  504: {
-    status: "504 Gateway Timeout",
-    code: "timeout",
-    detailsCode: "TIMEOUT",
-    detailsDisplay: "504: The server has timed out whilst processing the request."
-  }
-}
-
-/* Use the common version */
-export const generateFhirErrorResponse = (errors: Array<SearchError>, logger: Logger): OperationOutcome => {
-  logger.info("Generating the OperationOutcome wrapper...")
-  // Generate the OperationOutcome wrapper
-  const operationOutcome: OperationOutcome & OperationOutcomeType = {
-    resourceType: "OperationOutcome",
-    meta: {
-      lastUpdated: new Date().toISOString()
-    },
-    issue: errors.map((error) => ({
-      code: errorMap[error.status].code,
-      severity: error.severity,
-      diagnostics: error.description,
-      details: {
-        coding: [{
-          system: "https://fhir.nhs.uk/CodeSystem/http-error-codes",
-          code: errorMap[error.status].detailsCode,
-          display: errorMap[error.status].detailsDisplay
-        }]
-      }
-    }))
-  }
-
-  return operationOutcome
 }

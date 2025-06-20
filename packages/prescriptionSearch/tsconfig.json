@@ -2,9 +2,17 @@
   "extends": "../../tsconfig.defaults.json",
   "compilerOptions": {
     "rootDir": ".",
-    "outDir": "lib"
+    "outDir": "lib",
+    "moduleResolution": "bundler",
   },
-  "references": [],
-  "include": ["src/**/*", "tests/**/*", "tests/exampleSpineResponses/*.json"],
+  "references": [
+    {
+      "path": "../common/commonTypes"
+    },
+    {
+      "path": "../common/commonUtils"
+    }
+  ],
+  "include": ["src/**/*", "tests/**/*", "tests/examples/*.json"],
   "exclude": ["node_modules"]
 }

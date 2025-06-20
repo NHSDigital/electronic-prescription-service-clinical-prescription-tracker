@@ -1,22 +1,21 @@
 import {Logger} from "@aws-lambda-powertools/logger"
 import {injectLambdaContext} from "@aws-lambda-powertools/logger/middleware"
 import {LogLevel} from "@aws-lambda-powertools/logger/types"
+import {OperationOutcomeType} from "@cpt-common/common-types/schema"
 import {ServiceError} from "@cpt-common/common-types/service"
 import {generateFhirErrorResponse} from "@cpt-common/common-utils"
 import middy from "@middy/core"
+import httpHeaderNormalizer from "@middy/http-header-normalizer"
 import inputOutputLogger from "@middy/input-output-logger"
 import errorHandler from "@nhs/fhir-middy-error-handler"
 import {createSpineClient} from "@NHSDigital/eps-spine-client"
 import {ClinicalViewParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
 import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
 import {APIGatewayEvent, APIGatewayProxyResult} from "aws-lambda"
-import {OperationOutcome} from "fhir/r4"
 import {generateFhirResponse} from "./generateFhirResponse"
 import {ParsedSpineResponse, parseSpineResponse, Prescription} from "./parseSpineResponse"
-import {requestGroup} from "./schema/requestGroup"
+import {bundle, BundleType} from "./schema/bundle"
 import {validateRequest} from "./validateRequest"
-import {BundleType} from "./schema/bundle"
-import httpHeaderNormalizer from "@middy/http-header-normalizer"
 
 // Config
 const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel
@@ -39,7 +38,7 @@ export const apiGatewayHandler = async (
     "nhsd-correlation-id": event.headers?.["nhsd-correlation-id"],
     "nhsd-request-id": event.headers?.["nhsd-request-id"],
     "x-correlation-id": event.headers?.["x-correlation-id"],
-    "apigw-request-id": event.requestContext.requestId /* TODO: Change to event.headers?.["apigw-request-id"] when State machine */
+    "apigw-request-id": event.headers?.["apigw-request-id"]
   })
 
   const [searchParameters, validationErrors]:
@@ -54,7 +53,7 @@ export const apiGatewayHandler = async (
   if (validationErrors.length > 0) {
     logger.error("Error validating request.")
     logger.info("Generating FHIR error response...")
-    const errorResponseBundle: OperationOutcome = generateFhirErrorResponse(validationErrors, logger)
+    const errorResponseBundle: OperationOutcomeType = generateFhirErrorResponse(validationErrors, logger)
 
     logger.info("Returning FHIR error response.")
     return {
@@ -74,7 +73,8 @@ export const apiGatewayHandler = async (
   if ("spineError" in parsedSpineResponse) {
     logger.error("Spine response contained an error.", {error: parsedSpineResponse.spineError.description})
     logger.info("Generating FHIR error response...")
-    const errorResponseBundle: OperationOutcome = generateFhirErrorResponse([parsedSpineResponse.spineError], logger)
+    const errorResponseBundle: OperationOutcomeType =
+      generateFhirErrorResponse([parsedSpineResponse.spineError], logger)
 
     logger.info("Returning FHIR error response.")
     return {
@@ -112,6 +112,5 @@ const DEFAULT_HANDLER_PARAMS: HandlerParams = {logger, spineClient}
 export const handler = newHandler(DEFAULT_HANDLER_PARAMS)
 
 export {
-  requestGroup as requestGroupSchema
+  bundle as clinicalViewBundle
 }
-/* TODO: use specific operationOutcome schema type once its been moved to common */

@@ -199,7 +199,7 @@ const acuteCreatedWithMultipleItems: Prescription = {
   }
 }
 
-describe("Test parseSpineResponse", () => {
+describe("Test generateFhirResponse", () => {
   beforeEach(() => {
     mockUUID.mockImplementationOnce(() => "PATIENT-123-567-890")
     mockUUID.mockImplementationOnce(() => "RGROUP-123-567-890")
@@ -259,6 +259,7 @@ describe("Test parseSpineResponse", () => {
     } as unknown as RequestGroupBundleEntryType
 
     const actual = generateFhirResponse(acuteDispensedWithSingleItem, logger)
+    logger.info("", {thing: actual})
     expect(actual.entry).toContainEqual(expect.objectContaining(expected))
   })
 
@@ -1373,6 +1374,12 @@ describe("Test parseSpineResponse", () => {
         requester: {
           reference: "urn:uuid:PRESORG-123-567-890"
         },
+        performer: {
+          identifier: [{
+            system: "https://fhir.nhs.uk/Id/ods-organization-code",
+            value: "FA565"
+          }]
+        },
         groupIdentifier: {
           system: "https://fhir.nhs.uk/Id/prescription-order-number",
           value: "EA1CBC-A83008-F1F8A8"
@@ -1489,6 +1496,12 @@ describe("Test parseSpineResponse", () => {
         intent: "order",
         requester: {
           reference: "urn:uuid:PRESORG-123-567-890"
+        },
+        performer: {
+          identifier: [{
+            system: "https://fhir.nhs.uk/Id/ods-organization-code",
+            value: "FA565"
+          }]
         },
         groupIdentifier: {
           system: "https://fhir.nhs.uk/Id/prescription-order-number",

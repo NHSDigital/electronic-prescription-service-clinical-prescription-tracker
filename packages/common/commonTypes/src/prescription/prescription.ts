@@ -20,5 +20,5 @@ export interface IssueDetails {
   issueNumber: number
   status: PrescriptionStatusCoding["code"]
   prescriptionPendingCancellation: boolean
-  itemsPendingCancellation?: boolean // prescription search only
+  // itemsPendingCancellation?: boolean // prescription search only
 }

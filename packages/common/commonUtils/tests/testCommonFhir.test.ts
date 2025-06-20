@@ -1,8 +1,8 @@
 import {jest} from "@jest/globals"
 import {Logger} from "@aws-lambda-powertools/logger"
-import {BundleEntry, OperationOutcome, OperationOutcomeIssue} from "fhir/r4"
 import {generateFhirErrorResponse} from "../src/commonFhir"
 import {ServiceError} from "@cpt-common/common-types/service"
+import {OperationOutcomeIssueType, OperationOutcomeType} from "@cpt-common/common-types/schema"
 
 const logger: Logger = new Logger({serviceName: "commonUtils", logLevel: "DEBUG"})
 
@@ -13,7 +13,7 @@ describe("Test generateFhirErrorResponse", () => {
   })
 
   it("returns a OperationOutcome when called", async () => {
-    const expected: OperationOutcome = {
+    const expected: OperationOutcomeType = {
       resourceType: "OperationOutcome",
       meta: {
         lastUpdated: "2015-04-09T12:34:56.001Z"
@@ -21,7 +21,7 @@ describe("Test generateFhirErrorResponse", () => {
       issue: []
     }
 
-    const actual: OperationOutcome = generateFhirErrorResponse([], logger)
+    const actual: OperationOutcomeType = generateFhirErrorResponse([], logger)
     expect(actual).toEqual(expected)
   })
 
@@ -32,7 +32,7 @@ describe("Test generateFhirErrorResponse", () => {
       description: "An unknown error."
     }
 
-    const expected: OperationOutcomeIssue = {
+    const expected: OperationOutcomeIssueType = {
       code: "exception",
       severity: "error",
       diagnostics: "An unknown error.",
@@ -45,8 +45,8 @@ describe("Test generateFhirErrorResponse", () => {
       }
     }
 
-    const actualIssues = generateFhirErrorResponse([mockError], logger).issue as Array<OperationOutcomeIssue>
-    const actualOperationOutcome = actualIssues[0] as BundleEntry<OperationOutcome>
+    const actualIssues = generateFhirErrorResponse([mockError], logger).issue as Array<OperationOutcomeIssueType>
+    const actualOperationOutcome = actualIssues[0]
     expect(actualOperationOutcome).toEqual(expected)
   })
 
@@ -69,7 +69,7 @@ describe("Test generateFhirErrorResponse", () => {
       }
     ]
 
-    const expected: OperationOutcome = {
+    const expected: OperationOutcomeType = {
       resourceType: "OperationOutcome",
       meta: {
         lastUpdated: "2015-04-09T12:34:56.001Z"
@@ -113,7 +113,7 @@ describe("Test generateFhirErrorResponse", () => {
         }
       ]
     }
-    const actual = generateFhirErrorResponse(mockErrors, logger) as OperationOutcome
+    const actual = generateFhirErrorResponse(mockErrors, logger) as OperationOutcomeType
     expect(actual).toEqual(expected)
   })
 })
