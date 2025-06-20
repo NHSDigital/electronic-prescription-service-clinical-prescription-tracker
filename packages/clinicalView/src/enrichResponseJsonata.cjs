@@ -4,7 +4,7 @@ This is explicitly a .cjs file to allow both the cdk package(cjs) and the tests 
 */
 const extractPrescriptionIdExpression = `$clinicalViewResponseBody.entry.resource[resourceType="RequestGroup"].identifier[0].value`
 
-const extractAuthorOdsCodeExpression = `$clinicalViewResponseBody.entry.resource[resourceType="RequestGroup"].author.identifier.value`
+const extractDispenserOdsCodeExpression = `$clinicalViewResponseBody.entry[fullUrl=$clinicalViewResponseBody.entry.resource[resourceType="MedicationDispense"].performer[0].actor.reference].resource.organization.identifier.value`
 
 const enrichResponseExpression = `$string((
   $clinicalViewResponseBody ~> | entry.resource[resourceType="MedicationRequest"] |
@@ -34,6 +34,6 @@ const enrichResponseExpression = `$string((
 
 module.exports = {
   extractPrescriptionIdExpression,
-  extractAuthorOdsCodeExpression,
+  extractDispenserOdsCodeExpression,
   enrichResponseExpression
 }

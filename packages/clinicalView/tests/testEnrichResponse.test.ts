@@ -4,7 +4,7 @@ import {Logger} from "@aws-lambda-powertools/logger"
 import jsonata from "jsonata"
 import {
   extractPrescriptionIdExpression,
-  extractAuthorOdsCodeExpression,
+  extractDispenserOdsCodeExpression,
   enrichResponseExpression
 } from "../src/enrichResponseJsonata.cjs"
 import {generateFhirResponse} from "../src/generateFhirResponse"
@@ -54,12 +54,12 @@ describe("Enrich clinical view response", () => {
     expect(result).toEqual("EA1CBC-A83008-F1F8A8")
   })
 
-  it("correctly extracts the Author ODS code from the clinicalView response", async () => {
-    const expression = jsonata(extractAuthorOdsCodeExpression)
+  it("correctly extracts the Dispenser ODS code from the clinicalView response", async () => {
+    const expression = jsonata(extractDispenserOdsCodeExpression)
     const result = await expression.evaluate(
       {}, {clinicalViewResponseBody: generateFhirFromExample(acuteDispensedWithASingleItem)})
 
-    expect(result).toEqual("A83008")
+    expect(result).toEqual("FA565")
   })
 
   it("correctly enriches the Medication Request entry with the NPPTS status extension", async () => {

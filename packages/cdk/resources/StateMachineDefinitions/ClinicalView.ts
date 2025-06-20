@@ -13,7 +13,7 @@ import {Fn} from "aws-cdk-lib"
 import {CatchAllErrorPass} from "../../constructs/StateMachine/CatchAllErrorPass"
 import {
   extractPrescriptionIdExpression,
-  extractAuthorOdsCodeExpression,
+  extractDispenserOdsCodeExpression,
   enrichResponseExpression
 } from "../../../clinicalView/src/enrichResponseJsonata.cjs"
 
@@ -47,13 +47,23 @@ export class ClinicalView extends Construct {
     })
     invokeClinicalView.addCatch(catchAllError.state)
 
+    const returnClinicalViewResponse = new Pass(this, "Return Clinical View response", {
+      outputs: {
+        Payload: {
+          statusCode: "{% $clinicalViewStatusCode %}",
+          headers: "{% $responseHeaders %}",
+          body: "{% $string($clinicalViewResponseBody) %}"
+        }
+      }
+    })
+
     const invokeGetStatusUpdates = new LambdaInvoke(this, "Invoke Get Status Updates", {
       lambdaFunction: getStatusUpdates,
       payload: TaskInput.fromObject({
         schemaVersion: 1,
         prescriptions: [{
           prescriptionID: `{% ${extractPrescriptionIdExpression} %}`,
-          odsCode: `{% ${extractAuthorOdsCodeExpression} %}`
+          odsCode: `{% ${extractDispenserOdsCodeExpression} %}`
         }]
       }),
       assign: {
@@ -74,21 +84,10 @@ export class ClinicalView extends Construct {
       }
     })
 
-    const returnClinicalViewResponse = new Pass(this, "Return Clinical View response", {
-      outputs: {
-        Payload: {
-          statusCode: "{% $clinicalViewStatusCode %}",
-          headers: "{% $responseHeaders %}",
-          body: "{% $string($clinicalViewResponseBody) %}"
-        }
-      }
-    })
-
     const statusOK = Condition.jsonata("{% $clinicalViewStatusCode = 200 %}")
     const getStatusUpdatesIsSuccess = Condition.jsonata("{% $states.input.Payload.isSuccess = true %}")
     const checkClinicalViewResult = new Choice(this, "Check Clinical View Result")
     const checkGetStatusUpdatesResult = new Choice(this, "Check Get Status Updates Result")
-    // const returnResponse = new Pass(this, "Return response")
 
     // Definition Chain
     const definition = Chain
