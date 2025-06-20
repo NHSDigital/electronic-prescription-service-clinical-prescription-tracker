@@ -1,7 +1,7 @@
 import {Pass} from "aws-cdk-lib/aws-stepfunctions"
 import {Construct} from "constructs"
 
-const severErrorOperationOutcome = {
+const severErrorOperationOutcome = `{% $string(
   ResourceType: "OperationOutcome",
   meta: {
     lastUpdated: "{% $now() %}"
@@ -22,7 +22,7 @@ const severErrorOperationOutcome = {
       }
     }
   ]
-}
+}) %}`
 
 export class CatchAllErrorPass extends Construct {
   public readonly state
@@ -41,7 +41,7 @@ export class CatchAllErrorPass extends Construct {
             "Content-Type": "application/fhir+json",
             "Cache-Control": "co-cache"
           },
-          body: `{% $string(${severErrorOperationOutcome}) %}`
+          body: severErrorOperationOutcome
         }
       }
     })
