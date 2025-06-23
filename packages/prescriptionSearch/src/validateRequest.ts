@@ -1,8 +1,9 @@
 // Types
-import {APIGatewayEvent, APIGatewayProxyEventHeaders, APIGatewayProxyEventQueryStringParameters} from "aws-lambda"
 import {Logger} from "@aws-lambda-powertools/logger"
+import {CommonHeaderParameters, ServiceError} from "@cpt-common/common-types/service"
+import {validateCommonHeaders} from "@cpt-common/common-utils"
 import {PrescriptionSearchParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
-import {SearchError} from "./parseSpineResponse"
+import {APIGatewayEvent, APIGatewayProxyEventQueryStringParameters} from "aws-lambda"
 
 export interface QueryStringSearchParameters {
   prescriptionID?: string
@@ -13,31 +14,22 @@ export interface QueryStringSearchParameters {
   }
 }
 
-export interface HeaderSearchParameters {
-  requestId?: string
-  correlationId?: string
-  organizationId?: string
-  sdsRoleProfileId?: string
-  sdsId?: string
-  jobRoleCode?: string
-}
-
 export const validateRequest = (
-  event: APIGatewayEvent, logger: Logger):[PrescriptionSearchParams, Array<SearchError>] => {
+  event: APIGatewayEvent, logger: Logger):[PrescriptionSearchParams, Array<ServiceError>] => {
 
   logger.info("Validating query string parameters...")
   const [queryStringSearchParameters, queryStringParameterErrors]:
-    [QueryStringSearchParameters, Array<SearchError>] = validateQueryStringParameters(
+    [QueryStringSearchParameters, Array<ServiceError>] = validateQueryStringParameters(
       event.queryStringParameters, logger)
 
   logger.info("Validating headers...")
-  const [headerSearchParameters, headerErrors]:
-    [HeaderSearchParameters, Array<SearchError>] = validateHeaders(event.headers, logger)
+  const [headerParameters, headerErrors]:
+    [CommonHeaderParameters, Array<ServiceError>] = validateCommonHeaders(event.headers, logger)
 
-  const errors: Array<SearchError> = [...queryStringParameterErrors, ...headerErrors]
+  const errors: Array<ServiceError> = [...queryStringParameterErrors, ...headerErrors]
   const searchParameters = {
     ...queryStringSearchParameters,
-    ...headerSearchParameters
+    ...headerParameters
   } as unknown as PrescriptionSearchParams
 
   return [searchParameters, errors]
@@ -45,16 +37,16 @@ export const validateRequest = (
 
 const validateQueryStringParameters = (
   eventQueryStringParameters: APIGatewayProxyEventQueryStringParameters | null, logger: Logger):
-  [QueryStringSearchParameters, Array<SearchError>] => {
+  [QueryStringSearchParameters, Array<ServiceError>] => {
 
-  const errors: Array<SearchError> = []
+  const errors: Array<ServiceError> = []
 
   const prescriptionId: string | undefined = eventQueryStringParameters?.prescriptionId
   const nhsNumber: string | undefined = eventQueryStringParameters?.nhsNumber
   if(!prescriptionId && !nhsNumber){
     logger.error("Missing required query string parameter; prescriptionId or nhsNumber.")
     errors.push({
-      status: "400",
+      status: 400,
       severity: "error",
       description: "Missing required query string parameter; either prescriptionId or nhsNumber must be included."
     })
@@ -63,7 +55,7 @@ const validateQueryStringParameters = (
   if (prescriptionId && nhsNumber){
     logger.error("Invalid query string parameters, prescriptionId and nhsNumber both provided.")
     errors.push({
-      status: "400",
+      status: 400,
       severity: "error",
       description: "Invalid query string parameters; only prescriptionId or nhsNumber must be provided, not both."
     })
@@ -77,73 +69,6 @@ const validateQueryStringParameters = (
     prescriptionId,
     nhsNumber,
     creationDateRange
-  }
-
-  return [searchParameters, errors]
-}
-
-const validateHeaders = (
-  eventHeaders: APIGatewayProxyEventHeaders, logger: Logger): [HeaderSearchParameters, Array<SearchError>] => {
-
-  const errors: Array<SearchError> = []
-
-  const requestId: string | undefined = eventHeaders?.["x-request-id"]
-  if(!requestId) {
-    logger.error("Missing required header, x-request-id.")
-    errors.push({
-      status: "400",
-      severity: "error",
-      description: "Missing required header, x-request-id."
-    })
-  }
-  logger.appendKeys({"x-request-id": requestId})
-
-  const organizationId: string | undefined = eventHeaders?.["nhsd-organization-uuid"]
-  if(!organizationId) {
-    logger.error("Missing required header, nhsd-organization-uuid.")
-    errors.push({
-      status: "400",
-      severity: "error",
-      description: "Missing required header, nhsd-organization-uuid."
-    })
-  }
-
-  const sdsRoleProfileId: string | undefined = eventHeaders?.["nhsd-session-urid"]
-  if(!sdsRoleProfileId) {
-    logger.error("Missing required header, nhsd-session-urid.")
-    errors.push({
-      status: "400",
-      severity: "error",
-      description: "Missing required header, nhsd-session-urid."
-    })
-  }
-
-  const sdsId: string | undefined = eventHeaders?.["nhsd-identity-uuid"]
-  if(!sdsId) {
-    logger.error("Missing required header, nhsd-identity-uuid.")
-    errors.push({
-      status: "400",
-      severity: "error",
-      description: "Missing required header, nhsd-identity-uuid."
-    })
-  }
-
-  const jobRoleCode: string | undefined = eventHeaders?.["nhsd-session-jobrole"]
-  if(!jobRoleCode) {
-    logger.error("Missing required header, nhsd-session-jobrole.")
-    errors.push({
-      status: "400",
-      severity: "error",
-      description: "Missing required header, nhsd-session-jobrole."
-    })
-  }
-
-  const searchParameters: HeaderSearchParameters = {
-    requestId,
-    organizationId,
-    sdsRoleProfileId,
-    sdsId,
-    jobRoleCode
   }
 
   return [searchParameters, errors]

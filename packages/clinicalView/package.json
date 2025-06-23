@@ -10,24 +10,23 @@
     "scripts": {
         "unit": "POWERTOOLS_DEV=true NODE_OPTIONS=--experimental-vm-modules jest --no-cache --coverage",
         "lint": "eslint  --max-warnings 0 --fix --config ../../eslint.config.mjs .",
-        "compile": "tsc",
+        "compile": "tsc --build",
         "test": "npm run compile && npm run unit",
         "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
     },
     "dependencies": {
+        "@aws-lambda-powertools/logger": "^2.21.0",
         "@cpt-common/common-types": "^1.0.0",
         "@cpt-common/common-utils": "^1.0.0",
         "@middy/http-header-normalizer": "^6.3.2",
         "@NHSDigital/eps-spine-client": "^2.1.41",
         "@nhs/fhir-middy-error-handler": "^2.1.36",
-        "@types/xmldom": "^0.1.34",
-        "@xmldom/xmldom": "^0.9.8",
-        "axios": "^1.10.0",
         "date-fns": "^4.1.0",
         "fast-xml-parser": "^4.5.1",
         "json-schema-to-ts": "^3.1.0"
     },
     "devDependencies": {
-        "@types/fhir": "^0.0.41"
+        "@types/fhir": "^0.0.41",
+        "jsonata": "^2.0.6"
     }
 }
