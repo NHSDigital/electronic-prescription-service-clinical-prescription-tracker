@@ -1,0 +1,292 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<SOAP:Envelope
+	xmlns:crs="http://national.carerecords.nhs.uk/schema/crs/"
+	xmlns:SOAP="http://schemas.xmlsoap.org/soap/envelope/"
+	xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing"
+	xmlns="urn:hl7-org:v3"
+	xmlns:hl7="urn:hl7-org:v3">
+	<SOAP:Header>
+		<wsa:MessageID>uuid:3268E76E-452D-11F0-8636-1F023A60827D</wsa:MessageID>
+		<wsa:Action>urn:nhs:names:services:mmquery/PORX_IN000006UK98</wsa:Action>
+		<wsa:To/>
+		<wsa:From>
+			<wsa:Address>https://mmquery.national.ncrs.nhs.uk/syncservice</wsa:Address>
+		</wsa:From>
+		<communicationFunctionRcv typeCode="RCV">
+			<device classCode="DEV" determinerCode="INSTANCE">
+				<id root="1.2.826.0.1285.0.2.0.107" extension="200000002068"/>
+			</device>
+		</communicationFunctionRcv>
+		<communicationFunctionSnd typeCode="SND">
+			<device classCode="DEV" determinerCode="INSTANCE">
+				<id root="1.2.826.0.1285.0.2.0.107" extension="Not Known"/>
+			</device>
+		</communicationFunctionSnd>
+		<wsa:RelatesTo>uuid:59f316a2-7f2e-4abc-bddc-33cdc8fe0019</wsa:RelatesTo>
+	</SOAP:Header>
+	<SOAP:Body>
+		<prescriptionClinicalViewResponse>
+			<PORX_IN000006UK98>
+				<id root="3268E76E-452D-11F0-8636-1F023A60827D"/>
+				<creationTime value="20250609122807"/>
+				<versionCode code="V3NPfIT3.0"/>
+				<interactionId root="2.16.840.1.113883.2.1.3.2.4.12" extension="PORX_IN000006UK98"/>
+				<processingCode code="P"/>
+				<processingModeCode code="T"/>
+				<acceptAckCode code="NE"/>
+				<acknowledgement typeCode="AA">
+					<messageRef>
+						<id root="59f316a2-7f2e-4abc-bddc-33cdc8fe0019"/>
+					</messageRef>
+				</acknowledgement>
+				<communicationFunctionRcv typeCode="RCV">
+					<device classCode="DEV" determinerCode="INSTANCE">
+						<id root="1.2.826.0.1285.0.2.0.107" extension="200000002068"/>
+					</device>
+				</communicationFunctionRcv>
+				<communicationFunctionSnd typeCode="SND">
+					<device classCode="DEV" determinerCode="INSTANCE">
+						<id root="1.2.826.0.1285.0.2.0.107" extension="Not Known"/>
+					</device>
+				</communicationFunctionSnd>
+				<ControlActEvent classCode="CACT" moodCode="EVN">
+					<author1 typeCode="AUT">
+						<AgentSystemSDS classCode="AGNT">
+							<agentSystemSDS classCode="DEV" determinerCode="INSTANCE">
+								<id root="1.2.826.0.1285.0.2.0.107" extension="Not Known"/>
+							</agentSystemSDS>
+						</AgentSystemSDS>
+					</author1>
+					<reason typeCode="RSON"/>
+					<subject typeCode="SUBJ">
+						<PrescriptionJsonQueryResponse
+							xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:hl7-org:v3 ..schemasPORX_MT000006UK02.xsd" classCode="ORGANIZER" moodCode="EVN">
+							<id root="F8966CE0-E034-11DA-863F-A7A405B41481"/>
+							<effectiveTime value="20050922101500"/>
+							<epsIndex>
+								<!-- These are the secondary index items for the record-->
+								<prescribingSite_status>['A99968_9000', 'A99968_0006', 'A99968_0000']</prescribingSite_status>
+								<nominatedPharmacy_status>['FG897_9000', 'FG897_0006', 'FG897_0000']</nominatedPharmacy_status>
+								<nextActivity_nextActivityDate>['createNoClaim_20240225']</nextActivity_nextActivityDate>
+								<dispenser_status>['FG897_0000', 'FG897_9000', 'FG897_0006']['FG897_0000', 'FG897_9000', 'FG897_0006']['FG897_0000', 'FG897_9000', 'FG897_0006']</dispenser_status>
+							</epsIndex>
+							<epsRecord>
+								<!-- These are the other fields stored on the JSON for the record-->
+								<!--Prescription Instance Specific Information-->
+								<releaseRequestMsgRef>20250609120933598798_33935C_1803672591</releaseRequestMsgRef>
+								<prescriptionStatus>0006</prescriptionStatus>
+								<nominatedDownloadDate/>
+								<downloadDate>20250609120933</downloadDate>
+								<completionDate>20230829</completionDate>
+								<expiryDate/>
+								<dispenseWindow>
+									<low value="20250609"/>
+									<high value="20250709"/>
+								</dispenseWindow>
+								<instanceNumber>1</instanceNumber>
+								<lineItem>
+									<order value="1"/>
+									<ID value="554C9992-EF2D-4FB1-AA2B-ECCCC5BE31DC"/>
+									<previousStatus value="0008"/>
+									<lineItemMaxRepeats value="6"/>
+									<status value="0001"/>
+								</lineItem>
+								<!--Prescription History-->
+								<history>
+									<SCN>2</SCN>
+									<instance>1</instance>
+									<interactionID>PORX_IN020101SM31</interactionID>
+									<status>0001</status>
+									<instanceStatus>0001</instanceStatus>
+									<agentPerson>103255361988</agentPerson>
+									<agentSystem>200000001215</agentSystem>
+									<agentPersonOrgCode>A99968</agentPersonOrgCode>
+									<message>"Prescription upload successful"</message>
+									<messageID>"3E23F7CD-D72D-4FAD-ACC9-928C861F4356"</messageID>
+									<timestamp>"20250609120859"</timestamp>
+									<toASID>"200000001215"</toASID>
+									<fromASID>"567456789789"</fromASID>
+								</history>
+								<history>
+									<SCN>3</SCN>
+									<instance>1</instance>
+									<interactionID>PORX_IN132004SM30</interactionID>
+									<status>0002</status>
+									<instanceStatus>0002</instanceStatus>
+									<agentPerson>656005750108</agentPerson>
+									<agentSystem>200000001215</agentSystem>
+									<agentPersonOrgCode>FG897</agentPersonOrgCode>
+									<message>"Release Request successful"</message>
+									<messageID>"249F9650-E4A3-4B6D-9F18-F159115EE7FD"</messageID>
+									<timestamp>"20250609120933"</timestamp>
+									<toASID>"200000001215"</toASID>
+									<fromASID>"567456789789"</fromASID>
+								</history>
+								<history>
+									<SCN>4</SCN>
+									<instance>2</instance>
+									<interactionID>PORX_IN080101SM31</interactionID>
+									<status>0000</status>
+									<instanceStatus>0000</instanceStatus>
+									<agentPerson>656005750108</agentPerson>
+									<agentSystem>200000001215</agentSystem>
+									<agentPersonOrgCode>FG897</agentPersonOrgCode>
+									<message>"Dispense notification successful; Update applied to issue=1"</message>
+									<messageID>"CF4A3D45-F91F-46E5-B8BF-3F0F8BCC131D"</messageID>
+									<timestamp>"20250609121005"</timestamp>
+									<toASID>"200000001215"</toASID>
+									<fromASID>"567456789789"</fromASID>
+								</history>
+								<filteredHistory>
+									<SCN>2</SCN>
+									<timestamp>20250609120859</timestamp>
+									<fromStatus>False</fromStatus>
+									<toStatus>0001</toStatus>
+									<agentPerson>103255361988</agentPerson>
+									<agentRoleProfileCodeId>100102238986</agentRoleProfileCodeId>
+									<message>Prescription upload successful</message>
+									<orgASID>200000001215</orgASID>
+									<agentPersonOrgCode>A99968</agentPersonOrgCode>
+									<lineStatusChangeDict>
+										<line>
+											<order>1</order>
+											<id>554C9992-EF2D-4FB1-AA2B-ECCCC5BE31DC</id>
+											<fromStatus>None</fromStatus>
+											<toStatus>0007</toStatus>
+										</line>
+									</lineStatusChangeDict>
+								</filteredHistory>
+								<filteredHistory>
+									<SCN>3</SCN>
+									<timestamp>20250609120933</timestamp>
+									<fromStatus>0001</fromStatus>
+									<toStatus>0002</toStatus>
+									<agentPerson>656005750108</agentPerson>
+									<agentRoleProfileCodeId>555254242106</agentRoleProfileCodeId>
+									<message>Release Request successful</message>
+									<orgASID>200000001215</orgASID>
+									<agentPersonOrgCode>FG897</agentPersonOrgCode>
+									<lineStatusChangeDict>
+										<line>
+											<order>1</order>
+											<id>554C9992-EF2D-4FB1-AA2B-ECCCC5BE31DC</id>
+											<fromStatus>0007</fromStatus>
+											<toStatus>0008</toStatus>
+										</line>
+									</lineStatusChangeDict>
+								</filteredHistory>
+								<filteredHistory>
+									<SCN>4</SCN>
+									<timestamp>20250609121005</timestamp>
+									<fromStatus>0002</fromStatus>
+									<toStatus>0006</toStatus>
+									<agentPerson>656005750108</agentPerson>
+									<agentRoleProfileCodeId>555254242106</agentRoleProfileCodeId>
+									<message>Dispense notification successful; Update applied to issue=1</message>
+									<orgASID>200000001215</orgASID>
+									<agentPersonOrgCode>FG897</agentPersonOrgCode>
+									<lineStatusChangeDict>
+										<line>
+											<order>1</order>
+											<id>554C9992-EF2D-4FB1-AA2B-ECCCC5BE31DC</id>
+											<fromStatus>0008</fromStatus>
+											<toStatus>0001</toStatus>
+										</line>
+									</lineStatusChangeDict>
+								</filteredHistory>
+								<!--Dispense Specific Information-->
+								<dispensingOrganization>FG897</dispensingOrganization>
+								<lastDispenseDate>20230829</lastDispenseDate>
+								<lastDispenseNotificationMsgRef>20250609121005619544_8615DA_1803672591</lastDispenseNotificationMsgRef>
+								<lastDispenseNotificationGuid>CF4A3D45-F91F-46E5-B8BF-3F0F8BCC131D</lastDispenseNotificationGuid>
+								<!--Claim Specific Information-->
+								<claimReceivedDate>False</claimReceivedDate>
+								<!--Prescription Specific Information-->
+								<currentInstance>2</currentInstance>
+								<signedTime>20250609120849</signedTime>
+								<prescriptionTreatmentType>0003</prescriptionTreatmentType>
+								<prescriptionType>0101</prescriptionType>
+								<prescriptionTime>20250609000000</prescriptionTime>
+								<prescriptionID>D7BB03-A83008-8CF47Q</prescriptionID>
+								<prescriptionMsgRef>20250609120859358145_447F10_1803672591</prescriptionMsgRef>
+								<prescribingOrganization>A99968</prescribingOrganization>
+								<daysSupply>10</daysSupply>
+								<maxRepeats>6</maxRepeats>
+								<eventID>3E23F7CD-D72D-4FAD-ACC9-928C861F4356</eventID>
+								<!--Patient Specific Information-->
+								<lowerAgeLimit>20150103</lowerAgeLimit>
+								<higherAgeLimit>20590104</higherAgeLimit>
+								<patientNhsNumber>9735557819</patientNhsNumber>
+								<patientBirthTime>19990104</patientBirthTime>
+								<!--Nomination Specific Information-->
+								<nominatedPerformer>FG897</nominatedPerformer>
+								<nominatedPerformerType>P1</nominatedPerformerType>
+								<!--Parent Prescription Information-->
+								<parentPrescription>
+									<birthTime>19990104</birthTime>
+									<administrativeGenderCode>2</administrativeGenderCode>
+									<prefix>MISS</prefix>
+									<given>ETTA</given>
+									<family>CORY</family>
+									<suffix/>
+									<addrLine1>123 Dale Avenue</addrLine1>
+									<addrLine2>Long Eaton</addrLine2>
+									<addrLine3>Nottingham</addrLine3>
+									<postalCode>NG10 1NP</postalCode>
+									<productLineItem1>Azithromycin 250mg capsules</productLineItem1>
+									<quantityLineItem1>30</quantityLineItem1>
+									<narrativeLineItem1>tablet</narrativeLineItem1>
+									<dosageLineItem1>3 times a day for 10 days</dosageLineItem1>
+									<productLineItem2/>
+									<quantityLineItem2/>
+									<narrativeLineItem2/>
+									<dosageLineItem2/>
+									<productLineItem3/>
+									<quantityLineItem3/>
+									<narrativeLineItem3/>
+									<dosageLineItem3/>
+									<productLineItem4/>
+									<quantityLineItem4/>
+									<narrativeLineItem4/>
+									<dosageLineItem4/>
+								</parentPrescription>
+								<!--Dispense Notification Information-->
+								<dispenseNotification>
+									<dispenseNotificationID>CF4A3D45-F91F-46E5-B8BF-3F0F8BCC131D</dispenseNotificationID>
+									<dispNotifDocumentKey>20250609121005619544_8615DA_1803672591</dispNotifDocumentKey>
+									<dispNotifFromStatus>0002</dispNotifFromStatus>
+									<dispNotifToStatus>0006</dispNotifToStatus>
+									<dispenseNotifDateTime>20230829154600</dispenseNotifDateTime>
+									<productLineItem1>Methotrexate 10mg/0.2ml solution for injection pre-filled syringes</productLineItem1>
+									<quantityLineItem1>0</quantityLineItem1>
+									<narrativeLineItem1>pre-filled disposable injection</narrativeLineItem1>
+									<dosageLineItem1/>
+									<statusLineItem1>0001</statusLineItem1>
+									<productLineItem2/>
+									<quantityLineItem2/>
+									<narrativeLineItem2/>
+									<dosageLineItem2/>
+									<statusLineItem2/>
+									<productLineItem3/>
+									<quantityLineItem3/>
+									<narrativeLineItem3/>
+									<dosageLineItem3/>
+									<statusLineItem3/>
+									<productLineItem4/>
+									<quantityLineItem4/>
+									<narrativeLineItem4/>
+									<dosageLineItem4/>
+									<statusLineItem4/>
+									<statusPrescription>0006</statusPrescription>
+								</dispenseNotification>
+							</epsRecord>
+						</PrescriptionJsonQueryResponse>
+					</subject>
+					<queryAck type="QueryAck">
+						<queryResponseCode code="OK"/>
+					</queryAck>
+				</ControlActEvent>
+			</PORX_IN000006UK98>
+		</prescriptionClinicalViewResponse>
+	</SOAP:Body>
+</SOAP:Envelope>

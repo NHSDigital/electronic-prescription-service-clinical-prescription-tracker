@@ -199,6 +199,176 @@ const acuteCreatedWithMultipleItems: Prescription = {
   }
 }
 
+const acuteWithMultipleDispenseNotifications: Prescription = {
+  prescriptionId: "CF5D04-A83008-7374CW",
+  nhsNumber: "5839945242",
+  prefix: "MS",
+  given: "STACEY",
+  family: "TWITCHETT",
+  birthDate: "1948-04-30",
+  gender: 2,
+  address: {
+    line: [
+      "10 HEATHFIELD",
+      "COBHAM",
+      "SURREY"
+    ],
+    postalCode: "KT11 2QY"
+  },
+  issueDate: "2025-04-24T00:00:00.000Z",
+  issueNumber: 1,
+  status: "0006",
+  prescriptionPendingCancellation: false,
+  treatmentType: "0001",
+  prescriptionType: "0101",
+  daysSupply: 28,
+  prescriberOrg: "A83008",
+  nominatedDispenserOrg: "FA565",
+  nominatedDisperserType: "P1",
+  dispenserOrg: "FA565",
+  lineItems: {
+    1: {
+      lineItemNo: "1",
+      lineItemId: "3CA6AF12-560E-4DB4-B419-6E0DD99BEE40",
+      status: "0001",
+      itemName: "Amoxicillin 250mg capsules",
+      quantity: 20,
+      quantityForm: "tablet",
+      dosageInstruction: "2 times a day for 10 days",
+      pendingCancellation: false
+    },
+    2: {
+      lineItemNo: "2",
+      lineItemId: "18434F2E-AAE5-4001-8BB6-005ED2D3DF23",
+      status: "0001",
+      itemName: "Co-codamol 30mg/500mg tablets",
+      quantity: 20,
+      quantityForm: "tablet",
+      dosageInstruction: "2 times a day for 10 days",
+      pendingCancellation: false
+    },
+    3: {
+      lineItemNo: "3",
+      lineItemId: "0D73CBCD-36E9-4943-9EBE-502CA6B85216",
+      status: "0001",
+      itemName: "Pseudoephedrine hydrochloride 60mg tablets",
+      quantity: 30,
+      quantityForm: "tablet",
+      dosageInstruction: "3 times a day for 10 days",
+      pendingCancellation: false
+    },
+    4: {
+      lineItemNo: "4",
+      lineItemId: "453F161C-3A76-42B5-BA7F-7A4EBF61023B",
+      status: "0001",
+      itemName: "Azithromycin 250mg capsules",
+      quantity: 30,
+      quantityForm: "tablet",
+      dosageInstruction: "3 times a day for 10 days",
+      pendingCancellation: false
+    }
+  },
+  dispenseNotifications: {
+    "42A6A1A0-596C-482C-B018-0D15F8FFF9F3": {
+      dispenseNotificationId: "42A6A1A0-596C-482C-B018-0D15F8FFF9F3",
+      timestamp: "2025-04-24T11:45:17.000Z",
+      status: "0003",
+      lineItems: {
+        1: {
+          lineItemNo: "1",
+          lineItemId: "3CA6AF12-560E-4DB4-B419-6E0DD99BEE40",
+          status: "0003",
+          itemName: "Amoxicillin 250mg capsules",
+          quantity: 10,
+          quantityForm: "tablet",
+          dosageInstruction: "2 times a day for 10 days"
+        },
+        2: {
+          lineItemNo: "2",
+          lineItemId: "18434F2E-AAE5-4001-8BB6-005ED2D3DF23",
+          status: "0001",
+          itemName: "Co-codamol 30mg/500mg tablets",
+          quantity: 20,
+          quantityForm: "tablet",
+          dosageInstruction: "2 times a day for 10 days"
+        },
+        3: {
+          lineItemNo: "3",
+          lineItemId: "0D73CBCD-36E9-4943-9EBE-502CA6B85216",
+          status: "0001",
+          itemName: "Pseudoephedrine hydrochloride 60mg tablets",
+          quantity: 30,
+          quantityForm: "tablet",
+          dosageInstruction: "3 times a day for 10 days"
+        },
+        4: {
+          lineItemNo: "4",
+          lineItemId: "453F161C-3A76-42B5-BA7F-7A4EBF61023B",
+          status: "0001",
+          itemName: "Azithromycin 250mg capsules",
+          quantity: 30,
+          quantityForm: "tablet",
+          dosageInstruction: "3 times a day for 10 days"
+        }
+      }
+    },
+    "B358A55E-A423-48E2-A9D8-2612B4E66604": {
+      dispenseNotificationId: "B358A55E-A423-48E2-A9D8-2612B4E66604",
+      timestamp: "2025-04-24T11:49:31.000Z",
+      status: "0006",
+      lineItems: {
+        1: {
+          lineItemNo: "1",
+          lineItemId: "3CA6AF12-560E-4DB4-B419-6E0DD99BEE40",
+          status: "0001",
+          itemName: "Amoxicillin 250mg capsules",
+          quantity: 10,
+          quantityForm: "tablet",
+          dosageInstruction: "2 times a day for 10 days"
+        }
+      }
+    }
+  },
+  history: {
+    2: {
+      eventId: "2",
+      message: "Prescription upload successful",
+      messageId: "345FC11F-FF5C-4AE2-9FD6-A3F20FDB849A",
+      timestamp: "2025-04-24T11:44:57.000Z",
+      org: "A83008",
+      newStatus: "0001",
+      isDispenseNotification: false
+    },
+    3: {
+      eventId: "3",
+      message: "Release Request successful",
+      messageId: "E2463A18-C098-4B2A-B723-1D7779DEAA26",
+      timestamp: "2025-04-24T11:45:12.000Z",
+      org: "VNFKT",
+      newStatus: "0002",
+      isDispenseNotification: false
+    },
+    4: {
+      eventId: "4",
+      message: "Dispense notification successful",
+      messageId: "42A6A1A0-596C-482C-B018-0D15F8FFF9F3",
+      timestamp: "2025-04-24T11:45:32.000Z",
+      org: "FA565",
+      newStatus: "0003",
+      isDispenseNotification: true
+    },
+    5: {
+      eventId: "5",
+      message: "Dispense notification successful",
+      messageId: "B358A55E-A423-48E2-A9D8-2612B4E66604",
+      timestamp: "2025-04-24T11:49:41.000Z",
+      org: "FA565",
+      newStatus: "0006",
+      isDispenseNotification: true
+    }
+  }
+}
+
 describe("Test generateFhirResponse", () => {
   beforeEach(() => {
     mockUUID.mockImplementationOnce(() => "PATIENT-123-567-890")
@@ -1583,176 +1753,6 @@ describe("Test generateFhirResponse", () => {
     mockUUID.mockImplementationOnce(() => "MEDDIS-444-444-444")
     mockUUID.mockImplementationOnce(() => "MEDDIS-555-555-555")
 
-    const acuteWithMultipleDispenseNotifications: Prescription = {
-      prescriptionId: "CF5D04-A83008-7374CW",
-      nhsNumber: "5839945242",
-      prefix: "MS",
-      given: "STACEY",
-      family: "TWITCHETT",
-      birthDate: "1948-04-30",
-      gender: 2,
-      address: {
-        line: [
-          "10 HEATHFIELD",
-          "COBHAM",
-          "SURREY"
-        ],
-        postalCode: "KT11 2QY"
-      },
-      issueDate: "2025-04-24T00:00:00.000Z",
-      issueNumber: 1,
-      status: "0006",
-      prescriptionPendingCancellation: false,
-      treatmentType: "0001",
-      prescriptionType: "0101",
-      daysSupply: 28,
-      prescriberOrg: "A83008",
-      nominatedDispenserOrg: "FA565",
-      nominatedDisperserType: "P1",
-      dispenserOrg: "FA565",
-      lineItems: {
-        1: {
-          lineItemNo: "1",
-          lineItemId: "3CA6AF12-560E-4DB4-B419-6E0DD99BEE40",
-          status: "0001",
-          itemName: "Amoxicillin 250mg capsules",
-          quantity: 20,
-          quantityForm: "tablet",
-          dosageInstruction: "2 times a day for 10 days",
-          pendingCancellation: false
-        },
-        2: {
-          lineItemNo: "2",
-          lineItemId: "18434F2E-AAE5-4001-8BB6-005ED2D3DF23",
-          status: "0001",
-          itemName: "Co-codamol 30mg/500mg tablets",
-          quantity: 20,
-          quantityForm: "tablet",
-          dosageInstruction: "2 times a day for 10 days",
-          pendingCancellation: false
-        },
-        3: {
-          lineItemNo: "3",
-          lineItemId: "0D73CBCD-36E9-4943-9EBE-502CA6B85216",
-          status: "0001",
-          itemName: "Pseudoephedrine hydrochloride 60mg tablets",
-          quantity: 30,
-          quantityForm: "tablet",
-          dosageInstruction: "3 times a day for 10 days",
-          pendingCancellation: false
-        },
-        4: {
-          lineItemNo: "4",
-          lineItemId: "453F161C-3A76-42B5-BA7F-7A4EBF61023B",
-          status: "0001",
-          itemName: "Azithromycin 250mg capsules",
-          quantity: 30,
-          quantityForm: "tablet",
-          dosageInstruction: "3 times a day for 10 days",
-          pendingCancellation: false
-        }
-      },
-      dispenseNotifications: {
-        "42A6A1A0-596C-482C-B018-0D15F8FFF9F3": {
-          dispenseNotificationId: "42A6A1A0-596C-482C-B018-0D15F8FFF9F3",
-          timestamp: "2025-04-24T11:45:17.000Z",
-          status: "0003",
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              lineItemId: "3CA6AF12-560E-4DB4-B419-6E0DD99BEE40",
-              status: "0003",
-              itemName: "Amoxicillin 250mg capsules",
-              quantity: 10,
-              quantityForm: "tablet",
-              dosageInstruction: "2 times a day for 10 days"
-            },
-            2: {
-              lineItemNo: "2",
-              lineItemId: "18434F2E-AAE5-4001-8BB6-005ED2D3DF23",
-              status: "0001",
-              itemName: "Co-codamol 30mg/500mg tablets",
-              quantity: 20,
-              quantityForm: "tablet",
-              dosageInstruction: "2 times a day for 10 days"
-            },
-            3: {
-              lineItemNo: "3",
-              lineItemId: "0D73CBCD-36E9-4943-9EBE-502CA6B85216",
-              status: "0001",
-              itemName: "Pseudoephedrine hydrochloride 60mg tablets",
-              quantity: 30,
-              quantityForm: "tablet",
-              dosageInstruction: "3 times a day for 10 days"
-            },
-            4: {
-              lineItemNo: "4",
-              lineItemId: "453F161C-3A76-42B5-BA7F-7A4EBF61023B",
-              status: "0001",
-              itemName: "Azithromycin 250mg capsules",
-              quantity: 30,
-              quantityForm: "tablet",
-              dosageInstruction: "3 times a day for 10 days"
-            }
-          }
-        },
-        "B358A55E-A423-48E2-A9D8-2612B4E66604": {
-          dispenseNotificationId: "B358A55E-A423-48E2-A9D8-2612B4E66604",
-          timestamp: "2025-04-24T11:49:31.000Z",
-          status: "0006",
-          lineItems: {
-            1: {
-              lineItemNo: "1",
-              lineItemId: "3CA6AF12-560E-4DB4-B419-6E0DD99BEE40",
-              status: "0001",
-              itemName: "Amoxicillin 250mg capsules",
-              quantity: 10,
-              quantityForm: "tablet",
-              dosageInstruction: "2 times a day for 10 days"
-            }
-          }
-        }
-      },
-      history: {
-        2: {
-          eventId: "2",
-          message: "Prescription upload successful",
-          messageId: "345FC11F-FF5C-4AE2-9FD6-A3F20FDB849A",
-          timestamp: "2025-04-24T11:44:57.000Z",
-          org: "A83008",
-          newStatus: "0001",
-          isDispenseNotification: false
-        },
-        3: {
-          eventId: "3",
-          message: "Release Request successful",
-          messageId: "E2463A18-C098-4B2A-B723-1D7779DEAA26",
-          timestamp: "2025-04-24T11:45:12.000Z",
-          org: "VNFKT",
-          newStatus: "0002",
-          isDispenseNotification: false
-        },
-        4: {
-          eventId: "4",
-          message: "Dispense notification successful",
-          messageId: "42A6A1A0-596C-482C-B018-0D15F8FFF9F3",
-          timestamp: "2025-04-24T11:45:32.000Z",
-          org: "FA565",
-          newStatus: "0003",
-          isDispenseNotification: true
-        },
-        5: {
-          eventId: "5",
-          message: "Dispense notification successful",
-          messageId: "B358A55E-A423-48E2-A9D8-2612B4E66604",
-          timestamp: "2025-04-24T11:49:41.000Z",
-          org: "FA565",
-          newStatus: "0006",
-          isDispenseNotification: true
-        }
-      }
-    }
-
     const expectedMedicationDispense1: MedicationDispenseBundleEntryType = {
       fullUrl: "urn:uuid:MEDDIS-111-111-111",
       search: {
@@ -2310,4 +2310,168 @@ describe("Test generateFhirResponse", () => {
     }))
 
   })
+
+  it("returns a Dispense Notification history action with a correct reference when called with a prescription with a single dispense notification but mismatched ID's", () => {
+    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
+    mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
+
+    const mockPrescription: Prescription = {...acuteDispensedWithSingleItem}
+    mockPrescription.history[4].messageId = "MIS-MATCHED-ID-1234"
+
+    const expectedAction: HistoryAction["action"][0] = {
+      title: "Dispense notification successful",
+      timingDateTime: "2025-04-29T13:27:04.000Z",
+      code: [
+        {
+          coding: [{
+            system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+            code: "0006",
+            display: "Dispensed"
+          }]
+        },
+        {
+          coding: [{
+            system: "https://tools.ietf.org/html/rfc4122",
+            code: "2416B1D1-82D3-4D14-BB34-1F3C6B57CFFB"
+          }]
+        }
+      ],
+      participant: [{
+        extension: [{
+          url: "http://hl7.org/fhir/5.0/StructureDefinition/extension-RequestOrchestration.action.participant.typeReference",
+          valueReference: {
+            identifier: {
+              system: "https://fhir.nhs.uk/Id/ods-organization-code",
+              value: "FA565"
+            }
+          }
+        }]
+      }],
+      action: [{
+        resource: {
+          reference: "urn:uuid:MEDDIS-123-567-890"
+        }
+      }]
+    }
+
+    const actual = generateFhirResponse(mockPrescription, logger)
+    logger.info("", {actual})
+
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "RequestGroup",
+        action: expect.arrayContaining([expect.objectContaining({
+          title: "Prescription status transitions",
+          action: expect.arrayContaining([expectedAction])
+        })])
+      })
+    }))
+  })
+
+  it("returns a Dispense Notification history actions without a reference when called with a prescription with multiple dispense notificiations with mismatched ID's", () => {
+    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-444-444-444")
+    mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-111-111-111")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-222-222-222")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-333-333-333")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-444-444-444")
+
+    const mockPrescription: Prescription = {...acuteWithMultipleDispenseNotifications}
+    mockPrescription.history[4].messageId = "MIS-MATCHED-ID-1111"
+    mockPrescription.history[5].messageId = "MIS-MATCHED-ID-2222"
+
+    const expectedAction1: HistoryAction["action"][0] = {
+      title: "Dispense notification successful",
+      timingDateTime: "2025-04-24T11:45:32.000Z",
+      code: [
+        {
+          coding: [{
+            system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+            code: "0003",
+            display: "With Dispenser - Active"
+          }]
+        }
+      ],
+      participant: [{
+        extension: [{
+          url: "http://hl7.org/fhir/5.0/StructureDefinition/extension-RequestOrchestration.action.participant.typeReference",
+          valueReference: {
+            identifier: {
+              system: "https://fhir.nhs.uk/Id/ods-organization-code",
+              value: "FA565"
+            }
+          }
+        }]
+      }]
+    }
+
+    const expectedAction2: HistoryAction["action"][0] = {
+      title: "Dispense notification successful",
+      timingDateTime: "2025-04-24T11:49:41.000Z",
+      code: [
+        {
+          coding: [{
+            system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+            code: "0006",
+            display: "Dispensed"
+          }]
+        }
+      ],
+      participant: [{
+        extension: [{
+          url: "http://hl7.org/fhir/5.0/StructureDefinition/extension-RequestOrchestration.action.participant.typeReference",
+          valueReference: {
+            identifier: {
+              system: "https://fhir.nhs.uk/Id/ods-organization-code",
+              value: "FA565"
+            }
+          }
+        }]
+      }]
+    }
+
+    const actual = generateFhirResponse(mockPrescription, logger)
+    logger.info("", {actual})
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "RequestGroup",
+        action: expect.arrayContaining([expect.objectContaining({
+          title: "Prescription status transitions",
+          action: expect.arrayContaining([expectedAction1])
+        })])
+      })
+    }))
+
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "RequestGroup",
+        action: expect.arrayContaining([expect.objectContaining({
+          title: "Prescription status transitions",
+          action: expect.arrayContaining([expectedAction2])
+        })])
+      })
+    }))
+  })
+
+  // it("handles wierd erd thing", () => {
+  //   mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+  //   mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
+  //   mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
+  //   mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
+
+  //   const parsed = parseSpineResponse(erdBug, logger)
+  //   if ("spineError" in parsed) {
+  //     throw new Error("Parsed response should not contain an error")
+  //   }
+  //   logger.info("parse", {parsed})
+  //   const actual = generateFhirResponse(parsed.prescription, logger)
+  //   logger.info("fhir", actual)
+
+  // })
 })
