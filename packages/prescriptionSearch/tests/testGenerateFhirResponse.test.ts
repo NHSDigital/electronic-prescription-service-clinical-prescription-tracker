@@ -35,6 +35,7 @@ const mockAcutePrescription: Prescription = {
   maxRepeats: undefined,
   issueNumber: 1,
   status: "0001",
+  deleted: false,
   prescriptionPendingCancellation: false,
   itemsPendingCancellation: false
 }
@@ -51,6 +52,7 @@ const mockRepeatPrescription: Prescription = {
   maxRepeats: 1,
   issueNumber: 1,
   status: "0001",
+  deleted: false,
   prescriptionPendingCancellation: false,
   itemsPendingCancellation: false
 }
@@ -67,6 +69,7 @@ const mockErdPrescription: Prescription = {
   maxRepeats: 7,
   issueNumber: 1,
   status: "0001",
+  deleted: false,
   prescriptionPendingCancellation: false,
   itemsPendingCancellation: false
 }
@@ -132,6 +135,7 @@ describe("Test generateFhirResponse", () => {
       treatmentType: "0001",
       issueNumber: 1,
       status: "0001",
+      deleted: false,
       prescriptionPendingCancellation: false,
       itemsPendingCancellation: false
     }
@@ -201,6 +205,59 @@ describe("Test generateFhirResponse", () => {
     }
 
     const actual = generateFhirResponse([mockAcutePrescription], logger).entry as Array<BundleEntry<RequestGroup>>
+
+    expect(actual[1]).toEqual(expected)
+  })
+
+  it("returns a RequestGroup entry with a completed status in the bundle when called with a deleted prescription", async () => {
+    const expected: BundleEntry<RequestGroup> = {
+      fullUrl: "urn:uuid:PRESCRIPTION-111-111-111",
+      search: {
+        mode: "match"
+      },
+      resource: {
+        resourceType: "RequestGroup",
+        identifier: [{
+          system: "https://fhir.nhs.uk/Id/prescription-order-number",
+          value: "335C70-A83008-84058A"
+        }],
+        subject: {
+          reference: "urn:uuid:PATIENT-123-567-890"
+        },
+        status: "completed",
+        intent: "order",
+        authoredOn: "20250204000000",
+        extension: [{
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+          extension: [{
+            url: "status",
+            valueCoding : {
+              system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+              code: "0001",
+              display: "To be Dispensed"
+            }
+          }]
+        },
+        {
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
+          extension: [
+            {
+              url: "prescriptionPendingCancellation",
+              valueBoolean: false
+            },
+            {
+              url: "lineItemPendingCancellation",
+              valueBoolean: false
+            }
+          ]
+        }]
+      }
+    }
+
+    const mockPrescription = {...mockAcutePrescription}
+    mockPrescription.deleted = true
+
+    const actual = generateFhirResponse([mockPrescription], logger).entry as Array<BundleEntry<RequestGroup>>
 
     expect(actual[1]).toEqual(expected)
   })

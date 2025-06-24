@@ -32,7 +32,7 @@ export const requestGroupCommonProperties ={
   status: {
     type: "string",
     description: "The current state of the request. For request groups, the status reflects the status of all the requests in the group.",
-    enum: ["active"]
+    enum: ["active", "completed"]
   },
   intent,
   authoredOn: {

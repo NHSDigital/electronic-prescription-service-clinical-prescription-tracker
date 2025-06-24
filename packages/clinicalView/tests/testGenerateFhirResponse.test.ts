@@ -2311,6 +2311,131 @@ describe("Test generateFhirResponse", () => {
 
   })
 
+  it("returns Dispense Notification history actions with correct references when called with a prescription with multiple dispense notifications", () => {
+    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-444-444-444")
+    mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-111-111-111")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-222-222-222")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-333-333-333")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-444-444-444")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-555-555-555")
+
+    const expectedAction1: HistoryAction["action"][0] = {
+      title: "Dispense notification successful",
+      timingDateTime: "2025-04-24T11:45:32.000Z",
+      code: [
+        {
+          coding: [{
+            system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+            code: "0003",
+            display: "With Dispenser - Active"
+          }]
+        },
+        {
+          coding: [{
+            system: "https://tools.ietf.org/html/rfc4122",
+            code: "42A6A1A0-596C-482C-B018-0D15F8FFF9F3"
+          }]
+        }
+      ],
+      participant: [{
+        extension: [{
+          url: "http://hl7.org/fhir/5.0/StructureDefinition/extension-RequestOrchestration.action.participant.typeReference",
+          valueReference: {
+            identifier: {
+              system: "https://fhir.nhs.uk/Id/ods-organization-code",
+              value: "FA565"
+            }
+          }
+        }]
+      }],
+      action: [
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-111-111-111"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-222-222-222"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-333-333-333"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-444-444-444"
+          }
+        }
+      ]
+    }
+
+    const expectedAction2: HistoryAction["action"][0] = {
+      title: "Dispense notification successful",
+      timingDateTime: "2025-04-24T11:49:41.000Z",
+      code: [
+        {
+          coding: [{
+            system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+            code: "0006",
+            display: "Dispensed"
+          }]
+        },
+        {
+          coding: [{
+            system: "https://tools.ietf.org/html/rfc4122",
+            code: "B358A55E-A423-48E2-A9D8-2612B4E66604"
+          }]
+        }
+      ],
+      participant: [{
+        extension: [{
+          url: "http://hl7.org/fhir/5.0/StructureDefinition/extension-RequestOrchestration.action.participant.typeReference",
+          valueReference: {
+            identifier: {
+              system: "https://fhir.nhs.uk/Id/ods-organization-code",
+              value: "FA565"
+            }
+          }
+        }]
+      }],
+      action: [{
+        resource: {
+          reference: "urn:uuid:MEDDIS-555-555-555"
+        }
+      }]
+    }
+
+    const actual = generateFhirResponse(acuteWithMultipleDispenseNotifications, logger)
+    logger.info("", {actual})
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "RequestGroup",
+        action: expect.arrayContaining([expect.objectContaining({
+          title: "Prescription status transitions",
+          action: expect.arrayContaining([expectedAction1])
+        })])
+      })
+    }))
+
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "RequestGroup",
+        action: expect.arrayContaining([expect.objectContaining({
+          title: "Prescription status transitions",
+          action: expect.arrayContaining([expectedAction2])
+        })])
+      })
+    }))
+  })
+
   it("returns a Dispense Notification history action with a correct reference when called with a prescription with a single dispense notification but mismatched ID's", () => {
     mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
@@ -2357,7 +2482,6 @@ describe("Test generateFhirResponse", () => {
     }
 
     const actual = generateFhirResponse(mockPrescription, logger)
-    logger.info("", {actual})
 
     expect(actual.entry).toContainEqual(expect.objectContaining({
       resource: expect.objectContaining({
@@ -2370,7 +2494,7 @@ describe("Test generateFhirResponse", () => {
     }))
   })
 
-  it("returns a Dispense Notification history actions without a reference when called with a prescription with multiple dispense notificiations with mismatched ID's", () => {
+  it("returns Dispense Notification history actions without a reference when called with a prescription with multiple dispense notificiations with mismatched ID's", () => {
     mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
@@ -2381,6 +2505,7 @@ describe("Test generateFhirResponse", () => {
     mockUUID.mockImplementationOnce(() => "MEDDIS-222-222-222")
     mockUUID.mockImplementationOnce(() => "MEDDIS-333-333-333")
     mockUUID.mockImplementationOnce(() => "MEDDIS-444-444-444")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-555-555-555")
 
     const mockPrescription: Prescription = {...acuteWithMultipleDispenseNotifications}
     mockPrescription.history[4].messageId = "MIS-MATCHED-ID-1111"
@@ -2437,7 +2562,6 @@ describe("Test generateFhirResponse", () => {
     }
 
     const actual = generateFhirResponse(mockPrescription, logger)
-    logger.info("", {actual})
     expect(actual.entry).toContainEqual(expect.objectContaining({
       resource: expect.objectContaining({
         resourceType: "RequestGroup",

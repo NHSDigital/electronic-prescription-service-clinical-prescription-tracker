@@ -535,12 +535,12 @@ const generateHistoryAction = (
   const noOfDispenseNotificationEvents = historyEvents.filter(event => event.isDispenseNotification).length
   const noOfDispenseNotifications = resourceIds.medicationDispense ?
     Object.keys(resourceIds.medicationDispense).length : 0
-  let dispenseNotificationCoding
 
   for (const event of historyEvents){
     const referenceActions: Array<ReferenceAction> = []
 
     // Generate a reference sub Action of the event sub Action for each MedicationDispense
+    let dispenseNotificationCoding
     if (event.isDispenseNotification && resourceIds.medicationDispense){
       logger.info("Generating reference Actions for MedicationDispenses...")
       /*- We first need to check if the DN events messageID exists in the list of DN ID's, if not then

@@ -36,6 +36,7 @@ describe("Test parseSpineResponse", () => {
         treatmentType: "0001",
         issueNumber: 1,
         status: "0001",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       }
@@ -53,6 +54,7 @@ describe("Test parseSpineResponse", () => {
         treatmentType: "0001",
         issueNumber: 1,
         status: "0001",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       }
@@ -73,6 +75,7 @@ describe("Test parseSpineResponse", () => {
         treatmentType: "0001",
         issueNumber: 1,
         status: "0001",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: true
       },
@@ -86,6 +89,7 @@ describe("Test parseSpineResponse", () => {
         treatmentType: "0001",
         issueNumber: 1,
         status: "0001",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       }
@@ -107,6 +111,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 1,
         status: "0001",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -121,6 +126,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 2,
         status: "9000",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -135,6 +141,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 3,
         status: "9000",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -149,6 +156,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 4,
         status: "9000",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -163,6 +171,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 5,
         status: "9000",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -177,6 +186,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 6,
         status: "9000",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -191,6 +201,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 7,
         status: "9000",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       }
@@ -212,6 +223,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 1,
         status: "0001",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -226,6 +238,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 2,
         status: "9000",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -240,6 +253,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 3,
         status: "9000",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -254,6 +268,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 4,
         status: "9000",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -268,6 +283,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 5,
         status: "9000",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -282,6 +298,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 6,
         status: "9000",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -296,6 +313,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 7,
         status: "9000",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -310,6 +328,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 1,
         status: "0001",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -324,6 +343,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 2,
         status: "9000",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -338,6 +358,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 3,
         status: "9000",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -352,6 +373,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 4,
         status: "9000",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -366,6 +388,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 5,
         status: "9000",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -380,6 +403,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 6,
         status: "9000",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -394,6 +418,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 7,
         status: "9000",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       }
@@ -415,6 +440,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 1,
         issueNumber: 1,
         status: "0001",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       }
@@ -436,6 +462,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 1,
         issueNumber: 1,
         status: "0001",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -450,6 +477,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 1,
         issueNumber: 1,
         status: "0001",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       }
@@ -471,6 +499,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: undefined,
         issueNumber: 1,
         status: "0001",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -485,6 +514,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 1,
         status: "0001",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -499,6 +529,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 2,
         status: "9000",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -513,6 +544,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 3,
         status: "9000",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -527,6 +559,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 4,
         status: "9000",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -541,6 +574,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 5,
         status: "9000",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -555,6 +589,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 6,
         status: "9000",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -569,6 +604,7 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 7,
         issueNumber: 7,
         status: "9000",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       },
@@ -583,11 +619,37 @@ describe("Test parseSpineResponse", () => {
         maxRepeats: 1,
         issueNumber: 1,
         status: "0001",
+        deleted: false,
         prescriptionPendingCancellation: false,
         itemsPendingCancellation: false
       }
     ]
     const result: ParsedSpineResponse = parseSpineResponse(multipleMixed as SpineJsonResponse, logger)
+    expect(result).toEqual({prescriptions: expected})
+  })
+
+  it("returns a correctly parsed response and no error when spine returns a single deleted acute prescription", async () => {
+    const mockPrescription = {...singleAcute}
+    mockPrescription.Response.prescriptions[0].nextActivity = "purge"
+
+    const expected: Array<Prescription> = [
+      {
+        nhsNumber: "5839945242",
+        prefix: "MS",
+        suffix: "OBE",
+        family: "TWITCHETT",
+        given: "STACEY",
+        prescriptionId: "335C70-A83008-84058A",
+        issueDate: "2025-02-04T00:00:00.000Z",
+        treatmentType: "0001",
+        issueNumber: 1,
+        status: "0001",
+        deleted: true,
+        prescriptionPendingCancellation: false,
+        itemsPendingCancellation: false
+      }
+    ]
+    const result: ParsedSpineResponse = parseSpineResponse(mockPrescription as SpineJsonResponse, logger)
     expect(result).toEqual({prescriptions: expected})
   })
 
