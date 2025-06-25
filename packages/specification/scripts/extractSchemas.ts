@@ -1,13 +1,11 @@
 import fs from "fs"
 import path from "path"
-import {requestGroupSchema} from "clinicalView"
-import {
-  requestGroupBundleSchema as ResponseBundle,
-  operationOutcomeSchema as OperationOutcome
-} from "prescriptionSearch"
+import {prescriptionSearchBundle} from "prescriptionSearch"
+import {clinicalViewBundle} from "clinicalView"
+import {operationOutcome} from "@cpt-common/common-types/schema"
 import {JSONSchema} from "json-schema-to-ts"
 
-const schemas: Record<string, JSONSchema> = {requestGroupSchema, ResponseBundle, OperationOutcome}
+const schemas: Record<string, JSONSchema> = {prescriptionSearchBundle, clinicalViewBundle, operationOutcome}
 
 const schemasFolder = path.join(".", "schemas")
 const resourcesFolder = path.join(schemasFolder, "resources")

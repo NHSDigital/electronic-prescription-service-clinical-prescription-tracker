@@ -1,14 +1,12 @@
 /* eslint-disable max-len */
-import {jest} from "@jest/globals"
-import MockAdapter from "axios-mock-adapter"
-import axios from "axios"
-import {MiddyfiedHandler} from "@middy/core"
 import {Logger} from "@aws-lambda-powertools/logger"
+import {jest} from "@jest/globals"
+import {MiddyfiedHandler} from "@middy/core"
 import {createSpineClient} from "@NHSDigital/eps-spine-client"
-
-// Types
-import {APIGatewayProxyEvent, APIGatewayProxyEventHeaders, Context} from "aws-lambda"
 import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
+import {APIGatewayProxyEvent, APIGatewayProxyEventHeaders, Context} from "aws-lambda"
+import axios from "axios"
+import MockAdapter from "axios-mock-adapter"
 
 const prescriptionStatusUrl = `https://live/syncservice-pds/pds`
 const mockAxios = new MockAdapter(axios)
@@ -48,10 +46,15 @@ jest.unstable_mockModule("../src/parseSpineResponse", () => {
 })
 
 let mockGenerateFhirResponse = jest.fn()
-let mockGenerateFhirErrorResponse = jest.fn()
 jest.unstable_mockModule("../src/generateFhirResponse", () => {
   return {
-    generateFhirResponse: mockGenerateFhirResponse,
+    generateFhirResponse: mockGenerateFhirResponse
+  }
+})
+
+let mockGenerateFhirErrorResponse = jest.fn()
+jest.unstable_mockModule("@cpt-common/common-utils", () => {
+  return {
     generateFhirErrorResponse: mockGenerateFhirErrorResponse
   }
 })
@@ -59,7 +62,8 @@ jest.unstable_mockModule("../src/generateFhirResponse", () => {
 const {newHandler} = await import("../src/handler")
 const {validateRequest} = await import("../src/validateRequest")
 const {parseSpineResponse} = await import("../src/parseSpineResponse")
-const {generateFhirResponse, generateFhirErrorResponse} = await import("../src/generateFhirResponse")
+const {generateFhirResponse} = await import("../src/generateFhirResponse")
+const {generateFhirErrorResponse} = await import("@cpt-common/common-utils")
 
 describe("test handler", () => {
   let handler: MiddyfiedHandler
@@ -205,55 +209,12 @@ describe("test handler", () => {
     mockValidate.mockReturnValue([{requestId: "REQ-123-456-789"}, []])
     mockAxios.onPost(prescriptionStatusUrl).reply(200, {data: "success"})
     mockParseSpineResponse.mockReturnValue({
-      searchError: {
-        status: "500",
+      spineError: {
+        status: 500,
         severity: "error",
         description: "Unknown Error."
       }
     })
-    const mockOperationOutcome = {
-      resourceType: "OperationOutcome",
-      meta: {
-        lastUpdated: "2015-04-09T12:34:56.001Z"
-      },
-      issue: [{
-        code: "500",
-        severity: "error",
-        diagnostics: "Unknown Error.",
-        details: {
-          coding: [{
-            system: "https://fhir.nhs.uk/CodeSystem/http-error-codes",
-            code: "500 Internal Server Error",
-            display: "500: The Server has encountered an error processing the request."
-          }]
-        }
-      }]
-    }
-    mockGenerateFhirErrorResponse.mockReturnValue(mockOperationOutcome)
-
-    const expectedResponse = {
-      statusCode: 500,
-      body: JSON.stringify(mockOperationOutcome),
-      headers: {
-        "Content-Type": "application/fhir+json",
-        "Cache-Control": "no-cache",
-        "x-correlation-id": "COR-123-456",
-        "x-request-id": "REQ-123-456-789"
-      }
-    }
-
-    const actualResponse = await handler(mockEvent, mockContext)
-    expect(generateFhirErrorResponse).toHaveBeenCalled()
-    expect(actualResponse).toEqual(expectedResponse)
-  })
-
-  it("generates a OperationOutcome and returns it and a 500 response when there is an unknown error processing the request", async () => {
-    mockValidate.mockReturnValue([{requestId: "REQ-123-456-789"}, []])
-    mockAxios.onPost(prescriptionStatusUrl).reply(500, {data: "error"})
-    mockParseSpineResponse.mockImplementation(() => {
-      throw new Error
-    })
-
     const mockOperationOutcome = {
       resourceType: "OperationOutcome",
       meta: {

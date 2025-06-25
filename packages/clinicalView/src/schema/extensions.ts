@@ -223,6 +223,73 @@ export const dispensingInformationExtension = {
 } as const satisfies JSONSchema
 export type DispensingInformationExtensionType = FromSchema<typeof dispensingInformationExtension>
 
+export const taskBusinessStatusNpptExtension = {
+  type: "object",
+  properties: {
+    url: {
+      type: "string",
+      enum: ["https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory"]
+    },
+    extension: {
+      type: "array",
+      items: {
+        oneOf: [
+          {
+            type: "object",
+            properties: {
+              url: {
+                type: "string",
+                enum: ["status"]
+              },
+              valueCoding: {
+                type: "object",
+                properties: {
+                  system: {
+                    type: "string",
+                    enum: ["https://fhir.nhs.uk/CodeSystem/task-businessStatus-nppt"]
+                  },
+                  code: {
+                    type: "string",
+                    enum: [
+                      "With Pharmacy",
+                      "With Pharmacy - Preparing Remainder",
+                      "Ready to Collect",
+                      "Ready to Collect - Partial",
+                      "Collected",
+                      "Dispatched",
+                      "Not Dispensed",
+                      "Ready to Dispatch",
+                      "Ready to Dispatch - Partial"
+                    ]
+                  }
+                },
+                required: ["system", "code"]
+              }
+            },
+            required: ["url", "valueCoding"]
+          },
+          {
+            type: "object",
+            properties: {
+              url: {
+                type: "string",
+                enum: ["statusDate"]
+              },
+              valueDateTime: {
+                type: "string",
+                format: "date-time"
+              }
+            },
+            required: ["url", "valueDateTime"]
+          }
+        ]
+      }
+    }
+  },
+  required: ["url", "extension"]
+} as const satisfies JSONSchema
+export type TaskBusinessStatusNpptExtensionType = FromSchema<typeof taskBusinessStatusNpptExtension>
+
 export const taskBusinessStatusExtension = {
   type: "object",
   description: "The prescription status.",

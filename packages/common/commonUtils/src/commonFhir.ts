@@ -1,12 +1,18 @@
 import {Logger} from "@aws-lambda-powertools/logger"
+import {
+  HttpErrorCoding,
+  OperationOutcomeIssueCode,
+  OperationOutcomeIssueType,
+  OperationOutcomeType
+} from "@cpt-common/common-types/schema"
 import {ServiceError} from "@cpt-common/common-types/service"
 import {OperationOutcome, OperationOutcomeIssue} from "fhir/r4"
 
 interface FhirErrorDetails {
   status: string
-  code: string
-  detailsCode: string
-  detailsDisplay: string
+  code: OperationOutcomeIssueCode
+  detailsCode: HttpErrorCoding["code"]
+  detailsDisplay: HttpErrorCoding["display"]
 }
 
 interface ErrorMap {
@@ -24,7 +30,7 @@ const errorMap: ErrorMap = {
     status: "401 Unauthorized",
     code: "forbidden",
     detailsCode: "UNAUTHORIZED",
-    detailsDisplay: "401: The Server deemed you unauthorized to make this request."
+    detailsDisplay: "401: The Server deemed you unauthorized to make this request"
   },
   403: {
     status: "403 Forbidden",
@@ -52,10 +58,10 @@ const errorMap: ErrorMap = {
   }
 }
 
-export const generateFhirErrorResponse = (errors: Array<ServiceError>, logger: Logger): OperationOutcome => {
+export const generateFhirErrorResponse = (errors: Array<ServiceError>, logger: Logger): OperationOutcomeType => {
   logger.info("Generating the OperationOutcome wrapper...")
   // Generate the OperationOutcome wrapper
-  const operationOutcome: OperationOutcome = {
+  const operationOutcome: OperationOutcome & OperationOutcomeType = {
     resourceType: "OperationOutcome",
     meta: {
       lastUpdated: new Date().toISOString()
@@ -66,7 +72,7 @@ export const generateFhirErrorResponse = (errors: Array<ServiceError>, logger: L
   // For each error generate an issue
   for(const error of errors){
     logger.info("Generating Issue for error...")
-    const issue: OperationOutcomeIssue = {
+    const issue: OperationOutcomeIssue & OperationOutcomeIssueType = {
       code: errorMap[error.status].code,
       severity: error.severity,
       diagnostics: error.description,
