@@ -5,7 +5,7 @@ const severErrorOperationOutcome = `{% $string(
   {
     "ResourceType": "OperationOutcome",
     "meta": {
-      "lastUpdated": "{% $now() %}"
+      "lastUpdated": $now()
     },
     "issue": [
       {
