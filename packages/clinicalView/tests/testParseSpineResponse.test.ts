@@ -19,6 +19,7 @@ import {
   acuteWithoutOptionalDaysSupply,
   acuteWithoutOptionalDosageInstructions,
   acuteWithoutOptionalPatientDetails,
+  altAcuteMultipleDispenseNotifications,
   erdCreated,
   malformedError,
   notFound,
@@ -428,6 +429,7 @@ describe("Test parseSpineResponse", () => {
       prefix: "MS",
       given: "STACEY",
       family: "TWITCHETT",
+      suffix: "OBE",
       birthDate: "1948-04-30",
       gender: 2,
       address: {
@@ -828,6 +830,22 @@ describe("Test parseSpineResponse", () => {
               itemName: "Co-codamol 30mg/500mg tablets",
               quantity: 20,
               quantityForm: "tablet"
+            },
+            3: {
+              lineItemNo: "3",
+              lineItemId: "2BBF2CCD-309A-452A-A12D-C2595BD88E12",
+              status: "0004",
+              itemName: "Pseudoephedrine hydrochloride 60mg tablets",
+              quantity: 0,
+              quantityForm: "tablet"
+            },
+            4: {
+              lineItemNo: "4",
+              lineItemId: "BE479811-383E-4B7F-8438-4ACFA9FDE91B",
+              status: "0004",
+              itemName: "Azithromycin 250mg capsules",
+              quantity: 0,
+              quantityForm: "tablet"
             }
           }
         }
@@ -1014,6 +1032,7 @@ describe("Test parseSpineResponse", () => {
   })
 
   it("returns a correctly parsed response and no error when spine returns an acute prescription with multiple dispense notifications", async () => {
+    /* Tests DN's where items previously dispensed are included again with 0 quantity in subsequent DN's*/
     const expected: Prescription = {
       prescriptionId: "CF5D04-A83008-7374CW",
       nhsNumber: "5839945242",
@@ -1095,7 +1114,8 @@ describe("Test parseSpineResponse", () => {
               status: "0003",
               itemName: "Amoxicillin 250mg capsules",
               quantity: 10,
-              quantityForm: "tablet"
+              quantityForm: "tablet",
+              dosageInstruction: "2 times a day for 10 days"
             },
             2: {
               lineItemNo: "2",
@@ -1103,7 +1123,8 @@ describe("Test parseSpineResponse", () => {
               status: "0001",
               itemName: "Co-codamol 30mg/500mg tablets",
               quantity: 20,
-              quantityForm: "tablet"
+              quantityForm: "tablet",
+              dosageInstruction: "2 times a day for 10 days"
             },
             3: {
               lineItemNo: "3",
@@ -1111,7 +1132,8 @@ describe("Test parseSpineResponse", () => {
               status: "0001",
               itemName: "Pseudoephedrine hydrochloride 60mg tablets",
               quantity: 30,
-              quantityForm: "tablet"
+              quantityForm: "tablet",
+              dosageInstruction: "3 times a day for 10 days"
             },
             4: {
               lineItemNo: "4",
@@ -1119,7 +1141,8 @@ describe("Test parseSpineResponse", () => {
               status: "0001",
               itemName: "Azithromycin 250mg capsules",
               quantity: 30,
-              quantityForm: "tablet"
+              quantityForm: "tablet",
+              dosageInstruction: "3 times a day for 10 days"
             }
           }
         },
@@ -1134,7 +1157,35 @@ describe("Test parseSpineResponse", () => {
               status: "0001",
               itemName: "Amoxicillin 250mg capsules",
               quantity: 10,
-              quantityForm: "tablet"
+              quantityForm: "tablet",
+              dosageInstruction: "2 times a day for 10 days"
+            },
+            2: {
+              lineItemNo: "2",
+              lineItemId: "18434F2E-AAE5-4001-8BB6-005ED2D3DF23",
+              status: "0001",
+              itemName: "Co-codamol 30mg/500mg tablets",
+              quantity: 0,
+              quantityForm: "tablet",
+              dosageInstruction: "2 times a day for 10 days"
+            },
+            3: {
+              lineItemNo: "3",
+              lineItemId: "0D73CBCD-36E9-4943-9EBE-502CA6B85216",
+              status: "0001",
+              itemName: "Pseudoephedrine hydrochloride 60mg tablets",
+              quantity: 0,
+              quantityForm: "tablet",
+              dosageInstruction: "3 times a day for 10 days"
+            },
+            4: {
+              lineItemNo: "4",
+              lineItemId: "453F161C-3A76-42B5-BA7F-7A4EBF61023B",
+              status: "0001",
+              itemName: "Azithromycin 250mg capsules",
+              quantity: 0,
+              quantityForm: "tablet",
+              dosageInstruction: "3 times a day for 10 days"
             }
           }
         }
@@ -1180,6 +1231,191 @@ describe("Test parseSpineResponse", () => {
     }
 
     const result: ParsedSpineResponse = parseSpineResponse(acuteMultipleDispenseNotifications, logger)
+    expect(result).toEqual({prescription: expected})
+  })
+
+  it("returns a correctly parsed response and no error when spine returns an acute prescription with an alternative multiple dispense notifications format", async () => {
+    /* Tests DN's where items previously dispensed are not included in subsequent DN's*/
+    const expected: Prescription = {
+      prescriptionId: "CF5D04-A83008-7374CW",
+      nhsNumber: "5839945242",
+      prefix: "MS",
+      given: "STACEY",
+      family: "TWITCHETT",
+      birthDate: "1948-04-30",
+      gender: 2,
+      address: {
+        line: [
+          "10 HEATHFIELD",
+          "COBHAM",
+          "SURREY"
+        ],
+        postalCode: "KT11 2QY"
+      },
+      issueDate: "2025-04-24T00:00:00.000Z",
+      issueNumber: 1,
+      status: "0006",
+      prescriptionPendingCancellation: false,
+      treatmentType: "0001",
+      prescriptionType: "0101",
+      daysSupply: 28,
+      prescriberOrg: "A83008",
+      nominatedDispenserOrg: "FA565",
+      nominatedDisperserType: "P1",
+      dispenserOrg: "FA565",
+      lineItems: {
+        1: {
+          lineItemNo: "1",
+          lineItemId: "3CA6AF12-560E-4DB4-B419-6E0DD99BEE40",
+          status: "0001",
+          itemName: "Amoxicillin 250mg capsules",
+          quantity: 20,
+          quantityForm: "tablet",
+          dosageInstruction: "2 times a day for 10 days",
+          pendingCancellation: false
+        },
+        2: {
+          lineItemNo: "2",
+          lineItemId: "18434F2E-AAE5-4001-8BB6-005ED2D3DF23",
+          status: "0001",
+          itemName: "Co-codamol 30mg/500mg tablets",
+          quantity: 20,
+          quantityForm: "tablet",
+          dosageInstruction: "2 times a day for 10 days",
+          pendingCancellation: false
+        },
+        3: {
+          lineItemNo: "3",
+          lineItemId: "0D73CBCD-36E9-4943-9EBE-502CA6B85216",
+          status: "0001",
+          itemName: "Pseudoephedrine hydrochloride 60mg tablets",
+          quantity: 30,
+          quantityForm: "tablet",
+          dosageInstruction: "3 times a day for 10 days",
+          pendingCancellation: false
+        },
+        4: {
+          lineItemNo: "4",
+          lineItemId: "453F161C-3A76-42B5-BA7F-7A4EBF61023B",
+          status: "0001",
+          itemName: "Azithromycin 250mg capsules",
+          quantity: 30,
+          quantityForm: "tablet",
+          dosageInstruction: "3 times a day for 10 days",
+          pendingCancellation: false
+        }
+      },
+      dispenseNotifications: {
+        "42A6A1A0-596C-482C-B018-0D15F8FFF9F3": {
+          dispenseNotificationId: "42A6A1A0-596C-482C-B018-0D15F8FFF9F3",
+          timestamp: "2025-04-24T11:45:17.000Z",
+          status: "0003",
+          lineItems: {
+            1: {
+              lineItemNo: "1",
+              lineItemId: "3CA6AF12-560E-4DB4-B419-6E0DD99BEE40",
+              status: "0003",
+              itemName: "Amoxicillin 250mg capsules",
+              quantity: 10,
+              quantityForm: "tablet",
+              dosageInstruction: "2 times a day for 10 days"
+            },
+            2: {
+              lineItemNo: "2",
+              lineItemId: "18434F2E-AAE5-4001-8BB6-005ED2D3DF23",
+              status: "0001",
+              itemName: "Co-codamol 30mg/500mg tablets",
+              quantity: 20,
+              quantityForm: "tablet",
+              dosageInstruction: "2 times a day for 10 days"
+            },
+            3: {
+              lineItemNo: "3",
+              lineItemId: "0D73CBCD-36E9-4943-9EBE-502CA6B85216",
+              status: "0001",
+              itemName: "Pseudoephedrine hydrochloride 60mg tablets",
+              quantity: 30,
+              quantityForm: "tablet",
+              dosageInstruction: "3 times a day for 10 days"
+            },
+            4: {
+              lineItemNo: "4",
+              lineItemId: "453F161C-3A76-42B5-BA7F-7A4EBF61023B",
+              status: "0003",
+              itemName: "Azithromycin 250mg capsules",
+              quantity: 20,
+              quantityForm: "tablet",
+              dosageInstruction: "3 times a day for 10 days"
+            }
+          }
+        },
+        "B358A55E-A423-48E2-A9D8-2612B4E66604": {
+          dispenseNotificationId: "B358A55E-A423-48E2-A9D8-2612B4E66604",
+          timestamp: "2025-04-24T11:49:31.000Z",
+          status: "0006",
+          lineItems: {
+            1: {
+              lineItemNo: "1",
+              lineItemId: "3CA6AF12-560E-4DB4-B419-6E0DD99BEE40",
+              status: "0001",
+              itemName: "Amoxicillin 250mg capsules",
+              quantity: 10,
+              quantityForm: "tablet",
+              dosageInstruction: "2 times a day for 10 days"
+            },
+            4: {
+              lineItemNo: "4",
+              lineItemId: "453F161C-3A76-42B5-BA7F-7A4EBF61023B",
+              status: "0001",
+              itemName: "Azithromycin 250mg capsules",
+              quantity: 10,
+              quantityForm: "tablet",
+              dosageInstruction: "3 times a day for 10 days"
+            }
+          }
+        }
+      },
+      history: {
+        2: {
+          eventId: "2",
+          message: "Prescription upload successful",
+          messageId: "345FC11F-FF5C-4AE2-9FD6-A3F20FDB849A",
+          timestamp: "2025-04-24T11:44:57.000Z",
+          org: "A83008",
+          newStatus: "0001",
+          isDispenseNotification: false
+        },
+        3: {
+          eventId: "3",
+          message: "Release Request successful",
+          messageId: "E2463A18-C098-4B2A-B723-1D7779DEAA26",
+          timestamp: "2025-04-24T11:45:12.000Z",
+          org: "VNFKT",
+          newStatus: "0002",
+          isDispenseNotification: false
+        },
+        4: {
+          eventId: "4",
+          message: "Dispense notification successful",
+          messageId: "42A6A1A0-596C-482C-B018-0D15F8FFF9F3",
+          timestamp: "2025-04-24T11:45:32.000Z",
+          org: "FA565",
+          newStatus: "0003",
+          isDispenseNotification: true
+        },
+        5: {
+          eventId: "5",
+          message: "Dispense notification successful",
+          messageId: "B358A55E-A423-48E2-A9D8-2612B4E66604",
+          timestamp: "2025-04-24T11:49:41.000Z",
+          org: "FA565",
+          newStatus: "0006",
+          isDispenseNotification: true
+        }
+      }
+    }
+
+    const result: ParsedSpineResponse = parseSpineResponse(altAcuteMultipleDispenseNotifications, logger)
     expect(result).toEqual({prescription: expected})
   })
 

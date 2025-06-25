@@ -442,6 +442,7 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
       medicationDispenseResourceIds[
         dispenseNotification.dispenseNotificationId].push(medicationDispenseResourceId)
 
+      /* Some fields may be empty/undefined return them as is for partial DN scenarios */
       const medicationDispense: BundleEntry<MedicationDispense> & MedicationDispenseBundleEntryType= {
         fullUrl: `urn:uuid:${medicationDispenseResourceId}`,
         search: {
@@ -474,11 +475,11 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
             reference: `urn:uuid:${medicationRequestResourceIds[lineItem.lineItemNo]}`
           }],
           medicationCodeableConcept: {
-            text: lineItem.itemName
+            text: lineItem.itemName ? lineItem.itemName : ""
           },
           quantity: {
-            value: lineItem.quantity,
-            unit: lineItem.quantityForm
+            value: lineItem.quantity ? lineItem.quantity : 0,
+            unit: lineItem.quantityForm ? lineItem.quantityForm : ""
           },
           ...(lineItem.dosageInstruction ? {dosageInstruction: [{text: lineItem.dosageInstruction}]}: {}),
           extension: [

@@ -256,9 +256,9 @@
 									<dispNotifFromStatus>0002</dispNotifFromStatus>
 									<dispNotifToStatus>0006</dispNotifToStatus>
 									<dispenseNotifDateTime>20250429132657</dispenseNotifDateTime>
-									<productLineItem1>Amoxicillin 250mg capsules</productLineItem1>
-									<quantityLineItem1>20</quantityLineItem1>
-									<narrativeLineItem1>tablet</narrativeLineItem1>
+									<productLineItem1/>
+									<quantityLineItem1/>
+									<narrativeLineItem1/>
 									<dosageLineItem1/>
 									<statusLineItem1>0001</statusLineItem1>
 									<productLineItem2/>
