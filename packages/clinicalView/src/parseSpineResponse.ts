@@ -268,7 +268,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
   for (const xmlLineItem of xmlLineItems) {
     const lineItemNo = xmlLineItem.order["@_value"]
 
-    console.debug("Parsing line item...", {lineItemNo})
+    logger.debug("Parsing line item...", {lineItemNo})
     const lineItem: LineItemDetails = {
       lineItemNo,
       lineItemId: xmlLineItem.ID["@_value"],
