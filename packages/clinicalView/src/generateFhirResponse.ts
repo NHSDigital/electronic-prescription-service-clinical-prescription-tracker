@@ -553,9 +553,10 @@ const generateHistoryAction = (
         dispenseNotificationId = event.messageId
       } else if (noOfDispenseNotificationEvents === 1 && noOfDispenseNotifications === 1) {
         dispenseNotificationId = Object.keys(resourceIds.medicationDispense)[0]
-        console.debug("Pairing single DN event to single DN.", {messageId: event.messageId, dispenseNotificationId})
+        /* Leaving these logs as info so that we can monitor mismatched ID's in live*/
+        logger.info("Pairing single DN event to single DN.", {messageId: event.messageId, dispenseNotificationId})
       } else {
-        console.debug("Unable to pair DN event. No DN found for messageID, and DN event count and DN count > 1",
+        logger.info("Unable to pair DN event. No DN found for messageID, and DN event count and DN count > 1",
           {messageId: event.messageId, noOfDispenseNotifications, noOfDispenseNotificationEvents})
       }
 
