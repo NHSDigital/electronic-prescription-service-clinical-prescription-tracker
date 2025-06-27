@@ -475,7 +475,7 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
             reference: `urn:uuid:${medicationRequestResourceIds[lineItem.lineItemNo]}`
           }],
           medicationCodeableConcept: {
-            text: lineItem.itemName ? lineItem.itemName : ""
+            text: lineItem.itemName ?? ""
           },
           quantity: {
             value: lineItem.quantity ? lineItem.quantity : 0,
@@ -554,9 +554,9 @@ const generateHistoryAction = (
       } else if (noOfDispenseNotificationEvents === 1 && noOfDispenseNotifications === 1) {
         dispenseNotificationId = Object.keys(resourceIds.medicationDispense)[0]
         /* Leaving these logs as info so that we can monitor mismatched ID's in live*/
-        logger.info("Pairing single DN event to single DN.", {messageId: event.messageId, dispenseNotificationId})
+        logger.warn("Pairing single DN event to single DN.", {messageId: event.messageId, dispenseNotificationId})
       } else {
-        logger.info("Unable to pair DN event. No DN found for messageID, and DN event count and DN count > 1",
+        logger.warn("Unable to pair DN event. No DN found for messageID, and DN event count and DN count > 1",
           {messageId: event.messageId, noOfDispenseNotifications, noOfDispenseNotificationEvents})
       }
 
