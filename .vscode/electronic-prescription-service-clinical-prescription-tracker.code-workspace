@@ -115,7 +115,8 @@
 		"jest.jestCommandLine": "NODE_OPTIONS=--experimental-vm-modules node_modules/.bin/jest --no-cache",
 		"jest.nodeEnv": {
 			"POWERTOOLS_DEV": true
-		}
+		},
+		"jest.useJest30": true,
 	},
 	"extensions": {
 		"recommendations": [

@@ -6,9 +6,11 @@ export const nagSuppressions = (stack: Stack) => {
   safeAddNagSuppressionGroup(
     stack,
     [
-      "/CptsApiStack/PrescriptionSearchLambda/LambdaPutLogsManagedPolicy/Resource",
-      "/CptsApiStack/ClinicalViewLambda/LambdaPutLogsManagedPolicy/Resource",
-      "/CptsApiStack/StatusLambda/LambdaPutLogsManagedPolicy/Resource"
+      "/CptsApiStack/Functions/PrescriptionSearchLambda/LambdaPutLogsManagedPolicy/Resource",
+      "/CptsApiStack/Functions/ClinicalViewLambda/LambdaPutLogsManagedPolicy/Resource",
+      "/CptsApiStack/Functions/StatusLambda/LambdaPutLogsManagedPolicy/Resource",
+      "/CptsApiStack/StateMachines/ClinicalViewStateMachine/StateMachinePutLogsManagedPolicy",
+      "/CptsApiStack/StateMachines/ClinicalViewStateMachine/StateMachineRole/DefaultPolicy/Resource"
     ],
     [
       {
@@ -20,7 +22,7 @@ export const nagSuppressions = (stack: Stack) => {
 
   safeAddNagSuppression(
     stack,
-    "/CptsApiStack/ApiGateway/ApiGateway/Resource",
+    "/CptsApiStack/Apis/ApiGateway/ApiGateway/Resource",
     [
       {
         id: "AwsSolutions-APIG2",
@@ -29,23 +31,12 @@ export const nagSuppressions = (stack: Stack) => {
     ]
   )
 
-  safeAddNagSuppression(
-    stack,
-    "/CptsApiStack/ApiGateway/ApiGateway/CloudWatchRole/Resource",
-    [
-      {
-        id: "AwsSolutions-IAM4",
-        reason: "Suppress error for using AWS managed policy. This is an auto generated one for cognito domain"
-      }
-    ]
-  )
-
   safeAddNagSuppressionGroup(
     stack,
     [
-      "/CptsApiStack/ApiGateway/ApiGateway/Default/RequestGroup/GET/Resource",
-      "/CptsApiStack/ApiGateway/ApiGateway/Default/RequestGroup/{prescriptionId}/GET/Resource",
-      "/CptsApiStack/ApiGateway/ApiGateway/Default/_status/GET/Resource"
+      "/CptsApiStack/Apis/ApiGateway/ApiGateway/Default/RequestGroup/GET/Resource",
+      "/CptsApiStack/Apis/ApiGateway/ApiGateway/Default/RequestGroup/{prescriptionId}/GET/Resource",
+      "/CptsApiStack/Apis/ApiGateway/ApiGateway/Default/_status/GET/Resource"
     ],
     [
       {
