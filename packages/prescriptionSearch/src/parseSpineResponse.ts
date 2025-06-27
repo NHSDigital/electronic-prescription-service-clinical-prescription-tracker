@@ -28,6 +28,7 @@ interface ResponsePrescription {
   prescribedDate: string
   prescriptionTreatmentType: SpineTreatmentTypeCode
   maxRepeats?: string
+  nextActivity: string
 }
 export interface SpineJsonResponse {
   Response:{
@@ -39,7 +40,11 @@ interface PrescriptionSearchIssueDetails extends IssueDetails {
   itemsPendingCancellation: boolean
 }
 
-export type Prescription = PatientDetailsSummary & PrescriptionDetailsSummary & PrescriptionSearchIssueDetails
+interface PatientSearchPrescriptionDetails extends PrescriptionDetailsSummary {
+  deleted: boolean
+}
+
+export type Prescription = PatientDetailsSummary & PatientSearchPrescriptionDetails & PrescriptionSearchIssueDetails
 
 export type ParsedSpineResponse = {prescriptions: Array<Prescription> } | { spineError: ServiceError }
 
@@ -79,8 +84,9 @@ const parsePrescriptions = (responsePrescriptions: Array<ResponsePrescription>):
       ...(responsePrescription.family ? {family: responsePrescription.family} : {})
     }
 
-    const prescriptionDetails: PrescriptionDetailsSummary = {
+    const prescriptionDetails: PatientSearchPrescriptionDetails = {
       prescriptionId: responsePrescription.prescriptionID,
+      deleted: responsePrescription.nextActivity === "purge",
       issueDate: DateFns.parse(responsePrescription.prescribedDate, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
       treatmentType: responsePrescription.prescriptionTreatmentType,
       ...(responsePrescription.maxRepeats && responsePrescription.maxRepeats !== "None" ?

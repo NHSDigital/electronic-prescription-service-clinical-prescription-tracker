@@ -146,12 +146,16 @@ interface LineItemDetails extends LineItemDetailsSummary {
   pendingCancellation: boolean
 }
 
+type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] }
+type DispenseNotificationLineItemDetails = WithRequired<Partial<LineItemDetailsSummary>, "lineItemNo" | "status">
+
 interface DispenseNotificationDetails {
   dispenseNotificationId: string
   timestamp: string
   status: PrescriptionStatusCoding["code"]
   lineItems: {
-    [key: string]: LineItemDetailsSummary
+    [key: string]: DispenseNotificationLineItemDetails
+
   }
 }
 
@@ -264,7 +268,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
   for (const xmlLineItem of xmlLineItems) {
     const lineItemNo = xmlLineItem.order["@_value"]
 
-    console.debug("Parsing line item...", {lineItemNo})
+    logger.debug("Parsing line item...", {lineItemNo})
     const lineItem: LineItemDetails = {
       lineItemNo,
       lineItemId: xmlLineItem.ID["@_value"],
@@ -299,23 +303,23 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     // Parse each line item of the DN
     for (const [lineItemNo, LineItemDetails] of Object.entries(prescriptionDetails.lineItems)) {
       logger.debug("Parsing dispense notifications line item...", {dispenseNotificationId, lineItemNo})
-      // DN's include all line items, those with 0 quantity are those not dispensed as part of this DN.
-      const quantity = Number(xmlDispenseNotification[`quantityLineItem${lineItemNo}`])
-      if (quantity === 0) {
-        continue
+      /* - Include empty and undefined values for partial DN's
+         - Include 0 quantity items
+      */
+      const status = xmlDispenseNotification[`statusLineItem${lineItemNo}`] as DispenseStatusCoding["code"]
+      if(status) {
+        const lineItem: DispenseNotificationLineItemDetails = {
+          lineItemNo,
+          lineItemId: LineItemDetails.lineItemId,
+          status,
+          itemName: xmlDispenseNotification[`productLineItem${lineItemNo}`],
+          quantity: Number(xmlDispenseNotification[`quantityLineItem${lineItemNo}`]),
+          quantityForm: xmlDispenseNotification[`narrativeLineItem${lineItemNo}`],
+          ...(xmlDispenseNotification[`dosageLineItem${lineItemNo}`] ?
+            {dosageInstruction: xmlDispenseNotification[`dosageLineItem${lineItemNo}`]} : {})
+        }
+        dispenseNotification.lineItems[lineItemNo] = lineItem
       }
-
-      const lintItem: LineItemDetailsSummary = {
-        lineItemNo,
-        lineItemId: LineItemDetails.lineItemId,
-        status: xmlDispenseNotification[`statusLineItem${lineItemNo}`] as DispenseStatusCoding["code"],
-        itemName: xmlDispenseNotification[`productLineItem${lineItemNo}`],
-        quantity,
-        quantityForm: xmlDispenseNotification[`narrativeLineItem${lineItemNo}`],
-        ...(xmlDispenseNotification[`dosageLineItem${lineItemNo}`] ?
-          {dosageInstruction: xmlDispenseNotification[`dosageLineItem${lineItemNo}`]} : {})
-      }
-      dispenseNotification.lineItems[lineItemNo] = lintItem
     }
 
     prescriptionDetails.dispenseNotifications[dispenseNotificationId] = dispenseNotification

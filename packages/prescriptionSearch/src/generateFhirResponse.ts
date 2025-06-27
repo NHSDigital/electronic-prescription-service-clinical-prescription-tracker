@@ -77,7 +77,7 @@ export const generateFhirResponse = (prescriptions: Array<Prescription>, logger:
         subject: {
           reference: `urn:uuid:${patientUuid}`
         },
-        status: "active",
+        status: prescription.deleted ? "completed" : "active",
         intent: INTENT_MAP[prescription.treatmentType],
         authoredOn: prescription.issueDate,
         extension: []
