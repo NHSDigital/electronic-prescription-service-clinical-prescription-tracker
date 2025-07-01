@@ -14,9 +14,7 @@ const status = {
   type: "string",
   enum: [
     "in-progress",
-    "cancelled",
-    "completed",
-    "stopped"
+    "unknown"
   ]
 } as const satisfies JSONSchema
 export type MedicationDispenseStatusType = FromSchema<typeof status>

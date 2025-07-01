@@ -81,6 +81,7 @@ interface XmlEpsRecord {
   nominatedPerformer?: string
   nominatedPerformerType?: string
   dispensingOrganization?: string
+  lastDispenseNotificationGuid?: string
   parentPrescription: {
     prefix?: string
     suffix?: string
@@ -153,6 +154,7 @@ interface DispenseNotificationDetails {
   dispenseNotificationId: string
   timestamp: string
   status: PrescriptionStatusCoding["code"]
+  isLastDispenseNotification: boolean
   lineItems: {
     [key: string]: DispenseNotificationLineItemDetails
 
@@ -177,6 +179,7 @@ interface PrescriptionDetails extends PrescriptionDetailsSummary, IssueDetails {
   nominatedDispenserOrg?: string
   nominatedDisperserType: PerformerSiteTypeCoding["code"]
   dispenserOrg?: string
+  lastDispenseNotification?: string
   lineItems: {
     [key: string]: LineItemDetails
   }
@@ -254,6 +257,8 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     nominatedDisperserType: xmlEpsRecord.nominatedPerformerType ?
       xmlEpsRecord.nominatedPerformerType as PerformerSiteTypeCoding["code"] : "0004", // default to 0004 (None)
     ...(xmlEpsRecord.dispensingOrganization ? {dispenserOrg: xmlEpsRecord.dispensingOrganization} : {}),
+    ...(xmlEpsRecord.lastDispenseNotificationGuid ?
+      {lastDispenseNotification: xmlEpsRecord.lastDispenseNotificationGuid}: {}),
     lineItems: {},
     dispenseNotifications: {},
     history: {}
@@ -297,6 +302,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
       timestamp: DateFns.parse(
         xmlDispenseNotification.dispenseNotifDateTime, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
       status: xmlDispenseNotification.statusPrescription as PrescriptionStatusCoding["code"],
+      isLastDispenseNotification: dispenseNotificationId === prescriptionDetails.lastDispenseNotification,
       lineItems: {}
     }
 
