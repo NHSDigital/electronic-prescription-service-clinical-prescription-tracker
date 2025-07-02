@@ -24,7 +24,6 @@ import {
   GENDER_MAP,
   LINE_ITEM_STATUS_MAP,
   LINE_ITEM_STATUS_REASON_MAP,
-  MEDICATION_DISPENSE_STATUS_MAP,
   MEDICATION_REQUEST_STATUS_MAP,
   PERFORMER_SITE_TYPE_MAP,
   PRESCRIPTION_TYPE_MAP
@@ -458,7 +457,7 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
           subject: {
             reference: `urn:uuid:${patientResourceId}`
           },
-          status: MEDICATION_DISPENSE_STATUS_MAP[lineItem.status],
+          status: dispenseNotification.isLastDispenseNotification ? "in-progress" : "unknown",
           performer: [{
             actor: {
               reference: `urn:uuid:${dispenserResourceId}`

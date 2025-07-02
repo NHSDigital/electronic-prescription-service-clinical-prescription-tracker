@@ -19,7 +19,10 @@ import {
   acuteCreated,
   acuteDispensedWithASingleItem,
   acuteMultipleDispenseNotifications,
+  acuteWithdrawn,
   acuteWithPartialDispenseNotification,
+  acuteWithWithdrawnAmendment,
+  acuteWithWithdrawnDispenseNotification,
   altAcuteMultipleDispenseNotifications,
   erdDispensedWith0Quantity
 } from "./examples/examples"
@@ -1451,7 +1454,7 @@ describe("Test generateFhirResponse", () => {
         subject: {
           reference: "urn:uuid:PATIENT-123-567-890"
         },
-        status: "in-progress",
+        status: "unknown",
         performer: [{
           actor: {
             reference: "urn:uuid:DISORG-123-567-890"
@@ -1503,7 +1506,7 @@ describe("Test generateFhirResponse", () => {
         subject: {
           reference: "urn:uuid:PATIENT-123-567-890"
         },
-        status: "completed",
+        status: "unknown",
         performer: [{
           actor: {
             reference: "urn:uuid:DISORG-123-567-890"
@@ -1555,7 +1558,7 @@ describe("Test generateFhirResponse", () => {
         subject: {
           reference: "urn:uuid:PATIENT-123-567-890"
         },
-        status: "completed",
+        status: "unknown",
         performer: [{
           actor: {
             reference: "urn:uuid:DISORG-123-567-890"
@@ -1607,7 +1610,7 @@ describe("Test generateFhirResponse", () => {
         subject: {
           reference: "urn:uuid:PATIENT-123-567-890"
         },
-        status: "completed",
+        status: "unknown",
         performer: [{
           actor: {
             reference: "urn:uuid:DISORG-123-567-890"
@@ -1659,7 +1662,7 @@ describe("Test generateFhirResponse", () => {
         subject: {
           reference: "urn:uuid:PATIENT-123-567-890"
         },
-        status: "completed",
+        status: "in-progress",
         performer: [{
           actor: {
             reference: "urn:uuid:DISORG-123-567-890"
@@ -1711,7 +1714,7 @@ describe("Test generateFhirResponse", () => {
         subject: {
           reference: "urn:uuid:PATIENT-123-567-890"
         },
-        status: "completed",
+        status: "in-progress",
         performer: [{
           actor: {
             reference: "urn:uuid:DISORG-123-567-890"
@@ -1763,7 +1766,7 @@ describe("Test generateFhirResponse", () => {
         subject: {
           reference: "urn:uuid:PATIENT-123-567-890"
         },
-        status: "completed",
+        status: "in-progress",
         performer: [{
           actor: {
             reference: "urn:uuid:DISORG-123-567-890"
@@ -1815,7 +1818,7 @@ describe("Test generateFhirResponse", () => {
         subject: {
           reference: "urn:uuid:PATIENT-123-567-890"
         },
-        status: "completed",
+        status: "in-progress",
         performer: [{
           actor: {
             reference: "urn:uuid:DISORG-123-567-890"
@@ -1895,7 +1898,7 @@ describe("Test generateFhirResponse", () => {
         subject: {
           reference: "urn:uuid:PATIENT-123-567-890"
         },
-        status: "in-progress",
+        status: "unknown",
         performer: [{
           actor: {
             reference: "urn:uuid:DISORG-123-567-890"
@@ -1947,7 +1950,7 @@ describe("Test generateFhirResponse", () => {
         subject: {
           reference: "urn:uuid:PATIENT-123-567-890"
         },
-        status: "completed",
+        status: "unknown",
         performer: [{
           actor: {
             reference: "urn:uuid:DISORG-123-567-890"
@@ -1999,7 +2002,7 @@ describe("Test generateFhirResponse", () => {
         subject: {
           reference: "urn:uuid:PATIENT-123-567-890"
         },
-        status: "completed",
+        status: "unknown",
         performer: [{
           actor: {
             reference: "urn:uuid:DISORG-123-567-890"
@@ -2051,7 +2054,7 @@ describe("Test generateFhirResponse", () => {
         subject: {
           reference: "urn:uuid:PATIENT-123-567-890"
         },
-        status: "in-progress",
+        status: "unknown",
         performer: [{
           actor: {
             reference: "urn:uuid:DISORG-123-567-890"
@@ -2103,7 +2106,7 @@ describe("Test generateFhirResponse", () => {
         subject: {
           reference: "urn:uuid:PATIENT-123-567-890"
         },
-        status: "completed",
+        status: "in-progress",
         performer: [{
           actor: {
             reference: "urn:uuid:DISORG-123-567-890"
@@ -2155,7 +2158,7 @@ describe("Test generateFhirResponse", () => {
         subject: {
           reference: "urn:uuid:PATIENT-123-567-890"
         },
-        status: "completed",
+        status: "in-progress",
         performer: [{
           actor: {
             reference: "urn:uuid:DISORG-123-567-890"
@@ -2224,7 +2227,7 @@ describe("Test generateFhirResponse", () => {
         subject: {
           reference: "urn:uuid:PATIENT-123-567-890"
         },
-        status: "completed",
+        status: "in-progress",
         performer: [{
           actor: {
             reference: "urn:uuid:DISORG-123-567-890"
@@ -2285,7 +2288,7 @@ describe("Test generateFhirResponse", () => {
         subject: {
           reference: "urn:uuid:PATIENT-123-567-890"
         },
-        status: "completed",
+        status: "in-progress",
         performer: [{
           actor: {
             reference: "urn:uuid:DISORG-123-567-890"
@@ -2344,7 +2347,7 @@ describe("Test generateFhirResponse", () => {
         subject: {
           reference: "urn:uuid:PATIENT-123-567-890"
         },
-        status: "completed",
+        status: "in-progress",
         performer: [{
           actor: {
             reference: "urn:uuid:DISORG-123-567-890"
@@ -2380,6 +2383,150 @@ describe("Test generateFhirResponse", () => {
 
     const actual = generateFhirResponse(parsedErdDispensedWith0Quantity, logger)
     expect(actual.entry).toContainEqual(expectedMedicationDispense)
+  })
+
+  it("returns a Bundle containg MedicationDispense Bundle entries with the correct status when called with a prescription with multiple dispense notifications", () => {
+    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-444-444-444")
+    mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-111-111-111")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-222-222-222")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-333-333-333")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-444-444-444")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-555-555-555")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-666-666-666")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-777-777-777")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-888-888-888")
+
+    const actual = generateFhirResponse(parsedAcuteWithMultipleDispenseNotifications, logger)
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-111-111-111",
+        status: "unknown"
+      })
+    }))
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-222-222-222",
+        status: "unknown"
+      })
+    }))
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-333-333-333",
+        status: "unknown"
+      })
+    }))
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-444-444-444",
+        status: "unknown"
+      })
+    }))
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-555-555-555",
+        status: "in-progress"
+      })
+    }))
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-666-666-666",
+        status: "in-progress"
+      })
+    }))
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-777-777-777",
+        status: "in-progress"
+      })
+    }))
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-888-888-888",
+        status: "in-progress"
+      })
+    }))
+  })
+
+  it("returns a Bundle containg MedicationDispense Bundle entries with the correct status when called with a prescription with a withdrawn dispense notification", () => {
+    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
+    mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-111-111-111")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-222-222-222")
+    const mockParsedPrescription = parseExample(acuteWithWithdrawnDispenseNotification)
+
+    const actual = generateFhirResponse(mockParsedPrescription, logger)
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-111-111-111",
+        status: "in-progress"
+      })
+    }))
+
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-222-222-222",
+        status: "unknown"
+      })
+    }))
+  })
+
+  it("returns a Bundle containg MedicationDispense Bundle entries with the correct status when called with a prescription with a withdrawn amendment", () => {
+    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
+    mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-111-111-111")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-222-222-222")
+    const mockParsedPrescription = parseExample(acuteWithWithdrawnAmendment)
+
+    const actual = generateFhirResponse(mockParsedPrescription, logger)
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-111-111-111",
+        status: "in-progress"
+      })
+    }))
+
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-222-222-222",
+        status: "unknown"
+      })
+    }))
+  })
+
+  it("returns a Bundle containg MedicationDispense Bundle entries with the correct status when called with a withdrawn prescription", () => {
+    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
+    mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-111-111-111")
+    const mockParsedPrescription = parseExample(acuteWithdrawn)
+
+    const actual = generateFhirResponse(mockParsedPrescription, logger)
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-111-111-111",
+        status: "unknown"
+      })
+    }))
   })
 
   it("returns a RequestGroup with a prescription line items Action when called", () => {
