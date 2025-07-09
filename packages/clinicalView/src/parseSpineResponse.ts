@@ -56,6 +56,7 @@ interface XmlHistoryEventLineItem {
 
 interface XmlFilteredHistoryEvent {
   SCN: string
+  internalId: string
   timestamp: string
   toStatus: string
   message: string
@@ -152,6 +153,7 @@ type DispenseNotificationLineItemDetails = WithRequired<Partial<LineItemDetailsS
 
 interface DispenseNotificationDetails {
   dispenseNotificationId: string
+  dispenseNotificationDocumentKey: string
   timestamp: string
   status: PrescriptionStatusCoding["code"]
   isLastDispenseNotification: boolean
@@ -163,6 +165,7 @@ interface DispenseNotificationDetails {
 
 interface HistoryEventDetails {
   eventId: string
+  internalId: string
   message: HistoryMessage
   messageId: string
   timestamp: string
@@ -296,9 +299,11 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
   // Parse each dispense notification
   for (const xmlDispenseNotification of xmlDispenseNotifications) {
     const dispenseNotificationId = xmlDispenseNotification.dispenseNotificationID
+    const dispenseNotificationDocumentKey = xmlDispenseNotification.dispNotifDocumentKey
     logger.debug("Parsing dispense notification...", {dispenseNotificationId})
     const dispenseNotification: DispenseNotificationDetails = {
       dispenseNotificationId,
+      dispenseNotificationDocumentKey,
       timestamp: DateFns.parse(
         xmlDispenseNotification.dispenseNotifDateTime, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
       status: xmlDispenseNotification.statusPrescription as PrescriptionStatusCoding["code"],
@@ -328,7 +333,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
       }
     }
 
-    prescriptionDetails.dispenseNotifications[dispenseNotificationId] = dispenseNotification
+    prescriptionDetails.dispenseNotifications[dispenseNotificationDocumentKey] = dispenseNotification
   }
 
   let xmlFilteredHistory = xmlEpsRecord.filteredHistory
@@ -366,8 +371,9 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
 
     const historyEvent: HistoryEventDetails = {
       eventId,
+      internalId: xmlFilteredHistoryEvent.internalId, // This matches part of the DN doc key for relevant events.
       message: message as HistoryMessage,
-      messageId: xmlHistoryEvent.messageID.slice(1, -1), // This id matches the DN ID for relevant events. Strip unnecessary "" from value
+      messageId: xmlHistoryEvent.messageID.slice(1, -1), // This id may match the DN ID for relevant events. Strip unnecessary "" from value
       timestamp: DateFns.parse(xmlFilteredHistoryEvent.timestamp, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
       org: xmlFilteredHistoryEvent.agentPersonOrgCode,
       newStatus: xmlFilteredHistoryEvent.toStatus as PrescriptionStatusCoding["code"],

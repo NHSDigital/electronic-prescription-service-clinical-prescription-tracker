@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+
 import {Logger} from "@aws-lambda-powertools/logger"
 import {Prescription, parseSpineResponse, ParsedSpineResponse} from "../src/parseSpineResponse"
 import {
@@ -108,6 +109,7 @@ describe("Test parseSpineResponse", () => {
       history: {
         2: {
           eventId: "2",
+          internalId: "20250424111005000000_HISTORY_UPLOAD",
           message: "Prescription upload successful",
           messageId: "F1204DE7-9434-4EDE-B1A2-ACB849891919",
           timestamp: "2025-04-24T11:10:05.000Z",
@@ -164,6 +166,7 @@ describe("Test parseSpineResponse", () => {
       history: {
         2: {
           eventId: "2",
+          internalId: "20250429141302000000_HISTORY_UPLOAD",
           message: "Prescription upload successful",
           messageId: "32187B1F-9A74-4237-BD41-B4811D4282A7",
           timestamp: "2025-04-29T14:13:02.000Z",
@@ -252,6 +255,7 @@ describe("Test parseSpineResponse", () => {
       history: {
         2: {
           eventId: "2",
+          internalId: "20250424111005000000_HISTORY_UPLOAD",
           message: "Prescription upload successful",
           messageId: "F1204DE7-9434-4EDE-B1A2-ACB849891919",
           timestamp: "2025-04-24T11:10:05.000Z",
@@ -261,6 +265,7 @@ describe("Test parseSpineResponse", () => {
         },
         3: {
           eventId: "3",
+          internalId: "20250424111244000000_HISTORY_RELEASE",
           message: "Release Request successful",
           messageId: "C85C92E5-9793-4EE7-806B-AD1D678094D5",
           timestamp: "2025-04-24T11:12:44.000Z",
@@ -347,8 +352,9 @@ describe("Test parseSpineResponse", () => {
         }
       },
       dispenseNotifications: {
-        "DF525024-FD4E-4292-9FF6-B67025791B69": {
+        "20250424111602543458_4D3B83_1614371148": {
           dispenseNotificationId: "DF525024-FD4E-4292-9FF6-B67025791B69",
+          dispenseNotificationDocumentKey: "20250424111602543458_4D3B83_1614371148",
           timestamp: "2025-04-24T11:15:49.000Z",
           status: "0006",
           isLastDispenseNotification: true,
@@ -395,6 +401,7 @@ describe("Test parseSpineResponse", () => {
       history: {
         2: {
           eventId: "2",
+          internalId: "20250424111005000000_HISTORY_UPLOAD",
           message: "Prescription upload successful",
           messageId: "F1204DE7-9434-4EDE-B1A2-ACB849891919",
           timestamp: "2025-04-24T11:10:05.000Z",
@@ -404,6 +411,7 @@ describe("Test parseSpineResponse", () => {
         },
         3: {
           eventId: "3",
+          internalId: "20250424111244000000_HISTORY_RELEASE",
           message: "Release Request successful",
           messageId: "C85C92E5-9793-4EE7-806B-AD1D678094D5",
           timestamp: "2025-04-24T11:12:44.000Z",
@@ -413,6 +421,7 @@ describe("Test parseSpineResponse", () => {
         },
         4: {
           eventId: "4",
+          internalId: "20250424111602543458_4D3B83_1614371148",
           message: "Dispense notification successful",
           messageId: "DF525024-FD4E-4292-9FF6-B67025791B69",
           timestamp: "2025-04-24T11:16:02.000Z",
@@ -470,8 +479,9 @@ describe("Test parseSpineResponse", () => {
         }
       },
       dispenseNotifications: {
-        "2416B1D1-82D3-4D14-BB34-1F3C6B57CFFB": {
+        "20250429132704108575_90B308_1614371148": {
           dispenseNotificationId: "2416B1D1-82D3-4D14-BB34-1F3C6B57CFFB",
+          dispenseNotificationDocumentKey: "20250429132704108575_90B308_1614371148",
           timestamp: "2025-04-29T13:26:57.000Z",
           status: "0006",
           isLastDispenseNotification: true,
@@ -490,6 +500,7 @@ describe("Test parseSpineResponse", () => {
       history: {
         2: {
           eventId: "2",
+          internalId: "20250429132634000000_HISTORY_UPLOAD",
           message: "Prescription upload successful",
           messageId: "09843173-D677-401D-9331-5CCB37768320",
           timestamp: "2025-04-29T13:26:34.000Z",
@@ -499,6 +510,7 @@ describe("Test parseSpineResponse", () => {
         },
         3: {
           eventId: "3",
+          internalId: "20250429132645000000_HISTORY_RELEASE",
           message: "Release Request successful",
           messageId: "9ECCD950-623A-4821-81DE-774020DE0331",
           timestamp: "2025-04-29T13:26:45.000Z",
@@ -508,6 +520,7 @@ describe("Test parseSpineResponse", () => {
         },
         4: {
           eventId: "4",
+          internalId: "20250429132704108575_90B308_1614371148",
           message: "Dispense notification successful",
           messageId: "2416B1D1-82D3-4D14-BB34-1F3C6B57CFFB",
           timestamp: "2025-04-29T13:27:04.000Z",
@@ -599,6 +612,7 @@ describe("Test parseSpineResponse", () => {
       history: {
         2: {
           eventId: "2",
+          internalId: "20250424122612000000_HISTORY_UPLOAD",
           message: "Prescription upload successful",
           messageId: "916B1535-8912-42BD-9CB8-273EE88B65B4",
           timestamp: "2025-04-24T12:26:12.000Z",
@@ -608,6 +622,7 @@ describe("Test parseSpineResponse", () => {
         },
         3: {
           eventId: "3",
+          internalId: "20250424122621000000_HISTORY_CANCELLED",
           message: "Prescription/item was cancelled",
           messageId: "0B1C1EFC-84F4-497F-BDB5-6A2E6E109954",
           timestamp: "2025-04-24T12:26:21.000Z",
@@ -617,6 +632,7 @@ describe("Test parseSpineResponse", () => {
         },
         4: {
           eventId: "4",
+          internalId: "20250424122630000000_HISTORY_CANCELLED",
           message: "Prescription/item was cancelled",
           messageId: "79495C27-D892-4D27-9D14-3E1E13189A51",
           timestamp: "2025-04-24T12:26:30.000Z",
@@ -626,6 +642,7 @@ describe("Test parseSpineResponse", () => {
         },
         5: {
           eventId: "5",
+          internalId: "20250424122640000000_HISTORY_CANCELLED",
           message: "Prescription/item was cancelled",
           messageId: "2BE8F145-FD8B-4786-86F3-79D03A2E77C3",
           timestamp: "2025-04-24T12:26:40.000Z",
@@ -635,6 +652,7 @@ describe("Test parseSpineResponse", () => {
         },
         6: {
           eventId: "6",
+          internalId: "20250424122647000000_HISTORY_CANCELLED",
           message: "Prescription/item was cancelled",
           messageId: "4FCC251F-BD2C-4D11-BC8F-BFB12EE03997",
           timestamp: "2025-04-24T12:26:47.000Z",
@@ -723,6 +741,7 @@ describe("Test parseSpineResponse", () => {
       history: {
         2: {
           eventId: "2",
+          internalId: "20250424112054000000_HISTORY_UPLOAD",
           message: "Prescription upload successful",
           messageId: "F197EEFF-16CE-473E-A5FC-D3D1DAEC9CD8",
           timestamp: "2025-04-24T11:20:54.000Z",
@@ -732,6 +751,7 @@ describe("Test parseSpineResponse", () => {
         },
         3: {
           eventId: "3",
+          internalId: "20250424112132000000_HISTORY_CANCELLED",
           message: "Prescription/item was cancelled",
           messageId: "2D58192A-3A62-4D99-93CD-F49162053CF3",
           timestamp: "2025-04-24T11:21:32.000Z",
@@ -818,8 +838,9 @@ describe("Test parseSpineResponse", () => {
         }
       },
       dispenseNotifications: {
-        "70EE28E2-896B-448F-9454-4DD333141CFB": {
+        "20250424113658383065_2F620E_1614371148": {
           dispenseNotificationId: "70EE28E2-896B-448F-9454-4DD333141CFB",
+          dispenseNotificationDocumentKey: "20250424113658383065_2F620E_1614371148",
           timestamp: "2025-04-24T11:36:46.000Z",
           status: "0003",
           isLastDispenseNotification: true,
@@ -862,6 +883,7 @@ describe("Test parseSpineResponse", () => {
       history: {
         2: {
           eventId: "2",
+          internalId: "20250424113525000000_HISTORY_UPLOAD",
           message: "Prescription upload successful",
           messageId: "3B3D0C25-A95E-4F7A-A5F5-16C79E35249B",
           timestamp: "2025-04-24T11:35:25.000Z",
@@ -871,6 +893,7 @@ describe("Test parseSpineResponse", () => {
         },
         3: {
           eventId: "3",
+          internalId: "20250424113530000000_HISTORY_RELEASE",
           message: "Release Request successful",
           messageId: "C7784FC6-3CF8-48E7-B373-D55426DEEDEF",
           timestamp: "2025-04-24T11:35:30.000Z",
@@ -880,6 +903,7 @@ describe("Test parseSpineResponse", () => {
         },
         4: {
           eventId: "4",
+          internalId: "20250424113658383065_2F620E_1614371148",
           message: "Dispense notification successful",
           messageId: "70EE28E2-896B-448F-9454-4DD333141CFB",
           timestamp: "2025-04-24T11:36:58.000Z",
@@ -966,8 +990,9 @@ describe("Test parseSpineResponse", () => {
         }
       },
       dispenseNotifications: {
-        "42A6A1A0-596C-482C-B018-0D15F8FFF9F3": {
+        "20250424114532061265_E7C077_1614371148": {
           dispenseNotificationId: "42A6A1A0-596C-482C-B018-0D15F8FFF9F3",
+          dispenseNotificationDocumentKey: "20250424114532061265_E7C077_1614371148",
           timestamp: "2025-04-24T11:45:17.000Z",
           status: "0003",
           isLastDispenseNotification: true,
@@ -1010,6 +1035,7 @@ describe("Test parseSpineResponse", () => {
       history: {
         2: {
           eventId: "2",
+          internalId: "20250424114457000000_HISTORY_UPLOAD",
           message: "Prescription upload successful",
           messageId: "345FC11F-FF5C-4AE2-9FD6-A3F20FDB849A",
           timestamp: "2025-04-24T11:44:57.000Z",
@@ -1019,6 +1045,7 @@ describe("Test parseSpineResponse", () => {
         },
         3: {
           eventId: "3",
+          internalId: "20250424114512000000_HISTORY_RELEASE",
           message: "Release Request successful",
           messageId: "E2463A18-C098-4B2A-B723-1D7779DEAA26",
           timestamp: "2025-04-24T11:45:12.000Z",
@@ -1028,6 +1055,7 @@ describe("Test parseSpineResponse", () => {
         },
         4: {
           eventId: "4",
+          internalId: "20250424114532061265_E7C077_1614371148",
           message: "Dispense notification successful",
           messageId: "42A6A1A0-596C-482C-B018-0D15F8FFF9F3",
           timestamp: "2025-04-24T11:45:32.000Z",
@@ -1115,8 +1143,9 @@ describe("Test parseSpineResponse", () => {
         }
       },
       dispenseNotifications: {
-        "42A6A1A0-596C-482C-B018-0D15F8FFF9F3": {
+        "20250424114532061265_E7C077_1614371148": {
           dispenseNotificationId: "42A6A1A0-596C-482C-B018-0D15F8FFF9F3",
+          dispenseNotificationDocumentKey: "20250424114532061265_E7C077_1614371148",
           timestamp: "2025-04-24T11:45:17.000Z",
           status: "0003",
           isLastDispenseNotification: false,
@@ -1159,8 +1188,9 @@ describe("Test parseSpineResponse", () => {
             }
           }
         },
-        "B358A55E-A423-48E2-A9D8-2612B4E66604": {
+        "20250424114941724337_A1DAC3_1614371148": {
           dispenseNotificationId: "B358A55E-A423-48E2-A9D8-2612B4E66604",
+          dispenseNotificationDocumentKey: "20250424114941724337_A1DAC3_1614371148",
           timestamp: "2025-04-24T11:49:31.000Z",
           status: "0006",
           isLastDispenseNotification: true,
@@ -1207,6 +1237,7 @@ describe("Test parseSpineResponse", () => {
       history: {
         2: {
           eventId: "2",
+          internalId: "20250424114457000000_HISTORY_UPLOAD",
           message: "Prescription upload successful",
           messageId: "345FC11F-FF5C-4AE2-9FD6-A3F20FDB849A",
           timestamp: "2025-04-24T11:44:57.000Z",
@@ -1216,6 +1247,7 @@ describe("Test parseSpineResponse", () => {
         },
         3: {
           eventId: "3",
+          internalId: "20250424114512000000_HISTORY_UPLOAD",
           message: "Release Request successful",
           messageId: "E2463A18-C098-4B2A-B723-1D7779DEAA26",
           timestamp: "2025-04-24T11:45:12.000Z",
@@ -1225,6 +1257,7 @@ describe("Test parseSpineResponse", () => {
         },
         4: {
           eventId: "4",
+          internalId: "20250424114532061265_E7C077_1614371148",
           message: "Dispense notification successful",
           messageId: "42A6A1A0-596C-482C-B018-0D15F8FFF9F3",
           timestamp: "2025-04-24T11:45:32.000Z",
@@ -1234,6 +1267,7 @@ describe("Test parseSpineResponse", () => {
         },
         5: {
           eventId: "5",
+          internalId: "20250424114941724337_A1DAC3_1614371148",
           message: "Dispense notification successful",
           messageId: "B358A55E-A423-48E2-A9D8-2612B4E66604",
           timestamp: "2025-04-24T11:49:41.000Z",
@@ -1321,8 +1355,9 @@ describe("Test parseSpineResponse", () => {
         }
       },
       dispenseNotifications: {
-        "42A6A1A0-596C-482C-B018-0D15F8FFF9F3": {
+        "20250424114532061265_E7C077_1614371148": {
           dispenseNotificationId: "42A6A1A0-596C-482C-B018-0D15F8FFF9F3",
+          dispenseNotificationDocumentKey: "20250424114532061265_E7C077_1614371148",
           timestamp: "2025-04-24T11:45:17.000Z",
           status: "0003",
           isLastDispenseNotification: false,
@@ -1365,8 +1400,9 @@ describe("Test parseSpineResponse", () => {
             }
           }
         },
-        "B358A55E-A423-48E2-A9D8-2612B4E66604": {
+        "20250424114941724337_A1DAC3_1614371148": {
           dispenseNotificationId: "B358A55E-A423-48E2-A9D8-2612B4E66604",
+          dispenseNotificationDocumentKey: "20250424114941724337_A1DAC3_1614371148",
           timestamp: "2025-04-24T11:49:31.000Z",
           status: "0006",
           isLastDispenseNotification: true,
@@ -1395,6 +1431,7 @@ describe("Test parseSpineResponse", () => {
       history: {
         2: {
           eventId: "2",
+          internalId: "20250424114457000000_HISTORY_UPLOAD",
           message: "Prescription upload successful",
           messageId: "345FC11F-FF5C-4AE2-9FD6-A3F20FDB849A",
           timestamp: "2025-04-24T11:44:57.000Z",
@@ -1404,6 +1441,7 @@ describe("Test parseSpineResponse", () => {
         },
         3: {
           eventId: "3",
+          internalId: "20250424114512000000_HISTORY_RELEASE",
           message: "Release Request successful",
           messageId: "E2463A18-C098-4B2A-B723-1D7779DEAA26",
           timestamp: "2025-04-24T11:45:12.000Z",
@@ -1413,6 +1451,7 @@ describe("Test parseSpineResponse", () => {
         },
         4: {
           eventId: "4",
+          internalId: "20250424114532061265_E7C077_1614371148",
           message: "Dispense notification successful",
           messageId: "42A6A1A0-596C-482C-B018-0D15F8FFF9F3",
           timestamp: "2025-04-24T11:45:32.000Z",
@@ -1422,6 +1461,7 @@ describe("Test parseSpineResponse", () => {
         },
         5: {
           eventId: "5",
+          internalId: "20250424114941724337_A1DAC3_1614371148",
           message: "Dispense notification successful",
           messageId: "B358A55E-A423-48E2-A9D8-2612B4E66604",
           timestamp: "2025-04-24T11:49:41.000Z",
@@ -1514,6 +1554,7 @@ describe("Test parseSpineResponse", () => {
       history: {
         2: {
           eventId: "2",
+          internalId: "20250424120953000000_HISTORY_UPLOAD",
           message: "Prescription upload successful",
           messageId: "1E042BB0-164D-48C2-B4F4-CB94771838A0",
           timestamp: "2025-04-24T12:09:53.000Z",
@@ -1523,6 +1564,7 @@ describe("Test parseSpineResponse", () => {
         },
         3: {
           eventId: "3",
+          internalId: "20250424120958000000_HISTORY_RELEASE",
           message: "Release Request successful",
           messageId: "3339B7A4-4D62-48B3-A58B-9360D565CE68",
           timestamp: "2025-04-24T12:09:58.000Z",
@@ -1532,6 +1574,7 @@ describe("Test parseSpineResponse", () => {
         },
         4: {
           eventId: "4",
+          internalId: "20250424121113000000_HISTORY_CANCELLED",
           message: "Prescription/item was not cancelled. With dispenser. Marked for cancellation",
           messageId: "074269EB-C2AC-4571-B6A8-401B90A6F40A",
           timestamp: "2025-04-24T12:11:13.000Z",
@@ -1541,6 +1584,7 @@ describe("Test parseSpineResponse", () => {
         },
         5: {
           eventId: "5",
+          internalId: "20250424121437000000_HISTORY_CANCELLED",
           message: "Prescription/item was not cancelled. With dispenser. Marked for cancellation",
           messageId: "7C6E7789-ED69-4580-A5AC-4F310CF652DA",
           timestamp: "2025-04-24T12:14:37.000Z",
@@ -1550,6 +1594,7 @@ describe("Test parseSpineResponse", () => {
         },
         6: {
           eventId: "6",
+          internalId: "20250424121446000000_HISTORY_CANCELLED",
           message: "Prescription/item was not cancelled. With dispenser. Marked for cancellation",
           messageId: "F501683B-79A4-4032-A460-48B3BAB21C4C",
           timestamp: "2025-04-24T12:14:46.000Z",
@@ -1559,6 +1604,7 @@ describe("Test parseSpineResponse", () => {
         },
         7: {
           eventId: "7",
+          internalId: "20250424121457000000_HISTORY_CANCELLED",
           message: "Prescription/item was not cancelled. With dispenser. Marked for cancellation",
           messageId: "B94DF589-CE8C-4740-8657-CB62428388A2",
           timestamp: "2025-04-24T12:14:57.000Z",
@@ -1648,6 +1694,7 @@ describe("Test parseSpineResponse", () => {
       history: {
         2: {
           eventId: "2",
+          internalId: "20250424120953000000_HISTORY_UPLOAD",
           message: "Prescription upload successful",
           messageId: "1E042BB0-164D-48C2-B4F4-CB94771838A0",
           timestamp: "2025-04-24T12:09:53.000Z",
@@ -1657,6 +1704,7 @@ describe("Test parseSpineResponse", () => {
         },
         3: {
           eventId: "3",
+          internalId: "20250424120958000000_HISTORY_RELEASE",
           message: "Release Request successful",
           messageId: "3339B7A4-4D62-48B3-A58B-9360D565CE68",
           timestamp: "2025-04-24T12:09:58.000Z",
@@ -1666,6 +1714,7 @@ describe("Test parseSpineResponse", () => {
         },
         4: {
           eventId: "4",
+          internalId: "20250424121113000000_HISTORY_CANCELLED",
           message: "Prescription/item was not cancelled. With dispenser. Marked for cancellation",
           messageId: "074269EB-C2AC-4571-B6A8-401B90A6F40A",
           timestamp: "2025-04-24T12:11:13.000Z",
@@ -1757,6 +1806,7 @@ describe("Test parseSpineResponse", () => {
       history: {
         2: {
           eventId: "2",
+          internalId: "20250424122612000000_HISTORY_UPLOAD",
           message: "Prescription upload successful",
           messageId: "916B1535-8912-42BD-9CB8-273EE88B65B4",
           timestamp: "2025-04-24T12:26:12.000Z",
@@ -1766,6 +1816,7 @@ describe("Test parseSpineResponse", () => {
         },
         3: {
           eventId: "3",
+          internalId: "20250424122621000000_HISTORY_CANCELLED",
           message: "Prescription/item was cancelled",
           messageId: "0B1C1EFC-84F4-497F-BDB5-6A2E6E109954",
           timestamp: "2025-04-24T12:26:21.000Z",
@@ -1775,6 +1826,7 @@ describe("Test parseSpineResponse", () => {
         },
         4: {
           eventId: "4",
+          internalId: "20250424122630000000_HISTORY_CANCELLED",
           message: "Prescription/item was cancelled",
           messageId: "79495C27-D892-4D27-9D14-3E1E13189A51",
           timestamp: "2025-04-24T12:26:30.000Z",
@@ -1784,6 +1836,7 @@ describe("Test parseSpineResponse", () => {
         },
         5: {
           eventId: "5",
+          internalId: "20250424122640000000_HISTORY_CANCELLED",
           message: "Prescription/item was cancelled",
           messageId: "2BE8F145-FD8B-4786-86F3-79D03A2E77C3",
           timestamp: "2025-04-24T12:26:40.000Z",
@@ -1793,6 +1846,7 @@ describe("Test parseSpineResponse", () => {
         },
         6: {
           eventId: "6",
+          internalId: "20250424122647000000_HISTORY_CANCELLED",
           message: "Prescription/item was cancelled",
           messageId: "4FCC251F-BD2C-4D11-BC8F-BFB12EE03997",
           timestamp: "2025-04-24T12:26:47.000Z",
@@ -1886,6 +1940,7 @@ describe("Test parseSpineResponse", () => {
       history: {
         2: {
           eventId: "2",
+          internalId: "20250424120953000000_HISTORY_UPLOAD",
           message: "Prescription upload successful",
           messageId: "1E042BB0-164D-48C2-B4F4-CB94771838A0",
           timestamp: "2025-04-24T12:09:53.000Z",
@@ -1895,6 +1950,7 @@ describe("Test parseSpineResponse", () => {
         },
         3: {
           eventId: "3",
+          internalId: "20250424120958000000_HISTORY_RELEASE",
           message: "Release Request successful",
           messageId: "3339B7A4-4D62-48B3-A58B-9360D565CE68",
           timestamp: "2025-04-24T12:09:58.000Z",
@@ -1904,6 +1960,7 @@ describe("Test parseSpineResponse", () => {
         },
         4: {
           eventId: "4",
+          internalId: "20250424121113000000_HISTORY_CANCELLED",
           message: "Prescription/item was not cancelled. With dispenser. Marked for cancellation",
           messageId: "074269EB-C2AC-4571-B6A8-401B90A6F40A",
           timestamp: "2025-04-24T12:11:13.000Z",
@@ -1913,6 +1970,7 @@ describe("Test parseSpineResponse", () => {
         },
         5: {
           eventId: "5",
+          internalId: "20250424121437000000_HISTORY_CANCELLED",
           message: "Prescription/item was not cancelled. With dispenser. Marked for cancellation",
           messageId: "7C6E7789-ED69-4580-A5AC-4F310CF652DA",
           timestamp: "2025-04-24T12:14:37.000Z",
@@ -1922,6 +1980,7 @@ describe("Test parseSpineResponse", () => {
         },
         6: {
           eventId: "6",
+          internalId: "20250424121446000000_HISTORY_CANCELLED",
           message: "Prescription/item was not cancelled. With dispenser. Marked for cancellation",
           messageId: "F501683B-79A4-4032-A460-48B3BAB21C4C",
           timestamp: "2025-04-24T12:14:46.000Z",
@@ -1931,6 +1990,7 @@ describe("Test parseSpineResponse", () => {
         },
         7: {
           eventId: "7",
+          internalId: "20250424121457000000_HISTORY_CANCELLED",
           message: "Prescription/item was not cancelled. With dispenser. Marked for cancellation",
           messageId: "B94DF589-CE8C-4740-8657-CB62428388A2",
           timestamp: "2025-04-24T12:14:57.000Z",
@@ -1979,8 +2039,9 @@ describe("Test parseSpineResponse", () => {
         }
       },
       dispenseNotifications: {
-        "2416B1D1-82D3-4D14-BB34-1F3C6B57CFFB": {
+        "20250429132704108575_90B308_1614371148": {
           dispenseNotificationId: "2416B1D1-82D3-4D14-BB34-1F3C6B57CFFB",
+          dispenseNotificationDocumentKey: "20250429132704108575_90B308_1614371148",
           timestamp: "2025-04-29T13:26:57.000Z",
           status: "0006",
           isLastDispenseNotification: true,
@@ -1999,6 +2060,7 @@ describe("Test parseSpineResponse", () => {
       history: {
         2: {
           eventId: "2",
+          internalId: "20250429132634000000_HISTORY_UPLOAD",
           message: "Prescription upload successful",
           messageId: "09843173-D677-401D-9331-5CCB37768320",
           timestamp: "2025-04-29T13:26:34.000Z",
@@ -2008,6 +2070,7 @@ describe("Test parseSpineResponse", () => {
         },
         3: {
           eventId: "3",
+          internalId: "20250429132645000000_HISTORY_RELEASE",
           message: "Release Request successful",
           messageId: "9ECCD950-623A-4821-81DE-774020DE0331",
           timestamp: "2025-04-29T13:26:45.000Z",
@@ -2017,6 +2080,7 @@ describe("Test parseSpineResponse", () => {
         },
         4: {
           eventId: "4",
+          internalId: "20250429132704108575_90B308_1614371148",
           message: "Dispense notification successful",
           messageId: "2416B1D1-82D3-4D14-BB34-1F3C6B57CFFB",
           timestamp: "2025-04-29T13:27:04.000Z",
@@ -2104,6 +2168,7 @@ describe("Test parseSpineResponse", () => {
       history: {
         2: {
           eventId: "2",
+          internalId: "20250424111005000000_HISTORY_UPLOAD",
           message: "Prescription upload successful",
           messageId: "F1204DE7-9434-4EDE-B1A2-ACB849891919",
           timestamp: "2025-04-24T11:10:05.000Z",
@@ -2162,6 +2227,7 @@ describe("Test parseSpineResponse", () => {
       dispenseNotifications: {
         "AA23ADE2-DACD-4128-A2A2-3C223576F866": {
           dispenseNotificationId: "AA23ADE2-DACD-4128-A2A2-3C223576F866",
+          dispenseNotificationDocumentKey: "",
           timestamp: "2023-08-29T15:46:00.000Z",
           status: "0003",
           isLastDispenseNotification: true,
@@ -2178,6 +2244,7 @@ describe("Test parseSpineResponse", () => {
         },
         "11FBC05E-E1D4-4FF2-A384-E0FAE93DB8B3": {
           dispenseNotificationId: "11FBC05E-E1D4-4FF2-A384-E0FAE93DB8B3",
+          dispenseNotificationDocumentKey: "",
           timestamp: "2023-08-29T15:46:00.000Z",
           status: "0006",
           isLastDispenseNotification: false,
@@ -2196,6 +2263,7 @@ describe("Test parseSpineResponse", () => {
       history: {
         2: {
           eventId: "2",
+          internalId: "",
           message: "Prescription upload successful",
           messageId: "6C4D0D3A-1ADA-4CAB-B30E-35A0E195B8A3",
           timestamp: "2025-07-01T13:12:47.000Z",
@@ -2205,6 +2273,7 @@ describe("Test parseSpineResponse", () => {
         },
         3: {
           eventId: "3",
+          internalId: "",
           message: "Release Request successful",
           messageId: "F854C575-DDB5-4594-B748-5DDF40332641",
           timestamp: "2025-07-01T13:14:10.000Z",
@@ -2214,6 +2283,7 @@ describe("Test parseSpineResponse", () => {
         },
         4: {
           eventId: "4",
+          internalId: "",
           message: "Dispense notification successful",
           messageId: "AA23ADE2-DACD-4128-A2A2-3C223576F866",
           timestamp: "2025-07-01T13:14:54.000Z",
@@ -2223,6 +2293,7 @@ describe("Test parseSpineResponse", () => {
         },
         5: {
           eventId: "5",
+          internalId: "",
           message: "Dispense notification successful",
           messageId: "11FBC05E-E1D4-4FF2-A384-E0FAE93DB8B3",
           timestamp: "2025-07-01T13:15:00.000Z",
@@ -2232,6 +2303,7 @@ describe("Test parseSpineResponse", () => {
         },
         6: {
           eventId: "6",
+          internalId: "",
           message: "Dispense Withdrawal successful",
           messageId: "21EE07EC-3A20-4BD5-8F7E-A4F1CB1033DB",
           timestamp: "2025-07-01T13:15:41.000Z",
@@ -2290,6 +2362,7 @@ describe("Test parseSpineResponse", () => {
       dispenseNotifications: {
         "F591B992-F8D9-4E10-BB62-E0D0FB06AF22": {
           dispenseNotificationId: "F591B992-F8D9-4E10-BB62-E0D0FB06AF22",
+          dispenseNotificationDocumentKey: "",
           timestamp: "2023-08-29T15:46:00.000Z",
           status: "0006",
           isLastDispenseNotification: true,
@@ -2306,6 +2379,7 @@ describe("Test parseSpineResponse", () => {
         },
         "83DBA921-DFB4-4BFB-B5B5-AB6824CD35ED": {
           dispenseNotificationId: "83DBA921-DFB4-4BFB-B5B5-AB6824CD35ED",
+          dispenseNotificationDocumentKey: "",
           timestamp: "2023-08-29T15:46:00.000Z",
           status: "0006",
           isLastDispenseNotification: false,
@@ -2324,6 +2398,7 @@ describe("Test parseSpineResponse", () => {
       history: {
         2: {
           eventId: "2",
+          internalId: "",
           message: "Prescription upload successful",
           messageId: "EE8636EE-B371-40B2-97D1-98E01392EEDB",
           timestamp: "2025-07-01T13:20:05.000Z",
@@ -2333,6 +2408,7 @@ describe("Test parseSpineResponse", () => {
         },
         3: {
           eventId: "3",
+          internalId: "",
           message: "Release Request successful",
           messageId: "26B1FDFB-9FAD-48EB-9A5F-79323C21F13A",
           timestamp: "2025-07-01T13:20:37.000Z",
@@ -2342,6 +2418,7 @@ describe("Test parseSpineResponse", () => {
         },
         4: {
           eventId: "4",
+          internalId: "",
           message: "Dispense notification successful",
           messageId: "F591B992-F8D9-4E10-BB62-E0D0FB06AF22",
           timestamp: "2025-07-01T13:20:45.000Z",
@@ -2351,6 +2428,7 @@ describe("Test parseSpineResponse", () => {
         },
         5: {
           eventId: "5",
+          internalId: "",
           message: "Dispense notification successful",
           messageId: "83DBA921-DFB4-4BFB-B5B5-AB6824CD35ED",
           timestamp: "2025-07-01T13:20:49.000Z",
@@ -2360,6 +2438,7 @@ describe("Test parseSpineResponse", () => {
         },
         6: {
           eventId: "6",
+          internalId: "",
           message: "Dispense Withdrawal successful",
           messageId: "3184BA71-8C48-4B3C-8720-508D37C12BB1",
           timestamp: "2025-07-01T13:21:10.000Z",
@@ -2417,6 +2496,7 @@ describe("Test parseSpineResponse", () => {
       dispenseNotifications: {
         "A55BCAA4-64D3-467F-A538-17A6B2FB2A09": {
           dispenseNotificationId: "A55BCAA4-64D3-467F-A538-17A6B2FB2A09",
+          dispenseNotificationDocumentKey: "",
           timestamp: "2025-07-01T10:36:21.000Z",
           status: "0006",
           isLastDispenseNotification: false,
@@ -2435,6 +2515,7 @@ describe("Test parseSpineResponse", () => {
       history: {
         2: {
           eventId: "2",
+          internalId: "",
           message: "Prescription upload successful",
           messageId: "4C07B06C-3900-4ACC-8712-89941876F101",
           timestamp: "2025-07-01T10:36:13.000Z",
@@ -2444,6 +2525,7 @@ describe("Test parseSpineResponse", () => {
         },
         3: {
           eventId: "3",
+          internalId: "",
           message: "Release Request successful",
           messageId: "A164BD5A-AD86-464D-AEBB-F9DA0814AD7F",
           timestamp: "2025-07-01T10:36:17.000Z",
@@ -2453,6 +2535,7 @@ describe("Test parseSpineResponse", () => {
         },
         4: {
           eventId: "4",
+          internalId: "",
           message: "Dispense notification successful",
           messageId: "A55BCAA4-64D3-467F-A538-17A6B2FB2A09",
           timestamp: "2025-07-01T10:36:21.000Z",
@@ -2462,6 +2545,7 @@ describe("Test parseSpineResponse", () => {
         },
         5: {
           eventId: "5",
+          internalId: "",
           message: "Dispense Withdrawal successful",
           messageId: "B532F1FB-E29C-4D6F-9716-09F2EA9A46D5",
           timestamp: "2025-07-01T10:36:27.000Z",
@@ -2546,6 +2630,7 @@ describe("Test parseSpineResponse", () => {
       dispenseNotifications: {
         "DF525024-FD4E-4292-9FF6-B67025791B69": {
           dispenseNotificationId: "DF525024-FD4E-4292-9FF6-B67025791B69",
+          dispenseNotificationDocumentKey: "",
           timestamp: "2025-04-24T11:15:49.000Z",
           status: "0006",
           isLastDispenseNotification: true,
@@ -2588,6 +2673,7 @@ describe("Test parseSpineResponse", () => {
       history: {
         2: {
           eventId: "2",
+          internalId: "",
           message: "Prescription upload successful",
           messageId: "F1204DE7-9434-4EDE-B1A2-ACB849891919",
           timestamp: "2025-04-24T11:10:05.000Z",
@@ -2597,6 +2683,7 @@ describe("Test parseSpineResponse", () => {
         },
         3: {
           eventId: "3",
+          internalId: "",
           message: "Release Request successful",
           messageId: "C85C92E5-9793-4EE7-806B-AD1D678094D5",
           timestamp: "2025-04-24T11:12:44.000Z",
@@ -2606,6 +2693,7 @@ describe("Test parseSpineResponse", () => {
         },
         4: {
           eventId: "4",
+          internalId: "",
           message: "Dispense notification successful",
           messageId: "DF525024-FD4E-4292-9FF6-B67025791B69",
           timestamp: "2025-04-24T11:16:02.000Z",
@@ -2664,6 +2752,7 @@ describe("Test parseSpineResponse", () => {
       history: {
         2: {
           eventId: "2",
+          internalId: "",
           message: "Prescription upload successful",
           messageId: "F677E0E8-4C5A-45FF-B2A0-37D2F9693721",
           timestamp: "2025-04-29T16:29:13.000Z",
