@@ -532,10 +532,6 @@ const generateHistoryAction = (
 
   // Generate a sub Action for each prescription history event
   const historyEvents = Object.values(prescription.history)
-  // const noOfDispenseNotificationEvents = historyEvents.filter(event => event.isDispenseNotification).length
-  // const noOfDispenseNotifications = resourceIds.medicationDispense ?
-  //   Object.keys(resourceIds.medicationDispense).length : 0
-
   for (const event of historyEvents){
     const referenceActions: Array<ReferenceAction> = []
 
@@ -543,25 +539,8 @@ const generateHistoryAction = (
     let dispenseNotificationCoding
     if (event.isDispenseNotification && resourceIds.medicationDispense){
       logger.info("Generating reference Actions for MedicationDispenses...")
-      /*- We first need to check if the DN events messageID exists in the list of DN ID's, if not then
-          they are potentially mismatched and we cannon reference them normally.
-        - If there is only a single DN event and a single DN then we can safely pair them despite the mismatched ID's.
-        - Otherwise we omit the medicationDispense references as we cannot confidently pair them*/
-      // let dispenseNotificationId
-      // if (event.messageId in resourceIds.medicationDispense){
-      //   dispenseNotificationId = event.messageId
-      // } else if (noOfDispenseNotificationEvents === 1 && noOfDispenseNotifications === 1) {
-      //   dispenseNotificationId = Object.keys(resourceIds.medicationDispense)[0]
-      //   /* Leaving these logs as info so that we can monitor mismatched ID's in live*/
-      //   logger.warn("Pairing single DN event to single DN.", {messageId: event.messageId, dispenseNotificationId})
-      // } else {
-      //   logger.warn("Unable to pair DN event. No DN found for messageID, and DN event count and DN count > 1",
-      //     {messageId: event.messageId, noOfDispenseNotifications, noOfDispenseNotificationEvents})
-      // }
-
       const dispenseNotificationId = prescription.dispenseNotifications[event.internalId].dispenseNotificationId
 
-      // if (dispenseNotificationId){
       for (const medicationDispenseResourceId of resourceIds.medicationDispense[dispenseNotificationId]){
         const referenceAction: RequestGroupAction & ReferenceAction = {
           resource: {
@@ -577,7 +556,6 @@ const generateHistoryAction = (
           code: dispenseNotificationId
         }]
       }] satisfies HistoryAction["action"][0]["code"]
-      // }
     }
 
     logger.info("Generating sub Action for history event...")

@@ -6,7 +6,7 @@
 	xmlns="urn:hl7-org:v3"
 	xmlns:hl7="urn:hl7-org:v3">
 	<SOAP:Header>
-		<wsa:MessageID>uuid:E61E748C-568E-11F0-860F-3520031DD101</wsa:MessageID>
+		<wsa:MessageID>uuid:C26E8508-24FD-11F0-860F-3520031DD101</wsa:MessageID>
 		<wsa:Action>urn:nhs:names:services:mmquery/PORX_IN000006UK98</wsa:Action>
 		<wsa:To/>
 		<wsa:From>
@@ -22,13 +22,13 @@
 				<id root="1.2.826.0.1285.0.2.0.107" extension="Not Known"/>
 			</device>
 		</communicationFunctionSnd>
-		<wsa:RelatesTo>uuid:0231e3e1-2a19-415e-bebb-89b551d73c96</wsa:RelatesTo>
+		<wsa:RelatesTo>uuid:5a562114-d5e4-4a02-90d9-b9d556f10a2b</wsa:RelatesTo>
 	</SOAP:Header>
 	<SOAP:Body>
 		<prescriptionClinicalViewResponse>
 			<PORX_IN000006UK98>
-				<id root="E61E748C-568E-11F0-860F-3520031DD101"/>
-				<creationTime value="20250701152019"/>
+				<id root="C26E8508-24FD-11F0-860F-3520031DD101"/>
+				<creationTime value="20250429132755"/>
 				<versionCode code="V3NPfIT3.0"/>
 				<interactionId root="2.16.840.1.113883.2.1.3.2.4.12" extension="PORX_IN000006UK98"/>
 				<processingCode code="P"/>
@@ -36,7 +36,7 @@
 				<acceptAckCode code="NE"/>
 				<acknowledgement typeCode="AA">
 					<messageRef>
-						<id root="0231e3e1-2a19-415e-bebb-89b551d73c96"/>
+						<id root="5a562114-d5e4-4a02-90d9-b9d556f10a2b"/>
 					</messageRef>
 				</acknowledgement>
 				<communicationFunctionRcv typeCode="RCV">
@@ -65,30 +65,30 @@
 							<effectiveTime value="20050922101500"/>
 							<epsIndex>
 								<!-- These are the secondary index items for the record-->
-								<prescribingSite_status>['A99968_0002']</prescribingSite_status>
-								<nominatedPharmacy_status>['FA565_0002']</nominatedPharmacy_status>
-								<nextActivity_nextActivityDate>['expire_20260101']</nextActivity_nextActivityDate>
-								<dispenser_status>['VNFKT_0002']</dispenser_status>
+								<prescribingSite_status>['A83008_0006']</prescribingSite_status>
+								<nominatedPharmacy_status>['FA565_0006']</nominatedPharmacy_status>
+								<nextActivity_nextActivityDate>['createNoClaim_20251026']</nextActivity_nextActivityDate>
+								<dispenser_status>['FA565_0006']</dispenser_status>
 							</epsIndex>
 							<epsRecord>
 								<!-- These are the other fields stored on the JSON for the record-->
 								<!--Prescription Instance Specific Information-->
-								<releaseRequestMsgRef>20250701103616910140_B76EC9_1614371148</releaseRequestMsgRef>
-								<prescriptionStatus>0002</prescriptionStatus>
+								<releaseRequestMsgRef>20250429132645368787_8FEF54_1614371148</releaseRequestMsgRef>
+								<prescriptionStatus>0006</prescriptionStatus>
 								<nominatedDownloadDate/>
-								<downloadDate>20250701103616</downloadDate>
-								<completionDate>None</completionDate>
-								<expiryDate>20260101</expiryDate>
+								<downloadDate>20250429132645</downloadDate>
+								<completionDate>20250429</completionDate>
+								<expiryDate/>
 								<dispenseWindow>
-									<low value="20250701"/>
-									<high value="20260701"/>
+									<low value="20250429"/>
+									<high value="20260429"/>
 								</dispenseWindow>
 								<instanceNumber>1</instanceNumber>
 								<lineItem>
 									<order value="1"/>
-									<ID value="82D17E9A-A5A2-4DE1-9F78-324BE5892119"/>
-									<previousStatus value="0007"/>
-									<status value="0008"/>
+									<ID value="101875F7-400C-43FE-AC04-7F29DBF854AF"/>
+									<previousStatus value="0008"/>
+									<status value="0001"/>
 								</lineItem>
 								<!--Prescription History-->
 								<history>
@@ -99,10 +99,10 @@
 									<instanceStatus>0001</instanceStatus>
 									<agentPerson>555086689106</agentPerson>
 									<agentSystem>200000001215</agentSystem>
-									<agentPersonOrgCode>A99968</agentPersonOrgCode>
+									<agentPersonOrgCode>A83008</agentPersonOrgCode>
 									<message>"Prescription upload successful"</message>
-									<messageID>"4C07B06C-3900-4ACC-8712-89941876F101"</messageID>
-									<timestamp>"20250701103613"</timestamp>
+									<messageID>"09843173-D677-401D-9331-5CCB37768320"</messageID>
+									<timestamp>"20250429132634"</timestamp>
 									<toASID>"200000001215"</toASID>
 									<fromASID>"567456789789"</fromASID>
 								</history>
@@ -116,8 +116,8 @@
 									<agentSystem>200000001215</agentSystem>
 									<agentPersonOrgCode>VNFKT</agentPersonOrgCode>
 									<message>"Release Request successful"</message>
-									<messageID>"A164BD5A-AD86-464D-AEBB-F9DA0814AD7F"</messageID>
-									<timestamp>"20250701103616"</timestamp>
+									<messageID>"9ECCD950-623A-4821-81DE-774020DE0331"</messageID>
+									<timestamp>"20250429132645"</timestamp>
 									<toASID>"200000001215"</toASID>
 									<fromASID>"567456789789"</fromASID>
 								</history>
@@ -131,41 +131,26 @@
 									<agentSystem>200000001215</agentSystem>
 									<agentPersonOrgCode>FA565</agentPersonOrgCode>
 									<message>"Dispense notification successful; Update applied to issue=1"</message>
-									<messageID>"A55BCAA4-64D3-467F-A538-17A6B2FB2A09"</messageID>
-									<timestamp>"20250701103621"</timestamp>
-									<toASID>"200000001215"</toASID>
-									<fromASID>"567456789789"</fromASID>
-								</history>
-								<history>
-									<SCN>5</SCN>
-									<instance>1</instance>
-									<interactionID>PORX_IN510101SM31</interactionID>
-									<status>0002</status>
-									<instanceStatus>0002</instanceStatus>
-									<agentPerson>555086689106</agentPerson>
-									<agentSystem>200000001215</agentSystem>
-									<agentPersonOrgCode>VNE51</agentPersonOrgCode>
-									<message>"Dispense Withdrawal successful"</message>
-									<messageID>"B532F1FB-E29C-4D6F-9716-09F2EA9A46D5"</messageID>
-									<timestamp>"20250701103626"</timestamp>
+									<messageID>"DISPENSE-MISMATCHED-ID-123345"</messageID>
+									<timestamp>"20250429132704"</timestamp>
 									<toASID>"200000001215"</toASID>
 									<fromASID>"567456789789"</fromASID>
 								</history>
 								<filteredHistory>
 									<SCN>2</SCN>
-									<internalId>20250701103613000000_HISTORY_UPLOAD</internalId>
-									<timestamp>20250701103613</timestamp>
+									<internalId>20250429132634000000_HISTORY_UPLOAD</internalId>
+									<timestamp>20250429132634</timestamp>
 									<fromStatus>False</fromStatus>
 									<toStatus>0001</toStatus>
 									<agentPerson>555086689106</agentPerson>
-									<agentRoleProfileCodeId>100102238986</agentRoleProfileCodeId>
+									<agentRoleProfileCodeId>200102238987</agentRoleProfileCodeId>
 									<message>Prescription upload successful</message>
 									<orgASID>200000001215</orgASID>
-									<agentPersonOrgCode>A99968</agentPersonOrgCode>
+									<agentPersonOrgCode>A83008</agentPersonOrgCode>
 									<lineStatusChangeDict>
 										<line>
 											<order>1</order>
-											<id>82D17E9A-A5A2-4DE1-9F78-324BE5892119</id>
+											<id>101875F7-400C-43FE-AC04-7F29DBF854AF</id>
 											<fromStatus>None</fromStatus>
 											<toStatus>0007</toStatus>
 										</line>
@@ -173,8 +158,8 @@
 								</filteredHistory>
 								<filteredHistory>
 									<SCN>3</SCN>
-									<internalId>20250701103617000000_HISTORY_RELEASE</internalId>
-									<timestamp>20250701103617</timestamp>
+									<internalId>20250429132645000000_HISTORY_RELEASE</internalId>
+									<timestamp>20250429132645</timestamp>
 									<fromStatus>0001</fromStatus>
 									<toStatus>0002</toStatus>
 									<agentPerson>555086689106</agentPerson>
@@ -185,7 +170,7 @@
 									<lineStatusChangeDict>
 										<line>
 											<order>1</order>
-											<id>82D17E9A-A5A2-4DE1-9F78-324BE5892119</id>
+											<id>101875F7-400C-43FE-AC04-7F29DBF854AF</id>
 											<fromStatus>0007</fromStatus>
 											<toStatus>0008</toStatus>
 										</line>
@@ -193,8 +178,8 @@
 								</filteredHistory>
 								<filteredHistory>
 									<SCN>4</SCN>
-									<internalId>20250701103621847697_9F46B0_1614371148</internalId>
-									<timestamp>20250701103621</timestamp>
+									<internalId>20250429132704108575_90B308_1614371148</internalId>
+									<timestamp>20250429132704</timestamp>
 									<fromStatus>0002</fromStatus>
 									<toStatus>0006</toStatus>
 									<agentPerson>555086689106</agentPerson>
@@ -205,75 +190,55 @@
 									<lineStatusChangeDict>
 										<line>
 											<order>1</order>
-											<id>82D17E9A-A5A2-4DE1-9F78-324BE5892119</id>
+											<id>101875F7-400C-43FE-AC04-7F29DBF854AF</id>
 											<fromStatus>0008</fromStatus>
 											<toStatus>0001</toStatus>
 										</line>
 									</lineStatusChangeDict>
 								</filteredHistory>
-								<filteredHistory>
-									<SCN>5</SCN>
-									<internalId>20250701103627000000_HISTORY_WITHDRAWAL</internalId>
-									<timestamp>20250701103627</timestamp>
-									<fromStatus>0006</fromStatus>
-									<toStatus>0002</toStatus>
-									<agentPerson>555086689106</agentPerson>
-									<agentRoleProfileCodeId>NotProvided</agentRoleProfileCodeId>
-									<message>Dispense Withdrawal successful</message>
-									<orgASID>200000001215</orgASID>
-									<agentPersonOrgCode>VNE51</agentPersonOrgCode>
-									<lineStatusChangeDict>
-										<line>
-											<order>1</order>
-											<id>82D17E9A-A5A2-4DE1-9F78-324BE5892119</id>
-											<fromStatus>0001</fromStatus>
-											<toStatus>0008</toStatus>
-										</line>
-									</lineStatusChangeDict>
-								</filteredHistory>
 								<!--Dispense Specific Information-->
-								<dispensingOrganization>VNFKT</dispensingOrganization>
-								<lastDispenseDate>20250701</lastDispenseDate>
-								<lastDispenseNotificationMsgRef/>
-								<lastDispenseNotificationGuid/>
+								<dispensingOrganization>FA565</dispensingOrganization>
+								<lastDispenseDate>20250429</lastDispenseDate>
+								<lastDispenseNotificationMsgRef>20250429132704108575_90B308_1614371148</lastDispenseNotificationMsgRef>
+								<lastDispenseNotificationGuid>2416B1D1-82D3-4D14-BB34-1F3C6B57CFFB</lastDispenseNotificationGuid>
 								<!--Claim Specific Information-->
 								<claimReceivedDate>False</claimReceivedDate>
 								<!--Prescription Specific Information-->
 								<currentInstance>1</currentInstance>
-								<signedTime>20250701103613</signedTime>
+								<signedTime>20250429132629</signedTime>
 								<prescriptionTreatmentType>0001</prescriptionTreatmentType>
-								<prescriptionType>1001</prescriptionType>
-								<prescriptionTime>20250701103613</prescriptionTime>
-								<prescriptionID>C0503B-A83008-9DAB3Z</prescriptionID>
-								<prescriptionMsgRef>20250701103613627018_F7CBB6_1614371148</prescriptionMsgRef>
-								<prescribingOrganization>A99968</prescribingOrganization>
+								<prescriptionType>0101</prescriptionType>
+								<prescriptionTime>20250429000000</prescriptionTime>
+								<prescriptionID>EA1CBC-A83008-F1F8A8</prescriptionID>
+								<prescriptionMsgRef>20250429132634281136_A9B739_1614371148</prescriptionMsgRef>
+								<prescribingOrganization>A83008</prescribingOrganization>
 								<daysSupply>28</daysSupply>
 								<maxRepeats/>
-								<eventID>4C07B06C-3900-4ACC-8712-89941876F101</eventID>
+								<eventID>09843173-D677-401D-9331-5CCB37768320</eventID>
 								<!--Patient Specific Information-->
-								<lowerAgeLimit>20150103</lowerAgeLimit>
-								<higherAgeLimit>20590104</higherAgeLimit>
-								<patientNhsNumber>9651193484</patientNhsNumber>
-								<patientBirthTime>19990104</patientBirthTime>
+								<lowerAgeLimit>19640429</lowerAgeLimit>
+								<higherAgeLimit>20080430</higherAgeLimit>
+								<patientNhsNumber>5839945242</patientNhsNumber>
+								<patientBirthTime>19480430</patientBirthTime>
 								<!--Nomination Specific Information-->
 								<nominatedPerformer>FA565</nominatedPerformer>
 								<nominatedPerformerType>P1</nominatedPerformerType>
 								<!--Parent Prescription Information-->
 								<parentPrescription>
-									<birthTime>19990104</birthTime>
+									<birthTime>19480430</birthTime>
 									<administrativeGenderCode>2</administrativeGenderCode>
-									<prefix>MISS</prefix>
-									<given>ETTA</given>
-									<family>CORY</family>
-									<suffix/>
-									<addrLine1>123 Dale Avenue</addrLine1>
-									<addrLine2>Long Eaton</addrLine2>
-									<addrLine3>Nottingham</addrLine3>
-									<postalCode>NG10 1NP</postalCode>
-									<productLineItem1>Methotrexate 10mg/0.2ml solution for injection pre-filled syringes</productLineItem1>
-									<quantityLineItem1>1</quantityLineItem1>
-									<narrativeLineItem1>pre-filled disposable injection</narrativeLineItem1>
-									<dosageLineItem1>Inject 10 milligram - 5 times a day - Subcutaneous route - for 10 days</dosageLineItem1>
+									<prefix>MS</prefix>
+									<given>STACEY</given>
+									<family>TWITCHETT</family>
+									<suffix>OBE</suffix>
+									<addrLine1>10 HEATHFIELD</addrLine1>
+									<addrLine2>COBHAM</addrLine2>
+									<addrLine3>SURREY</addrLine3>
+									<postalCode>KT11 2QY</postalCode>
+									<productLineItem1>Amoxicillin 250mg capsules</productLineItem1>
+									<quantityLineItem1>20</quantityLineItem1>
+									<narrativeLineItem1>tablet</narrativeLineItem1>
+									<dosageLineItem1>2 times a day for 10 days</dosageLineItem1>
 									<productLineItem2/>
 									<quantityLineItem2/>
 									<narrativeLineItem2/>
@@ -289,14 +254,14 @@
 								</parentPrescription>
 								<!--Dispense Notification Information-->
 								<dispenseNotification>
-									<dispenseNotificationID>A55BCAA4-64D3-467F-A538-17A6B2FB2A09</dispenseNotificationID>
-									<dispNotifDocumentKey>20250701103621847697_9F46B0_1614371148</dispNotifDocumentKey>
+									<dispenseNotificationID>2416B1D1-82D3-4D14-BB34-1F3C6B57CFFB</dispenseNotificationID>
+									<dispNotifDocumentKey>20250429132704108575_90B308_1614371148</dispNotifDocumentKey>
 									<dispNotifFromStatus>0002</dispNotifFromStatus>
 									<dispNotifToStatus>0006</dispNotifToStatus>
-									<dispenseNotifDateTime>20250701103621</dispenseNotifDateTime>
-									<productLineItem1>Methotrexate 10mg/0.2ml solution for injection pre-filled syringes</productLineItem1>
-									<quantityLineItem1>1</quantityLineItem1>
-									<narrativeLineItem1>pre-filled disposable injection</narrativeLineItem1>
+									<dispenseNotifDateTime>20250429132657</dispenseNotifDateTime>
+									<productLineItem1>Amoxicillin 250mg capsules</productLineItem1>
+									<quantityLineItem1>20</quantityLineItem1>
+									<narrativeLineItem1>tablet</narrativeLineItem1>
 									<dosageLineItem1/>
 									<statusLineItem1>0001</statusLineItem1>
 									<productLineItem2/>

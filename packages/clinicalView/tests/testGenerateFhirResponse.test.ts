@@ -18,12 +18,16 @@ import {MedicationDispenseBundleEntryType} from "../src/schema/medicationDispens
 import {
   acuteCreated,
   acuteDispensedWithASingleItem,
+  acuteDispensedWithMismatchedIds,
+  acuteHl7PendingCancellation,
   acuteMultipleDispenseNotifications,
+  acuteMultipleDispenseNotificationsWithMismatchedIds,
   acuteWithdrawn,
   acuteWithPartialDispenseNotification,
   acuteWithWithdrawnAmendment,
   acuteWithWithdrawnDispenseNotification,
   altAcuteMultipleDispenseNotifications,
+  erdCreated,
   erdDispensedWith0Quantity
 } from "./examples/examples"
 
@@ -49,7 +53,6 @@ const parsedAcuteCreatedWithMultipleItems = parseExample(acuteCreated)
 const parsedAcuteWithMultipleDispenseNotifications = parseExample(acuteMultipleDispenseNotifications)
 const parsedAltAcuteWithMultipleDispenseNotifications = parseExample(altAcuteMultipleDispenseNotifications)
 const parsedErdDispensedWith0Quantity = parseExample(erdDispensedWith0Quantity)
-
 const {generateFhirResponse} = await import("../src/generateFhirResponse")
 
 describe("Test generateFhirResponse", () => {
@@ -162,17 +165,10 @@ describe("Test generateFhirResponse", () => {
   const partialPatientTestCases = [
     {
       patientDetails: {
-        nhsNumber: "5839945242",
-        birthDate: "1948-04-30",
-        gender: 2,
-        address: {
-          line: [
-            "10 HEATHFIELD",
-            "COBHAM",
-            "SURREY"
-          ],
-          postalCode: "KT11 2QY"
-        }
+        prefix: undefined,
+        given: undefined,
+        suffix: undefined,
+        family: undefined
       },
       scenario: "a prescription with no patient name",
       expectedPatientResource: {
@@ -205,13 +201,6 @@ describe("Test generateFhirResponse", () => {
     },
     {
       patientDetails: {
-        nhsNumber: "5839945242",
-        prefix: "MS",
-        suffix: "OBE",
-        given: "STACEY",
-        family: "TWITCHETT",
-        birthDate: "1948-04-30",
-        gender: 2,
         address: {
           line: [],
           postalCode: "KT11 2QY"
@@ -249,19 +238,13 @@ describe("Test generateFhirResponse", () => {
     },
     {
       patientDetails: {
-        nhsNumber: "5839945242",
-        prefix: "MS",
-        suffix: "OBE",
-        given: "STACEY",
-        family: "TWITCHETT",
-        birthDate: "1948-04-30",
-        gender: 2,
         address: {
           line: [
             "10 HEATHFIELD",
             "COBHAM",
             "SURREY"
-          ]
+          ],
+          postalCode: undefined
         }
       },
       scenario: "a prescription with no patient address postcode",
@@ -300,15 +283,9 @@ describe("Test generateFhirResponse", () => {
     },
     {
       patientDetails: {
-        nhsNumber: "5839945242",
-        prefix: "MS",
-        suffix: "OBE",
-        given: "STACEY",
-        family: "TWITCHETT",
-        birthDate: "1948-04-30",
-        gender: 2,
         address: {
-          line: []
+          line: [],
+          postalCode: undefined
         }
       },
       scenario: "a prescription with no patient address",
@@ -337,20 +314,7 @@ describe("Test generateFhirResponse", () => {
     },
     {
       patientDetails: {
-        nhsNumber: "5839945242",
-        prefix: "MS",
-        suffix: "OBE",
-        given: "STACEY",
-        family: "TWITCHETT",
-        birthDate: "1948-04-30",
-        address: {
-          line: [
-            "10 HEATHFIELD",
-            "COBHAM",
-            "SURREY"
-          ],
-          postalCode: "KT11 2QY"
-        }
+        gender: undefined
       },
       scenario: "a prescription with no patient gender",
       expectedPatientResource: {
@@ -396,102 +360,9 @@ describe("Test generateFhirResponse", () => {
       mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
 
       const acuteDispensedWithIncompletePatientDetails = {
-        ...patientDetails,
-        prescriptionId: "EA1CBC-A83008-F1F8A8",
-        issueDate: "2025-04-29T00:00:00.000Z",
-        issueNumber: 1,
-        status: "0006",
-        prescriptionPendingCancellation: false,
-        itemsPendingCancellation: false,
-        treatmentType: "0001",
-        prescriptionType: "0101",
-        daysSupply: 28,
-        prescriberOrg: "A83008",
-        nominatedDispenserOrg: "FA565",
-        nominatedDisperserType: "P1",
-        dispenserOrg: "FA565",
-        lineItems: {
-          1: {
-            lineItemNo: "1",
-            lineItemId: "101875F7-400C-43FE-AC04-7F29DBF854AF",
-            status: "0001",
-            itemName: "Amoxicillin 250mg capsules",
-            quantity: 20,
-            quantityForm: "tablet",
-            dosageInstruction: "2 times a day for 10 days",
-            pendingCancellation: false
-          }
-        },
-        dispenseNotifications: {
-          "2416B1D1-82D3-4D14-BB34-1F3C6B57CFFB": {
-            dispenseNotificationId: "2416B1D1-82D3-4D14-BB34-1F3C6B57CFFB",
-            timestamp: "2025-04-29T13:26:57.000Z",
-            status: "0006",
-            lineItems: {
-              1: {
-                lineItemNo: "1",
-                lineItemId: "101875F7-400C-43FE-AC04-7F29DBF854AF",
-                status: "0001",
-                itemName: "Amoxicillin 250mg capsules",
-                quantity: 20,
-                quantityForm: "tablet"
-              }
-            }
-          }
-        },
-        history: {
-          2: {
-            eventId: "2",
-            message: "Prescription upload successful",
-            messageId: "09843173-D677-401D-9331-5CCB37768320",
-            timestamp: "2025-04-29T13:26:34.000Z",
-            org: "A83008",
-            newStatus: "0001",
-            isDispenseNotification: false,
-            isPrescriptionUpload: true,
-            lineItems: {
-              1: {
-                lineItemNo: "1",
-                newStatus: "0007"
-              }
-            }
-          },
-          3: {
-            eventId: "3",
-            message: "Release Request successful",
-            messageId: "9ECCD950-623A-4821-81DE-774020DE0331",
-            timestamp: "2025-04-29T13:26:45.000Z",
-            org: "VNFKT",
-            newStatus: "0002",
-            isDispenseNotification: false,
-            isPrescriptionUpload: false,
-            lineItems: {
-              1: {
-                lineItemNo: "1",
-                newStatus: "0008"
-              }
-            }
-          },
-          4: {
-            eventId: "4",
-            message: "Dispense notification successful",
-            messageId: "2416B1D1-82D3-4D14-BB34-1F3C6B57CFFB",
-            timestamp: "2025-04-29T13:27:04.000Z",
-            org: "FA565",
-            newStatus: "0006",
-            isDispenseNotification: true,
-            isPrescriptionUpload: false,
-            lineItems: {
-              1: {
-                lineItemNo: "1",
-                newStatus: "0001"
-              }
-            }
-          }
-        }
+        ...parsedAcuteDispensedWithSingleItem,
+        ...patientDetails
       } as unknown as Prescription
-
-      console.log(acuteDispensedWithIncompletePatientDetails)
 
       const actual = generateFhirResponse(acuteDispensedWithIncompletePatientDetails, logger)
       expect(actual.entry).toContainEqual(expectedPatientResource)
@@ -528,59 +399,7 @@ describe("Test generateFhirResponse", () => {
   it("returns a RequestGroup with a RepeatInformation extension when called with a non acute prescription", () => {
     mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
-
-    const erdCreatedWithSingleItem: Prescription = {
-      prescriptionId: "6D9882-A83008-6AB663",
-      nhsNumber: "9732730684",
-      prefix: "MISS",
-      given: "ETTA",
-      family: "CORY",
-      birthDate: "1999-01-04",
-      gender: 2,
-      address: {
-        line: [
-          "123 Dale Avenue",
-          "Long Eaton",
-          "Nottingham"
-        ],
-        postalCode: "NG10 1NP"
-      },
-      issueDate: "2025-04-29T00:00:00.000Z",
-      issueNumber: 1,
-      status: "0001",
-      prescriptionPendingCancellation: false,
-      treatmentType: "0003",
-      prescriptionType: "0101",
-      maxRepeats: 7,
-      daysSupply: 10,
-      prescriberOrg: "A99968",
-      nominatedDispenserOrg: "VNE51",
-      nominatedDisperserType: "P1",
-      lineItems: {
-        1: {
-          lineItemNo: "1",
-          lineItemId: "58F3FF9A-E00B-44DC-8CDF-280883267C16",
-          status: "0007",
-          itemName: "Azithromycin 250mg capsules",
-          quantity: 30,
-          quantityForm: "tablet",
-          dosageInstruction: "3 times a day for 10 days",
-          pendingCancellation: false
-        }
-      },
-      dispenseNotifications: {},
-      history: {
-        2: {
-          eventId: "2",
-          message: "Prescription upload successful",
-          messageId: "F677E0E8-4C5A-45FF-B2A0-37D2F9693721",
-          timestamp: "2025-04-29T16:29:13.000Z",
-          org: "A99968",
-          newStatus: "0001",
-          isDispenseNotification: false
-        }
-      }
-    }
+    const parsedErdCreated = parseExample(erdCreated)
 
     const expected: MedicationRepeatInformationExtensionType = {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
@@ -596,7 +415,7 @@ describe("Test generateFhirResponse", () => {
       ]
     }
 
-    const actual = generateFhirResponse(erdCreatedWithSingleItem, logger)
+    const actual = generateFhirResponse(parsedErdCreated, logger)
     expect(actual.entry).toContainEqual(expect.objectContaining({
       resource: expect.objectContaining({
         resourceType: "RequestGroup",
@@ -652,139 +471,7 @@ describe("Test generateFhirResponse", () => {
   it("returns a RequestGroup with a PendingCancellation extension when called with a prescription with a HL7 pending cancellation", () => {
     mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
-
-    const acuteWithHl7PendingCancellation: Prescription = {
-      prescriptionId: "65C4B1-A83008-AA9C1I",
-      nhsNumber: "5839945242",
-      prefix: "MS",
-      given: "STACEY",
-      family: "TWITCHETT",
-      birthDate: "1948-04-30",
-      gender: 2,
-      address: {
-        line: [
-          "10 HEATHFIELD",
-          "COBHAM",
-          "SURREY"
-        ],
-        postalCode: "KT11 2QY"
-      },
-      issueDate: "2025-04-24T00:00:00.000Z",
-      issueNumber: 1,
-      status: "0002",
-      prescriptionPendingCancellation: true,
-      treatmentType: "0001",
-      prescriptionType: "0101",
-      daysSupply: 28,
-      prescriberOrg: "A83008",
-      nominatedDispenserOrg: "FA565",
-      nominatedDisperserType: "P1",
-      dispenserOrg: "VNFKT",
-      lineItems: {
-        1: {
-          lineItemNo: "1",
-          lineItemId: "0206F8EF-0194-49C3-807A-ABE5DF42ADC3",
-          status: "0008",
-          itemName: "Amoxicillin 250mg capsules",
-          quantity: 20,
-          quantityForm: "tablet",
-          dosageInstruction: "2 times a day for 10 days",
-          cancellationReason: "Prescribing Error",
-          pendingCancellation: true
-        },
-        2: {
-          lineItemNo: "2",
-          lineItemId: "EE3636D5-E411-4656-A47E-053F0464E7AC",
-          status: "0008",
-          itemName: "Co-codamol 30mg/500mg tablets",
-          quantity: 20,
-          quantityForm: "tablet",
-          dosageInstruction: "2 times a day for 10 days",
-          cancellationReason: "Prescribing Error",
-          pendingCancellation: true
-        },
-        3: {
-          lineItemNo: "3",
-          lineItemId: "3E3D4CCA-DFE1-4D8E-9BC8-6A1F0FA95C86",
-          status: "0008",
-          itemName: "Pseudoephedrine hydrochloride 60mg tablets",
-          quantity: 30,
-          quantityForm: "tablet",
-          dosageInstruction: "3 times a day for 10 days",
-          cancellationReason: "Prescribing Error",
-          pendingCancellation: true
-        },
-        4: {
-          lineItemNo: "4",
-          lineItemId: "44E252BD-2AB3-4AB1-A5A3-879DEA9B25C3",
-          status: "0008",
-          itemName: "Azithromycin 250mg capsules",
-          quantity: 30,
-          quantityForm: "tablet",
-          dosageInstruction: "3 times a day for 10 days",
-          cancellationReason: "Prescribing Error",
-          pendingCancellation: true
-        }
-      },
-      dispenseNotifications: {},
-      history: {
-        2: {
-          eventId: "2",
-          message: "Prescription upload successful",
-          messageId: "1E042BB0-164D-48C2-B4F4-CB94771838A0",
-          timestamp: "2025-04-24T12:09:53.000Z",
-          org: "A83008",
-          newStatus: "0001",
-          isDispenseNotification: false
-        },
-        3: {
-          eventId: "3",
-          message: "Release Request successful",
-          messageId: "3339B7A4-4D62-48B3-A58B-9360D565CE68",
-          timestamp: "2025-04-24T12:09:58.000Z",
-          org: "VNFKT",
-          newStatus: "0002",
-          isDispenseNotification: false
-        },
-        4: {
-          eventId: "4",
-          message: "Prescription/item was not cancelled. With dispenser. Marked for cancellation",
-          messageId: "074269EB-C2AC-4571-B6A8-401B90A6F40A",
-          timestamp: "2025-04-24T12:11:13.000Z",
-          org: "A83008",
-          newStatus: "0002",
-          isDispenseNotification: false
-        },
-        5: {
-          eventId: "5",
-          message: "Prescription/item was not cancelled. With dispenser. Marked for cancellation",
-          messageId: "7C6E7789-ED69-4580-A5AC-4F310CF652DA",
-          timestamp: "2025-04-24T12:14:37.000Z",
-          org: "A83008",
-          newStatus: "0002",
-          isDispenseNotification: false
-        },
-        6: {
-          eventId: "6",
-          message: "Prescription/item was not cancelled. With dispenser. Marked for cancellation",
-          messageId: "F501683B-79A4-4032-A460-48B3BAB21C4C",
-          timestamp: "2025-04-24T12:14:46.000Z",
-          org: "A83008",
-          newStatus: "0002",
-          isDispenseNotification: false
-        },
-        7: {
-          eventId: "7",
-          message: "Prescription/item was not cancelled. With dispenser. Marked for cancellation",
-          messageId: "B94DF589-CE8C-4740-8657-CB62428388A2",
-          timestamp: "2025-04-24T12:14:57.000Z",
-          org: "A83008",
-          newStatus: "0002",
-          cancellationReason: "Prescribing Error",
-          isDispenseNotification: false
-        }
-      }
-    }
+    const parsedAcuteWithHl7PendingCancellation = parseExample(acuteHl7PendingCancellation)
 
     const expected: PendingCancellationExtensionType = {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
@@ -794,7 +481,7 @@ describe("Test generateFhirResponse", () => {
       }]
     }
 
-    const actual = generateFhirResponse(acuteWithHl7PendingCancellation, logger)
+    const actual = generateFhirResponse(parsedAcuteWithHl7PendingCancellation, logger)
     expect(actual.entry).toContainEqual(expect.objectContaining({
       resource: expect.objectContaining({
         resourceType: "RequestGroup",
@@ -3093,14 +2780,13 @@ describe("Test generateFhirResponse", () => {
     }))
   })
 
-  it("returns a Dispense Notification history action with a correct reference when called with a prescription with a single dispense notification but mismatched ID's", () => {
+  it("returns a Dispense Notification history action with a correct reference when called with a prescription with a dispense notification with mismatched ID's", () => {
     mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
 
-    const mockPrescription: Prescription = {...parsedAcuteDispensedWithSingleItem}
-    mockPrescription.history[4].messageId = "MIS-MATCHED-ID-1234"
+    const mockPrescription: Prescription = parseExample(acuteDispensedWithMismatchedIds)
 
     const expectedAction: HistoryAction["action"][0] = {
       title: "Dispense notification successful",
@@ -3151,7 +2837,7 @@ describe("Test generateFhirResponse", () => {
     }))
   })
 
-  it("returns Dispense Notification history actions without a reference when called with a prescription with multiple dispense notificiations with mismatched ID's", () => {
+  it("returns Dispense Notification history actions with correct references when called with a prescription with multiple dispense notificiations with mismatched ID's", () => {
     mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
@@ -3163,10 +2849,11 @@ describe("Test generateFhirResponse", () => {
     mockUUID.mockImplementationOnce(() => "MEDDIS-333-333-333")
     mockUUID.mockImplementationOnce(() => "MEDDIS-444-444-444")
     mockUUID.mockImplementationOnce(() => "MEDDIS-555-555-555")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-666-666-666")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-777-777-777")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-888-888-888")
 
-    const mockPrescription: Prescription = {...parsedAcuteWithMultipleDispenseNotifications}
-    mockPrescription.history[4].messageId = "MIS-MATCHED-ID-1111"
-    mockPrescription.history[5].messageId = "MIS-MATCHED-ID-2222"
+    const mockPrescription: Prescription = parseExample(acuteMultipleDispenseNotificationsWithMismatchedIds)
 
     const expectedAction1: HistoryAction["action"][0] = {
       title: "Dispense notification successful",
@@ -3177,6 +2864,12 @@ describe("Test generateFhirResponse", () => {
             system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
             code: "0003",
             display: "With Dispenser - Active"
+          }]
+        },
+        {
+          coding: [{
+            system: "https://tools.ietf.org/html/rfc4122",
+            code: "42A6A1A0-596C-482C-B018-0D15F8FFF9F3"
           }]
         }
       ],
@@ -3190,7 +2883,29 @@ describe("Test generateFhirResponse", () => {
             }
           }
         }]
-      }]
+      }],
+      action: [
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-111-111-111"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-222-222-222"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-333-333-333"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-444-444-444"
+          }
+        }
+      ]
     }
 
     const expectedAction2: HistoryAction["action"][0] = {
@@ -3203,6 +2918,12 @@ describe("Test generateFhirResponse", () => {
             code: "0006",
             display: "Dispensed"
           }]
+        },
+        {
+          coding: [{
+            system: "https://tools.ietf.org/html/rfc4122",
+            code: "B358A55E-A423-48E2-A9D8-2612B4E66604"
+          }]
         }
       ],
       participant: [{
@@ -3215,10 +2936,33 @@ describe("Test generateFhirResponse", () => {
             }
           }
         }]
-      }]
+      }],
+      action: [
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-555-555-555"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-666-666-666"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-777-777-777"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-888-888-888"
+          }
+        }
+      ]
     }
 
     const actual = generateFhirResponse(mockPrescription, logger)
+    logger.info("", {actual})
     expect(actual.entry).toContainEqual(expect.objectContaining({
       resource: expect.objectContaining({
         resourceType: "RequestGroup",

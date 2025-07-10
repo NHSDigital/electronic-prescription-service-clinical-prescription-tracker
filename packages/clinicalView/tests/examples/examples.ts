@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import {readFileSync} from "fs"
 import path from "path"
 
@@ -27,6 +28,8 @@ export const acuteWithPartialDispenseNotification = readXmlToString("acuteWithPa
 export const acuteWithWithdrawnDispenseNotification = readXmlToString("acuteWithWithdrawnDispenseNotification.xml")
 export const acuteWithWithdrawnAmendment = readXmlToString("acuteWithWithdrawnAmendment.xml")
 export const acuteWithdrawn = readXmlToString("acuteWithdrawn.xml")
+export const acuteDispensedWithMismatchedIds = readXmlToString("acuteDispensedWithMismatchedIds.xml")
+export const acuteMultipleDispenseNotificationsWithMismatchedIds = readXmlToString("acuteMultipleDispenseNotificationsWithMismatchedIds.xml")
 export const erdCreated = readXmlToString("erdCreated.xml")
 export const erdDispensedWith0Quantity = readXmlToString("erdDispensedWith0Quantity.xml")
 export const notFound = readXmlToString("notFound.xml")
