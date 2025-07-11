@@ -115,13 +115,22 @@ jobs:
       LOG_LEVEL: DEBUG
       ENABLE_MUTUAL_TLS: false
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
+      RUN_REGRESSION_TESTS: true
+      CREATE_INT_RELEASE_NOTES: true
+      CREATE_PROD_RELEASE_NOTES: true
+      MARK_JIRA_RELEASED: false
+      CREATE_INT_RC_RELEASE_NOTES: false
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}
       PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
       TARGET_SPINE_SERVER: ${{ secrets.DEV_TARGET_SPINE_SERVER }}
       REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
-
+      DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
+      INT_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
+      PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
+      DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
+  
   # release_dev_sandbox:
   #   needs: [get_commit_id, tag_release, package_code, release_dev]
   #   uses: ./.github/workflows/cdk_release_code.yml
@@ -143,21 +152,6 @@ jobs:
   #     TARGET_SPINE_SERVER: sandbox
   #     REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
 
-  create_release_notes:
-    needs: [tag_release, package_code, get_commit_id, release_dev]
-    uses: ./.github/workflows/create_release_notes.yml
-    with:
-      VERSION_NUMBER: ${{needs.tag_release.outputs.version_tag}}
-      CREATE_INT_RELEASE_NOTES: true
-      CREATE_INT_RC_RELEASE_NOTES: false
-      CREATE_PROD_RELEASE_NOTES: true
-      MARK_JIRA_RELEASED: false
-    secrets:
-      DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
-      DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-      INT_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-      PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-
   release_qa:
     needs: [get_commit_id, tag_release, package_code, release_dev] # TODO: add sandbox back once implemented
     uses: ./.github/workflows/cdk_release_code.yml
@@ -172,6 +166,7 @@ jobs:
       LOG_LEVEL: DEBUG
       ENABLE_MUTUAL_TLS: false
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
+      RUN_REGRESSION_TESTS: true
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.QA_CDK_PULL_IMAGE_ROLE }}

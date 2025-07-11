@@ -2,7 +2,6 @@ import {TreatmentType} from "@cpt-common/common-types/fhir"
 import {SpineTreatmentTypeCode} from "@cpt-common/common-types/spine"
 import {SpineGenderCode} from "./parseSpineResponse"
 import {PerformerSiteTypeCoding, PrescriptionTypeCoding} from "./schema/extensions"
-import {MedicationDispenseStatusType} from "./schema/medicationDispense"
 import {CourseOfTherapyTypeCoding, MedicationRequestStatusType, StatusReasonCoding} from "./schema/medicationRequest"
 import {GenderType} from "./schema/patient"
 import {DispenseStatusCoding} from "./schema/elements"
@@ -123,15 +122,4 @@ export const PERFORMER_SITE_TYPE_MAP: Record<PerformerSiteTypeCoding["code"], Pe
   "P2": "Appliance Contractor",
   "P3": "Dispensing Doctor",
   "0004": "None"
-}
-
-export const MEDICATION_DISPENSE_STATUS_MAP: Record<DispenseStatusCoding["code"], MedicationDispenseStatusType> = {
-  "0001": "completed",
-  "0002": "stopped",
-  "0003": "in-progress",
-  "0004": "in-progress",
-  "0005": "cancelled",
-  "0006": "stopped",
-  "0007": "in-progress",
-  "0008": "in-progress"
 }

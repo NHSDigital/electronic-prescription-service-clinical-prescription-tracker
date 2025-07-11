@@ -16,6 +16,13 @@ import {
 import {patientCommonProperties} from "./patient"
 import {requestGroupCommonProperties} from "./requestGroup"
 import {searchsetBundleCommonProperties, bundleEntryCommonProperties} from "./bundle"
+import {
+  operationOutcome,
+  OperationOutcomeType,
+  OperationOutcomeIssueType,
+  OperationOutcomeIssueCode,
+  HttpErrorCoding
+} from "./operationOutcome"
 
 export {
   intent,
@@ -32,5 +39,10 @@ export {
   subject,
   taskBusinessStatus,
   searchsetBundleCommonProperties,
-  bundleEntryCommonProperties
+  bundleEntryCommonProperties,
+  operationOutcome,
+  OperationOutcomeType,
+  OperationOutcomeIssueType,
+  OperationOutcomeIssueCode,
+  HttpErrorCoding
 }

@@ -13,11 +13,6 @@ export interface SpineXmlError {
   PORX_IN000006UK98: never
 }
 
-/* TODO: Move this to prescriptions search */
-// export interface SpineXmlPrescriptionSearchResponse {
-//   prescriptionSearchResponse: SpineXmlError
-// }
-
 interface SpineSoapEnvelope<Response> {
   "SOAP:Envelope": {
     "SOAP:Body": Response

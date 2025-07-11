@@ -178,9 +178,9 @@ export const historyAction = {
             }
           },
           action: {
-            type: "array"
-          },
-          items: referenceAction
+            type: "array",
+            items: referenceAction
+          }
         },
         required: [
           "title",

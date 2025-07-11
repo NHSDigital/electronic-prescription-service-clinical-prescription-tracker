@@ -1,48 +1,34 @@
-import {XMLParser} from "fast-xml-parser"
 import {Logger} from "@aws-lambda-powertools/logger"
-import {logger} from "./handler"
-import {PrescriptionStatusExtensionType} from "./schema/response"
+import {IssueDetails, PatientDetailsSummary, PrescriptionDetailsSummary} from "@cpt-common/common-types/prescription"
+import {PrescriptionStatusCoding} from "@cpt-common/common-types/schema"
+import {ServiceError} from "@cpt-common/common-types/service"
+import {
+  SPINE_TIMESTAMP_FORMAT,
+  SpineTreatmentTypeCode,
+  SpineXmlError,
+  SpineXmlResponse
+} from "@cpt-common/common-types/spine"
+import * as DateFns from "date-fns"
+import {XMLParser} from "fast-xml-parser"
 
-/* TODO: use common version */
-type PrescriptionStatusCode = PrescriptionStatusExtensionType["extension"][0]["valueCoding"]["code"]
-
-/* TODO: Use common version */
-interface SpineXmlErrorResponse {
-  "SOAP:Envelope": {
-    "SOAP:Body": {
-      prescriptionSearchResponse: {
-        MCCI_IN010000UK13: {
-          acknowledgement: {
-            acknowledgementDetail: {
-              code: {
-                "@_codeSystem": string
-                "@_code": string
-                "@_displayName": string
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
 interface ResponseIssueDetail {
   instanceNumber: string
-  prescriptionStatus: PrescriptionStatusCode
+  prescriptionStatus: PrescriptionStatusCoding["code"]
   prescCancPending: string
   liCancPending: string
 }
 interface ResponsePrescription {
   prescriptionID: string
   patientID: string
-  prefix: string
-  suffix: string
-  given: string
-  family: string
+  prefix?: string
+  suffix?: string
+  given?: string
+  family?: string
   issueDetail: Array<ResponseIssueDetail>
   prescribedDate: string
-  prescriptionTreatmentType: string
-  maxRepeats: string
+  prescriptionTreatmentType: SpineTreatmentTypeCode
+  maxRepeats?: string
+  nextActivity: string
 }
 export interface SpineJsonResponse {
   Response:{
@@ -50,64 +36,36 @@ export interface SpineJsonResponse {
   }
 }
 
-/* TODO: use common version*/
-export interface PatientDetails {
-  nhsNumber: string
-  prefix: string
-  suffix: string
-  given: string
-  family: string
-}
-
-/* TODO: use common version */
-export interface PrescriptionDetails {
-  prescriptionId: string
-  issueDate: string
-  treatmentType: string
-  maxRepeats: number | undefined
-}
-
-/* TODO: use common version */
-export interface IssueDetails {
-  issueNumber: number
-  status: PrescriptionStatusCode
-  prescriptionPendingCancellation: boolean
+interface PrescriptionSearchIssueDetails extends IssueDetails {
   itemsPendingCancellation: boolean
-
 }
 
-export type Prescription = PatientDetails & PrescriptionDetails & IssueDetails
-
-/* TODO: use common service error type*/
-export interface SearchError {
-  status: string
-  severity: "error" | "fatal"
-  description: string
+interface PatientSearchPrescriptionDetails extends PrescriptionDetailsSummary {
+  deleted: boolean
 }
 
-export interface ParsedSpineResponse {
-  prescriptions?: Array<Prescription> | undefined
-  searchError?: SearchError | undefined
-}
+export type Prescription = PatientDetailsSummary & PatientSearchPrescriptionDetails & PrescriptionSearchIssueDetails
+
+export type ParsedSpineResponse = {prescriptions: Array<Prescription> } | { spineError: ServiceError }
 
 export const parseSpineResponse = (
   spineResponse: SpineJsonResponse | string, logger: Logger): ParsedSpineResponse => {
   if (typeof spineResponse === "string"){
     logger.info("Spine response did not contain valid JSON, attempting to parse response as XML...")
 
-    const error: string = parseErrorResponse(spineResponse)
+    const error: string = parseErrorResponse(spineResponse, logger)
     if (error === "Prescription not found"){
       logger.info("No prescriptions found.")
       return {prescriptions: []}
     }
 
-    return {searchError: {status: "500", severity: "error", description: error}}
+    return {spineError: {status: 500, severity: "error", description: error}}
   }
 
   const response = spineResponse.Response
   if (!response){
     logger.error("Failed to parse response, Spine response did not contain valid JSON.")
-    return {searchError: {status: "500", severity: "error", description: "Unknown Error."}}
+    return {spineError: {status: 500, severity: "error", description: "Unknown Error."}}
   }
 
   logger.info("Parsing prescriptions...")
@@ -118,23 +76,26 @@ export const parseSpineResponse = (
 const parsePrescriptions = (responsePrescriptions: Array<ResponsePrescription>): Array<Prescription> => {
   let parsedPrescriptions: Array<Prescription> = []
   for (const responsePrescription of responsePrescriptions){
-    const patientDetails: PatientDetails = {
+    const patientDetails: PatientDetailsSummary = {
       nhsNumber: responsePrescription.patientID,
-      prefix: responsePrescription.prefix,
-      suffix: responsePrescription.suffix,
-      given: responsePrescription.given,
-      family: responsePrescription.family
+      ...(responsePrescription.prefix ? {prefix: responsePrescription.prefix} : {}),
+      ...(responsePrescription.suffix ? {suffix: responsePrescription.suffix} : {}),
+      ...(responsePrescription.given ? {given: responsePrescription.given} : {}),
+      ...(responsePrescription.family ? {family: responsePrescription.family} : {})
     }
 
-    const prescriptionDetails: PrescriptionDetails = {
+    const prescriptionDetails: PatientSearchPrescriptionDetails = {
       prescriptionId: responsePrescription.prescriptionID,
-      issueDate: responsePrescription.prescribedDate, /* TODO: needs formatting */
+      deleted: responsePrescription.nextActivity === "purge",
+      issueDate: DateFns.parse(responsePrescription.prescribedDate, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
       treatmentType: responsePrescription.prescriptionTreatmentType,
-      maxRepeats: responsePrescription.maxRepeats === "None" ? undefined : Number(responsePrescription.maxRepeats)
+      ...(responsePrescription.maxRepeats && responsePrescription.maxRepeats !== "None" ?
+        {maxRepeats: Number(responsePrescription.maxRepeats)} : {})
+      // maxRepeats: responsePrescription.maxRepeats === "None" ? undefined : Number(responsePrescription.maxRepeats)
     }
 
     for (const responseIssue of responsePrescription.issueDetail){
-      const issueDetails: IssueDetails = {
+      const issueDetails: PrescriptionSearchIssueDetails = {
         issueNumber: Number(responseIssue.instanceNumber),
         status: responseIssue.prescriptionStatus,
         prescriptionPendingCancellation: convertStringBool(responseIssue.prescCancPending),
@@ -156,17 +117,21 @@ const convertStringBool = (value: string): boolean => {
   return value === "True" ? true : false
 }
 
-const parseErrorResponse = (spineResponse: string): string => {
-  const xmlParser = new XMLParser({ignoreAttributes: false})
-  const xmlResponse = xmlParser.parse(spineResponse) as SpineXmlErrorResponse
+export interface SpineXmlPrescriptionSearchResponse {
+  prescriptionSearchResponse: SpineXmlError
+}
 
-  const xmlSoapEnvBody = xmlResponse["SOAP:Envelope"]?.["SOAP:Body"]
-  if (!xmlSoapEnvBody){
+const parseErrorResponse = (spineResponse: string, logger: Logger): string => {
+  const xmlParser = new XMLParser({ignoreAttributes: false})
+  const xmlResponse = xmlParser.parse(spineResponse) as SpineXmlResponse<SpineXmlPrescriptionSearchResponse>
+
+  const xmlSoapBody = xmlResponse["SOAP:Envelope"]?.["SOAP:Body"] || xmlResponse["SOAP-ENV:Envelope"]?.["SOAP-ENV:Body"]
+  if (!xmlSoapBody){
     logger.error("Failed to parse response, Spine response did not contain valid XML.")
     return "Unknown Error."
   }
 
-  const xmlError = xmlSoapEnvBody.prescriptionSearchResponse
+  const xmlError = xmlSoapBody.prescriptionSearchResponse
     .MCCI_IN010000UK13.acknowledgement.acknowledgementDetail.code
 
   return xmlError["@_displayName"]

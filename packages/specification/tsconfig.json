@@ -2,11 +2,13 @@
   "extends": "../../tsconfig.defaults.json",
   "compilerOptions": {
     "rootDir": ".",
-    "outDir": "lib"
+    "outDir": "lib",
+    "moduleResolution": "bundler"
   },
   "references": [
     { "path": "../clinicalView" },
-    { "path": "../prescriptionSearch" }
+    { "path": "../prescriptionSearch" },
+    { "path": "../common/commonTypes" }
   ],
   "include": ["scripts/**/*", "tests/**/*"],
   "exclude": ["node_modules"]

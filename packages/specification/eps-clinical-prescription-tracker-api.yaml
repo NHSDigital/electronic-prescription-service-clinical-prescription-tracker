@@ -148,7 +148,7 @@ paths:
           content:
             application/fhir+json:
               schema:
-                $ref: schemas/resources/ResponseBundle.json
+                $ref: schemas/resources/prescriptionSearchBundle.json
         "4XX":
           description: |
             An error occurred as follows:
@@ -163,7 +163,7 @@ paths:
           content:
             application/fhir+json:
               schema:
-                $ref: schemas/resources/OperationOutcome.json
+                $ref: schemas/resources/operationOutcome.json
         "5XX":
           description: |
             An error occurred as follows:
@@ -176,7 +176,7 @@ paths:
           content:
             application/fhir+json:
               schema:
-                $ref: schemas/resources/OperationOutcome.json
+                $ref: schemas/resources/operationOutcome.json
       security:
         - nhs-cis2-aal3: []
   /RequestGroup/{prescriptionId}:
@@ -193,13 +193,18 @@ paths:
           description: The EPS Prescription ID.
           schema:
             type: string
+        - name: issueNumber
+          in: query
+          schema:
+            type: string
+          description: The issue number of the prescription for eRDs
       responses:
         "200":
           description: Successful retrieval.
           content:
             application/fhir+json:
               schema:
-                $ref: schemas/resources/requestGroupSchema.json
+                $ref: schemas/resources/clinicalViewBundle.json
         "4XX":
           description: |
             An error occurred as follows:
@@ -215,7 +220,20 @@ paths:
           content:
             application/fhir+json:
               schema:
-                $ref: schemas/resources/OperationOutcome.json
+                $ref: schemas/resources/operationOutcome.json
+        "5XX":
+          description: |
+            An error occurred as follows:
+
+            | HTTP status | Error code          | Description                                                                                                                               |
+            | ----------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+            | 500         | `exception`         | The Server has encountered an error processing the request.                                                                               |
+
+            Any errors will be included in the returned OperationOutcome (below).
+          content:
+            application/fhir+json:
+              schema:
+                $ref: schemas/resources/operationOutcome.json
       security:
         - nhs-cis2-aal3: []
 
