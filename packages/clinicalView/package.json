@@ -18,7 +18,7 @@
         "@aws-lambda-powertools/logger": "^2.23.0",
         "@cpt-common/common-types": "^1.0.0",
         "@cpt-common/common-utils": "^1.0.0",
-        "@middy/http-header-normalizer": "^6.3.2",
+        "@middy/http-header-normalizer": "^6.4.1",
         "@NHSDigital/eps-spine-client": "^2.1.44",
         "@nhs/fhir-middy-error-handler": "^2.1.39",
         "date-fns": "^4.1.0",
