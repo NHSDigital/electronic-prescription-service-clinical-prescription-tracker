@@ -112,7 +112,7 @@
 								<history>
 									<SCN>2</SCN>
 									<instance>1</instance>
-									<interactionID>PORX_IN020101SM31</interactionID>
+									<interactionId>PORX_IN020101SM31</interactionId>
 									<status>0001</status>
 									<instanceStatus>0001</instanceStatus>
 									<agentPerson>555086689106</agentPerson>
@@ -127,7 +127,7 @@
 								<history>
 									<SCN>3</SCN>
 									<instance>1</instance>
-									<interactionID>PORX_IN132004SM30</interactionID>
+									<interactionId>PORX_IN132004SM30</interactionId>
 									<status>0002</status>
 									<instanceStatus>0002</instanceStatus>
 									<agentPerson>555086689106</agentPerson>
@@ -142,7 +142,7 @@
 								<history>
 									<SCN>4</SCN>
 									<instance>1</instance>
-									<interactionID>PORX_IN080101SM31</interactionID>
+									<interactionId>PORX_IN080101SM31</interactionId>
 									<status>0003</status>
 									<instanceStatus>0003</instanceStatus>
 									<agentPerson>555086689106</agentPerson>
@@ -157,7 +157,7 @@
 								<history>
 									<SCN>5</SCN>
 									<instance>1</instance>
-									<interactionID>PORX_IN080101SM31</interactionID>
+									<interactionId>PORX_IN080101SM31</interactionId>
 									<status>0006</status>
 									<instanceStatus>0006</instanceStatus>
 									<agentPerson>555086689106</agentPerson>
@@ -210,7 +210,7 @@
 								</filteredHistory>
 								<filteredHistory>
 									<SCN>3</SCN>
-									<internalId>20250424114512000000_HISTORY_UPLOAD</internalId>
+									<internalId>20250424114512000000_HISTORY_RELEASE</internalId>
 									<timestamp>20250424114512</timestamp>
 									<fromStatus>0001</fromStatus>
 									<toStatus>0002</toStatus>
@@ -392,22 +392,26 @@
 									<quantityLineItem1>10</quantityLineItem1>
 									<narrativeLineItem1>tablet</narrativeLineItem1>
 									<dosageLineItem1>2 times a day for 10 days</dosageLineItem1>
+									<componentsLineItem1>[{"product": "Amoxicillin 250mg capsules","quantity": "10","narrative": "tablet","dosage": "2 times a day for 10 days"}]</componentsLineItem1>
 									<statusLineItem1>0003</statusLineItem1>
 									<productLineItem2>Co-codamol 30mg/500mg tablets</productLineItem2>
 									<quantityLineItem2>20</quantityLineItem2>
 									<narrativeLineItem2>tablet</narrativeLineItem2>
 									<dosageLineItem2>2 times a day for 10 days</dosageLineItem2>
+									<componentsLineItem2>[{"product": "Co-codamol 30mg/500mg tablets","quantity": "20","narrative": "tablet","dosage": "2 times a day for 10 days"}]</componentsLineItem2>
 									<statusLineItem2>0001</statusLineItem2>
 									<productLineItem3>Pseudoephedrine hydrochloride 60mg tablets</productLineItem3>
 									<quantityLineItem3>30</quantityLineItem3>
 									<narrativeLineItem3>tablet</narrativeLineItem3>
 									<dosageLineItem3>3 times a day for 10 days</dosageLineItem3>
+									<componentsLineItem3>[{"product": "Pseudoephedrine hydrochloride 60mg tablets","quantity": "30","narrative": "tablet","dosage": "3 times a day for 10 days"}]</componentsLineItem3>
 									<statusLineItem3>0001</statusLineItem3>
 									<productLineItem4>Azithromycin 250mg capsules</productLineItem4>
-									<quantityLineItem4>30</quantityLineItem4>
+									<quantityLineItem4>20</quantityLineItem4>
 									<narrativeLineItem4>tablet</narrativeLineItem4>
 									<dosageLineItem4>3 times a day for 10 days</dosageLineItem4>
-									<statusLineItem4>0001</statusLineItem4>
+									<componentsLineItem4>[{"product": "Azithromycin 250mg capsules","quantity": "20","narrative": "tablet","dosage": "3 times a day for 10 days"}]</componentsLineItem4>
+									<statusLineItem4>0003</statusLineItem4>
 									<statusPrescription>0003</statusPrescription>
 								</dispenseNotification>
 								<!--Dispense Notification Information-->
@@ -421,21 +425,25 @@
 									<quantityLineItem1>10</quantityLineItem1>
 									<narrativeLineItem1>tablet</narrativeLineItem1>
 									<dosageLineItem1>2 times a day for 10 days</dosageLineItem1>
+									<componentsLineItem1>[{"product": "Amoxicillin 250mg capsules","quantity": "10","narrative": "tablet","dosage": "2 times a day for 10 days"}]</componentsLineItem1>
 									<statusLineItem1>0001</statusLineItem1>
 									<productLineItem2>Co-codamol 30mg/500mg tablets</productLineItem2>
-									<quantityLineItem2>0</quantityLineItem2>
+									<quantityLineItem2>20</quantityLineItem2>
 									<narrativeLineItem2>tablet</narrativeLineItem2>
 									<dosageLineItem2>2 times a day for 10 days</dosageLineItem2>
+									<componentsLineItem2>[{"product": "Co-codamol 30mg/500mg tablets","quantity": "0","narrative": "tablet","dosage": "2 times a day for 10 days"}]</componentsLineItem2>
 									<statusLineItem2>0001</statusLineItem2>
 									<productLineItem3>Pseudoephedrine hydrochloride 60mg tablets</productLineItem3>
-									<quantityLineItem3>0</quantityLineItem3>
+									<quantityLineItem3>30</quantityLineItem3>
 									<narrativeLineItem3>tablet</narrativeLineItem3>
 									<dosageLineItem3>3 times a day for 10 days</dosageLineItem3>
+									<componentsLineItem3>[{"product": "Pseudoephedrine hydrochloride 60mg tablets","quantity": "0","narrative": "tablet","dosage": "3 times a day for 10 days"}]</componentsLineItem3>
 									<statusLineItem3>0001</statusLineItem3>
 									<productLineItem4>Azithromycin 250mg capsules</productLineItem4>
-									<quantityLineItem4>0</quantityLineItem4>
+									<quantityLineItem4>10</quantityLineItem4>
 									<narrativeLineItem4>tablet</narrativeLineItem4>
 									<dosageLineItem4>3 times a day for 10 days</dosageLineItem4>
+									<componentsLineItem4>[{"product": "Azithromycin 250mg capsules","quantity": "10","narrative": "tablet","dosage": "3 times a day for 10 days"}]</componentsLineItem4>
 									<statusLineItem4>0001</statusLineItem4>
 									<statusPrescription>0006</statusPrescription>
 								</dispenseNotification>

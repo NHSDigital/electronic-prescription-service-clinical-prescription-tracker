@@ -428,65 +428,68 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
     }
   }
 
-  // Generate a medication dispense resource for each line item of each dispense notification
+  // Generate a medication dispense resource for each component of each line item of each dispense notification
   for (const dispenseNotification of Object.values(prescription.dispenseNotifications)){
     medicationDispenseResourceIds[dispenseNotification.dispenseNotificationId] = []
     for (const lineItem of Object.values(dispenseNotification.lineItems)){
 
-      logger.info("Generating MedicationDispense resource for DN line item...", {
+      logger.info("Generating MedicationDispense resources for DN line item...", {
         dispenseNotificationId: dispenseNotification.dispenseNotificationId,
         lineItemNo: lineItem.lineItemNo
       })
-      const medicationDispenseResourceId = randomUUID()
-      medicationDispenseResourceIds[
-        dispenseNotification.dispenseNotificationId].push(medicationDispenseResourceId)
 
-      /* Some fields may be empty/undefined return them as is for partial DN scenarios */
-      const medicationDispense: BundleEntry<MedicationDispense> & MedicationDispenseBundleEntryType= {
-        fullUrl: `urn:uuid:${medicationDispenseResourceId}`,
-        search: {
-          mode: "include"
-        },
-        resource:{
-          resourceType: "MedicationDispense",
-          id: medicationDispenseResourceId,
-          identifier: [{
-            system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
-            value: lineItem.lineItemId
-          }],
-          subject: {
-            reference: `urn:uuid:${patientResourceId}`
+      for (const component of lineItem.components){
+        const medicationDispenseResourceId = randomUUID()
+        medicationDispenseResourceIds[
+          dispenseNotification.dispenseNotificationId].push(medicationDispenseResourceId)
+
+        /* Some fields may be empty/undefined return them as is for partial DN scenarios */
+        const medicationDispense: BundleEntry<MedicationDispense> & MedicationDispenseBundleEntryType= {
+          fullUrl: `urn:uuid:${medicationDispenseResourceId}`,
+          search: {
+            mode: "include"
           },
-          status: dispenseNotification.isLastDispenseNotification ? "in-progress" : "unknown",
-          performer: [{
-            actor: {
-              reference: `urn:uuid:${dispenserResourceId}`
-            }
-          }],
-          type:{
-            coding: [{
-              system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
-              code: lineItem.status,
-              display: LINE_ITEM_STATUS_MAP[lineItem.status]
-            }]
-          },
-          authorizingPrescription: [{
-            reference: `urn:uuid:${medicationRequestResourceIds[lineItem.lineItemNo]}`
-          }],
-          medicationCodeableConcept: {
-            text: lineItem.itemName ?? ""
-          },
-          quantity: {
-            value: lineItem.quantity ? lineItem.quantity : 0,
-            unit: lineItem.quantityForm ? lineItem.quantityForm : ""
-          },
-          ...(lineItem.dosageInstruction ? {dosageInstruction: [{text: lineItem.dosageInstruction}]}: {}),
-          extension: [
-            taskBusinessStatusExtension
-          ]
+          resource:{
+            resourceType: "MedicationDispense",
+            id: medicationDispenseResourceId,
+            identifier: [{
+              system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
+              value: lineItem.lineItemId
+            }],
+            subject: {
+              reference: `urn:uuid:${patientResourceId}`
+            },
+            status: dispenseNotification.isLastDispenseNotification ? "in-progress" : "unknown",
+            performer: [{
+              actor: {
+                reference: `urn:uuid:${dispenserResourceId}`
+              }
+            }],
+            type:{
+              coding: [{
+                system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+                code: lineItem.status,
+                display: LINE_ITEM_STATUS_MAP[lineItem.status]
+              }]
+            },
+            authorizingPrescription: [{
+              reference: `urn:uuid:${medicationRequestResourceIds[lineItem.lineItemNo]}`
+            }],
+            medicationCodeableConcept: {
+              text: component.itemName ?? ""
+            },
+            quantity: {
+              value: component.quantity ? component.quantity : 0,
+              unit: component.quantityForm ? component.quantityForm : ""
+            },
+            ...(component.dosageInstruction ? {dosageInstruction: [{text: component.dosageInstruction}]}: {}),
+            extension: [
+              taskBusinessStatusExtension
+            ]
+          }
         }
+        medicationDispenses.push(medicationDispense)
       }
-      medicationDispenses.push(medicationDispense)
     }
   }
 

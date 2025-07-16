@@ -15,11 +15,9 @@ import {StatusReasonCoding} from "./schema/medicationRequest"
 import {HistoryMessage} from "./schema/actions"
 import {DispenseStatusCoding} from "./schema/elements"
 
-// Constants
 export const SPINE_DOB_FORMAT = "yyyymmdd" as const
 export const FHIR_DATE_FORMAT = "yyyy-mm-dd"
 
-// XML Types
 type XmlStringValue = {
   "@_value": string
 }
@@ -40,6 +38,7 @@ interface XmlDispenseNotification {
   [narrativeLineItem: `narrativeLineItem${string}`]: string
   [statusLineItem: `statusLineItem${string}`]: string
   [dosageLineItem: `dosageLineItem${string}`]: string
+  [componentsLineItem: `componentsLineItem${string}`]: string
 }
 
 interface XmlHistoryEventLineItem {
@@ -118,6 +117,13 @@ interface SpineXmlClinicalViewResponse {
 // Parsed response types
 export type SpineGenderCode = 1 | 2 | 3 | 4
 
+interface spineComponentDetails {
+  product: string
+  quantity: string
+  narrative: string
+  dosage: string
+}
+
 interface PatientDetails extends PatientDetailsSummary {
   birthDate: string
   gender?: SpineGenderCode
@@ -127,23 +133,27 @@ interface PatientDetails extends PatientDetailsSummary {
   }
 }
 
-interface LineItemDetailsSummary {
-  lineItemNo: string
-  lineItemId: string
-  status: DispenseStatusCoding["code"]
+interface ComponentDetails {
   itemName: string
   quantity: number
   quantityForm: string
   dosageInstruction?: string
 }
 
-interface LineItemDetails extends LineItemDetailsSummary {
+interface LineItemDetailsSummary {
+  lineItemNo: string
+  lineItemId: string
+  status: DispenseStatusCoding["code"]
+}
+
+interface LineItemDetails extends LineItemDetailsSummary, ComponentDetails {
   cancellationReason?: StatusReasonCoding["display"]
   pendingCancellation: boolean
 }
 
-type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] }
-type DispenseNotificationLineItemDetails = WithRequired<Partial<LineItemDetailsSummary>, "lineItemNo" | "status">
+interface DispenseNotificationLineItemDetails extends LineItemDetailsSummary {
+  components: Array<Partial<ComponentDetails>>
+}
 
 interface DispenseNotificationDetails {
   dispenseNotificationId: string
@@ -312,20 +322,27 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
       */
       const status = xmlDispenseNotification[`statusLineItem${lineItemNo}`] as DispenseStatusCoding["code"]
       if(status) {
+        const spineComponents: Array<spineComponentDetails> = JSON.parse(
+          xmlDispenseNotification[`componentsLineItem${lineItemNo}`])
+
         const lineItem: DispenseNotificationLineItemDetails = {
           lineItemNo,
           lineItemId: LineItemDetails.lineItemId,
           status,
-          itemName: xmlDispenseNotification[`productLineItem${lineItemNo}`],
-          quantity: Number(xmlDispenseNotification[`quantityLineItem${lineItemNo}`]),
-          quantityForm: xmlDispenseNotification[`narrativeLineItem${lineItemNo}`],
-          ...(xmlDispenseNotification[`dosageLineItem${lineItemNo}`] ?
-            {dosageInstruction: xmlDispenseNotification[`dosageLineItem${lineItemNo}`]} : {})
+          components: []
+        }
+
+        for (const component of spineComponents){
+          lineItem.components.push({
+            itemName: component.product,
+            quantity: Number(component.quantity),
+            quantityForm: component.narrative,
+            dosageInstruction: component.dosage
+          })
         }
         dispenseNotification.lineItems[lineItemNo] = lineItem
       }
     }
-
     prescriptionDetails.dispenseNotifications[dispenseNotificationDocumentKey] = dispenseNotification
   }
 

@@ -20,13 +20,13 @@ import {
   acuteDispensedWithASingleItem,
   acuteDispensedWithMismatchedIds,
   acuteHl7PendingCancellation,
-  acuteMultipleDispenseNotifications,
+  acuteCumulativeMultipleDispenseNotifications,
   acuteMultipleDispenseNotificationsWithMismatchedIds,
   acuteWithdrawn,
   acuteWithPartialDispenseNotification,
   acuteWithWithdrawnAmendment,
   acuteWithWithdrawnDispenseNotification,
-  altAcuteMultipleDispenseNotifications,
+  altAcuteAdditiveMultipleDispenseNotifications,
   erdCreated,
   erdDispensedWith0Quantity
 } from "./examples/examples"
@@ -50,8 +50,8 @@ const parseExample = (exampleSpineResponse: string) => {
 }
 const parsedAcuteDispensedWithSingleItem = parseExample(acuteDispensedWithASingleItem)
 const parsedAcuteCreatedWithMultipleItems = parseExample(acuteCreated)
-const parsedAcuteWithMultipleDispenseNotifications = parseExample(acuteMultipleDispenseNotifications)
-const parsedAltAcuteWithMultipleDispenseNotifications = parseExample(altAcuteMultipleDispenseNotifications)
+const parsedAcuteWithMultipleDispenseNotifications = parseExample(acuteCumulativeMultipleDispenseNotifications)
+const parsedAltAcuteWithMultipleDispenseNotifications = parseExample(altAcuteAdditiveMultipleDispenseNotifications)
 const parsedErdDispensedWith0Quantity = parseExample(erdDispensedWith0Quantity)
 const {generateFhirResponse} = await import("../src/generateFhirResponse")
 
