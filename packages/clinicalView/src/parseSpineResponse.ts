@@ -114,7 +114,6 @@ interface SpineXmlClinicalViewResponse {
   prescriptionClinicalViewResponse: SpineClinicalView | SpineXmlError
 }
 
-// Parsed response types
 export type SpineGenderCode = 1 | 2 | 3 | 4
 
 interface spineComponentDetails {
@@ -322,8 +321,11 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
       */
       const status = xmlDispenseNotification[`statusLineItem${lineItemNo}`] as DispenseStatusCoding["code"]
       if(status) {
-        const spineComponents: Array<spineComponentDetails> = JSON.parse(
-          xmlDispenseNotification[`componentsLineItem${lineItemNo}`])
+        /* The JSON string in components gets mangled a bit in the xml response, need to first remove any line breaks
+        and tabs from it to get it back to a valid format before being able to JSON parse it */
+        const rawSpineComponents = xmlDispenseNotification[`componentsLineItem${lineItemNo}`]
+        const spineComponents: Array<spineComponentDetails> = rawSpineComponents ?
+          JSON.parse(rawSpineComponents.replace(/\r?\n\t*|\r/gm, "")) : []
 
         const lineItem: DispenseNotificationLineItemDetails = {
           lineItemNo,

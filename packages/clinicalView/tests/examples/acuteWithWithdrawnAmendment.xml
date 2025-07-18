@@ -188,7 +188,7 @@
 								</filteredHistory>
 								<filteredHistory>
 									<SCN>3</SCN>
-									<internalId>20250701132037_HISTORY_RELEASE</internalId>
+									<internalId>20250701132037000000_HISTORY_RELEASE</internalId>
 									<timestamp>20250701132037</timestamp>
 									<fromStatus>0001</fromStatus>
 									<toStatus>0002</toStatus>
@@ -333,7 +333,11 @@
 									<quantityLineItem1>1</quantityLineItem1>
 									<narrativeLineItem1>pre-filled disposable injection</narrativeLineItem1>
 									<dosageLineItem1>Inject 10 milligram - 5 times a day - Subcutaneous route - for 10 days</dosageLineItem1>
-									<componentsLineItem1>[{"product": "Methotrexate 10mg/0.2ml solution for injection pre-filled syringes","quantity": "1","narrative": "pre-filled disposable injection","dosage": "Inject 10 milligram - 5 times a day - Subcutaneous route - for 10 days"}]</componentsLineItem1>
+									<componentsLineItem1>
+										[{"product": "Methotrexate 10mg/0.2ml solution for injection 
+										pre-filled syringes","quantity": "1","narrative": "pre-filled disposable injection","dosage": "Inject 10 milligram - 5 
+										times a day - Subcutaneous route - for 10 days"}]
+									</componentsLineItem1>
 									<statusLineItem1>0001</statusLineItem1>
 									<productLineItem2/>
 									<quantityLineItem2/>
@@ -366,7 +370,11 @@
 									<quantityLineItem1>13</quantityLineItem1>
 									<narrativeLineItem1>tablets</narrativeLineItem1>
 									<dosageLineItem1>3 times a day for 10 days</dosageLineItem1>
-									<componentsLineItem1>[{"product": "Azithromycin 250mg capsules","quantity": "13","narrative": "tablets","dosage": "3 times a day for 10 days"}]</componentsLineItem1>
+									<componentsLineItem1>
+										[{"product": "Azithromycin 250mg 
+										capsules","quantity": "13","narrative": "tablets","dosage": "3 
+										times a day for 10 days"}]
+									</componentsLineItem1>
 									<statusLineItem1>0001</statusLineItem1>
 									<productLineItem2/>
 									<quantityLineItem2/>

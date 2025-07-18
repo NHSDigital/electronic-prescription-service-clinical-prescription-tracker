@@ -11,6 +11,7 @@ export const acuteNonNominatedCreated = readXmlToString("acuteNonNominatedCreate
 export const acuteReleased = readXmlToString("acuteReleased.xml")
 export const acuteDispensed = readXmlToString("acuteDispensed.xml")
 export const acuteDispensedWithASingleItem = readXmlToString("acuteDispensedWithSingleItem.xml")
+export const acuteDispensedWithMultipleComponents = readXmlToString("acuteDispensedWithMultipleComponents.xml")
 export const acuteCancelled = readXmlToString("acuteCancelled.xml")
 export const acuteWithCancelledItem = readXmlToString("acuteWithCancelledItem.xml")
 export const acutePartiallyDispensed = readXmlToString("acutePartiallyDispensed.xml")

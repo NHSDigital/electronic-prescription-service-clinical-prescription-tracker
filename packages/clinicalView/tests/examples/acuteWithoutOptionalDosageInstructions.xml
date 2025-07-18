@@ -338,25 +338,37 @@
 									<quantityLineItem1>20</quantityLineItem1>
 									<narrativeLineItem1>tablet</narrativeLineItem1>
 									<dosageLineItem1/>
-									<componentsLineItem1>[{"product": "Amoxicillin 250mg capsules","quantity": "20","narrative": "tablet"}]</componentsLineItem1>
+									<componentsLineItem1>
+										[{"product": "Amoxicillin 250mg 
+										capsules","quantity": "20","narrative": "tablet"}]
+									</componentsLineItem1>
 									<statusLineItem1>0001</statusLineItem1>
 									<productLineItem2>Co-codamol 30mg/500mg tablets</productLineItem2>
 									<quantityLineItem2>20</quantityLineItem2>
 									<narrativeLineItem2>tablet</narrativeLineItem2>
 									<dosageLineItem2/>
-									<componentsLineItem2>[{"product": "Co-codamol 30mg/500mg tablets","quantity": "20","narrative": "tablet"}]</componentsLineItem2>
+									<componentsLineItem2>
+										[{"product": "Co-codamol 30mg/500mg 
+										tablets","quantity": "20","narrative": "tablet"}]
+									</componentsLineItem2>
 									<statusLineItem2>0001</statusLineItem2>
 									<productLineItem3>Pseudoephedrine hydrochloride 60mg tablets</productLineItem3>
 									<quantityLineItem3>30</quantityLineItem3>
 									<narrativeLineItem3>tablet</narrativeLineItem3>
 									<dosageLineItem3/>
-									<componentsLineItem3>[{"product": "Pseudoephedrine hydrochloride 60mg tablets","quantity": "30","narrative": "tablet"}]</componentsLineItem3>
+									<componentsLineItem3>
+										[{"product": "Pseudoephedrine hydrochloride 60mg 
+										tablets","quantity": "30","narrative": "tablet"}]
+									</componentsLineItem3>
 									<statusLineItem3>0001</statusLineItem3>
 									<productLineItem4>Azithromycin 250mg capsules</productLineItem4>
 									<quantityLineItem4>30</quantityLineItem4>
 									<narrativeLineItem4>tablet</narrativeLineItem4>
 									<dosageLineItem4/>
-									<componentsLineItem4>[{"product": "Azithromycin 250mg capsules","quantity": "30","narrative": "tablet"}]</componentsLineItem4>
+									<componentsLineItem4>
+										[{"product": "Azithromycin 250mg 
+										capsules","quantity": "30","narrative": "tablet"}]
+									</componentsLineItem4>
 									<statusLineItem4>0001</statusLineItem4>
 									<statusPrescription>0006</statusPrescription>
 								</dispenseNotification>

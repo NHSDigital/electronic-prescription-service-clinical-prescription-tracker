@@ -298,7 +298,11 @@
 									<quantityLineItem1>1</quantityLineItem1>
 									<narrativeLineItem1>pre-filled disposable injection</narrativeLineItem1>
 									<dosageLineItem1>Inject 10 milligram - 5 times a day - Subcutaneous route - for 10 days</dosageLineItem1>
-									<componentsLineItem1>[{"product": "Methotrexate 10mg/0.2ml solution for injection pre-filled syringes","quantity": "1","narrative": "pre-filled disposable injection","dosage": "Inject 10 milligram - 5 times a day - Subcutaneous route - for 10 days"}]</componentsLineItem1>
+									<componentsLineItem1>
+										[{"product": "Methotrexate 10mg/0.2ml solution for injection 
+										pre-filled syringes","quantity": "1","narrative": "pre-filled disposable injection","dosage": "Inject 
+										10 milligram - 5 times a day - Subcutaneous route - for 10 days"}]
+									</componentsLineItem1>
 									<statusLineItem1>0001</statusLineItem1>
 									<productLineItem2/>
 									<quantityLineItem2/>

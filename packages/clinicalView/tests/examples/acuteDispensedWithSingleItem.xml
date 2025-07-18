@@ -263,7 +263,11 @@
 									<quantityLineItem1>20</quantityLineItem1>
 									<narrativeLineItem1>tablet</narrativeLineItem1>
 									<dosageLineItem1/>
-									<componentsLineItem1>[{"product": "Amoxicillin 250mg capsules","quantity": "20","narrative": "tablet","dosage": "2 times a day for 10 days"}]</componentsLineItem1>
+									<componentsLineItem1>
+										[{"product": "Amoxicillin 250mg 
+										capsules","quantity": "20","narrative": "tablet","dosage": "2 
+										times a day for 10 days"}]
+									</componentsLineItem1>
 									<statusLineItem1>0001</statusLineItem1>
 									<productLineItem2/>
 									<quantityLineItem2/>
