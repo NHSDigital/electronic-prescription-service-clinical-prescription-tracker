@@ -438,6 +438,12 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
         lineItemNo: lineItem.lineItemNo
       })
 
+      /* If component information is completely missing add a "fake" component so a
+      MedicationDispense resource is still created for the partial DN*/
+      if (lineItem.components.length === 0){
+        lineItem.components.push({})
+      }
+
       for (const component of lineItem.components){
         const medicationDispenseResourceId = randomUUID()
         medicationDispenseResourceIds[

@@ -419,15 +419,15 @@
 									</componentsLineItem3>
 									<statusLineItem3>0001</statusLineItem3>
 									<productLineItem4>Azithromycin 250mg capsules</productLineItem4>
-									<quantityLineItem4>30</quantityLineItem4>
+									<quantityLineItem4>20</quantityLineItem4>
 									<narrativeLineItem4>tablet</narrativeLineItem4>
 									<dosageLineItem4>3 times a day for 10 days</dosageLineItem4>
 									<componentsLineItem4>
 										[{"product": "Azithromycin 250mg 
-										capsules","quantity": "30","narrative": "tablet","dosage": "3 
+										capsules","quantity": "20","narrative": "tablet","dosage": "3 
 										times a day for 10 days"}]
 									</componentsLineItem4>
-									<statusLineItem4>0001</statusLineItem4>
+									<statusLineItem4>0003</statusLineItem4>
 									<statusPrescription>0003</statusPrescription>
 								</dispenseNotification>
 								<!--Dispense Notification Information-->

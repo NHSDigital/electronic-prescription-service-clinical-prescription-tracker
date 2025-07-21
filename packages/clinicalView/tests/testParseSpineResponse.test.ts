@@ -1419,10 +1419,10 @@ describe("Test parseSpineResponse", () => {
             4: {
               lineItemNo: "4",
               lineItemId: "453F161C-3A76-42B5-BA7F-7A4EBF61023B",
-              status: "0001",
+              status: "0003",
               components: [{
                 itemName: "Azithromycin 250mg capsules",
-                quantity: 30,
+                quantity: 20,
                 quantityForm: "tablet",
                 dosageInstruction: "3 times a day for 10 days"
               }]
@@ -1528,7 +1528,7 @@ describe("Test parseSpineResponse", () => {
   })
 
   it("returns a correctly parsed response and no error when spine returns an acute prescription with additive multiple dispense notifications format", async () => {
-  /* Tests DN's where items previously dispensed are included in subsequent DN's with 0 quantity (alt additive)*/
+  /* Tests DN's where items previously dispensed are included in subsequent DN's with 0 quantity (additive)*/
     const expected: Prescription = {
       prescriptionId: "CF5D04-A83008-7374CW",
       nhsNumber: "5839945242",
