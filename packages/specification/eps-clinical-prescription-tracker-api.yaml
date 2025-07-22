@@ -12,22 +12,25 @@ info:
     email: api.management@nhs.net
   description: |
     ## Overview
-    The Clinical Prescription Tracker API provides real-time tracking of prescriptions within the Electronic Prescription Service (EPS). It enables authorized users to retrieve details about prescription status, dispensation progress, and other essential prescription lifecycle information.
+    Use this API to provide real-time tracking of prescriptions within the Electronic Prescription Service (EPS). It enables authorized users to retrieve details about prescription status, dispensation progress, and other essential prescription lifecycle information.
 
     This API is designed to be used by healthcare providers, dispensers, and authorized NHS applications to track prescriptions from issuance to fulfillment.
 
     ## Who can use this API
-    The Clinical Prescription Tracker query API is intended for NHS England internal use only.
-        
-    ## Related APIs
-    * [Electronic Prescriptions Service](https://digital.nhs.uk/developer/api-catalogue/electronic-prescription-service-fhir): The national service for creating and dispensing prescriptions across health and social care.
-    * [Prescriptions for Patients](https://digital.nhs.uk/developer/api-catalogue/prescriptions-for-patients): the national service to retrieve prescriptions data for individual patients from the Electronic Prescription Service (EPS), for use in patient-facing applications.
+    The Clinical Prescription Tracker API is intended for use by assured PMR systems which have a use case to add prescription tracking functionality into their system.
 
+    ## Access modes
+    This API only supports [user-restricted] access(https://digital.nhs.uk/developer/guides-and-documentation/security-and-authorisation#user-restricted-apis), 
+    meaning we authenticate the end user.
+
+    This API is for Healthcare worker access only and follows the [CIS2 separate authentication and authorisation](https://digital.nhs.uk/developer/guides-and-documentation/security-and-authorisation/user-restricted-restful-apis-nhs-cis2-separate-authentication-and-authorisation).
+    
     ## API Status and Roadmap
     This API is [in development](https://digital.nhs.uk/developer/guides-and-documentation/reference-guide#statuses), meaning the API will soon be available for testing via a sandbox service or an integration environment - but we expect to make breaking changes based on developer feedback.
 
-    ## Service Level
-    This API will be a platinum service, meaning it is operational and supported 24 hours a day, 365 days a year.
+    ## Service level
+    This API is a platinum service, meaning it is operational and supported 24 hours a day, 365 days a year.
+
     See [service levels](https://digital.nhs.uk/developer/guides-and-documentation/reference-guide#service-levels) for more details.
 
     ## Technology
@@ -48,21 +51,31 @@ info:
     There are [libraries and software development kits](https://digital.nhs.uk/developer/guides-and-documentation/api-technologies-at-nhs-digital#fhir-libraries-and-sdks) available to help with FHIR API integration.
 
     ## Network Access
-    This API is available on the internet.
+    This API is available on the internet. For more details see [Network access for APIs](https://digital.nhs.uk/developer/guides-and-documentation/network-access-for-apis).
 
-    For more details see [Network access for APIs](https://digital.nhs.uk/developer/guides-and-documentation/network-access-for-apis).
+    ## Errors
+    We use standard HTTP status codes to show whether an API request succeeded or not.
+    They are usually in the range:
 
-    ## Security and Authorisation
-    This API only supports [user-restricted] access(https://digital.nhs.uk/developer/guides-and-documentation/security-and-authorisation#user-restricted-apis), 
-    meaning we authenticate the end user.
+    * 200 to 299 if it succeeded, including code 202 if it was accepted by an API that needs to wait for further action
+    * 400 to 499 if it failed because of a client error by your application
+    * 500 to 599 if it failed because of an error on our server
 
-    This API only supports [CIS2 separate authentication and authorisation](https://digital.nhs.uk/developer/guides-and-documentation/security-and-authorisation/user-restricted-restful-apis-nhs-cis2-separate-authentication-and-authorisation),
-    do not use combined authentication and authorisation.
+    Errors specific to each API are shown in the Endpoints section, under Response. See our [reference guide](https://digital.nhs.uk/developer/guides-and-documentation/reference-guide#http-status-codes) for more on errors.
 
+    ## Open Source
+    You might find the following [open source](https://digital.nhs.uk/developer/guides-and-documentation/reference-guide#open-source) resources useful:
 
+    | Resource                          | Description                                                                                                  | Links                                                                                                                                                     |
+    |-----------------------------------|--------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+    | FHIR libraries and SDKs           | Various open source libraries for integrating with FHIR APIs.                                                | [FHIR libraries and SDKs](https://digital.nhs.uk/developer/guides-and-documentation/api-technologies-at-nhs-digital#fhir-libraries-and-sdks)              |
+    | nhs-number                        | Python package containing utilities for NHS numbers including validity checks, normalisation and generation. | [GitHub](https://github.com/uk-fci/nhs-number) | [Python Package index](https://pypi.org/project/nhs-number/) | [Docs](https://nhs-number.uk-fci.tech/) | |
+    | Clinical Prescription Tracker API | Source code for the Clinical Prescription Tracker API.                                                       | [GitHub](https://github.com/NHSDigital/electronic-prescription-service-clinical-prescription-tracker)                                                     |
+    | PDS FHIR API                      | Source code for the API proxy, sandbox and specification for patient details.                                | [GitHub](https://github.com/NHSDigital/personal-demographics-service-api)                                                                                 |
+    
     ## Environment and testing
-    | Environment      | Base URL                                                            |
-    |------------------|---------------------------------------------------------------------|
+    | Environment      | Base URL                                                               |
+    |------------------|------------------------------------------------------------------------|
     | Sandbox          | `https://sandbox.api.service.nhs.uk/clinical-prescription-tracker`     |
     | Integration test | `https://int.api.service.nhs.uk/clinical-prescription-tracker`         |
     | Production       | `https://api.service.nhs.uk/clinical-prescription-tracker`             |
@@ -87,17 +100,13 @@ info:
     For more details see [integration testing with our RESTful APIs](https://digital.nhs.uk/developer/guides-and-documentation/testing#integration-testing-with-our-restful-apis).
 
     ## Onboarding
-    All dispenser suppliers are being asked to integrate with this new service.
+    Your software must be approved by us before you can begin the EPS onboarding process and go live with this FHIR API. EPS 'onboarding' is the term used for the development and assurance required before IT suppliers can offer EPS to NHS organisations.
+    
+    Details of the onboarding process can be found on our [EPS onboarding and assurance for IT suppliers] (https://digital.nhs.uk/services/electronic-prescription-service/guidance-for-suppliers#:~:text=Electronic%20Prescription%20Service%20(EPS)%20',offer%20EPS%20to%20NHS%20organisations.) page.
 
-    ## Errors
-    We use standard HTTP status codes to show whether an API request succeeded or not.
-    They are usually in the range:
-
-    * 200 to 299 if it succeeded, including code 202 if it was accepted by an API that needs to wait for further action
-    * 400 to 499 if it failed because of a client error by your application
-    * 500 to 599 if it failed because of an error on our server
-
-    Errors specific to each API are shown in the Endpoints section, under Response. See our [reference guide](https://digital.nhs.uk/developer/guides-and-documentation/reference-guide#http-status-codes) for more on errors.
+    ## Related APIs
+    * [Electronic Prescriptions Service](https://digital.nhs.uk/developer/api-catalogue/electronic-prescription-service-fhir): the national service for creating and dispensing prescriptions across health and social care.
+    * [Prescriptions for Patients](https://digital.nhs.uk/developer/api-catalogue/prescriptions-for-patients): the national service to retrieve prescriptions data for individual patients from the Electronic Prescription Service (EPS), for use in patient-facing applications.
 
 x-spec-publication:
   operation-order:
@@ -117,7 +126,7 @@ paths:
   /RequestGroup:
     get:
       operationId: clinical-prescription-tracker-bundle
-      summary: Prescription Search
+      summary: Prescription search
       description: |
         ## Overview
         This returns a list of prescriptions for a given prescriptionId or nhsNumber.
@@ -155,9 +164,9 @@ paths:
 
             | HTTP status | Error code          | Description                                                                                                                               |
             | ----------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-            | 400         | `value`             | The Server was unable to process the request                                                                                              |
+            | 400         | `value`             | The Server was unable to process the request.                                                                                             |
             | 404         | `not-found`         | The Server was unable to find the specified resource.                                                                                     |
-            | 408         | `timeout`           | The server has timed out whilst processing the request.                                                                                   |
+            | 408         | `timeout`           | The Server has timed out whilst processing the request.                                                                                   |
 
             Any errors will be included in the returned OperationOutcome (below).
           content:
@@ -185,7 +194,7 @@ paths:
       summary: Retrieve prescription details
       description: |
         ## Overview
-        Use this endpoint to retrieve prescription details for a given prescription ID.
+        Use this endpoint to return a list of prescriptions for a given prescriptionId or nhsNumber.
       parameters:
         - name: prescriptionId
           in: path
@@ -211,10 +220,10 @@ paths:
 
             | HTTP status | Error code          | Description                                                                                               |
             | ----------- | ------------------- | ----------------------------------------------------------------------------------------------------------|
-            | 400         | `value`             | Missing values or invalid JSON in request                                                                 |
-            | 401         | `processing`        | Missing or invalid OAuth 2.0 bearer token in request                                                      |
-            | 404         | `not-found`         | Prescription not found                                                                                    |
-            | 408         | `timeout`           | Request timed out                                                                                         |
+            | 400         | `value`             | Missing values or invalid JSON in request.                                                                |
+            | 401         | `processing`        | Missing or invalid OAuth 2.0 bearer token in request.                                                     |
+            | 404         | `not-found`         | Prescription not found.                                                                                   |
+            | 408         | `timeout`           | Request timed out.                                                                                        |
 
             The error code will be included in the returned OperationOutcome (below).
           content:
@@ -277,7 +286,7 @@ components:
       in: header
       name: nhsd-session-jobrole
       description: |
-        "The users job role code for the current session"
+        "The users job role code for the current session."
       required: true
       schema:
         type: string
