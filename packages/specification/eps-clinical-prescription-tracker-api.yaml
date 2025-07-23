@@ -12,12 +12,12 @@ info:
     email: api.management@nhs.net
   description: |
     ## Overview
-    Use this API to provide real-time tracking of prescriptions within the Electronic Prescription Service (EPS). It enables authorized users to retrieve details about prescription status, dispensation progress, and other essential prescription lifecycle information.
-
-    This API is designed to be used by healthcare providers, dispensers, and authorized NHS applications to track prescriptions from issuance to fulfillment.
+    Use this API for real-time tracking of Electronic Prescription Service (EPS). It gives details about prescription status, dispensing progress and other essential prescription information. 
 
     ## Who can use this API
-    The Prescription Tracker API is intended for use by assured Patient Medication Record (PMR) system suppliers can use the Prescription Tracker API to add prescription tracking into their systems..
+    Patient Medication Record (PMR) system suppliers can use the Prescription Tracker API to add prescription tracking into their systems.
+
+    This API is also designed to be used by healthcare providers, dispensers and NHS applications to track prescriptions.
 
     ## Access modes
     This API only supports [user-restricted] access(https://digital.nhs.uk/developer/guides-and-documentation/security-and-authorisation#user-restricted-apis), meaning we authenticate the end user.
@@ -97,7 +97,7 @@ info:
     For more details see [integration testing with our RESTful APIs](https://digital.nhs.uk/developer/guides-and-documentation/testing#integration-testing-with-our-restful-apis).
 
     ## Onboarding
-    Your software must be approved by us before you can begin the EPS onboarding process and go live with this FHIR API. EPS 'onboarding' is the term used for the development and assurance required before IT suppliers can offer EPS to NHS organisations.
+    Your software must be approved by the EPS team before you can begin the onboarding process and go live with this FHIR API. EPS 'onboarding' is the term used for the development and assurance required before IT suppliers can offer EPS to NHS organisations.
     
     Details of the onboarding process can be found on our [EPS onboarding and assurance for IT suppliers] (https://digital.nhs.uk/services/electronic-prescription-service/guidance-for-suppliers#:~:text=Electronic%20Prescription%20Service%20(EPS)%20',offer%20EPS%20to%20NHS%20organisations.) page.
 
