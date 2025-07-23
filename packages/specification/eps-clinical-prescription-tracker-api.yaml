@@ -17,11 +17,10 @@ info:
     This API is designed to be used by healthcare providers, dispensers, and authorized NHS applications to track prescriptions from issuance to fulfillment.
 
     ## Who can use this API
-    The Clinical Prescription Tracker API is intended for use by assured PMR systems which have a use case to add prescription tracking functionality into their system.
+    The Prescription Tracker API is intended for use by assured Patient Medication Record (PMR) system suppliers can use the Prescription Tracker API to add prescription tracking into their systems..
 
     ## Access modes
-    This API only supports [user-restricted] access(https://digital.nhs.uk/developer/guides-and-documentation/security-and-authorisation#user-restricted-apis), 
-    meaning we authenticate the end user.
+    This API only supports [user-restricted] access(https://digital.nhs.uk/developer/guides-and-documentation/security-and-authorisation#user-restricted-apis), meaning we authenticate the end user.
 
     This API is for Healthcare worker access only and follows the [CIS2 separate authentication and authorisation](https://digital.nhs.uk/developer/guides-and-documentation/security-and-authorisation/user-restricted-restful-apis-nhs-cis2-separate-authentication-and-authorisation).
     
@@ -69,7 +68,7 @@ info:
     | Resource                          | Description                                                                                                  | Links                                                                                                                                                     |
     |-----------------------------------|--------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
     | FHIR libraries and SDKs           | Various open source libraries for integrating with FHIR APIs.                                                | [FHIR libraries and SDKs](https://digital.nhs.uk/developer/guides-and-documentation/api-technologies-at-nhs-digital#fhir-libraries-and-sdks)              |
-    | Clinical Prescription Tracker API | Source code for the Clinical Prescription Tracker API.                                                       | [GitHub](https://github.com/NHSDigital/electronic-prescription-service-clinical-prescription-tracker)                                                     |
+    | Prescription Tracker API | Source code for the Prescription Tracker API.                                                       | [GitHub](https://github.com/NHSDigital/electronic-prescription-service-clinical-prescription-tracker)                                                     |
     
     ## Environment and testing
     | Environment      | Base URL                                                               |
