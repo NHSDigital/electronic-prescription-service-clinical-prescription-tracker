@@ -69,7 +69,7 @@ export const validateCommonHeaders = (
   return [headerParameters, errors]
 }
 
-const PRESCRIPTION_ID_PATTERN = /^[0-9a-fA-F]{6}-[0-9a-fA-F]{6}-[0-9a-fA-F]{5}[0-9a-zA-Z+]{1}$/
+const PRESCRIPTION_ID_PATTERN = /^[A-F0-9]{6}-[A-Z0-9]{6}-[A-F0-9]{5}[A-Z0-9+]{1}$/
 const PRESCRIPTION_ID_WITHOUT_CHECKSUM_LENGTH = 17 as const
 const CHECKSUM_CHARACTERS = [..."0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ+"] as const
 
@@ -98,15 +98,18 @@ export const validatePrescriptionId = (prescriptionId: string, logger: Logger): 
   const calculatedChecksumValue = (38 - total % 37) % 37
   const calculatedChecksumChar = CHECKSUM_CHARACTERS[calculatedChecksumValue]
 
-  if (calculatedChecksumChar !== checksum){
-    logger.error("Invalid prescriptionId checksum.", {prescriptionId, checksum, calculatedChecksumChar})
+  if (!calculatedChecksumChar || !checksum || calculatedChecksumChar !== checksum){
+    logger.error("Invalid prescriptionId checksum.", {
+      prescriptionId,
+      checksum: `${checksum}`, // logger does not include the key/value in the log if directly passed an undefined value
+      calculatedChecksumChar: `${calculatedChecksumChar}`
+    })
     errors.push({
       status: 400,
       severity: "error",
       description: "prescriptionId checksum is invalid."
     })
   }
-
   return errors
 }
 
@@ -122,6 +125,33 @@ export const validateNhsNumber = (nhsNumber: string, logger: Logger): Array<Serv
       status: 400,
       severity: "error",
       description: "nhsNumber does not match required format."
+    })
+  }
+
+  const [nhsNumberWithoutChecksum, checksum] = nhsNumber.split(/(?<=^.{9})/)
+
+  let total = 0
+  for (const [digitIndex, digit] of [...nhsNumberWithoutChecksum].entries()) {
+    total += Number(digit) * (10 - digitIndex)
+  }
+  const remainder = total % 11
+
+  let calculatedChecksum = 11 - remainder
+  if (calculatedChecksum === 11) {
+    calculatedChecksum = 0
+  }
+
+  if (calculatedChecksum === undefined || checksum === undefined
+    || calculatedChecksum === 10 || calculatedChecksum !== Number(checksum)){
+    logger.error("Invalid nhsNumber checksum.", {
+      nhsNumber,
+      checksum: `${checksum}`,
+      calculatedChecksum: `${calculatedChecksum}`
+    })
+    errors.push({
+      status: 400,
+      severity: "error",
+      description: "nhsNumber checksum is invalid."
     })
   }
 

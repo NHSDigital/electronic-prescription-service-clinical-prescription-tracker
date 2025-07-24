@@ -1,9 +1,10 @@
+/* eslint-disable max-len */
 
 import {jest} from "@jest/globals"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {APIGatewayProxyEventHeaders} from "aws-lambda"
 import {CommonHeaderParameters, ServiceError} from "@cpt-common/common-types/service"
-import {validateCommonHeaders} from "../src/commonValidation"
+import {validateCommonHeaders, validateNhsNumber, validatePrescriptionId} from "../src/commonValidation"
 
 const logger: Logger = new Logger({serviceName: "commonUtils", logLevel: "DEBUG"})
 const mockHeaders: APIGatewayProxyEventHeaders = {
@@ -14,6 +15,7 @@ const mockHeaders: APIGatewayProxyEventHeaders = {
   "nhsd-session-jobrole": "JOB-123-456-789"
 }
 
+// TODO: happy path?
 describe("Test validateCommonHeaders", () => {
   it("returns the correct error when x-request-id is missing from the requests headers", async () => {
     const headers: APIGatewayProxyEventHeaders = {...mockHeaders, "x-request-id": undefined}
@@ -87,5 +89,397 @@ describe("Test validateCommonHeaders", () => {
 
     const [, actualError]: [CommonHeaderParameters, Array<ServiceError>] = validateCommonHeaders(headers, logger)
     expect(actualError).toEqual(expectedErrors)
+  })
+})
+
+describe("Test validatePrescriptionId", () => {
+  it("returns no errors when called with a valid prescriptionId with a numeric checksum", () => {
+    const mockPrescriptionId = "4F30E7-A83008-160FB1"
+
+    const expectedErrors: Array<ServiceError> = []
+
+    const actualErrors = validatePrescriptionId(mockPrescriptionId, logger)
+    expect(actualErrors).toEqual(expectedErrors)
+  })
+
+  it("returns no errors when called with a valid prescriptionId with a alpha checksum", () => {
+    const mockPrescriptionId = "54F746-A83008-E8A05J"
+
+    const expectedErrors: Array<ServiceError> = []
+
+    const actualErrors = validatePrescriptionId(mockPrescriptionId, logger)
+    expect(actualErrors).toEqual(expectedErrors)
+  })
+
+  it("returns no errors when called with a valid prescriptionId with a + checksum", () => {
+    const mockPrescriptionId = "CBEF44-000X26-41E1B+"
+
+    const expectedErrors: Array<ServiceError> = []
+
+    const actualErrors = validatePrescriptionId(mockPrescriptionId, logger)
+    expect(actualErrors).toEqual(expectedErrors)
+  })
+
+  it("returns the correct errors when called with a invalid prescriptionId with a short first part", () => {
+    const mockPrescriptionId = "CBEF4-000X26-41E1B+"
+
+    const expectedErrors: Array<ServiceError> = [
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId does not match required format."
+      },
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId checksum is invalid."
+      }
+    ]
+
+    const actualErrors = validatePrescriptionId(mockPrescriptionId, logger)
+    expect(actualErrors).toEqual(expectedErrors)
+  })
+
+  it("returns the correct errors when called with a invalid prescriptionId with a long first part", () => {
+    const mockPrescriptionId = "CBEF444-000X26-41E1B+"
+
+    const expectedErrors: Array<ServiceError> = [
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId does not match required format."
+      },
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId checksum is invalid."
+      }
+    ]
+
+    const actualErrors = validatePrescriptionId(mockPrescriptionId, logger)
+    expect(actualErrors).toEqual(expectedErrors)
+  })
+
+  it("returns the correct errors when called with a invalid prescriptionId with non alphanumeric characters in the first part", () => {
+    const mockPrescriptionId = "CBEF4?-000X26-41E1B+"
+
+    const expectedErrors: Array<ServiceError> = [
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId does not match required format."
+      },
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId checksum is invalid."
+      }
+    ]
+
+    const actualErrors = validatePrescriptionId(mockPrescriptionId, logger)
+    expect(actualErrors).toEqual(expectedErrors)
+  })
+
+  it("returns the correct errors when called with a invalid prescriptionId with a short middle part", () => {
+    const mockPrescriptionId = "CBEF44-000X2-41E1B+"
+
+    const expectedErrors: Array<ServiceError> = [
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId does not match required format."
+      },
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId checksum is invalid."
+      }
+    ]
+
+    const actualErrors = validatePrescriptionId(mockPrescriptionId, logger)
+    expect(actualErrors).toEqual(expectedErrors)
+  })
+
+  it("returns the correct errors when called with a invalid prescriptionId with a long middle part", () => {
+    const mockPrescriptionId = "CBEF44-000X266-41E1B+"
+
+    const expectedErrors: Array<ServiceError> = [
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId does not match required format."
+      },
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId checksum is invalid."
+      }
+    ]
+
+    const actualErrors = validatePrescriptionId(mockPrescriptionId, logger)
+    expect(actualErrors).toEqual(expectedErrors)
+  })
+
+  it("returns the correct errors when called with a invalid prescriptionId with non alphanumeric characters in the middle part", () => {
+    const mockPrescriptionId = "CBEF44-000X2?-41E1B+"
+
+    const expectedErrors: Array<ServiceError> = [
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId does not match required format."
+      },
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId checksum is invalid."
+      }
+    ]
+
+    const actualErrors = validatePrescriptionId(mockPrescriptionId, logger)
+    expect(actualErrors).toEqual(expectedErrors)
+  })
+
+  it("returns the correct errors when called with a invalid prescriptionId with a short end part", () => {
+    const mockPrescriptionId = "CBEF44-000X2-41E1B"
+
+    const expectedErrors: Array<ServiceError> = [
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId does not match required format."
+      },
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId checksum is invalid."
+      }
+    ]
+
+    const actualErrors = validatePrescriptionId(mockPrescriptionId, logger)
+    expect(actualErrors).toEqual(expectedErrors)
+  })
+
+  it("returns the correct errors when called with a invalid prescriptionId with a long end part", () => {
+    const mockPrescriptionId = "CBEF44-000X2-41E1B+1"
+
+    const expectedErrors: Array<ServiceError> = [
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId does not match required format."
+      },
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId checksum is invalid."
+      }
+    ]
+
+    const actualErrors = validatePrescriptionId(mockPrescriptionId, logger)
+    expect(actualErrors).toEqual(expectedErrors)
+  })
+
+  it("returns the correct errors when called with a invalid prescriptionId with non alphanumeric characters in the end part", () => {
+    const mockPrescriptionId = "CBEF44-000X2-41?1B+"
+
+    const expectedErrors: Array<ServiceError> = [
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId does not match required format."
+      },
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId checksum is invalid."
+      }
+    ]
+
+    const actualErrors = validatePrescriptionId(mockPrescriptionId, logger)
+    expect(actualErrors).toEqual(expectedErrors)
+  })
+
+  it("returns the correct errors when called with a invalid prescriptionId with invalid characters in the checksum", () => {
+    const mockPrescriptionId = "CBEF44-000X2-411B?"
+
+    const expectedErrors: Array<ServiceError> = [
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId does not match required format."
+      },
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId checksum is invalid."
+      }
+    ]
+
+    const actualErrors = validatePrescriptionId(mockPrescriptionId, logger)
+    expect(actualErrors).toEqual(expectedErrors)
+  })
+
+  it("returns the correct errors when called with a invalid prescriptionId with invalid delimiters", () => {
+    const mockPrescriptionId = "CBEF44_000X2_411B?"
+
+    const expectedErrors: Array<ServiceError> = [
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId does not match required format."
+      },
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId checksum is invalid."
+      }
+    ]
+
+    const actualErrors = validatePrescriptionId(mockPrescriptionId, logger)
+    expect(actualErrors).toEqual(expectedErrors)
+  })
+
+  it("returns the correct errors when called with an empty prescriptionId", () => {
+    const mockPrescriptionId = ""
+
+    const expectedErrors: Array<ServiceError> = [
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId does not match required format."
+      },
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId checksum is invalid."
+      }
+    ]
+
+    const actualErrors = validatePrescriptionId(mockPrescriptionId, logger)
+    expect(actualErrors).toEqual(expectedErrors)
+  })
+
+  it("returns the correct errors when called with a prescriptionId with an incorrect checksum", () => {
+    const mockPrescriptionId = "CBEF44-000X26-41E1B1"
+
+    const expectedErrors: Array<ServiceError> = [
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId checksum is invalid."
+      }
+    ]
+
+    const actualErrors = validatePrescriptionId(mockPrescriptionId, logger)
+    expect(actualErrors).toEqual(expectedErrors)
+  })
+})
+
+describe("Test validateNhsNumber", () => {
+  it("returns no errors when called with a valid nhsNumber with a 1-9 checksum", () => {
+    const mockNhsNumber = "7994647952"
+
+    const expectedErrors: Array<ServiceError> = []
+
+    const actualErrors = validateNhsNumber(mockNhsNumber, logger)
+    expect(actualErrors).toEqual(expectedErrors)
+  })
+
+  it("returns no errors when called with a valid nhsNumber with a 11/0 checksum", () => {
+    const mockNhsNumber = "3116610770"
+
+    const expectedErrors: Array<ServiceError> = []
+
+    const actualErrors = validateNhsNumber(mockNhsNumber, logger)
+    expect(actualErrors).toEqual(expectedErrors)
+  })
+
+  it("returns the correct errors when called with a invalid nhsNumber that is too short", () => {
+    const mockNhsNumber = "311661077"
+
+    const expectedErrors: Array<ServiceError> = [
+      {
+        status: 400,
+        severity: "error",
+        description: "nhsNumber does not match required format."
+      },
+      {
+        status: 400,
+        severity: "error",
+        description: "nhsNumber checksum is invalid."
+      }
+    ]
+
+    const actualErrors = validateNhsNumber(mockNhsNumber, logger)
+    expect(actualErrors).toEqual(expectedErrors)
+  })
+
+  it("returns the correct errors when called with a invalid nhsNumber that is too long", () => {
+    const mockNhsNumber = "31166107700"
+
+    const expectedErrors: Array<ServiceError> = [
+      {
+        status: 400,
+        severity: "error",
+        description: "nhsNumber does not match required format."
+      }
+    ]
+
+    const actualErrors = validateNhsNumber(mockNhsNumber, logger)
+    expect(actualErrors).toEqual(expectedErrors)
+  })
+
+  it("returns the correct errors when called with a invalid nhsNumber that contains alpha characters", () => {
+    const mockNhsNumber = "311661A770"
+
+    const expectedErrors: Array<ServiceError> = [
+      {
+        status: 400,
+        severity: "error",
+        description: "nhsNumber does not match required format."
+      },
+      {
+        status: 400,
+        severity: "error",
+        description: "nhsNumber checksum is invalid."
+      }
+    ]
+
+    const actualErrors = validateNhsNumber(mockNhsNumber, logger)
+    expect(actualErrors).toEqual(expectedErrors)
+  })
+
+  it("returns the correct errors when called with a invalid nhsNumber that contains special characters", () => {
+    const mockNhsNumber = "311661?770"
+
+    const expectedErrors: Array<ServiceError> = [
+      {
+        status: 400,
+        severity: "error",
+        description: "nhsNumber does not match required format."
+      },
+      {
+        status: 400,
+        severity: "error",
+        description: "nhsNumber checksum is invalid."
+      }
+    ]
+
+    const actualErrors = validateNhsNumber(mockNhsNumber, logger)
+    expect(actualErrors).toEqual(expectedErrors)
+  })
+
+  it("returns the correct errors when called with a nhsNumber with a calculated invalid checksum of 10", () => {
+    const mockNhsNumber = "1000070000"
+
+    const expectedErrors: Array<ServiceError> = [{
+      status: 400,
+      severity: "error",
+      description: "nhsNumber checksum is invalid."
+    }]
+
+    const actualErrors = validateNhsNumber(mockNhsNumber, logger)
+    expect(actualErrors).toEqual(expectedErrors)
   })
 })
