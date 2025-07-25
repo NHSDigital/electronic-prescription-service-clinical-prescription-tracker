@@ -18,11 +18,11 @@
     "@aws-lambda-powertools/parameters": "^2.24.0",
     "@middy/core": "^6.4.1",
     "@middy/input-output-logger": "^6.4.1",
-    "@nhs/fhir-middy-error-handler": "^2.1.40",
-    "@NHSDigital/eps-spine-client": "^2.1.45"
+    "@nhs/fhir-middy-error-handler": "^2.1.41",
+    "@NHSDigital/eps-spine-client": "^2.1.46"
   },
   "devDependencies": {
     "axios-mock-adapter": "^2.1.0",
-    "esbuild": "^0.25.6"
+    "esbuild": "^0.25.8"
   }
 }
