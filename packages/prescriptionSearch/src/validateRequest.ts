@@ -1,7 +1,7 @@
 // Types
 import {Logger} from "@aws-lambda-powertools/logger"
 import {CommonHeaderParameters, ServiceError} from "@cpt-common/common-types/service"
-import {validateCommonHeaders} from "@cpt-common/common-utils"
+import {validateCommonHeaders, validateNhsNumber, validatePrescriptionId} from "@cpt-common/common-utils"
 import {PrescriptionSearchParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
 import {APIGatewayEvent, APIGatewayProxyEventQueryStringParameters} from "aws-lambda"
 
@@ -39,10 +39,10 @@ const validateQueryStringParameters = (
   eventQueryStringParameters: APIGatewayProxyEventQueryStringParameters | null, logger: Logger):
   [QueryStringSearchParameters, Array<ServiceError>] => {
 
-  const errors: Array<ServiceError> = []
+  let errors: Array<ServiceError> = []
 
-  const prescriptionId: string | undefined = eventQueryStringParameters?.prescriptionId
-  const nhsNumber: string | undefined = eventQueryStringParameters?.nhsNumber
+  let prescriptionId: string | undefined = eventQueryStringParameters?.prescriptionId
+  let nhsNumber: string | undefined = eventQueryStringParameters?.nhsNumber
   if(!prescriptionId && !nhsNumber){
     logger.error("Missing required query string parameter; prescriptionId or nhsNumber.")
     errors.push({
@@ -59,6 +59,17 @@ const validateQueryStringParameters = (
       severity: "error",
       description: "Invalid query string parameters; only prescriptionId or nhsNumber must be provided, not both."
     })
+  }
+
+  if (prescriptionId){
+    prescriptionId = prescriptionId.toUpperCase()
+    const prescriptionIdErrors = validatePrescriptionId(prescriptionId, logger)
+    errors = [...errors, ...prescriptionIdErrors]
+  }
+
+  if (nhsNumber){
+    const nhsNumberErrors = validateNhsNumber(nhsNumber, logger)
+    errors = [...errors, ...nhsNumberErrors]
   }
 
   const lowDate: string | undefined = eventQueryStringParameters?.lowDate

@@ -18,7 +18,7 @@ const mockHeaders: APIGatewayProxyEventHeaders = {
 }
 
 const mockPathParameters: APIGatewayProxyEventPathParameters = {
-  prescriptionId: "PRES-1234-5678"
+  prescriptionId: "54F746-A83008-E8A05J"
 }
 
 describe("Test validateRequest for ClinicalView Lambda", () => {
@@ -43,7 +43,7 @@ describe("Test validateRequest for ClinicalView Lambda", () => {
     } as unknown as APIGatewayProxyEvent
 
     const expected: ClinicalViewParams = {
-      prescriptionId: "PRES-1234-5678",
+      prescriptionId: "54F746-A83008-E8A05J",
       requestId: "REQ-123-456-789",
       organizationId: "ORG-123-456-789",
       sdsRoleProfileId: "SESS-123-456-789",
@@ -51,8 +51,10 @@ describe("Test validateRequest for ClinicalView Lambda", () => {
       jobRoleCode: "JOB-123-456-789"
     }
 
-    const [actualParameters]: [ClinicalViewParams, Array<ServiceError>] = validateRequest(mockEvent, logger)
+    const [actualParameters, actualErrors]: [ClinicalViewParams, Array<ServiceError>] =
+      validateRequest(mockEvent, logger)
     expect(actualParameters).toEqual(expected)
+    expect(actualErrors).toEqual([])
   })
 
   it("returns correct search parameters when called with a valid request with optional parameters", async () => {
@@ -63,7 +65,7 @@ describe("Test validateRequest for ClinicalView Lambda", () => {
     } as unknown as APIGatewayProxyEvent
 
     const expected: ClinicalViewParams = {
-      prescriptionId: "PRES-1234-5678",
+      prescriptionId: "54F746-A83008-E8A05J",
       repeatNumber: "1",
       requestId: "REQ-123-456-789",
       organizationId: "ORG-123-456-789",
@@ -82,10 +84,65 @@ describe("Test validateRequest for ClinicalView Lambda", () => {
       pathParameters: {}
     } as unknown as APIGatewayProxyEvent
 
+    const expectedErrors: Array<ServiceError> = [
+      {
+        status: 400,
+        severity: "error",
+        description: "Missing required path parameter: prescriptionId."
+      },
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId does not match required format."
+      },
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId checksum is invalid."
+      }
+    ]
+
+    const [, actualError]: [ClinicalViewParams, Array<ServiceError>] = validateRequest(mockEvent, logger)
+    expect(actualError).toEqual(expectedErrors)
+  })
+
+  it("returns the correct errors when the prescriptionId is in a invalid format", async () => {
+    const mockEvent = {
+      headers: mockHeaders,
+      pathParameters: {
+        prescriptionId: "54746-A8308-E8A05J"
+      }
+    } as unknown as APIGatewayProxyEvent
+
+    const expectedErrors: Array<ServiceError> = [
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId does not match required format."
+      },
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId checksum is invalid."
+      }
+    ]
+
+    const [, actualError]: [ClinicalViewParams, Array<ServiceError>] = validateRequest(mockEvent, logger)
+    expect(actualError).toEqual(expectedErrors)
+  })
+
+  it("returns the correct error when the prescriptionId checksum is invalid", async () => {
+    const mockEvent = {
+      headers: mockHeaders,
+      pathParameters: {
+        prescriptionId: "CBEF44-000X26-41E1B1"
+      }
+    } as unknown as APIGatewayProxyEvent
+
     const expectedErrors: Array<ServiceError> = [{
       status: 400,
       severity: "error",
-      description: "Missing required path parameter: prescriptionId."
+      description: "prescriptionId checksum is invalid."
     }]
 
     const [, actualError]: [ClinicalViewParams, Array<ServiceError>] = validateRequest(mockEvent, logger)

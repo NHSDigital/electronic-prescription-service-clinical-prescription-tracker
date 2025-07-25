@@ -1,6 +1,6 @@
 import {Logger} from "@aws-lambda-powertools/logger"
 import {CommonHeaderParameters, ServiceError} from "@cpt-common/common-types/service"
-import {validateCommonHeaders} from "@cpt-common/common-utils"
+import {validateCommonHeaders, validatePrescriptionId} from "@cpt-common/common-utils"
 import {ClinicalViewParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
 import {
   APIGatewayEvent,
@@ -45,9 +45,9 @@ const validatePathParameters = (
   eventPathParameters: APIGatewayProxyEventPathParameters | null, logger: Logger):
   [PathParameters, Array<ServiceError>] => {
 
-  const errors: Array<ServiceError> = []
+  let errors: Array<ServiceError> = []
 
-  const prescriptionId: string | undefined = eventPathParameters?.prescriptionId
+  let prescriptionId: string | undefined = eventPathParameters?.prescriptionId
   if (!prescriptionId) {
     logger.error("Missing required path parameter; prescriptionId.")
     errors.push({
@@ -56,6 +56,9 @@ const validatePathParameters = (
       description: "Missing required path parameter: prescriptionId."
     })
   }
+
+  const prescriptionIdErrors = validatePrescriptionId(prescriptionId ? prescriptionId.toUpperCase() : "", logger)
+  errors = [...errors, ...prescriptionIdErrors]
 
   const pathParameters: PathParameters = {
     prescriptionId

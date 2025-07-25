@@ -19,7 +19,7 @@ const mockHeaders: APIGatewayProxyEventHeaders = {
   "nhsd-session-jobrole": "JOB-123-456-789"
 }
 const mockQueryStringParameters: APIGatewayProxyEventQueryStringParameters = {
-  prescriptionId : "PRES-1234-5678"
+  prescriptionId : "54F746-A83008-E8A05J"
 }
 
 describe("Test validateRequest", () => {
@@ -44,7 +44,7 @@ describe("Test validateRequest", () => {
     } as unknown as APIGatewayProxyEvent
 
     const expected: PrescriptionSearchParams = {
-      prescriptionId: "PRES-1234-5678",
+      prescriptionId: "54F746-A83008-E8A05J",
       nhsNumber: undefined,
       creationDateRange: undefined,
       requestId: "REQ-123-456-789",
@@ -54,8 +54,9 @@ describe("Test validateRequest", () => {
       jobRoleCode: "JOB-123-456-789"
     }
 
-    const [actualParameters]: [PrescriptionSearchParams, Array<ServiceError>] = validateRequest(mockEvent, logger)
+    const [actualParameters, actualErrors]: [PrescriptionSearchParams, Array<ServiceError>] = validateRequest(mockEvent, logger)
     expect(actualParameters).toEqual(expected)
+    expect(actualErrors).toEqual([])
   })
 
   it("returns correct search parameters when called with a valid request with nhsNumber", async () => {
@@ -86,7 +87,7 @@ describe("Test validateRequest", () => {
     } as unknown as APIGatewayProxyEvent
 
     const expected: PrescriptionSearchParams = {
-      prescriptionId: "PRES-1234-5678",
+      prescriptionId: "54F746-A83008-E8A05J",
       nhsNumber: undefined,
       creationDateRange: {
         lowDate: "2025-01-01"
@@ -109,7 +110,7 @@ describe("Test validateRequest", () => {
     } as unknown as APIGatewayProxyEvent
 
     const expected: PrescriptionSearchParams = {
-      prescriptionId: "PRES-1234-5678",
+      prescriptionId: "54F746-A83008-E8A05J",
       nhsNumber: undefined,
       creationDateRange: {
         highDate: "2025-02-02"
@@ -132,7 +133,7 @@ describe("Test validateRequest", () => {
     } as unknown as APIGatewayProxyEvent
 
     const expected: PrescriptionSearchParams = {
-      prescriptionId: "PRES-1234-5678",
+      prescriptionId: "54F746-A83008-E8A05J",
       nhsNumber: undefined,
       creationDateRange: {
         lowDate: "2025-01-01",
@@ -155,11 +156,13 @@ describe("Test validateRequest", () => {
       queryStringParameters: {}
     } as unknown as APIGatewayProxyEvent
 
-    const expectedErrors: Array<ServiceError> = [{
-      status: 400,
-      severity: "error",
-      description: "Missing required query string parameter; either prescriptionId or nhsNumber must be included."
-    }]
+    const expectedErrors: Array<ServiceError> = [
+      {
+        status: 400,
+        severity: "error",
+        description: "Missing required query string parameter; either prescriptionId or nhsNumber must be included."
+      }
+    ]
 
     const [, actualError]: [PrescriptionSearchParams, Array<ServiceError>] = validateRequest(mockEvent, logger)
     expect(actualError).toEqual(expectedErrors)
@@ -168,13 +171,101 @@ describe("Test validateRequest", () => {
   it("returns the correct error when prescriptionId and nhsNumber are both included in the requests query string params", async () => {
     const mockEvent = {
       headers: mockHeaders,
-      queryStringParameters: {...mockQueryStringParameters, ...{nhsNumber: "123-456-7890"}}
+      queryStringParameters: {...mockQueryStringParameters, ...{nhsNumber: "5839945242"}}
+    } as unknown as APIGatewayProxyEvent
+
+    const expectedErrors: Array<ServiceError> = [
+      {
+        status: 400,
+        severity: "error",
+        description: "Invalid query string parameters; only prescriptionId or nhsNumber must be provided, not both."
+      }
+    ]
+
+    const [, actualError]: [PrescriptionSearchParams, Array<ServiceError>] = validateRequest(mockEvent, logger)
+    expect(actualError).toEqual(expectedErrors)
+  })
+
+  it("returns the correct errors when the prescriptionId is in a invalid format", async () => {
+    const mockEvent = {
+      headers: mockHeaders,
+      queryStringParameters: {
+        prescriptionId: "54746-A8308-E8A05J"
+      }
+    } as unknown as APIGatewayProxyEvent
+
+    const expectedErrors: Array<ServiceError> = [
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId does not match required format."
+      },
+      {
+        status: 400,
+        severity: "error",
+        description: "prescriptionId checksum is invalid."
+      }
+    ]
+
+    const [, actualError]: [PrescriptionSearchParams, Array<ServiceError>] = validateRequest(mockEvent, logger)
+    expect(actualError).toEqual(expectedErrors)
+  })
+
+  it("returns the correct error when the prescriptionId checksum is invalid", async () => {
+    const mockEvent = {
+      headers: mockHeaders,
+      queryStringParameters: {
+        prescriptionId: "CBEF44-000X26-41E1B1"
+      }
     } as unknown as APIGatewayProxyEvent
 
     const expectedErrors: Array<ServiceError> = [{
       status: 400,
       severity: "error",
-      description: "Invalid query string parameters; only prescriptionId or nhsNumber must be provided, not both."
+      description: "prescriptionId checksum is invalid."
+    }]
+
+    const [, actualError]: [PrescriptionSearchParams, Array<ServiceError>] = validateRequest(mockEvent, logger)
+    expect(actualError).toEqual(expectedErrors)
+  })
+
+  it("returns the correct errors when the nhsNumber is in a invalid format", async () => {
+    const mockEvent = {
+      headers: mockHeaders,
+      queryStringParameters: {
+        nhsNumber: "311661077"
+      }
+    } as unknown as APIGatewayProxyEvent
+
+    const expectedErrors: Array<ServiceError> = [
+      {
+        status: 400,
+        severity: "error",
+        description: "nhsNumber does not match required format."
+      },
+      {
+        status: 400,
+        severity: "error",
+        description: "nhsNumber checksum is invalid."
+      }
+    ]
+
+    const [, actualError]: [PrescriptionSearchParams, Array<ServiceError>] = validateRequest(mockEvent, logger)
+    expect(actualError).toEqual(expectedErrors)
+  })
+
+  it("returns the correct error when the nhsNumber checksum is invalid", async () => {
+    const mockEvent = {
+      headers: mockHeaders,
+      queryStringParameters: {
+        nhsNumber: "7994647953"
+      }
+    } as unknown as APIGatewayProxyEvent
+
+    const expectedErrors: Array<ServiceError> = [{
+      status: 400,
+      severity: "error",
+      description: "nhsNumber checksum is invalid."
     }]
 
     const [, actualError]: [PrescriptionSearchParams, Array<ServiceError>] = validateRequest(mockEvent, logger)
@@ -185,7 +276,7 @@ describe("Test validateRequest", () => {
     const headers: APIGatewayProxyEventHeaders = {...mockHeaders, "x-request-id": undefined}
     const event = {
       headers: headers,
-      queryStringParameters: {prescriptionId : "PRES-1234-5678"}
+      queryStringParameters: {prescriptionId : "54F746-A83008-E8A05J"}
     } as unknown as APIGatewayProxyEvent
 
     const expectedErrors: Array<ServiceError> = [{
@@ -202,7 +293,7 @@ describe("Test validateRequest", () => {
     const headers: APIGatewayProxyEventHeaders = {...mockHeaders, "nhsd-organization-uuid": undefined}
     const event = {
       headers: headers,
-      queryStringParameters: {prescriptionId : "PRES-1234-5678"}
+      queryStringParameters: {prescriptionId : "54F746-A83008-E8A05J"}
     } as unknown as APIGatewayProxyEvent
 
     const expectedErrors: Array<ServiceError> = [{
@@ -219,7 +310,7 @@ describe("Test validateRequest", () => {
     const headers: APIGatewayProxyEventHeaders = {...mockHeaders, "nhsd-session-urid": undefined}
     const event = {
       headers: headers,
-      queryStringParameters: {prescriptionId : "PRES-1234-5678"}
+      queryStringParameters: {prescriptionId : "54F746-A83008-E8A05J"}
     } as unknown as APIGatewayProxyEvent
 
     const expectedErrors: Array<ServiceError> = [{
@@ -236,7 +327,7 @@ describe("Test validateRequest", () => {
     const headers: APIGatewayProxyEventHeaders = {...mockHeaders, "nhsd-identity-uuid": undefined}
     const event = {
       headers: headers,
-      queryStringParameters: {prescriptionId : "PRES-1234-5678"}
+      queryStringParameters: {prescriptionId : "54F746-A83008-E8A05J"}
     } as unknown as APIGatewayProxyEvent
 
     const expectedErrors: Array<ServiceError> = [{
@@ -253,7 +344,7 @@ describe("Test validateRequest", () => {
     const headers: APIGatewayProxyEventHeaders = {...mockHeaders, "nhsd-session-jobrole": undefined}
     const event = {
       headers: headers,
-      queryStringParameters: {prescriptionId : "PRES-1234-5678"}
+      queryStringParameters: {prescriptionId : "54F746-A83008-E8A05J"}
     } as unknown as APIGatewayProxyEvent
 
     const expectedErrors: Array<ServiceError> = [{
@@ -269,7 +360,7 @@ describe("Test validateRequest", () => {
   it("returns a list of errors when multiple required headers are missing from the request", async () => {
     const event = {
       headers: {},
-      queryStringParameters: {prescriptionId : "PRES-1234-5678"}
+      queryStringParameters: {prescriptionId : "54F746-A83008-E8A05J"}
     } as unknown as APIGatewayProxyEvent
 
     const expectedErrors: Array<ServiceError> = [
