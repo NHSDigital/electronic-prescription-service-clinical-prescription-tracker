@@ -15,8 +15,21 @@ const mockHeaders: APIGatewayProxyEventHeaders = {
   "nhsd-session-jobrole": "JOB-123-456-789"
 }
 
-// TODO: happy path?
 describe("Test validateCommonHeaders", () => {
+  it("returns headers when called with valid headers", async () => {
+    const expectedHeaders = {
+      jobRoleCode: "JOB-123-456-789",
+      organizationId: "ORG-123-456-789",
+      requestId: "REQ-123-456-789",
+      sdsId: "ID-123-456-789",
+      sdsRoleProfileId: "SESS-123-456-789"
+    }
+
+    const [actualHeaders, actualError]: [CommonHeaderParameters, Array<ServiceError>] = validateCommonHeaders(mockHeaders, logger)
+    expect(expectedHeaders).toEqual(actualHeaders)
+    expect(actualError).toEqual([])
+  })
+
   it("returns the correct error when x-request-id is missing from the requests headers", async () => {
     const headers: APIGatewayProxyEventHeaders = {...mockHeaders, "x-request-id": undefined}
 
@@ -478,6 +491,39 @@ describe("Test validateNhsNumber", () => {
       severity: "error",
       description: "nhsNumber checksum is invalid."
     }]
+
+    const actualErrors = validateNhsNumber(mockNhsNumber, logger)
+    expect(actualErrors).toEqual(expectedErrors)
+  })
+
+  it("returns the correct errors when called with a nhsNumber with invalid checksum", () => {
+    const mockNhsNumber = "7994647953"
+
+    const expectedErrors: Array<ServiceError> = [{
+      status: 400,
+      severity: "error",
+      description: "nhsNumber checksum is invalid."
+    }]
+
+    const actualErrors = validateNhsNumber(mockNhsNumber, logger)
+    expect(actualErrors).toEqual(expectedErrors)
+  })
+
+  it("returns the correct errors when called with an empty nhsNumber", () => {
+    const mockNhsNumber = ""
+
+    const expectedErrors: Array<ServiceError> = [
+      {
+        status: 400,
+        severity: "error",
+        description: "nhsNumber does not match required format."
+      },
+      {
+        status: 400,
+        severity: "error",
+        description: "nhsNumber checksum is invalid."
+      }
+    ]
 
     const actualErrors = validateNhsNumber(mockNhsNumber, logger)
     expect(actualErrors).toEqual(expectedErrors)
