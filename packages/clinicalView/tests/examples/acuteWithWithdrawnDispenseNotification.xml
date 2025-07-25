@@ -168,6 +168,7 @@
 								</history>
 								<filteredHistory>
 									<SCN>2</SCN>
+									<internalId>20250701131247000000_HISTORY_UPLOAD</internalId>
 									<timestamp>20250701131247</timestamp>
 									<fromStatus>False</fromStatus>
 									<toStatus>0001</toStatus>
@@ -187,6 +188,7 @@
 								</filteredHistory>
 								<filteredHistory>
 									<SCN>3</SCN>
+									<internalId>20250701131410000000_HISTORY_RELEASE</internalId>
 									<timestamp>20250701131410</timestamp>
 									<fromStatus>0001</fromStatus>
 									<toStatus>0002</toStatus>
@@ -206,6 +208,7 @@
 								</filteredHistory>
 								<filteredHistory>
 									<SCN>4</SCN>
+									<internalId>20250701131454709685_DF2826_1614371148</internalId>
 									<timestamp>20250701131454</timestamp>
 									<fromStatus>0002</fromStatus>
 									<toStatus>0003</toStatus>
@@ -225,6 +228,7 @@
 								</filteredHistory>
 								<filteredHistory>
 									<SCN>5</SCN>
+									<internalId>20250701131500268279_99E058_1614371148</internalId>
 									<timestamp>20250701131500</timestamp>
 									<fromStatus>0003</fromStatus>
 									<toStatus>0006</toStatus>
@@ -244,6 +248,7 @@
 								</filteredHistory>
 								<filteredHistory>
 									<SCN>6</SCN>
+									<internalId>20250701131541000000_HISTORY_WITHDRAWAL</internalId>
 									<timestamp>20250701131541</timestamp>
 									<fromStatus>0006</fromStatus>
 									<toStatus>0003</toStatus>
@@ -327,21 +332,28 @@
 									<productLineItem1>Methotrexate 10mg/0.2ml solution for injection pre-filled syringes</productLineItem1>
 									<quantityLineItem1>1</quantityLineItem1>
 									<narrativeLineItem1>pre-filled disposable injection</narrativeLineItem1>
-									<dosageLineItem1/>
+									<dosageLineItem1>Inject 10 milligram - 5 times a day - Subcutaneous route - for 10 days</dosageLineItem1>
+									<componentsLineItem1>
+										[{"product": "Methotrexate 10mg/0.2ml solution for injection 
+										pre-filled syringes","quantity": "1","narrative": "pre-filled disposable injection","dosage": "Inject 10 milligram - 5 
+										times a day - Subcutaneous route - for 10 days"}]</componentsLineItem1>
 									<statusLineItem1>0003</statusLineItem1>
 									<productLineItem2/>
 									<quantityLineItem2/>
 									<narrativeLineItem2/>
 									<dosageLineItem2/>
+									<componentsLineItem2/>
 									<statusLineItem2/>
 									<productLineItem3/>
 									<quantityLineItem3/>
 									<narrativeLineItem3/>
 									<dosageLineItem3/>
+									<componentsLineItem3/>
 									<statusLineItem3/>
 									<productLineItem4/>
 									<quantityLineItem4/>
 									<narrativeLineItem4/>
+									<componentsLineItem4/>
 									<dosageLineItem4/>
 									<statusLineItem4/>
 									<statusPrescription>0003</statusPrescription>
@@ -356,22 +368,30 @@
 									<productLineItem1>Methotrexate 10mg/0.2ml solution for injection pre-filled syringes</productLineItem1>
 									<quantityLineItem1>1</quantityLineItem1>
 									<narrativeLineItem1>pre-filled disposable injection</narrativeLineItem1>
-									<dosageLineItem1/>
+									<dosageLineItem1>Inject 10 milligram - 5 times a day - Subcutaneous route - for 10 days</dosageLineItem1>
+									<componentsLineItem1>
+										[{"product": "Methotrexate 10mg/0.2ml solution for injection pre-filled 
+										syringes","quantity": "1","narrative": "pre-filled disposable injection","dosage": "Inject 10 milligram - 5 
+										times a day - Subcutaneous route - for 10 days"}]
+									</componentsLineItem1>
 									<statusLineItem1>0001</statusLineItem1>
 									<productLineItem2/>
 									<quantityLineItem2/>
 									<narrativeLineItem2/>
 									<dosageLineItem2/>
+									<componentsLineItem2/>
 									<statusLineItem2/>
 									<productLineItem3/>
 									<quantityLineItem3/>
 									<narrativeLineItem3/>
 									<dosageLineItem3/>
+									<componentsLineItem3/>
 									<statusLineItem3/>
 									<productLineItem4/>
 									<quantityLineItem4/>
 									<narrativeLineItem4/>
 									<dosageLineItem4/>
+									<componentsLineItem4/>
 									<statusLineItem4/>
 									<statusPrescription>0006</statusPrescription>
 								</dispenseNotification>

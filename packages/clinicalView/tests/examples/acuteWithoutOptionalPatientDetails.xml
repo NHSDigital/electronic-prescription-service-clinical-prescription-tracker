@@ -138,6 +138,7 @@
 								</history>
 								<filteredHistory>
 									<SCN>2</SCN>
+									<internalId>20250429132634000000_HISTORY_UPLOAD</internalId>
 									<timestamp>20250429132634</timestamp>
 									<fromStatus>False</fromStatus>
 									<toStatus>0001</toStatus>
@@ -157,6 +158,7 @@
 								</filteredHistory>
 								<filteredHistory>
 									<SCN>3</SCN>
+									<internalId>20250429132645000000_HISTORY_RELEASE</internalId>
 									<timestamp>20250429132645</timestamp>
 									<fromStatus>0001</fromStatus>
 									<toStatus>0002</toStatus>
@@ -176,6 +178,7 @@
 								</filteredHistory>
 								<filteredHistory>
 									<SCN>4</SCN>
+									<internalId>20250429132704108575_90B308_1614371148</internalId>
 									<timestamp>20250429132704</timestamp>
 									<fromStatus>0002</fromStatus>
 									<toStatus>0006</toStatus>
@@ -259,22 +262,30 @@
 									<productLineItem1>Amoxicillin 250mg capsules</productLineItem1>
 									<quantityLineItem1>20</quantityLineItem1>
 									<narrativeLineItem1>tablet</narrativeLineItem1>
-									<dosageLineItem1/>
+									<dosageLineItem1>2 times a day for 10 days</dosageLineItem1>
+									<componentsLineItem1>
+										[{"product": "Amoxicillin 250mg 
+										capsules","quantity": "20","narrative": "tablet","dosage": "2 times 
+										a day for 10 days"}]
+									</componentsLineItem1>
 									<statusLineItem1>0001</statusLineItem1>
 									<productLineItem2/>
 									<quantityLineItem2/>
 									<narrativeLineItem2/>
 									<dosageLineItem2/>
+									<componentsLineItem2/>
 									<statusLineItem2/>
 									<productLineItem3/>
 									<quantityLineItem3/>
 									<narrativeLineItem3/>
 									<dosageLineItem3/>
+									<componentsLineItem3/>
 									<statusLineItem3/>
 									<productLineItem4/>
 									<quantityLineItem4/>
 									<narrativeLineItem4/>
 									<dosageLineItem4/>
+									<componentsLineItem4/>
 									<statusLineItem4/>
 									<statusPrescription>0006</statusPrescription>
 								</dispenseNotification>

@@ -43,7 +43,8 @@
         "streetsidesoftware.code-spell-checker",
         "timonwong.shellcheck",
         "mkhl.direnv",
-        "github.vscode-github-actions"
+        "github.vscode-github-actions",
+        "Gruntfuggly.todo-tree"
       ],
       "settings": {
         "python.defaultInterpreterPath": "/workspaces/electronic-prescription-service-clinical-prescription-tracker/.venv/bin/python",
