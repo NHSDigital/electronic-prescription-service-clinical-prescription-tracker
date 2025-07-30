@@ -485,8 +485,8 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
               text: component.itemName ?? ""
             },
             quantity: {
-              value: component.quantity ? component.quantity : 0,
-              unit: component.quantityForm ? component.quantityForm : ""
+              value: component.quantity ?? 0,
+              unit: component.quantityForm ?? ""
             },
             ...(component.dosageInstruction ? {dosageInstruction: [{text: component.dosageInstruction}]}: {}),
             extension: [
