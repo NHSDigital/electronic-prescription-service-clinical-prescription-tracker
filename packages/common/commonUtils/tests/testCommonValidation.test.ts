@@ -107,7 +107,7 @@ describe("Test validateCommonHeaders", () => {
 
 describe("Test validatePrescriptionId", () => {
   it("returns no errors when called with a valid prescriptionId with a numeric checksum", () => {
-    const mockPrescriptionId = "4F30E7-A83008-160FB1"
+    const mockPrescriptionId = "0308BB-000X26-4410B0"
 
     const expectedErrors: Array<ServiceError> = []
 

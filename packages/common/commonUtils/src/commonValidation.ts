@@ -141,8 +141,7 @@ export const validateNhsNumber = (nhsNumber: string, logger: Logger): Array<Serv
     calculatedChecksum = 0
   }
 
-  if (calculatedChecksum === undefined || checksum === undefined
-    || calculatedChecksum === 10 || calculatedChecksum !== Number(checksum)){
+  if (checksum === undefined || calculatedChecksum === 10 || calculatedChecksum !== Number(checksum)){
     logger.error("Invalid nhsNumber checksum.", {
       nhsNumber,
       checksum: `${checksum}`,
