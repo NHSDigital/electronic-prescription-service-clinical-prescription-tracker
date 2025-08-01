@@ -23,6 +23,7 @@ const cfnDriftDetectionGroup = app.node.tryGetContext("cfnDriftDetectionGroup")
 
 Aspects.of(app).add(new AwsSolutionsChecks({verbose: true}))
 
+Tags.of(app).add("accountId", accountId)
 Tags.of(app).add("stackName", stackName)
 Tags.of(app).add("version", version)
 Tags.of(app).add("commit", commit)
