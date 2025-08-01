@@ -428,65 +428,74 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
     }
   }
 
-  // Generate a medication dispense resource for each line item of each dispense notification
+  // Generate a medication dispense resource for each component of each line item of each dispense notification
   for (const dispenseNotification of Object.values(prescription.dispenseNotifications)){
     medicationDispenseResourceIds[dispenseNotification.dispenseNotificationId] = []
     for (const lineItem of Object.values(dispenseNotification.lineItems)){
 
-      logger.info("Generating MedicationDispense resource for DN line item...", {
+      logger.info("Generating MedicationDispense resources for DN line item...", {
         dispenseNotificationId: dispenseNotification.dispenseNotificationId,
         lineItemNo: lineItem.lineItemNo
       })
-      const medicationDispenseResourceId = randomUUID()
-      medicationDispenseResourceIds[
-        dispenseNotification.dispenseNotificationId].push(medicationDispenseResourceId)
 
-      /* Some fields may be empty/undefined return them as is for partial DN scenarios */
-      const medicationDispense: BundleEntry<MedicationDispense> & MedicationDispenseBundleEntryType= {
-        fullUrl: `urn:uuid:${medicationDispenseResourceId}`,
-        search: {
-          mode: "include"
-        },
-        resource:{
-          resourceType: "MedicationDispense",
-          id: medicationDispenseResourceId,
-          identifier: [{
-            system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
-            value: lineItem.lineItemId
-          }],
-          subject: {
-            reference: `urn:uuid:${patientResourceId}`
-          },
-          status: dispenseNotification.isLastDispenseNotification ? "in-progress" : "unknown",
-          performer: [{
-            actor: {
-              reference: `urn:uuid:${dispenserResourceId}`
-            }
-          }],
-          type:{
-            coding: [{
-              system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
-              code: lineItem.status,
-              display: LINE_ITEM_STATUS_MAP[lineItem.status]
-            }]
-          },
-          authorizingPrescription: [{
-            reference: `urn:uuid:${medicationRequestResourceIds[lineItem.lineItemNo]}`
-          }],
-          medicationCodeableConcept: {
-            text: lineItem.itemName ?? ""
-          },
-          quantity: {
-            value: lineItem.quantity ? lineItem.quantity : 0,
-            unit: lineItem.quantityForm ? lineItem.quantityForm : ""
-          },
-          ...(lineItem.dosageInstruction ? {dosageInstruction: [{text: lineItem.dosageInstruction}]}: {}),
-          extension: [
-            taskBusinessStatusExtension
-          ]
-        }
+      /* If component information is completely missing add a "fake" component so a
+      MedicationDispense resource is still created for the partial DN*/
+      if (lineItem.components.length === 0){
+        lineItem.components.push({})
       }
-      medicationDispenses.push(medicationDispense)
+
+      for (const component of lineItem.components){
+        const medicationDispenseResourceId = randomUUID()
+        medicationDispenseResourceIds[
+          dispenseNotification.dispenseNotificationId].push(medicationDispenseResourceId)
+
+        /* Some fields may be empty/undefined return them as is for partial DN scenarios */
+        const medicationDispense: BundleEntry<MedicationDispense> & MedicationDispenseBundleEntryType= {
+          fullUrl: `urn:uuid:${medicationDispenseResourceId}`,
+          search: {
+            mode: "include"
+          },
+          resource:{
+            resourceType: "MedicationDispense",
+            id: medicationDispenseResourceId,
+            identifier: [{
+              system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
+              value: lineItem.lineItemId
+            }],
+            subject: {
+              reference: `urn:uuid:${patientResourceId}`
+            },
+            status: dispenseNotification.isLastDispenseNotification ? "in-progress" : "unknown",
+            performer: [{
+              actor: {
+                reference: `urn:uuid:${dispenserResourceId}`
+              }
+            }],
+            type:{
+              coding: [{
+                system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+                code: lineItem.status,
+                display: LINE_ITEM_STATUS_MAP[lineItem.status]
+              }]
+            },
+            authorizingPrescription: [{
+              reference: `urn:uuid:${medicationRequestResourceIds[lineItem.lineItemNo]}`
+            }],
+            medicationCodeableConcept: {
+              text: component.itemName ?? ""
+            },
+            quantity: {
+              value: component.quantity ?? 0,
+              unit: component.quantityForm ?? ""
+            },
+            ...(component.dosageInstruction ? {dosageInstruction: [{text: component.dosageInstruction}]}: {}),
+            extension: [
+              taskBusinessStatusExtension
+            ]
+          }
+        }
+        medicationDispenses.push(medicationDispense)
+      }
     }
   }
 
@@ -532,10 +541,6 @@ const generateHistoryAction = (
 
   // Generate a sub Action for each prescription history event
   const historyEvents = Object.values(prescription.history)
-  const noOfDispenseNotificationEvents = historyEvents.filter(event => event.isDispenseNotification).length
-  const noOfDispenseNotifications = resourceIds.medicationDispense ?
-    Object.keys(resourceIds.medicationDispense).length : 0
-
   for (const event of historyEvents){
     const referenceActions: Array<ReferenceAction> = []
 
@@ -543,39 +548,23 @@ const generateHistoryAction = (
     let dispenseNotificationCoding
     if (event.isDispenseNotification && resourceIds.medicationDispense){
       logger.info("Generating reference Actions for MedicationDispenses...")
-      /*- We first need to check if the DN events messageID exists in the list of DN ID's, if not then
-          they are potentially mismatched and we cannon reference them normally.
-        - If there is only a single DN event and a single DN then we can safely pair them despite the mismatched ID's.
-        - Otherwise we omit the medicationDispense references as we cannot confidently pair them*/
-      let dispenseNotificationId
-      if (event.messageId in resourceIds.medicationDispense){
-        dispenseNotificationId = event.messageId
-      } else if (noOfDispenseNotificationEvents === 1 && noOfDispenseNotifications === 1) {
-        dispenseNotificationId = Object.keys(resourceIds.medicationDispense)[0]
-        /* Leaving these logs as info so that we can monitor mismatched ID's in live*/
-        logger.warn("Pairing single DN event to single DN.", {messageId: event.messageId, dispenseNotificationId})
-      } else {
-        logger.warn("Unable to pair DN event. No DN found for messageID, and DN event count and DN count > 1",
-          {messageId: event.messageId, noOfDispenseNotifications, noOfDispenseNotificationEvents})
-      }
+      const dispenseNotificationId = prescription.dispenseNotifications[event.internalId].dispenseNotificationId
 
-      if (dispenseNotificationId){
-        for (const medicationDispenseResourceId of resourceIds.medicationDispense[dispenseNotificationId]){
-          const referenceAction: RequestGroupAction & ReferenceAction = {
-            resource: {
-              reference: `urn:uuid:${medicationDispenseResourceId}`
-            }
+      for (const medicationDispenseResourceId of resourceIds.medicationDispense[dispenseNotificationId]){
+        const referenceAction: RequestGroupAction & ReferenceAction = {
+          resource: {
+            reference: `urn:uuid:${medicationDispenseResourceId}`
           }
-          referenceActions.push(referenceAction)
         }
-
-        dispenseNotificationCoding = [{
-          coding:[{
-            system: "https://tools.ietf.org/html/rfc4122",
-            code: dispenseNotificationId
-          }]
-        }] satisfies HistoryAction["action"][0]["code"]
+        referenceActions.push(referenceAction)
       }
+
+      dispenseNotificationCoding = [{
+        coding:[{
+          system: "https://tools.ietf.org/html/rfc4122",
+          code: dispenseNotificationId
+        }]
+      }] satisfies HistoryAction["action"][0]["code"]
     }
 
     logger.info("Generating sub Action for history event...")
