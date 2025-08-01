@@ -14,11 +14,11 @@
     "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
   },
   "dependencies": {
-    "@aws-lambda-powertools/logger": "^2.24.0",
+    "@aws-lambda-powertools/logger": "^2.24.1",
     "@cpt-common/common-types": "^1.0.0",
     "@cpt-common/common-utils": "^1.0.0",
     "@middy/http-header-normalizer": "^6.4.1",
-    "@NHSDigital/eps-spine-client": "^2.1.46",
+    "@NHSDigital/eps-spine-client": "^2.1.47",
     "date-fns": "^4.1.0",
     "fast-xml-parser": "^5.2.5",
     "json-schema-to-ts": "^3.1.0"
