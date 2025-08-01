@@ -27,6 +27,6 @@
     },
     "devDependencies": {
         "@types/fhir": "^0.0.41",
-        "jsonata": "^2.0.6"
+        "jsonata": "^2.1.0"
     }
 }
