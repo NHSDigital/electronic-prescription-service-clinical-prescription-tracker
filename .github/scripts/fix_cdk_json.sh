@@ -40,6 +40,11 @@ TRUSTSTORE_BUCKET_ARN=$(aws cloudformation describe-stacks --stack-name account-
 TRUSTSTORE_BUCKET_NAME=$(echo "${TRUSTSTORE_BUCKET_ARN}" | cut -d ":" -f 6)
 TRUSTSTORE_VERSION=$(aws s3api list-object-versions --bucket "${TRUSTSTORE_BUCKET_NAME}" --prefix "${TRUSTSTORE_FILE}" --query 'Versions[?IsLatest].[VersionId]' --output text)
 
+CFN_DRIFT_DETECTION_GROUP="cpt-api"
+if [[ "$STACK_NAME" =~ -pr-[0-9]+$ ]]; then
+  CFN_DRIFT_DETECTION_GROUP="cpt-api-pull-request"
+fi
+
 # go through all the key values we need to set
 fix_string_key accountId "${ACCOUNT_ID}"
 fix_string_key stackName "${STACK_NAME}"
@@ -51,3 +56,4 @@ fix_string_key targetSpineServer "${TARGET_SPINE_SERVER}"
 fix_boolean_number_key enableMutualTls "${ENABLE_MUTUAL_TLS}"
 fix_string_key trustStoreFile "${TRUSTSTORE_FILE}"
 fix_string_key trustStoreVersion "${TRUSTSTORE_VERSION}"
+fix_string_key cfnDriftDetectionGroup "${CFN_DRIFT_DETECTION_GROUP}"

@@ -19,6 +19,7 @@ const accountId = app.node.tryGetContext("accountId")
 const stackName = app.node.tryGetContext("stackName")
 const version = app.node.tryGetContext("versionNumber")
 const commit = app.node.tryGetContext("commitId")
+const cfnDriftDetectionGroup = app.node.tryGetContext("cfnDriftDetectionGroup")
 
 Aspects.of(app).add(new AwsSolutionsChecks({verbose: true}))
 
@@ -27,6 +28,8 @@ Tags.of(app).add("stackName", stackName)
 Tags.of(app).add("version", version)
 Tags.of(app).add("commit", commit)
 Tags.of(app).add("cdkApp", "CptsApiApp")
+Tags.of(app).add("repo", "electronic-prescription-service-clinical-prescription-tracker")
+Tags.of(app).add("cfnDriftDetectionGroup", cfnDriftDetectionGroup)
 
 new CptsApiStack(app, "CptsApiStack", {
   env: {
