@@ -87,7 +87,7 @@ export const apiGatewayHandler = async (
   logger.info("Generating FHIR response...")
   const responseBundle: BundleType = generateFhirResponse(parsedSpineResponse.prescription as Prescription, logger)
 
-  logger.info("Retuning FHIR response.")
+  logger.info("Returning FHIR response.")
   return {
     statusCode: 200,
     body: JSON.stringify(responseBundle),
