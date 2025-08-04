@@ -23,7 +23,7 @@ import {
   COURSE_OF_THERAPY_TYPE_MAP,
   GENDER_MAP,
   LINE_ITEM_STATUS_MAP,
-  LINE_ITEM_STATUS_REASON_MAP,
+  CANCELLATION_REASON_MAP,
   MEDICATION_REQUEST_STATUS_MAP,
   PERFORMER_SITE_TYPE_MAP,
   PRESCRIPTION_TYPE_MAP
@@ -318,7 +318,7 @@ const generateMedicationRequests = (
           statusReason: {
             coding:[{
               system: "https://fhir.nhs.uk/CodeSystem/medicationrequest-status-reason",
-              code: LINE_ITEM_STATUS_REASON_MAP[lineItem.cancellationReason],
+              code: CANCELLATION_REASON_MAP[lineItem.cancellationReason],
               display: lineItem.cancellationReason
             }]
           }

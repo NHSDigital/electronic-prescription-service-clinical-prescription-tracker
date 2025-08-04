@@ -96,3 +96,56 @@ export const dispenseStatusCoding = {
   required: ["system", "code", "display"]
 } as const satisfies JSONSchema
 export type DispenseStatusCoding = FromSchema<typeof dispenseStatusCoding>
+
+export const nonDispensingReasonCoding = {
+  type: "object",
+  properties: {
+    coding: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          system: {
+            type: "string",
+            enum: ["https://fhir.nhs.uk/CodeSystem/medicationdispense-status-reason"]
+          },
+          code: {
+            type: "string",
+            enum: [
+              "0001",
+              "0002",
+              "0003",
+              "0004",
+              "0005",
+              "0006",
+              "0007",
+              "0008",
+              "0009",
+              "0010",
+              "0011"
+            ]
+          },
+          display: {
+            type: "string",
+            enum: [
+              "Not required as instructed by the patient",
+              "Clinically unsuitable",
+              "Owings note issued to patient",
+              "Prescription cancellation",
+              "Prescription cancellation due to death",
+              "Illegal NHS prescription",
+              "Prescribed out of scope item",
+              "Item or prescription expired",
+              "Not allowed on FP10",
+              "Patient did not collect medication",
+              "Patient purchased medication over the counter"
+            ]
+          }
+        },
+        required: ["system", "code", "display"]
+      }
+    }
+  },
+  required: ["coding"]
+} as const satisfies JSONSchema
+export type NonDispensingReasonCoding = FromSchema<typeof nonDispensingReasonCoding>["coding"][0]

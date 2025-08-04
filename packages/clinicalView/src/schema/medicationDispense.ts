@@ -6,6 +6,7 @@ import {
   id,
   lineItemIdentifier,
   medicationCodeableConcept,
+  nonDispensingReasonCoding,
   quantity
 } from "./elements"
 import {taskBusinessStatusExtension} from "./extensions"
@@ -31,6 +32,7 @@ export const medicationDispense = {
     identifier: lineItemIdentifier,
     subject,
     status,
+    statusReason: nonDispensingReasonCoding,
     performer: {
       type: "array",
       items: {

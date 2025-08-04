@@ -1,6 +1,6 @@
 import {Logger} from "@aws-lambda-powertools/logger"
 import {IssueDetails, PatientDetailsSummary, PrescriptionDetailsSummary} from "@cpt-common/common-types/prescription"
-import {PrescriptionStatusCoding} from "@cpt-common/common-types/schema"
+import {CancellationReasonCoding, PrescriptionStatusCoding} from "@cpt-common/common-types/schema"
 import {ServiceError} from "@cpt-common/common-types/service"
 import {
   SPINE_TIMESTAMP_FORMAT,
@@ -11,7 +11,6 @@ import {
 import * as DateFns from "date-fns"
 import {XMLParser} from "fast-xml-parser"
 import {PerformerSiteTypeCoding, PrescriptionTypeCoding} from "./schema/extensions"
-import {StatusReasonCoding} from "./schema/medicationRequest"
 import {HistoryMessage} from "./schema/actions"
 import {DispenseStatusCoding} from "./schema/elements"
 
@@ -35,11 +34,13 @@ interface XmlDispenseNotification {
   dispNotifDocumentKey: string
   dispenseNotifDateTime: string
   statusPrescription: string
+  nonDispensingReasonPrescription: string
   [productLineItem: `productLineItem${string}`]: string
   [quantityLineItem: `quantityLineItem${string}`]: string
   [narrativeLineItem: `narrativeLineItem${string}`]: string
   [statusLineItem: `statusLineItem${string}`]: string
   [dosageLineItem: `dosageLineItem${string}`]: string
+  [nonDispensingReasonLineItem: `nonDispensingReasonLineItem${string}`]: string
 }
 
 interface XmlHistoryEvent {
@@ -143,17 +144,21 @@ interface LineItemDetailsSummary {
 }
 
 interface LineItemDetails extends LineItemDetailsSummary {
-  cancellationReason?: StatusReasonCoding["display"]
+  cancellationReason?: CancellationReasonCoding["display"]
   pendingCancellation: boolean
 }
 
 type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] }
-type DispenseNotificationLineItemDetails = WithRequired<Partial<LineItemDetailsSummary>, "lineItemNo" | "status">
+interface DispenseNotificationLineItemDetails extends
+  WithRequired<Partial<LineItemDetailsSummary>, "lineItemNo" | "status"> {
+    nonDispensingReason?: string
+  }
 
 interface DispenseNotificationDetails {
   dispenseNotificationId: string
   timestamp: string
   status: PrescriptionStatusCoding["code"]
+  nonDispensingReason?: string
   isLastDispenseNotification: boolean
   lineItems: {
     [key: string]: DispenseNotificationLineItemDetails
@@ -168,7 +173,7 @@ interface HistoryEventDetails {
   timestamp: string
   org: string
   newStatus: PrescriptionStatusCoding["code"]
-  cancellationReason?: StatusReasonCoding["display"]
+  cancellationReason?: CancellationReasonCoding["display"]
   isDispenseNotification: boolean
 }
 
@@ -353,11 +358,12 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
 
     logger.debug("Parsing history event...", {scn: eventId})
     // Determine if cancellation reason is pending, but remove from value to return
-    let cancellationReason = xmlFilteredHistoryEvent.cancellationReason as StatusReasonCoding["display"] | undefined
+    let cancellationReason =
+      xmlFilteredHistoryEvent.cancellationReason as CancellationReasonCoding["display"] | undefined
     let pendingCancellation = false
     if (cancellationReason?.startsWith("Pending: ")){
       pendingCancellation = true
-      cancellationReason = cancellationReason.substring(9) as StatusReasonCoding["display"]
+      cancellationReason = cancellationReason.substring(9) as CancellationReasonCoding["display"]
     }
 
     if (finalEvent){
@@ -385,11 +391,12 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
       const lineItemNo = xmlEventLineItem.order
 
       // Determine if cancellation reason is pending, but remove from value to return
-      let itemCancellationReason = xmlEventLineItem.cancellationReason as StatusReasonCoding["display"] | undefined
+      let itemCancellationReason =
+        xmlEventLineItem.cancellationReason as CancellationReasonCoding["display"] | undefined
       let itemPendingCancellation = false
       if (itemCancellationReason?.startsWith("Pending: ")){
         itemPendingCancellation = true
-        itemCancellationReason = itemCancellationReason?.substring(9) as StatusReasonCoding["display"]
+        itemCancellationReason = itemCancellationReason?.substring(9) as CancellationReasonCoding["display"]
       }
 
       logger.debug("Parsing history event line item...", {scn: eventId, lineItemNo})

@@ -3,7 +3,9 @@ import {
   IntentType,
   PrescriptionStatusCoding,
   subject,
-  taskBusinessStatus
+  taskBusinessStatus,
+  cancellationReasonCoding,
+  CancellationReasonCoding
 } from "./elements"
 import {
   medicationRepeatInformationExtension,
@@ -38,6 +40,8 @@ export {
   requestGroupCommonProperties,
   subject,
   taskBusinessStatus,
+  cancellationReasonCoding as cancellationReason,
+  CancellationReasonCoding,
   searchsetBundleCommonProperties,
   bundleEntryCommonProperties,
   operationOutcome,
