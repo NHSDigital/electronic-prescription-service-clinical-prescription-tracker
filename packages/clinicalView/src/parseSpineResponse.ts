@@ -14,11 +14,9 @@ import {PerformerSiteTypeCoding, PrescriptionTypeCoding} from "./schema/extensio
 import {HistoryMessage} from "./schema/actions"
 import {DispenseStatusCoding} from "./schema/elements"
 
-// Constants
 export const SPINE_DOB_FORMAT = "yyyymmdd" as const
 export const FHIR_DATE_FORMAT = "yyyy-mm-dd"
 
-// XML Types
 type XmlStringValue = {
   "@_value": string
 }
@@ -41,11 +39,7 @@ interface XmlDispenseNotification {
   [statusLineItem: `statusLineItem${string}`]: string
   [dosageLineItem: `dosageLineItem${string}`]: string
   [nonDispensingReasonLineItem: `nonDispensingReasonLineItem${string}`]: string
-}
-
-interface XmlHistoryEvent {
-  SCN: string
-  messageID: string
+  [componentsLineItem: `componentsLineItem${string}`]: string
 }
 
 interface XmlHistoryEventLineItem {
@@ -57,6 +51,7 @@ interface XmlHistoryEventLineItem {
 
 interface XmlFilteredHistoryEvent {
   SCN: string
+  internalId: string
   timestamp: string
   toStatus: string
   message: string
@@ -100,7 +95,6 @@ interface XmlEpsRecord {
   }
   lineItem: Array<XmlLineItem> | XmlLineItem
   dispenseNotification?: Array<XmlDispenseNotification> | XmlDispenseNotification
-  history: Array<XmlHistoryEvent> | XmlHistoryEvent
   filteredHistory: Array<XmlFilteredHistoryEvent> | XmlFilteredHistoryEvent
 }
 
@@ -121,8 +115,14 @@ interface SpineXmlClinicalViewResponse {
   prescriptionClinicalViewResponse: SpineClinicalView | SpineXmlError
 }
 
-// Parsed response types
 export type SpineGenderCode = 1 | 2 | 3 | 4
+
+interface spineComponentDetails {
+  product: string
+  quantity: string
+  narrative: string
+  dosage: string
+}
 
 interface PatientDetails extends PatientDetailsSummary {
   birthDate: string
@@ -133,29 +133,31 @@ interface PatientDetails extends PatientDetailsSummary {
   }
 }
 
-interface LineItemDetailsSummary {
-  lineItemNo: string
-  lineItemId: string
-  status: DispenseStatusCoding["code"]
+interface ComponentDetails {
   itemName: string
   quantity: number
   quantityForm: string
   dosageInstruction?: string
 }
+interface LineItemDetailsSummary {
+  lineItemNo: string
+  lineItemId: string
+  status: DispenseStatusCoding["code"]
+}
 
-interface LineItemDetails extends LineItemDetailsSummary {
+interface LineItemDetails extends LineItemDetailsSummary, ComponentDetails {
   cancellationReason?: CancellationReasonCoding["display"]
   pendingCancellation: boolean
 }
 
-type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] }
-interface DispenseNotificationLineItemDetails extends
-  WithRequired<Partial<LineItemDetailsSummary>, "lineItemNo" | "status"> {
-    nonDispensingReason?: string
-  }
+interface DispenseNotificationLineItemDetails extends LineItemDetailsSummary {
+  nonDispensingReason?: string
+  components: Array<Partial<ComponentDetails>>
+}
 
 interface DispenseNotificationDetails {
   dispenseNotificationId: string
+  dispenseNotificationDocumentKey: string
   timestamp: string
   status: PrescriptionStatusCoding["code"]
   nonDispensingReason?: string
@@ -168,8 +170,8 @@ interface DispenseNotificationDetails {
 
 interface HistoryEventDetails {
   eventId: string
+  internalId: string
   message: HistoryMessage
-  messageId: string
   timestamp: string
   org: string
   newStatus: PrescriptionStatusCoding["code"]
@@ -301,9 +303,11 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
   // Parse each dispense notification
   for (const xmlDispenseNotification of xmlDispenseNotifications) {
     const dispenseNotificationId = xmlDispenseNotification.dispenseNotificationID
+    const dispenseNotificationDocumentKey = xmlDispenseNotification.dispNotifDocumentKey
     logger.debug("Parsing dispense notification...", {dispenseNotificationId})
     const dispenseNotification: DispenseNotificationDetails = {
       dispenseNotificationId,
+      dispenseNotificationDocumentKey,
       timestamp: DateFns.parse(
         xmlDispenseNotification.dispenseNotifDateTime, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
       status: xmlDispenseNotification.statusPrescription as PrescriptionStatusCoding["code"],
@@ -319,21 +323,31 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
       */
       const status = xmlDispenseNotification[`statusLineItem${lineItemNo}`] as DispenseStatusCoding["code"]
       if(status) {
+        /* The JSON string in components gets mangled a bit in the xml response, need to first remove any line breaks
+        and tabs from it to get it back to a valid format before being able to JSON parse it */
+        const rawSpineComponents = xmlDispenseNotification[`componentsLineItem${lineItemNo}`]
+        const spineComponents: Array<spineComponentDetails> = rawSpineComponents ?
+          JSON.parse(rawSpineComponents.replace(/\r?\n\t*|\r/gm, "")) : []
+
         const lineItem: DispenseNotificationLineItemDetails = {
           lineItemNo,
           lineItemId: LineItemDetails.lineItemId,
           status,
-          itemName: xmlDispenseNotification[`productLineItem${lineItemNo}`],
-          quantity: Number(xmlDispenseNotification[`quantityLineItem${lineItemNo}`]),
-          quantityForm: xmlDispenseNotification[`narrativeLineItem${lineItemNo}`],
-          ...(xmlDispenseNotification[`dosageLineItem${lineItemNo}`] ?
-            {dosageInstruction: xmlDispenseNotification[`dosageLineItem${lineItemNo}`]} : {})
+          components: []
+        }
+
+        for (const component of spineComponents){
+          lineItem.components.push({
+            itemName: component.product,
+            quantity: Number(component.quantity),
+            quantityForm: component.narrative,
+            dosageInstruction: component.dosage
+          })
         }
         dispenseNotification.lineItems[lineItemNo] = lineItem
       }
     }
-
-    prescriptionDetails.dispenseNotifications[dispenseNotificationId] = dispenseNotification
+    prescriptionDetails.dispenseNotifications[dispenseNotificationDocumentKey] = dispenseNotification
   }
 
   let xmlFilteredHistory = xmlEpsRecord.filteredHistory
@@ -341,20 +355,12 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
     xmlFilteredHistory = [xmlFilteredHistory]
   }
 
-  let xmlHistory = xmlEpsRecord.history
-  if (!Array.isArray(xmlHistory)) {
-    xmlHistory = [xmlHistory]
-  }
-
   // Parse each event in the filtered history
   for (const [eventIndex, xmlFilteredHistoryEvent] of xmlFilteredHistory.entries()) {
-    const finalEvent = eventIndex === xmlHistory.length - 1
+    const finalEvent = eventIndex === xmlFilteredHistory.length - 1
 
     const eventId = xmlFilteredHistoryEvent.SCN
     const message = (xmlFilteredHistoryEvent.message).split(";")[0] // Remove unwanted additional information after the ";"
-
-    // Need to find corresponding event from the full history to parse the events full details
-    const xmlHistoryEvent = xmlHistory.find((event) => event.SCN === eventId)!
 
     logger.debug("Parsing history event...", {scn: eventId})
     // Determine if cancellation reason is pending, but remove from value to return
@@ -372,8 +378,8 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
 
     const historyEvent: HistoryEventDetails = {
       eventId,
+      internalId: xmlFilteredHistoryEvent.internalId, // This matches the DN doc key for relevant events.
       message: message as HistoryMessage,
-      messageId: xmlHistoryEvent.messageID.slice(1, -1), // This id matches the DN ID for relevant events. Strip unnecessary "" from value
       timestamp: DateFns.parse(xmlFilteredHistoryEvent.timestamp, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
       org: xmlFilteredHistoryEvent.agentPersonOrgCode,
       newStatus: xmlFilteredHistoryEvent.toStatus as PrescriptionStatusCoding["code"],
