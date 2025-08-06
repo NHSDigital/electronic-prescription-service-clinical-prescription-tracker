@@ -19,7 +19,7 @@ import {
   acuteCreated,
   acuteDispensedWithASingleItem,
   acuteDispensedWithMismatchedIds,
-  acuteHl7PendingCancellation,
+  acutePendingCancellationWithReason,
   acuteCumulativeMultipleDispenseNotifications,
   acuteMultipleDispenseNotificationsWithMismatchedIds,
   acuteWithdrawn,
@@ -478,7 +478,7 @@ describe("Test generateFhirResponse", () => {
   it("returns a RequestGroup with a PendingCancellation extension when called with a prescription with a HL7 pending cancellation", () => {
     mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
-    const parsedAcuteWithHl7PendingCancellation = parseExample(acuteHl7PendingCancellation)
+    const parsedAcuteWithHl7PendingCancellation = parseExample(acutePendingCancellationWithReason)
 
     const expected: PendingCancellationExtensionType = {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
