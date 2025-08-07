@@ -44,17 +44,17 @@ const errorMap: ErrorMap = {
     detailsCode: "NOT_FOUND",
     detailsDisplay: "404: The Server was unable to find the specified resource."
   },
+  408: {
+    status: "408 ",
+    code: "timeout",
+    detailsCode: "TIMEOUT",
+    detailsDisplay: "408: The server has timed out whilst processing the request."
+  },
   500: {
     status: "500 Internal Server Error",
     code: "exception",
     detailsCode: "SERVER_ERROR",
     detailsDisplay: "500: The Server has encountered an error processing the request."
-  },
-  504: {
-    status: "504 Gateway Timeout",
-    code: "timeout",
-    detailsCode: "TIMEOUT",
-    detailsDisplay: "504: The server has timed out whilst processing the request."
   }
 }
 
