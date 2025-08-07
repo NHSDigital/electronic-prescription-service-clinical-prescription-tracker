@@ -305,10 +305,10 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
   for (const xmlDispenseNotification of xmlDispenseNotifications) {
     const dispenseNotificationId = xmlDispenseNotification.dispenseNotificationID
     const dispenseNotificationDocumentKey = xmlDispenseNotification.dispNotifDocumentKey
-
-    logger.debug("Parsing dispense notification...", {dispenseNotificationId})
     const nonDispensingReason =
       xmlDispenseNotification.nonDispensingReasonPrescription as NonDispensingReasonCoding["code"] | undefined
+
+    logger.debug("Parsing dispense notification...", {dispenseNotificationId})
     const dispenseNotification: DispenseNotificationDetails = {
       dispenseNotificationId,
       dispenseNotificationDocumentKey,
