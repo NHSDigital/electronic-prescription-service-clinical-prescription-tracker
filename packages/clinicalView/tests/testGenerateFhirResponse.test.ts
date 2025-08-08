@@ -9,7 +9,7 @@ import {
   PendingCancellationExtensionType,
   PrescriptionStatusExtensionType
 } from "@cpt-common/common-types/schema"
-import {PrescriptionTypeExtensionType} from "../src/schema/extensions"
+import {PrescriptionNonDispensingReasonExtensionType, PrescriptionTypeExtensionType} from "../src/schema/extensions"
 import {HistoryAction} from "../src/schema/actions"
 import {RequestGroupBundleEntryType} from "../src/schema/requestGroup"
 import {MedicationRequestBundleEntryType} from "../src/schema/medicationRequest"
@@ -31,7 +31,9 @@ import {
   erdDispensedWith0Quantity,
   acuteAdditiveMultipleDispenseNotifications,
   acuteDispensedWithMultipleComponents,
-  acuteWithoutOptionalDosageInstructions
+  acuteWithoutOptionalDosageInstructions,
+  acuteCancelledWithReason,
+  acuteNonDispensedWithReason
 } from "./examples/examples"
 
 const logger: Logger = new Logger({serviceName: "clinicalView", logLevel: "DEBUG"})
@@ -62,18 +64,18 @@ const parsedErdDispensedWith0Quantity = parseExample(erdDispensedWith0Quantity)
 
 const {generateFhirResponse} = await import("../src/generateFhirResponse")
 
-describe("Test generateFhirResponse", () => {
-  beforeEach(() => {
-    mockUUID.mockImplementationOnce(() => "PATIENT-123-567-890")
-    mockUUID.mockImplementationOnce(() => "RGROUP-123-567-890")
-  })
+beforeEach(() => {
+  mockUUID.mockImplementationOnce(() => "PATIENT-123-567-890")
+  mockUUID.mockImplementationOnce(() => "RGROUP-123-567-890")
+  mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+})
 
-  afterEach(() => {
-    jest.resetAllMocks()
-  })
+afterEach(() => {
+  jest.resetAllMocks()
+})
 
-  it("returns a Bundle called", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+describe("Test generateFhirResponse: Bundle resource structure", () => {
+  it("returns a Bundle when called", () => {
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
@@ -87,13 +89,16 @@ describe("Test generateFhirResponse", () => {
     const actual = generateFhirResponse(parsedAcuteDispensedWithSingleItem, logger)
     expect(actual).toEqual(expect.objectContaining(expected))
   })
+})
 
-  it("returns a Bundle containing a RequestGroup Bundle Entry resource when called", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+describe("Test generateFhirResponse: RequestGroup resource structure & extensions", () => {
+  beforeEach(() => {
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
+  })
 
+  it("returns a Bundle containing a RequestGroup Bundle Entry resource when called", () => {
     const expected = {
       fullUrl: "urn:uuid:RGROUP-123-567-890",
       search: {
@@ -125,8 +130,289 @@ describe("Test generateFhirResponse", () => {
     expect(actual.entry).toContainEqual(expect.objectContaining(expected))
   })
 
+  it("returns a RequestGroup with a status PrescriptionStatus extension when called", () => {
+    const expected: PrescriptionStatusExtensionType = {
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+      extension: [{
+        url: "status",
+        valueCoding: {
+          system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+          code: "0006",
+          display: "Dispensed"
+        }
+      }]
+    }
+
+    const actual = generateFhirResponse(parsedAcuteDispensedWithSingleItem, logger)
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "RequestGroup",
+        extension: expect.arrayContaining([expected])
+      })
+    }))
+  })
+
+  it("returns a RequestGroup with a PrescriptionType extension when called", () => {
+    const expected: PrescriptionTypeExtensionType = {
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionType",
+      valueCoding: {
+        system: "https://fhir.nhs.uk/CodeSystem/prescription-type",
+        code: "0101",
+        display: "Primary Care Prescriber - Medical Prescriber"
+      }
+    }
+
+    const actual = generateFhirResponse(parsedAcuteDispensedWithSingleItem, logger)
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "RequestGroup",
+        extension: expect.arrayContaining([expected])
+      })
+    }))
+  })
+
+  it("returns a RequestGroup with a RepeatInformation extension when called with a non acute prescription", () => {
+    const parsedErdCreated = parseExample(erdCreated)
+
+    const expected: MedicationRepeatInformationExtensionType = {
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
+      extension:[
+        {
+          url: "numberOfRepeatsIssued",
+          valueInteger: 1
+        },
+        {
+          url: "numberOfRepeatsAllowed",
+          valueInteger: 7
+        }
+      ]
+    }
+
+    const actual = generateFhirResponse(parsedErdCreated, logger)
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "RequestGroup",
+        extension: expect.arrayContaining([expected])
+      })
+    }))
+  })
+
+  it("returns a RequestGroup without a RepeatInformation extension when called with a acute prescription", () => {
+    const expected = {
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation"
+    } as unknown as MedicationRepeatInformationExtensionType
+
+    const actual = generateFhirResponse(parsedAcuteDispensedWithSingleItem, logger)
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "RequestGroup",
+        extension: expect.not.arrayContaining([expected])
+      })
+    }))
+  })
+
+  it("returns a RequestGroup with a partial RepeatInformation extension when called with a non acute prescription without a max repeats value", () => {
+    const prescription = {
+      ...parsedAcuteDispensedWithSingleItem,
+      ...{treatmentType: "0002"}
+    } as unknown as Prescription
+
+    const expected: MedicationRepeatInformationExtensionType = {
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
+      extension:[
+        {
+          url: "numberOfRepeatsIssued",
+          valueInteger: 1
+        }
+      ]
+    }
+
+    const actual = generateFhirResponse(prescription, logger)
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "RequestGroup",
+        extension: expect.arrayContaining([expected])
+      })
+    }))
+  })
+
+  it("returns a RequestGroup with correct PendingCancellation & cancellationReason PrescriptionStatus extensions when called with an acute prescription pending cancellation with a cancellation reason", () => {
+    /* Tests for prescriptions where:
+      - The prescription has a non cancelled status
+      - The prescription has cancellation reason (e.g. cancelled via HL7)
+      - The cancellation is pending
+    */
+    const parsedAcutePendingCancellationWithReason = parseExample(acutePendingCancellationWithReason)
+
+    const expectedPendingCancellation: PendingCancellationExtensionType = {
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
+      extension: [{
+        url: "prescriptionPendingCancellation",
+        valueBoolean: true
+      }]
+    }
+    const expectedCancellationReason: PrescriptionStatusExtensionType = {
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+      extension:[{
+        url: "cancellationReason",
+        valueCoding: {
+          system: "https://fhir.nhs.uk/CodeSystem/medicationrequest-status-reason",
+          code: "0001",
+          display: "Prescribing Error"
+        }
+      }]
+    }
+
+    const actual = generateFhirResponse(parsedAcutePendingCancellationWithReason, logger)
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "RequestGroup",
+        extension: expect.arrayContaining([expectedPendingCancellation])
+      })
+    }))
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "RequestGroup",
+        extension: expect.arrayContaining([expectedCancellationReason])
+      })
+    }))
+  })
+
+  it("returns a RequestGroup with a correct PendingCancellation and no cancellationReason PrescriptionStatus extensions when called with an acute prescription without a cancellation reason", () => {
+    /* Tests for prescriptions where:
+      - The prescription has a non cancelled status
+      - The prescription does not have a cancellation reason
+      - There is no pending cancellation
+    */
+    const expectedPendingCancellation: PendingCancellationExtensionType = {
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
+      extension: [{
+        url: "prescriptionPendingCancellation",
+        valueBoolean: false
+      }]
+    }
+    const expectedCancellationReason = {
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+      extension:[{
+        url: "cancellationReason",
+        valueCoding: {
+          system: "https://fhir.nhs.uk/CodeSystem/medicationrequest-status-reason"
+        }
+      }]
+    } as unknown as PrescriptionStatusExtensionType
+
+    const actual = generateFhirResponse(parsedAcuteDispensedWithSingleItem, logger)
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "RequestGroup",
+        extension: expect.arrayContaining([expectedPendingCancellation])
+      })
+    }))
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "RequestGroup",
+        extension: expect.not.arrayContaining([expect.objectContaining(expectedCancellationReason)])
+      })
+    }))
+  })
+
+  it("returns a RequestGroup with correct PendingCancellation & cancellationReason PrescriptionStatus extensions when called with a cancelled acute prescription with a cancellation reason", () => {
+    /* Tests for prescriptions where:
+      - The prescription has a cancelled status
+      - The prescription has a cancellation reason (e.g. cancelled via HL7)
+      - The cancellation is not pending
+    */
+    const parsedAcuteCancelledWithReason = parseExample(acuteCancelledWithReason)
+
+    const expectedPendingCancellation: PendingCancellationExtensionType = {
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
+      extension: [{
+        url: "prescriptionPendingCancellation",
+        valueBoolean: false
+      }]
+    }
+    const expectedCancellationReason: PrescriptionStatusExtensionType = {
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+      extension:[{
+        url: "cancellationReason",
+        valueCoding: {
+          system: "https://fhir.nhs.uk/CodeSystem/medicationrequest-status-reason",
+          code: "0001",
+          display: "Prescribing Error"
+        }
+      }]
+    }
+
+    const actual = generateFhirResponse(parsedAcuteCancelledWithReason, logger)
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "RequestGroup",
+        extension: expect.arrayContaining([expectedPendingCancellation])
+      })
+    }))
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "RequestGroup",
+        extension: expect.arrayContaining([expectedCancellationReason])
+      })
+    }))
+  })
+
+  it("returns a RequestGroup without a PrescriptionNonDispensingReason extension when called with a acute prescription without a non dispensing reason", () => {
+    /* Tests for prescriptions where:
+      - The prescription has a non non dispensing status
+      - The prescription does not have a non dispensing reason
+    */
+    const expectedPrescriptionNonDispensingReason: PrescriptionNonDispensingReasonExtensionType = {
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionNonDispensingReason",
+      valueCoding: {
+        system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-status-reason",
+        code: "0002",
+        display: "Clinically unsuitable"
+      }
+    }
+
+    const actual = generateFhirResponse(parsedAcuteDispensedWithSingleItem, logger)
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "RequestGroup",
+        extension: expect.not.arrayContaining([expectedPrescriptionNonDispensingReason])
+      })
+    }))
+  })
+
+  it("returns a RequestGroup with a PrescriptionNonDispensingReason extension when called with a non dispensed acute prescription with a non dispensing reason", () => {
+    /* Tests for prescriptions where:
+      - The prescription has a non dispensing status
+      - The prescription has a non dispensing reason (e.g. not dispensed via HL7)
+    */
+    const parsedAcuteNonDispensedWithReason = parseExample(acuteNonDispensedWithReason)
+
+    const expectedPrescriptionNonDispensingReason: PrescriptionNonDispensingReasonExtensionType = {
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionNonDispensingReason",
+      valueCoding: {
+        system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-status-reason",
+        code: "0002",
+        display: "Clinically unsuitable"
+      }
+    }
+
+    const actual = generateFhirResponse(parsedAcuteNonDispensedWithReason, logger)
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "RequestGroup",
+        extension: expect.arrayContaining([expectedPrescriptionNonDispensingReason])
+      })
+    }))
+  })
+})
+
+// TODO: properly split / group the rest of these tests
+// TODO: check tests for item level cancellation reasons
+// TODO: add tests for item level non dispensing reasons
+describe("Test generateFhirResponse: Patient resource structure", () => {
   it("returns a Bundle containing Patient Bundle Entry resource when called", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
@@ -361,7 +647,7 @@ describe("Test generateFhirResponse", () => {
   ]
   partialPatientTestCases.forEach(({patientDetails, scenario, expectedPatientResource}) => {
     it(`returns a Bundle containing a partial Patient Bundle Entry resource when called with ${scenario}`, () => {
-      mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
       mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
       mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
       mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
@@ -376,153 +662,8 @@ describe("Test generateFhirResponse", () => {
     })
   })
 
-  it("returns a RequestGroup with a PrescriptionStatus extension when called", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
-    mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
-    mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
-    mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
-
-    const expected: PrescriptionStatusExtensionType = {
-      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
-      extension: [{
-        url: "status",
-        valueCoding: {
-          system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
-          code: "0006",
-          display: "Dispensed"
-        }
-      }]
-    }
-
-    const actual = generateFhirResponse(parsedAcuteDispensedWithSingleItem, logger)
-    expect(actual.entry).toContainEqual(expect.objectContaining({
-      resource: expect.objectContaining({
-        resourceType: "RequestGroup",
-        extension: expect.arrayContaining([expected])
-      })
-    }))
-  })
-
-  it("returns a RequestGroup with a RepeatInformation extension when called with a non acute prescription", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
-    mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
-    const parsedErdCreated = parseExample(erdCreated)
-
-    const expected: MedicationRepeatInformationExtensionType = {
-      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
-      extension:[
-        {
-          url: "numberOfRepeatsIssued",
-          valueInteger: 1
-        },
-        {
-          url: "numberOfRepeatsAllowed",
-          valueInteger: 7
-        }
-      ]
-    }
-
-    const actual = generateFhirResponse(parsedErdCreated, logger)
-    expect(actual.entry).toContainEqual(expect.objectContaining({
-      resource: expect.objectContaining({
-        resourceType: "RequestGroup",
-        extension: expect.arrayContaining([expected])
-      })
-    }))
-  })
-
-  it("returns a RequestGroup without a RepeatInformation extension when called with a acute prescription", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
-    mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
-
-    const expected = {
-      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation"
-    } as unknown as MedicationRepeatInformationExtensionType
-
-    const actual = generateFhirResponse(parsedAcuteDispensedWithSingleItem, logger)
-    expect(actual.entry).toContainEqual(expect.objectContaining({
-      resource: expect.objectContaining({
-        resourceType: "RequestGroup",
-        extension: expect.not.arrayContaining([expected])
-      })
-    }))
-  })
-
-  it("returns a RequestGroup without a partial RepeatInformation extension when called with a non acute prescription without a max repeats", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
-    mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
-    const prescription = {
-      ...parsedAcuteDispensedWithSingleItem,
-      ...{treatmentType: "0002"}
-    } as unknown as Prescription
-
-    const expected: MedicationRepeatInformationExtensionType = {
-      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
-      extension:[
-        {
-          url: "numberOfRepeatsIssued",
-          valueInteger: 1
-        }
-      ]
-    }
-
-    const actual = generateFhirResponse(prescription, logger)
-    expect(actual.entry).toContainEqual(expect.objectContaining({
-      resource: expect.objectContaining({
-        resourceType: "RequestGroup",
-        extension: expect.arrayContaining([expected])
-      })
-    }))
-  })
-
-  it("returns a RequestGroup with a PendingCancellation extension when called with a prescription with a HL7 pending cancellation", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
-    mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
-    const parsedAcuteWithHl7PendingCancellation = parseExample(acutePendingCancellationWithReason)
-
-    const expected: PendingCancellationExtensionType = {
-      url: "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
-      extension: [{
-        url: "prescriptionPendingCancellation",
-        valueBoolean: true
-      }]
-    }
-
-    const actual = generateFhirResponse(parsedAcuteWithHl7PendingCancellation, logger)
-    expect(actual.entry).toContainEqual(expect.objectContaining({
-      resource: expect.objectContaining({
-        resourceType: "RequestGroup",
-        extension: expect.arrayContaining([expected])
-      })
-    }))
-  })
-
-  it("returns a RequestGroup with a PrescriptionType extension when called", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
-    mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
-    mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
-    mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
-
-    const expected: PrescriptionTypeExtensionType = {
-      url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionType",
-      valueCoding: {
-        system: "https://fhir.nhs.uk/CodeSystem/prescription-type",
-        code: "0101",
-        display: "Primary Care Prescriber - Medical Prescriber"
-      }
-    }
-
-    const actual = generateFhirResponse(parsedAcuteDispensedWithSingleItem, logger)
-    expect(actual.entry).toContainEqual(expect.objectContaining({
-      resource: expect.objectContaining({
-        resourceType: "RequestGroup",
-        extension: expect.arrayContaining([expected])
-      })
-    }))
-  })
-
   it("returns a Bundle containing a prescriber org PractitionerRole Bundle Entry resource when called", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
@@ -548,7 +689,7 @@ describe("Test generateFhirResponse", () => {
   })
 
   it("returns a Bundle containing a MedicationRequest Bundle Entry resource for each line item when called", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
     mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")
@@ -891,7 +1032,7 @@ describe("Test generateFhirResponse", () => {
   })
 
   it("returns a Bundle containing a partial MedicationRequest Bundle Entry resource called with a prescription with no nominated dispenser", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
 
     const prescription: Prescription = {
@@ -988,7 +1129,7 @@ describe("Test generateFhirResponse", () => {
   })
 
   it("returns a Bundle containing a dispenser org PractitionerRole Bundle Entry resource when called with a dispensed prescription", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
@@ -1015,7 +1156,7 @@ describe("Test generateFhirResponse", () => {
   })
 
   it("returns a Bundle containing a contained partial MedicationRequest Bundle Entry resource called with a prescription with an item with no dosage instructions", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
     mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")
@@ -1116,7 +1257,7 @@ describe("Test generateFhirResponse", () => {
 
   it("returns a Bundle containing a MedicationDispense Bundle Entry resource for each line item in each dispense notification when called with a dispensed prescription with cumulative dispense notifications", () => {
     /* Tests where each DN represents the current state of the dispensed items at the time of the DN (cumulative)*/
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
     mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")
@@ -1562,7 +1703,7 @@ describe("Test generateFhirResponse", () => {
 
   it("returns a Bundle containing a MedicationDispense Bundle Entry resource for each line item in each dispense notification when called with a dispensed prescription with additive dispense notifications", () => {
     /* Tests DN's where items previously dispensed are included in subsequent DN's with 0 quantity (additive)*/
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
     mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")
@@ -2008,7 +2149,7 @@ describe("Test generateFhirResponse", () => {
 
   it("returns a Bundle containing a MedicationDispense Bundle Entry resource for each line item in each dispense notification when called with a dispensed prescription with alt additive dispense notifications", () => {
     /* Tests DN's where items previously dispensed are not included in subsequent DN's (alt additive)*/
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
     mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")
@@ -2345,7 +2486,7 @@ describe("Test generateFhirResponse", () => {
   })
 
   it("returns a Bundle containing a MedicationDispense Bundle Entry resource for each component of each line item in each dispense notification when called with a dispensed prescription", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
     mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")
@@ -2623,7 +2764,7 @@ describe("Test generateFhirResponse", () => {
   })
 
   it("returns a Bundle containing a partial MedicationDispense Bundle Entry resource when called with a prescription with a dispense notification item with no dosage instruction", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
     mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")
@@ -2692,7 +2833,7 @@ describe("Test generateFhirResponse", () => {
   })
 
   it("returns a Bundle containing a partial MedicationDispense Bundle Entry resource when called with a prescription with a partial dispense notification", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-111-111-111")
@@ -2753,7 +2894,7 @@ describe("Test generateFhirResponse", () => {
   })
 
   it("returns a Bundle containing a MedicationDispense Bundle Entry resource when called with a prescription with a 0 quantity dispense notification", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-111-111-111")
@@ -2815,7 +2956,7 @@ describe("Test generateFhirResponse", () => {
   })
 
   it("returns a Bundle containg MedicationDispense Bundle entries with the correct status when called with a prescription with multiple dispense notifications", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
     mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")
@@ -2890,7 +3031,7 @@ describe("Test generateFhirResponse", () => {
   })
 
   it("returns a Bundle containg MedicationDispense Bundle entries with the correct status when called with a prescription with a withdrawn dispense notification", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-111-111-111")
@@ -2916,7 +3057,7 @@ describe("Test generateFhirResponse", () => {
   })
 
   it("returns a Bundle containg MedicationDispense Bundle entries with the correct status when called with a prescription with a withdrawn amendment", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-111-111-111")
@@ -2942,7 +3083,7 @@ describe("Test generateFhirResponse", () => {
   })
 
   it("returns a Bundle containg MedicationDispense Bundle entries with the correct status when called with a withdrawn prescription", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-111-111-111")
@@ -2959,7 +3100,7 @@ describe("Test generateFhirResponse", () => {
   })
 
   it("returns a RequestGroup with a prescription line items Action when called", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
@@ -2985,7 +3126,7 @@ describe("Test generateFhirResponse", () => {
   })
 
   it("returns a RequestGroup with a partial prescription line items Action when called with a prescription with a missing days supply", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
@@ -3027,7 +3168,7 @@ describe("Test generateFhirResponse", () => {
   })
 
   it("returns a RequestGroup with a reference Action for each line item when called", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
     mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")
@@ -3070,7 +3211,7 @@ describe("Test generateFhirResponse", () => {
   })
 
   it("returns a RequestGroup with a history Action when called", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
@@ -3089,7 +3230,7 @@ describe("Test generateFhirResponse", () => {
   })
 
   it("returns a RequestGroup with a event Action for each filtered history event within the history Action when called", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
@@ -3191,7 +3332,7 @@ describe("Test generateFhirResponse", () => {
 
   it("returns Dispense Notification history actions with correct references when called with a prescription with culmative dispense notifications", () => {
     /* Tests where each DN represents the current state of the dispensed items at the time of the DN (cumulative)*/
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
     mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")
@@ -3335,7 +3476,7 @@ describe("Test generateFhirResponse", () => {
   })
 
   it("returns Dispense Notification history actions with correct references when called with a prescription with dispense notifications containing multiple components", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
     mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")
@@ -3461,7 +3602,7 @@ describe("Test generateFhirResponse", () => {
 
   it("returns Dispense Notification history actions with correct references when called with a prescription with additive dispense notifications", () => {
     /* Tests DN's where items previously dispensed are included in subsequent DN's with 0 quantity (additive)*/
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
     mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")
@@ -3606,7 +3747,7 @@ describe("Test generateFhirResponse", () => {
 
   it("returns Dispense Notification history actions with correct references when called with a prescription with alt additive dispense notifications", () => {
     /* Tests DN's where items previously dispensed are not included in subsequent DN's (alt additive)*/
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
     mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")
@@ -3738,7 +3879,7 @@ describe("Test generateFhirResponse", () => {
   })
 
   it("returns a Dispense Notification history action with a correct reference when called with a prescription with a 0 quantity dispense notification", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
@@ -3793,7 +3934,7 @@ describe("Test generateFhirResponse", () => {
   })
 
   it("returns a Dispense Notification history action with a correct reference when called with a prescription with a dispense notification with mismatched ID's", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
@@ -3850,7 +3991,7 @@ describe("Test generateFhirResponse", () => {
   })
 
   it("returns Dispense Notification history actions with correct references when called with a prescription with multiple dispense notificiations with mismatched ID's", () => {
-    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
     mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")

@@ -1,6 +1,6 @@
 import {
   bundleEntryCommonProperties,
-  cancellationReason,
+  cancellationReasonCoding,
   intent,
   pendingCancellationExtension,
   subject
@@ -75,7 +75,16 @@ export const medicationRequest = {
     identifier: lineItemIdentifier,
     subject,
     status,
-    statusReason: cancellationReason,
+    statusReason: {
+      type: "object",
+      properties: {
+        coding: {
+          type: "array",
+          items: cancellationReasonCoding
+        }
+      },
+      required: ["coding"]
+    },
     intent,
     requester: {
       type: "object",

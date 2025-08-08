@@ -26,12 +26,14 @@ import {
   CANCELLATION_REASON_MAP,
   MEDICATION_REQUEST_STATUS_MAP,
   PERFORMER_SITE_TYPE_MAP,
-  PRESCRIPTION_TYPE_MAP
+  PRESCRIPTION_TYPE_MAP,
+  NON_DISPENSING_REASON_MAP
 } from "./fhirMaps"
 import {Prescription} from "./parseSpineResponse"
 import {HistoryAction, PrescriptionLineItemsAction, ReferenceAction} from "./schema/actions"
 import {
   DispensingInformationExtensionType,
+  PrescriptionNonDispensingReasonExtensionType,
   PrescriptionTypeExtensionType,
   TaskBusinessStatusExtensionType
 } from "./schema/extensions"
@@ -151,12 +153,23 @@ const generateRequestGroupExtensions = (prescription: Prescription): Array<Exten
         code: prescription.status,
         display: PRESCRIPTION_STATUS_MAP[prescription.status]
       }
-    }]
+    } satisfies Extension & PrescriptionStatusExtensionType["extension"][0]]
   }
   extensions.push(prescriptionStatusExtension)
 
-  logger.info("Generating MedicationRepeatInformation extension for non acute prescription...")
+  logger.info("Generating PrescriptionType extensions...")
+  const prescriptionTypeExtension : Extension & PrescriptionTypeExtensionType = {
+    url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionType",
+    valueCoding: {
+      system: "https://fhir.nhs.uk/CodeSystem/prescription-type",
+      code: prescription.prescriptionType,
+      display: PRESCRIPTION_TYPE_MAP[prescription.prescriptionType]
+    }
+  }
+  extensions.push(prescriptionTypeExtension)
+
   if (prescription.treatmentType !== TreatmentType.ACUTE){
+    logger.info("Generating MedicationRepeatInformation extension for non acute prescription...")
     const repeatInformationExtension: MedicationRepeatInformationExtensionType = {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
       extension: [
@@ -183,16 +196,32 @@ const generateRequestGroupExtensions = (prescription: Prescription): Array<Exten
   }
   extensions.push(prescriptionPendingCancellationExtension)
 
-  logger.info("Generating PrescriptionType extensions...")
-  const prescriptionTypeExtension : Extension & PrescriptionTypeExtensionType = {
-    url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionType",
-    valueCoding: {
-      system: "https://fhir.nhs.uk/CodeSystem/prescription-type",
-      code: prescription.prescriptionType,
-      display: PRESCRIPTION_TYPE_MAP[prescription.prescriptionType]
+  if (prescription.cancellationReason){
+    const cancellationReasonExtension: Extension & PrescriptionStatusExtensionType = {
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+      extension: [{
+        url: "cancellationReason",
+        valueCoding: {
+          system: "https://fhir.nhs.uk/CodeSystem/medicationrequest-status-reason",
+          code: CANCELLATION_REASON_MAP[prescription.cancellationReason],
+          display: prescription.cancellationReason
+        }
+      } satisfies Extension & PrescriptionStatusExtensionType["extension"][1]]
     }
+    extensions.push(cancellationReasonExtension)
   }
-  extensions.push(prescriptionTypeExtension)
+
+  if (prescription.nonDispensingReason){
+    const nonDispensingReasonExtension: Extension & PrescriptionNonDispensingReasonExtensionType = {
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionNonDispensingReason",
+      valueCoding: {
+        system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-status-reason",
+        code: prescription.nonDispensingReason,
+        display: NON_DISPENSING_REASON_MAP[prescription.nonDispensingReason]
+      }
+    }
+    extensions.push(nonDispensingReasonExtension)
+  }
 
   return extensions
 }
@@ -399,8 +428,9 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
   medicationRequestResourceIds: MedicationRequestResourceIds): MedicationDispenseResources => {
   const medicationDispenses: Array<MedicationDispenseBundleEntryType> = []
   const medicationDispenseResourceIds: MedicationDispenseResourceIds = {}
-  logger.info("Generating dispenser PractitionerRole resource...")
   const dispenserResourceId = randomUUID()
+
+  logger.info("Generating dispenser PractitionerRole resource...")
   const dispenserPractitionerRole: BundleEntry<PractitionerRole> & PractitionerRoleBundleEntryType = {
     fullUrl: `urn:uuid:${dispenserResourceId}`,
     search: {
@@ -466,6 +496,15 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
               reference: `urn:uuid:${patientResourceId}`
             },
             status: dispenseNotification.isLastDispenseNotification ? "in-progress" : "unknown",
+            ...(lineItem.nonDispensingReason ? {
+              statusReasonCodeableConcept: {
+                coding: [{
+                  system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-status-reason",
+                  code: lineItem.nonDispensingReason,
+                  display: NON_DISPENSING_REASON_MAP[lineItem.nonDispensingReason]
+                }]
+              }
+            }: {}),
             performer: [{
               actor: {
                 reference: `urn:uuid:${dispenserResourceId}`

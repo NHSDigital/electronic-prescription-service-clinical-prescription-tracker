@@ -161,7 +161,6 @@ interface DispenseNotificationDetails {
   dispenseNotificationDocumentKey: string
   timestamp: string
   status: PrescriptionStatusCoding["code"]
-  nonDispensingReason?: NonDispensingReasonCoding["code"]
   isLastDispenseNotification: boolean
   lineItems: {
     [key: string]: DispenseNotificationLineItemDetails
@@ -187,6 +186,7 @@ interface PrescriptionDetails extends PrescriptionDetailsSummary, IssueDetails {
   nominatedDisperserType: PerformerSiteTypeCoding["code"]
   dispenserOrg?: string
   cancellationReason?: CancellationReasonCoding["display"]
+  nonDispensingReason?: NonDispensingReasonCoding["code"]
   lastDispenseNotification?: string
   lineItems: {
     [key: string]: LineItemDetails
@@ -305,8 +305,13 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
   for (const xmlDispenseNotification of xmlDispenseNotifications) {
     const dispenseNotificationId = xmlDispenseNotification.dispenseNotificationID
     const dispenseNotificationDocumentKey = xmlDispenseNotification.dispNotifDocumentKey
+    const isLastDispenseNotification =dispenseNotificationId === prescriptionDetails.lastDispenseNotification
     const nonDispensingReason =
       xmlDispenseNotification.nonDispensingReasonPrescription as NonDispensingReasonCoding["code"] | undefined
+
+    if (isLastDispenseNotification && nonDispensingReason) {
+      prescriptionDetails.nonDispensingReason = nonDispensingReason
+    }
 
     logger.debug("Parsing dispense notification...", {dispenseNotificationId})
     const dispenseNotification: DispenseNotificationDetails = {
@@ -315,8 +320,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
       timestamp: DateFns.parse(
         xmlDispenseNotification.dispenseNotifDateTime, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
       status: xmlDispenseNotification.statusPrescription as PrescriptionStatusCoding["code"],
-      ...(nonDispensingReason ? {nonDispensingReason: nonDispensingReason} : {}),
-      isLastDispenseNotification: dispenseNotificationId === prescriptionDetails.lastDispenseNotification,
+      isLastDispenseNotification,
       lineItems: {}
     }
 

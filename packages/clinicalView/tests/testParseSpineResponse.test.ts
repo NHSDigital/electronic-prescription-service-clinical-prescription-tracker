@@ -3876,6 +3876,7 @@ describe("Test parseSpineResponse: Non dispensing", () => {
       dispenserOrg: "FA565",
       nominatedDispenserOrg: "FA565",
       nominatedDisperserType: "P1",
+      nonDispensingReason: "0002",
       lastDispenseNotification: "90D8F0AE-57DD-4841-8B71-575D3CFAA83D",
       lineItems: {
         1: {
@@ -3925,7 +3926,6 @@ describe("Test parseSpineResponse: Non dispensing", () => {
           dispenseNotificationDocumentKey: "20250806114815080980_E5C6F2_1614371148",
           timestamp: "2025-08-06T11:47:28.000Z",
           status: "0007",
-          nonDispensingReason: "0002",
           isLastDispenseNotification: true,
           lineItems: {
             1: {

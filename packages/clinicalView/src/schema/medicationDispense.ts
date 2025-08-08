@@ -32,7 +32,16 @@ export const medicationDispense = {
     identifier: lineItemIdentifier,
     subject,
     status,
-    statusReason: nonDispensingReasonCoding,
+    statusReasonCodeableConcept: {
+      type: "object",
+      properties: {
+        coding: {
+          type: "array",
+          items: nonDispensingReasonCoding
+        }
+      },
+      required: ["coding"]
+    },
     performer: {
       type: "array",
       items: {

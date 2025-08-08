@@ -40,7 +40,7 @@ export {
   requestGroupCommonProperties,
   subject,
   taskBusinessStatus,
-  cancellationReasonCoding as cancellationReason,
+  cancellationReasonCoding,
   CancellationReasonCoding,
   searchsetBundleCommonProperties,
   bundleEntryCommonProperties,
