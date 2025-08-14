@@ -30,8 +30,8 @@
     "@types/aws-lambda": "^8.10.152",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.2.1",
-    "@typescript-eslint/eslint-plugin": "^8.39.0",
-    "@typescript-eslint/parser": "^8.38.0",
+    "@typescript-eslint/eslint-plugin": "^8.39.1",
+    "@typescript-eslint/parser": "^8.39.1",
     "aws-lambda": "^1.0.7",
     "eslint": "^9.33.0",
     "eslint-plugin-import-newlines": "^1.4.0",
@@ -45,6 +45,6 @@
   },
   "dependencies": {
     "conventional-changelog-eslint": "^6.0.0",
-    "esbuild": "^0.25.8"
+    "esbuild": "^0.25.9"
   }
 }
