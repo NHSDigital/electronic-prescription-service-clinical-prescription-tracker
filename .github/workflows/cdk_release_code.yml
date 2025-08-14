@@ -50,6 +50,12 @@ on:
       CREATE_INT_RC_RELEASE_NOTES:
         type: boolean
         default: false
+      MTLS_KEY:
+        type: string
+        required: true
+      IS_PULL_REQUEST:
+        type: boolean
+        required: true
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE:
         required: true
@@ -212,6 +218,8 @@ jobs:
           PROXYGEN_KID: eps-clinical-tracker
           DRY_RUN: false
           ENABLE_MUTUAL_TLS: ${{ inputs.ENABLE_MUTUAL_TLS }}
+          MTLS_KEY: ${{ inputs.MTLS_KEY }}
+          IS_PULL_REQUEST: ${{ inputs.IS_PULL_REQUEST }}
         run: ./.github/scripts/deploy_api.sh
 
       - uses: actions/upload-artifact@v4
