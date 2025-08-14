@@ -285,7 +285,7 @@ jobs:
     if: ${{ always() && !failure() && !cancelled() && inputs.RUN_REGRESSION_TESTS == true }}
     needs: [release_code_and_api]
     with:
-      ENVIRONMENT: ${{ inputs.AWS_ENVIRONMENT }}
+      ENVIRONMENT: ${{ inputs.APIGEE_ENVIRONMENT }}
       VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}
     secrets:
       REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
