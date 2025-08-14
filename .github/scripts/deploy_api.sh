@@ -38,6 +38,7 @@ instance_suffix=""
 if [[ "${IS_PULL_REQUEST}" == "true" ]]; then
     # Extracting the PR ID from $STACK_NAME
     pr_id=$(echo "$STACK_NAME" | awk -F'-' '{print $NF}')
+    pr_id=1331
     instance_suffix=-"pr-${pr_id}"
 fi
 
