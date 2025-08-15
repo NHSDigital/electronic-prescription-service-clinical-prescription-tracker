@@ -239,7 +239,7 @@ describe("Test generateFhirResponse: RequestGroup resource structure & extension
     }))
   })
 
-  it("returns a RequestGroup with correct PendingCancellation & cancellationReason PrescriptionStatus extensions when called with an acute prescription pending cancellation with a cancellation reason", () => {
+  it("returns a RequestGroup with correct PendingCancellation & cancellationReason PrescriptionStatus extensions when called with a prescription pending cancellation with a cancellation reason", () => {
     /* Tests for prescriptions where:
       - The prescription has a non cancelled status
       - The prescription has cancellation reason (e.g. cancelled via HL7)
@@ -281,7 +281,7 @@ describe("Test generateFhirResponse: RequestGroup resource structure & extension
     }))
   })
 
-  it("returns a RequestGroup with a correct PendingCancellation and no cancellationReason PrescriptionStatus extensions when called with an acute prescription without a cancellation reason", () => {
+  it("returns a RequestGroup with a correct PendingCancellation and no cancellationReason PrescriptionStatus extensions when called with a prescription without a cancellation reason", () => {
     /* Tests for prescriptions where:
       - The prescription has a non cancelled status
       - The prescription does not have a cancellation reason
@@ -319,7 +319,7 @@ describe("Test generateFhirResponse: RequestGroup resource structure & extension
     }))
   })
 
-  it("returns a RequestGroup with correct PendingCancellation & cancellationReason PrescriptionStatus extensions when called with a cancelled acute prescription with a cancellation reason", () => {
+  it("returns a RequestGroup with correct PendingCancellation & cancellationReason PrescriptionStatus extensions when called with a cancelled prescription with a cancellation reason", () => {
     /* Tests for prescriptions where:
       - The prescription has a cancelled status
       - The prescription has a cancellation reason (e.g. cancelled via HL7)
@@ -361,7 +361,7 @@ describe("Test generateFhirResponse: RequestGroup resource structure & extension
     }))
   })
 
-  it("returns a RequestGroup without a PrescriptionNonDispensingReason extension when called with a acute prescription without a non dispensing reason", () => {
+  it("returns a RequestGroup without a PrescriptionNonDispensingReason extension when called with a prescription without a non dispensing reason", () => {
     /* Tests for prescriptions where:
       - The prescription has a non non dispensing status
       - The prescription does not have a non dispensing reason
@@ -384,7 +384,7 @@ describe("Test generateFhirResponse: RequestGroup resource structure & extension
     }))
   })
 
-  it("returns a RequestGroup with a PrescriptionNonDispensingReason extension when called with a non dispensed acute prescription with a non dispensing reason", () => {
+  it("returns a RequestGroup with a PrescriptionNonDispensingReason extension when called with a non dispensed prescription with a non dispensing reason", () => {
     /* Tests for prescriptions where:
       - The prescription has a non dispensing status
       - The prescription has a non dispensing reason (e.g. not dispensed via HL7)
@@ -410,8 +410,6 @@ describe("Test generateFhirResponse: RequestGroup resource structure & extension
   })
 })
 
-// TODO: properly split / group the rest of these tests
-// TODO: add tests for item level non dispensing reasons
 describe("Test generateFhirResponse: Patient resource structure", () => {
   it("returns a Bundle containing Patient Bundle Entry resource when called", () => {
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
@@ -1253,7 +1251,7 @@ describe("Test generateFhirResponse: MedicationRequest resource structure", () =
     expect(actual.entry).toContainEqual(expectedMedicationRequest)
   })
 
-  it("returns a Bundle containing a MedicationRequest Bundle Entry resource with a correct statusReason and PendingCancellation extension when called with an acute prescription with a cancelled item", () => {
+  it("returns a Bundle containing a MedicationRequest Bundle Entry resource with a correct statusReason and PendingCancellation extension when called with a prescription with a cancelled item", () => {
     /* Tests for prescriptions where:
       - One or more line items have a cancelled status
       - One or more line items have a cancellation reason
@@ -1358,7 +1356,7 @@ describe("Test generateFhirResponse: MedicationRequest resource structure", () =
     expect(actual.entry).toContainEqual(expectedMedicationRequest)
   })
 
-  it("returns a Bundle containing a MedicationRequest Bundle Entry resource with a correct statusReason and PendingCancellation extension when called with an acute prescription with an item pending cancellation", () => {
+  it("returns a Bundle containing a MedicationRequest Bundle Entry resource with a correct statusReason and PendingCancellation extension when called with a prescription with an item pending cancellation", () => {
     /* Tests for prescriptions where:
       - One or more line items have a non cancelled status
       - One or more line items have a pending cancellation reason
@@ -4188,7 +4186,6 @@ describe("Test generateFhirResponse: prescription history Action structure", () 
   })
 
   it("returns a Dispense Notification history action with a correct reference when called with a prescription with a 0 quantity dispense notification", () => {
-
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
@@ -4243,7 +4240,6 @@ describe("Test generateFhirResponse: prescription history Action structure", () 
   })
 
   it("returns a Dispense Notification history action with a correct reference when called with a prescription with a dispense notification with mismatched ID's", () => {
-
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
@@ -4300,7 +4296,6 @@ describe("Test generateFhirResponse: prescription history Action structure", () 
   })
 
   it("returns Dispense Notification history actions with correct references when called with a prescription with multiple dispense notificiations with mismatched ID's", () => {
-
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
     mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")
@@ -4443,11 +4438,5 @@ describe("Test generateFhirResponse: prescription history Action structure", () 
         })])
       })
     }))
-  })
-
-  it("does thing", () => {
-    const parsed = parseExample(acuteWithCancelledItem)
-    const actual = generateFhirResponse(parsed, logger)
-    logger.info("", actual)
   })
 })
