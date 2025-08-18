@@ -6,7 +6,7 @@
 	xmlns="urn:hl7-org:v3"
 	xmlns:hl7="urn:hl7-org:v3">
 	<SOAP:Header>
-		<wsa:MessageID>uuid:51976BCA-2105-11F0-860F-3520031DD101</wsa:MessageID>
+		<wsa:MessageID>uuid:85379A0C-20FD-11F0-860F-3520031DD101</wsa:MessageID>
 		<wsa:Action>urn:nhs:names:services:mmquery/PORX_IN000006UK98</wsa:Action>
 		<wsa:To/>
 		<wsa:From>
@@ -27,8 +27,8 @@
 	<SOAP:Body>
 		<prescriptionClinicalViewResponse>
 			<PORX_IN000006UK98>
-				<id root="51976BCA-2105-11F0-860F-3520031DD101"/>
-				<creationTime value="20250424121157"/>
+				<id root="85379A0C-20FD-11F0-860F-3520031DD101"/>
+				<creationTime value="20250424111608"/>
 				<versionCode code="V3NPfIT3.0"/>
 				<interactionId root="2.16.840.1.113883.2.1.3.2.4.12" extension="PORX_IN000006UK98"/>
 				<processingCode code="P"/>
@@ -65,20 +65,20 @@
 							<effectiveTime value="20050922101500"/>
 							<epsIndex>
 								<!-- These are the secondary index items for the record-->
-								<prescribingSite_status>['A83008_0002']</prescribingSite_status>
-								<nominatedPharmacy_status>['FA565_0002']</nominatedPharmacy_status>
-								<nextActivity_nextActivityDate>['expire_20251024']</nextActivity_nextActivityDate>
-								<dispenser_status>['VNFKT_0002']</dispenser_status>
+								<prescribingSite_status>['A83008_0006']</prescribingSite_status>
+								<nominatedPharmacy_status>['FA565_0006']</nominatedPharmacy_status>
+								<nextActivity_nextActivityDate>['createNoClaim_20251021']</nextActivity_nextActivityDate>
+								<dispenser_status>['FA565_0006']</dispenser_status>
 							</epsIndex>
 							<epsRecord>
 								<!-- These are the other fields stored on the JSON for the record-->
 								<!--Prescription Instance Specific Information-->
-								<releaseRequestMsgRef>20250424120958669107_C7D6F4_1614371148</releaseRequestMsgRef>
-								<prescriptionStatus>0002</prescriptionStatus>
+								<releaseRequestMsgRef>20250424111243727780_4E63E0_1614371148</releaseRequestMsgRef>
+								<prescriptionStatus>0006</prescriptionStatus>
 								<nominatedDownloadDate/>
-								<downloadDate>20250424120958</downloadDate>
-								<completionDate>False</completionDate>
-								<expiryDate>20251024</expiryDate>
+								<downloadDate>20250424111243</downloadDate>
+								<completionDate>20250424</completionDate>
+								<expiryDate/>
 								<dispenseWindow>
 									<low value="20250424"/>
 									<high value="20260424"/>
@@ -86,27 +86,27 @@
 								<instanceNumber>1</instanceNumber>
 								<lineItem>
 									<order value="1"/>
-									<ID value="0206F8EF-0194-49C3-807A-ABE5DF42ADC3"/>
-									<previousStatus value="0007"/>
-									<status value="0008"/>
+									<ID value="D37FD639-E831-420C-B37B-40481DCA910E"/>
+									<previousStatus value="0008"/>
+									<status value="0001"/>
 								</lineItem>
 								<lineItem>
 									<order value="2"/>
-									<ID value="EE3636D5-E411-4656-A47E-053F0464E7AC"/>
-									<previousStatus value="0007"/>
-									<status value="0008"/>
+									<ID value="407685A2-A1A2-4B6B-B281-CAED41733C2B"/>
+									<previousStatus value="0008"/>
+									<status value="0001"/>
 								</lineItem>
 								<lineItem>
 									<order value="3"/>
-									<ID value="3E3D4CCA-DFE1-4D8E-9BC8-6A1F0FA95C86"/>
-									<previousStatus value="0007"/>
-									<status value="0008"/>
+									<ID value="20D6D69F-7BDD-4798-86DF-30F902BD2936"/>
+									<previousStatus value="0008"/>
+									<status value="0001"/>
 								</lineItem>
 								<lineItem>
 									<order value="4"/>
-									<ID value="44E252BD-2AB3-4AB1-A5A3-879DEA9B25C3"/>
-									<previousStatus value="0007"/>
-									<status value="0008"/>
+									<ID value="BF1B0BD8-0E6D-4D90-989E-F32065200CA3"/>
+									<previousStatus value="0008"/>
+									<status value="0001"/>
 								</lineItem>
 								<!--Prescription History-->
 								<history>
@@ -119,8 +119,8 @@
 									<agentSystem>200000001215</agentSystem>
 									<agentPersonOrgCode>A83008</agentPersonOrgCode>
 									<message>"Prescription upload successful"</message>
-									<messageID>"1E042BB0-164D-48C2-B4F4-CB94771838A0"</messageID>
-									<timestamp>"20250424120953"</timestamp>
+									<messageID>"F1204DE7-9434-4EDE-B1A2-ACB849891919"</messageID>
+									<timestamp>"20250424111005"</timestamp>
 									<toASID>"200000001215"</toASID>
 									<fromASID>"567456789789"</fromASID>
 								</history>
@@ -134,30 +134,30 @@
 									<agentSystem>200000001215</agentSystem>
 									<agentPersonOrgCode>VNFKT</agentPersonOrgCode>
 									<message>"Release Request successful"</message>
-									<messageID>"3339B7A4-4D62-48B3-A58B-9360D565CE68"</messageID>
-									<timestamp>"20250424120958"</timestamp>
+									<messageID>"C85C92E5-9793-4EE7-806B-AD1D678094D5"</messageID>
+									<timestamp>"20250424111243"</timestamp>
 									<toASID>"200000001215"</toASID>
 									<fromASID>"567456789789"</fromASID>
 								</history>
 								<history>
 									<SCN>4</SCN>
 									<instance>1</instance>
-									<interactionID>PORX_IN050102SM32</interactionID>
-									<status>0002</status>
-									<instanceStatus>0002</instanceStatus>
+									<interactionID>PORX_IN080101SM31</interactionID>
+									<status>0006</status>
+									<instanceStatus>0006</instanceStatus>
 									<agentPerson>555086689106</agentPerson>
 									<agentSystem>200000001215</agentSystem>
-									<agentPersonOrgCode>A83008</agentPersonOrgCode>
-									<message>"Prescription/item was not cancelled. With dispenser. Marked for cancellation"</message>
-									<messageID>"074269EB-C2AC-4571-B6A8-401B90A6F40A"</messageID>
-									<timestamp>"20250424121113"</timestamp>
+									<agentPersonOrgCode>FA565</agentPersonOrgCode>
+									<message>"Dispense notification successful; Update applied to issue=1"</message>
+									<messageID>"DF525024-FD4E-4292-9FF6-B67025791B69"</messageID>
+									<timestamp>"20250424111602"</timestamp>
 									<toASID>"200000001215"</toASID>
 									<fromASID>"567456789789"</fromASID>
 								</history>
 								<filteredHistory>
 									<SCN>2</SCN>
-									<internalId>20250424120953000000_HISTORY_UPLOAD</internalId>
-									<timestamp>20250424120953</timestamp>
+									<internalId>20250424111005000000_HISTORY_UPLOAD</internalId>
+									<timestamp>20250424111005</timestamp>
 									<fromStatus>False</fromStatus>
 									<toStatus>0001</toStatus>
 									<agentPerson>555086689106</agentPerson>
@@ -168,26 +168,26 @@
 									<lineStatusChangeDict>
 										<line>
 											<order>1</order>
-											<id>0206F8EF-0194-49C3-807A-ABE5DF42ADC3</id>
+											<id>D37FD639-E831-420C-B37B-40481DCA910E</id>
 											<fromStatus>None</fromStatus>
 											<toStatus>0007</toStatus>
 										</line>
 										<line>
 											<order>2</order>
-											<id>EE3636D5-E411-4656-A47E-053F0464E7AC</id>
+											<id>407685A2-A1A2-4B6B-B281-CAED41733C2B</id>
 											<status/>
 											<fromStatus>None</fromStatus>
 											<toStatus>0007</toStatus>
 										</line>
 										<line>
 											<order>3</order>
-											<id>3E3D4CCA-DFE1-4D8E-9BC8-6A1F0FA95C86</id>
+											<id>20D6D69F-7BDD-4798-86DF-30F902BD2936</id>
 											<fromStatus>None</fromStatus>
 											<toStatus>0007</toStatus>
 										</line>
 										<line>
 											<order>4</order>
-											<id>44E252BD-2AB3-4AB1-A5A3-879DEA9B25C3</id>
+											<id>BF1B0BD8-0E6D-4D90-989E-F32065200CA3</id>
 											<fromStatus>None</fromStatus>
 											<toStatus>0007</toStatus>
 										</line>
@@ -195,8 +195,8 @@
 								</filteredHistory>
 								<filteredHistory>
 									<SCN>3</SCN>
-									<internalId>20250424120958000000_HISTORY_RELEASE</internalId>
-									<timestamp>20250424120958</timestamp>
+									<internalId>20250424111244000000_HISTORY_RELEASE</internalId>
+									<timestamp>20250424111244</timestamp>
 									<fromStatus>0001</fromStatus>
 									<toStatus>0002</toStatus>
 									<agentPerson>555086689106</agentPerson>
@@ -207,26 +207,26 @@
 									<lineStatusChangeDict>
 										<line>
 											<order>1</order>
-											<id>0206F8EF-0194-49C3-807A-ABE5DF42ADC3</id>
+											<id>D37FD639-E831-420C-B37B-40481DCA910E</id>
 											<fromStatus>0007</fromStatus>
 											<toStatus>0008</toStatus>
 										</line>
 										<line>
 											<order>2</order>
-											<id>EE3636D5-E411-4656-A47E-053F0464E7AC</id>
+											<id>407685A2-A1A2-4B6B-B281-CAED41733C2B</id>
 											<status/>
 											<fromStatus>0007</fromStatus>
 											<toStatus>0008</toStatus>
 										</line>
 										<line>
 											<order>3</order>
-											<id>3E3D4CCA-DFE1-4D8E-9BC8-6A1F0FA95C86</id>
+											<id>20D6D69F-7BDD-4798-86DF-30F902BD2936</id>
 											<fromStatus>0007</fromStatus>
 											<toStatus>0008</toStatus>
 										</line>
 										<line>
 											<order>4</order>
-											<id>44E252BD-2AB3-4AB1-A5A3-879DEA9B25C3</id>
+											<id>BF1B0BD8-0E6D-4D90-989E-F32065200CA3</id>
 											<fromStatus>0007</fromStatus>
 											<toStatus>0008</toStatus>
 										</line>
@@ -234,63 +234,62 @@
 								</filteredHistory>
 								<filteredHistory>
 									<SCN>4</SCN>
-									<internalId>20250424121113000000_HISTORY_CANCELLED</internalId>
-									<timestamp>20250424121113</timestamp>
+									<internalId>20250424111602543458_4D3B83_1614371148</internalId>
+									<timestamp>20250424111602</timestamp>
 									<fromStatus>0002</fromStatus>
-									<toStatus>0002</toStatus>
+									<toStatus>0006</toStatus>
 									<agentPerson>555086689106</agentPerson>
-									<agentRoleProfileCodeId>200102238987</agentRoleProfileCodeId>
-									<message>Prescription/item was not cancelled. With dispenser. Marked for cancellation</message>
+									<agentRoleProfileCodeId>555086415105</agentRoleProfileCodeId>
+									<message>Dispense notification successful; Update applied to issue=1</message>
 									<orgASID>200000001215</orgASID>
-									<agentPersonOrgCode>A83008</agentPersonOrgCode>
+									<agentPersonOrgCode>FA565</agentPersonOrgCode>
 									<lineStatusChangeDict>
 										<line>
 											<order>1</order>
-											<id>0206F8EF-0194-49C3-807A-ABE5DF42ADC3</id>
+											<id>D37FD639-E831-420C-B37B-40481DCA910E</id>
 											<fromStatus>0008</fromStatus>
-											<toStatus>0008</toStatus>
-											<cancellationReason>Pending: Prescribing Error</cancellationReason>
+											<toStatus>0001</toStatus>
 										</line>
 										<line>
 											<order>2</order>
-											<id>EE3636D5-E411-4656-A47E-053F0464E7AC</id>
+											<id>407685A2-A1A2-4B6B-B281-CAED41733C2B</id>
 											<status/>
 											<fromStatus>0008</fromStatus>
-											<toStatus>0008</toStatus>
+											<toStatus>0001</toStatus>
 										</line>
 										<line>
 											<order>3</order>
-											<id>3E3D4CCA-DFE1-4D8E-9BC8-6A1F0FA95C86</id>
+											<id>20D6D69F-7BDD-4798-86DF-30F902BD2936</id>
 											<fromStatus>0008</fromStatus>
-											<toStatus>0008</toStatus>
+											<toStatus>0001</toStatus>
 										</line>
 										<line>
 											<order>4</order>
-											<id>44E252BD-2AB3-4AB1-A5A3-879DEA9B25C3</id>
+											<id>BF1B0BD8-0E6D-4D90-989E-F32065200CA3</id>
 											<fromStatus>0008</fromStatus>
-											<toStatus>0008</toStatus>
+											<toStatus>0001</toStatus>
 										</line>
 									</lineStatusChangeDict>
 								</filteredHistory>
 								<!--Dispense Specific Information-->
-								<dispensingOrganization>VNFKT</dispensingOrganization>
-								<lastDispenseDate>False</lastDispenseDate>
-								<lastDispenseNotificationMsgRef/>
-								<lastDispenseNotificationGuid/>
+								<dispensingOrganization>FA565</dispensingOrganization>
+								<lastDispenseDate>20250424</lastDispenseDate>
+								<lastDispenseNotificationMsgRef>20250424111602543458_4D3B83_1614371148</lastDispenseNotificationMsgRef>
+								<lastDispenseNotificationGuid>DF525024-FD4E-4292-9FF6-B67025791B69</lastDispenseNotificationGuid>
 								<!--Claim Specific Information-->
 								<claimReceivedDate>False</claimReceivedDate>
 								<!--Prescription Specific Information-->
 								<currentInstance>1</currentInstance>
-								<signedTime>20250424120952</signedTime>
+								<signedTime>20250424111004</signedTime>
 								<prescriptionTreatmentType>0001</prescriptionTreatmentType>
 								<prescriptionType>0101</prescriptionType>
 								<prescriptionTime>20250424000000</prescriptionTime>
-								<prescriptionID>65C4B1-A83008-AA9C1I</prescriptionID>
-								<prescriptionMsgRef>20250424120953265417_552EBD_1614371148</prescriptionMsgRef>
+								<prescriptionID>C0C3E6-A83008-93D8FL</prescriptionID>
+								<prescriptionMsgRef>20250424111005027335_2CBA3C_1614371148</prescriptionMsgRef>
 								<prescribingOrganization>A83008</prescribingOrganization>
 								<daysSupply>28</daysSupply>
 								<maxRepeats/>
-								<eventID>1E042BB0-164D-48C2-B4F4-CB94771838A0</eventID>
+								<eventID>F1204DE7-9434-4EDE-B1A2-ACB849891919</eventID>
 								<!--Patient Specific Information-->
 								<lowerAgeLimit>19640429</lowerAgeLimit>
 								<higherAgeLimit>20080430</higherAgeLimit>
@@ -328,6 +327,71 @@
 									<narrativeLineItem4>tablet</narrativeLineItem4>
 									<dosageLineItem4>3 times a day for 10 days</dosageLineItem4>
 								</parentPrescription>
+								<!--Dispense Notification Information-->
+								<dispenseNotification>
+									<dispenseNotificationID>DF525024-FD4E-4292-9FF6-B67025791B69</dispenseNotificationID>
+									<dispNotifDocumentKey>20250424111602543458_4D3B83_1614371148</dispNotifDocumentKey>
+									<dispNotifFromStatus>0002</dispNotifFromStatus>
+									<dispNotifToStatus>0006</dispNotifToStatus>
+									<dispenseNotifDateTime>20250424111549</dispenseNotifDateTime>
+									<productLineItem1>Amoxicillin 250mg capsules</productLineItem1>
+									<quantityLineItem1>20</quantityLineItem1>
+									<narrativeLineItem1>tablet</narrativeLineItem1>
+									<dosageLineItem1>2 times a day for 10 days</dosageLineItem1>
+									<componentsLineItem1>
+										[{"product": "Amoxicillin 250mg 
+										capsules A","quantity": "20","narrative": "tablet","dosage": "2 times 
+										a day for 10 days"}, {"product": "Amoxicillin 250mg 
+										capsules B","quantity": "20","narrative": "tablet","dosage": "2 times 
+										a day for 10 days"}, {"product": "Amoxicillin 250mg 
+										capsules C","quantity": "20","narrative": "tablet","dosage": "2 times 
+										a day for 10 days"}]
+									</componentsLineItem1>
+									<statusLineItem1>0001</statusLineItem1>
+									<productLineItem2>Co-codamol 30mg/500mg tablets</productLineItem2>
+									<quantityLineItem2>20</quantityLineItem2>
+									<narrativeLineItem2>tablet</narrativeLineItem2>
+									<dosageLineItem2>2 times a day for 10 days</dosageLineItem2>
+									<componentsLineItem2>
+										[{"product": "Co-codamol 30mg/500mg 
+										tablets A","quantity": "20","narrative": "tablet","dosage": "2 times 
+										a day for 10 days"}, {"product": "Co-codamol 30mg/500mg 
+										tablets B","quantity": "20","narrative": "tablet","dosage": "2 times 
+										a day for 10 days"}, {"product": "Co-codamol 30mg/500mg 
+										tablets C","quantity": "20","narrative": "tablet","dosage": "2 times 
+										a day for 10 days"}]
+									</componentsLineItem2>
+									<statusLineItem2>0001</statusLineItem2>
+									<productLineItem3>Pseudoephedrine hydrochloride 60mg tablets</productLineItem3>
+									<quantityLineItem3>30</quantityLineItem3>
+									<narrativeLineItem3>tablet</narrativeLineItem3>
+									<dosageLineItem3>3 times a day for 10 days</dosageLineItem3>
+									<componentsLineItem3>
+										[{"product": "Pseudoephedrine hydrochloride 60mg 
+										tablets A","quantity": "30","narrative": "tablet","dosage": "3 times 
+										a day for 10 days"}, {"product": "Pseudoephedrine hydrochloride 60mg 
+										tablets B","quantity": "30","narrative": "tablet","dosage": "3 times 
+										a day for 10 days"}, {"product": "Pseudoephedrine hydrochloride 60mg 
+										tablets C","quantity": "30","narrative": "tablet","dosage": "3 times 
+										a day for 10 days"}]
+									</componentsLineItem3>
+									<statusLineItem3>0001</statusLineItem3>
+									<productLineItem4>Azithromycin 250mg capsules</productLineItem4>
+									<quantityLineItem4>30</quantityLineItem4>
+									<narrativeLineItem4>tablet</narrativeLineItem4>
+									<dosageLineItem4>3 times a day for 10 days</dosageLineItem4>
+									<componentsLineItem4>
+										[{"product": "Azithromycin 250mg 
+										capsules A","quantity": "30","narrative": "tablet","dosage": "3 times 
+										a day for 10 days"}, {"product": "Azithromycin 250mg 
+										capsules B","quantity": "30","narrative": "tablet","dosage": "3 times 
+										a day for 10 days"}, {"product": "Azithromycin 250mg 
+										capsules C","quantity": "30","narrative": "tablet","dosage": "3 times 
+										a day for 10 days"}]
+									</componentsLineItem4>
+									<statusLineItem4>0001</statusLineItem4>
+									<statusPrescription>0006</statusPrescription>
+								</dispenseNotification>
 							</epsRecord>
 						</PrescriptionJsonQueryResponse>
 					</subject>

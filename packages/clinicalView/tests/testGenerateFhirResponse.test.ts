@@ -18,13 +18,20 @@ import {MedicationDispenseBundleEntryType} from "../src/schema/medicationDispens
 import {
   acuteCreated,
   acuteDispensedWithASingleItem,
-  acuteMultipleDispenseNotifications,
+  acuteDispensedWithMismatchedIds,
+  acuteHl7PendingCancellation,
+  acuteCumulativeMultipleDispenseNotifications,
+  acuteMultipleDispenseNotificationsWithMismatchedIds,
   acuteWithdrawn,
   acuteWithPartialDispenseNotification,
   acuteWithWithdrawnAmendment,
   acuteWithWithdrawnDispenseNotification,
-  altAcuteMultipleDispenseNotifications,
-  erdDispensedWith0Quantity
+  altAcuteAdditiveMultipleDispenseNotifications,
+  erdCreated,
+  erdDispensedWith0Quantity,
+  acuteAdditiveMultipleDispenseNotifications,
+  acuteDispensedWithMultipleComponents,
+  acuteWithoutOptionalDosageInstructions
 } from "./examples/examples"
 
 const logger: Logger = new Logger({serviceName: "clinicalView", logLevel: "DEBUG"})
@@ -46,8 +53,11 @@ const parseExample = (exampleSpineResponse: string) => {
 }
 const parsedAcuteDispensedWithSingleItem = parseExample(acuteDispensedWithASingleItem)
 const parsedAcuteCreatedWithMultipleItems = parseExample(acuteCreated)
-const parsedAcuteWithMultipleDispenseNotifications = parseExample(acuteMultipleDispenseNotifications)
-const parsedAltAcuteWithMultipleDispenseNotifications = parseExample(altAcuteMultipleDispenseNotifications)
+const parsedAcuteDispensedWithMultipleComponents = parseExample(acuteDispensedWithMultipleComponents)
+const parsedAcuteCumulativeMultipleDispenseNotifications = parseExample(acuteCumulativeMultipleDispenseNotifications)
+const parsedAcuteAdditiveMultipleDispenseNotifications = parseExample(acuteAdditiveMultipleDispenseNotifications)
+const parsedAltAcuteAdditiveMultipleDispenseNotifications = parseExample(altAcuteAdditiveMultipleDispenseNotifications)
+const parsedAcuteWithoutOptionalDosageInstruction = parseExample(acuteWithoutOptionalDosageInstructions)
 const parsedErdDispensedWith0Quantity = parseExample(erdDispensedWith0Quantity)
 
 const {generateFhirResponse} = await import("../src/generateFhirResponse")
@@ -162,17 +172,10 @@ describe("Test generateFhirResponse", () => {
   const partialPatientTestCases = [
     {
       patientDetails: {
-        nhsNumber: "5839945242",
-        birthDate: "1948-04-30",
-        gender: 2,
-        address: {
-          line: [
-            "10 HEATHFIELD",
-            "COBHAM",
-            "SURREY"
-          ],
-          postalCode: "KT11 2QY"
-        }
+        prefix: undefined,
+        given: undefined,
+        suffix: undefined,
+        family: undefined
       },
       scenario: "a prescription with no patient name",
       expectedPatientResource: {
@@ -205,13 +208,6 @@ describe("Test generateFhirResponse", () => {
     },
     {
       patientDetails: {
-        nhsNumber: "5839945242",
-        prefix: "MS",
-        suffix: "OBE",
-        given: "STACEY",
-        family: "TWITCHETT",
-        birthDate: "1948-04-30",
-        gender: 2,
         address: {
           line: [],
           postalCode: "KT11 2QY"
@@ -249,19 +245,13 @@ describe("Test generateFhirResponse", () => {
     },
     {
       patientDetails: {
-        nhsNumber: "5839945242",
-        prefix: "MS",
-        suffix: "OBE",
-        given: "STACEY",
-        family: "TWITCHETT",
-        birthDate: "1948-04-30",
-        gender: 2,
         address: {
           line: [
             "10 HEATHFIELD",
             "COBHAM",
             "SURREY"
-          ]
+          ],
+          postalCode: undefined
         }
       },
       scenario: "a prescription with no patient address postcode",
@@ -300,15 +290,9 @@ describe("Test generateFhirResponse", () => {
     },
     {
       patientDetails: {
-        nhsNumber: "5839945242",
-        prefix: "MS",
-        suffix: "OBE",
-        given: "STACEY",
-        family: "TWITCHETT",
-        birthDate: "1948-04-30",
-        gender: 2,
         address: {
-          line: []
+          line: [],
+          postalCode: undefined
         }
       },
       scenario: "a prescription with no patient address",
@@ -337,20 +321,7 @@ describe("Test generateFhirResponse", () => {
     },
     {
       patientDetails: {
-        nhsNumber: "5839945242",
-        prefix: "MS",
-        suffix: "OBE",
-        given: "STACEY",
-        family: "TWITCHETT",
-        birthDate: "1948-04-30",
-        address: {
-          line: [
-            "10 HEATHFIELD",
-            "COBHAM",
-            "SURREY"
-          ],
-          postalCode: "KT11 2QY"
-        }
+        gender: undefined
       },
       scenario: "a prescription with no patient gender",
       expectedPatientResource: {
@@ -396,102 +367,9 @@ describe("Test generateFhirResponse", () => {
       mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
 
       const acuteDispensedWithIncompletePatientDetails = {
-        ...patientDetails,
-        prescriptionId: "EA1CBC-A83008-F1F8A8",
-        issueDate: "2025-04-29T00:00:00.000Z",
-        issueNumber: 1,
-        status: "0006",
-        prescriptionPendingCancellation: false,
-        itemsPendingCancellation: false,
-        treatmentType: "0001",
-        prescriptionType: "0101",
-        daysSupply: 28,
-        prescriberOrg: "A83008",
-        nominatedDispenserOrg: "FA565",
-        nominatedDisperserType: "P1",
-        dispenserOrg: "FA565",
-        lineItems: {
-          1: {
-            lineItemNo: "1",
-            lineItemId: "101875F7-400C-43FE-AC04-7F29DBF854AF",
-            status: "0001",
-            itemName: "Amoxicillin 250mg capsules",
-            quantity: 20,
-            quantityForm: "tablet",
-            dosageInstruction: "2 times a day for 10 days",
-            pendingCancellation: false
-          }
-        },
-        dispenseNotifications: {
-          "2416B1D1-82D3-4D14-BB34-1F3C6B57CFFB": {
-            dispenseNotificationId: "2416B1D1-82D3-4D14-BB34-1F3C6B57CFFB",
-            timestamp: "2025-04-29T13:26:57.000Z",
-            status: "0006",
-            lineItems: {
-              1: {
-                lineItemNo: "1",
-                lineItemId: "101875F7-400C-43FE-AC04-7F29DBF854AF",
-                status: "0001",
-                itemName: "Amoxicillin 250mg capsules",
-                quantity: 20,
-                quantityForm: "tablet"
-              }
-            }
-          }
-        },
-        history: {
-          2: {
-            eventId: "2",
-            message: "Prescription upload successful",
-            messageId: "09843173-D677-401D-9331-5CCB37768320",
-            timestamp: "2025-04-29T13:26:34.000Z",
-            org: "A83008",
-            newStatus: "0001",
-            isDispenseNotification: false,
-            isPrescriptionUpload: true,
-            lineItems: {
-              1: {
-                lineItemNo: "1",
-                newStatus: "0007"
-              }
-            }
-          },
-          3: {
-            eventId: "3",
-            message: "Release Request successful",
-            messageId: "9ECCD950-623A-4821-81DE-774020DE0331",
-            timestamp: "2025-04-29T13:26:45.000Z",
-            org: "VNFKT",
-            newStatus: "0002",
-            isDispenseNotification: false,
-            isPrescriptionUpload: false,
-            lineItems: {
-              1: {
-                lineItemNo: "1",
-                newStatus: "0008"
-              }
-            }
-          },
-          4: {
-            eventId: "4",
-            message: "Dispense notification successful",
-            messageId: "2416B1D1-82D3-4D14-BB34-1F3C6B57CFFB",
-            timestamp: "2025-04-29T13:27:04.000Z",
-            org: "FA565",
-            newStatus: "0006",
-            isDispenseNotification: true,
-            isPrescriptionUpload: false,
-            lineItems: {
-              1: {
-                lineItemNo: "1",
-                newStatus: "0001"
-              }
-            }
-          }
-        }
+        ...parsedAcuteDispensedWithSingleItem,
+        ...patientDetails
       } as unknown as Prescription
-
-      console.log(acuteDispensedWithIncompletePatientDetails)
 
       const actual = generateFhirResponse(acuteDispensedWithIncompletePatientDetails, logger)
       expect(actual.entry).toContainEqual(expectedPatientResource)
@@ -528,59 +406,7 @@ describe("Test generateFhirResponse", () => {
   it("returns a RequestGroup with a RepeatInformation extension when called with a non acute prescription", () => {
     mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
-
-    const erdCreatedWithSingleItem: Prescription = {
-      prescriptionId: "6D9882-A83008-6AB663",
-      nhsNumber: "9732730684",
-      prefix: "MISS",
-      given: "ETTA",
-      family: "CORY",
-      birthDate: "1999-01-04",
-      gender: 2,
-      address: {
-        line: [
-          "123 Dale Avenue",
-          "Long Eaton",
-          "Nottingham"
-        ],
-        postalCode: "NG10 1NP"
-      },
-      issueDate: "2025-04-29T00:00:00.000Z",
-      issueNumber: 1,
-      status: "0001",
-      prescriptionPendingCancellation: false,
-      treatmentType: "0003",
-      prescriptionType: "0101",
-      maxRepeats: 7,
-      daysSupply: 10,
-      prescriberOrg: "A99968",
-      nominatedDispenserOrg: "VNE51",
-      nominatedDisperserType: "P1",
-      lineItems: {
-        1: {
-          lineItemNo: "1",
-          lineItemId: "58F3FF9A-E00B-44DC-8CDF-280883267C16",
-          status: "0007",
-          itemName: "Azithromycin 250mg capsules",
-          quantity: 30,
-          quantityForm: "tablet",
-          dosageInstruction: "3 times a day for 10 days",
-          pendingCancellation: false
-        }
-      },
-      dispenseNotifications: {},
-      history: {
-        2: {
-          eventId: "2",
-          message: "Prescription upload successful",
-          messageId: "F677E0E8-4C5A-45FF-B2A0-37D2F9693721",
-          timestamp: "2025-04-29T16:29:13.000Z",
-          org: "A99968",
-          newStatus: "0001",
-          isDispenseNotification: false
-        }
-      }
-    }
+    const parsedErdCreated = parseExample(erdCreated)
 
     const expected: MedicationRepeatInformationExtensionType = {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
@@ -596,7 +422,7 @@ describe("Test generateFhirResponse", () => {
       ]
     }
 
-    const actual = generateFhirResponse(erdCreatedWithSingleItem, logger)
+    const actual = generateFhirResponse(parsedErdCreated, logger)
     expect(actual.entry).toContainEqual(expect.objectContaining({
       resource: expect.objectContaining({
         resourceType: "RequestGroup",
@@ -652,139 +478,7 @@ describe("Test generateFhirResponse", () => {
   it("returns a RequestGroup with a PendingCancellation extension when called with a prescription with a HL7 pending cancellation", () => {
     mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
-
-    const acuteWithHl7PendingCancellation: Prescription = {
-      prescriptionId: "65C4B1-A83008-AA9C1I",
-      nhsNumber: "5839945242",
-      prefix: "MS",
-      given: "STACEY",
-      family: "TWITCHETT",
-      birthDate: "1948-04-30",
-      gender: 2,
-      address: {
-        line: [
-          "10 HEATHFIELD",
-          "COBHAM",
-          "SURREY"
-        ],
-        postalCode: "KT11 2QY"
-      },
-      issueDate: "2025-04-24T00:00:00.000Z",
-      issueNumber: 1,
-      status: "0002",
-      prescriptionPendingCancellation: true,
-      treatmentType: "0001",
-      prescriptionType: "0101",
-      daysSupply: 28,
-      prescriberOrg: "A83008",
-      nominatedDispenserOrg: "FA565",
-      nominatedDisperserType: "P1",
-      dispenserOrg: "VNFKT",
-      lineItems: {
-        1: {
-          lineItemNo: "1",
-          lineItemId: "0206F8EF-0194-49C3-807A-ABE5DF42ADC3",
-          status: "0008",
-          itemName: "Amoxicillin 250mg capsules",
-          quantity: 20,
-          quantityForm: "tablet",
-          dosageInstruction: "2 times a day for 10 days",
-          cancellationReason: "Prescribing Error",
-          pendingCancellation: true
-        },
-        2: {
-          lineItemNo: "2",
-          lineItemId: "EE3636D5-E411-4656-A47E-053F0464E7AC",
-          status: "0008",
-          itemName: "Co-codamol 30mg/500mg tablets",
-          quantity: 20,
-          quantityForm: "tablet",
-          dosageInstruction: "2 times a day for 10 days",
-          cancellationReason: "Prescribing Error",
-          pendingCancellation: true
-        },
-        3: {
-          lineItemNo: "3",
-          lineItemId: "3E3D4CCA-DFE1-4D8E-9BC8-6A1F0FA95C86",
-          status: "0008",
-          itemName: "Pseudoephedrine hydrochloride 60mg tablets",
-          quantity: 30,
-          quantityForm: "tablet",
-          dosageInstruction: "3 times a day for 10 days",
-          cancellationReason: "Prescribing Error",
-          pendingCancellation: true
-        },
-        4: {
-          lineItemNo: "4",
-          lineItemId: "44E252BD-2AB3-4AB1-A5A3-879DEA9B25C3",
-          status: "0008",
-          itemName: "Azithromycin 250mg capsules",
-          quantity: 30,
-          quantityForm: "tablet",
-          dosageInstruction: "3 times a day for 10 days",
-          cancellationReason: "Prescribing Error",
-          pendingCancellation: true
-        }
-      },
-      dispenseNotifications: {},
-      history: {
-        2: {
-          eventId: "2",
-          message: "Prescription upload successful",
-          messageId: "1E042BB0-164D-48C2-B4F4-CB94771838A0",
-          timestamp: "2025-04-24T12:09:53.000Z",
-          org: "A83008",
-          newStatus: "0001",
-          isDispenseNotification: false
-        },
-        3: {
-          eventId: "3",
-          message: "Release Request successful",
-          messageId: "3339B7A4-4D62-48B3-A58B-9360D565CE68",
-          timestamp: "2025-04-24T12:09:58.000Z",
-          org: "VNFKT",
-          newStatus: "0002",
-          isDispenseNotification: false
-        },
-        4: {
-          eventId: "4",
-          message: "Prescription/item was not cancelled. With dispenser. Marked for cancellation",
-          messageId: "074269EB-C2AC-4571-B6A8-401B90A6F40A",
-          timestamp: "2025-04-24T12:11:13.000Z",
-          org: "A83008",
-          newStatus: "0002",
-          isDispenseNotification: false
-        },
-        5: {
-          eventId: "5",
-          message: "Prescription/item was not cancelled. With dispenser. Marked for cancellation",
-          messageId: "7C6E7789-ED69-4580-A5AC-4F310CF652DA",
-          timestamp: "2025-04-24T12:14:37.000Z",
-          org: "A83008",
-          newStatus: "0002",
-          isDispenseNotification: false
-        },
-        6: {
-          eventId: "6",
-          message: "Prescription/item was not cancelled. With dispenser. Marked for cancellation",
-          messageId: "F501683B-79A4-4032-A460-48B3BAB21C4C",
-          timestamp: "2025-04-24T12:14:46.000Z",
-          org: "A83008",
-          newStatus: "0002",
-          isDispenseNotification: false
-        },
-        7: {
-          eventId: "7",
-          message: "Prescription/item was not cancelled. With dispenser. Marked for cancellation",
-          messageId: "B94DF589-CE8C-4740-8657-CB62428388A2",
-          timestamp: "2025-04-24T12:14:57.000Z",
-          org: "A83008",
-          newStatus: "0002",
-          cancellationReason: "Prescribing Error",
-          isDispenseNotification: false
-        }
-      }
-    }
+    const parsedAcuteWithHl7PendingCancellation = parseExample(acuteHl7PendingCancellation)
 
     const expected: PendingCancellationExtensionType = {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
@@ -794,7 +488,7 @@ describe("Test generateFhirResponse", () => {
       }]
     }
 
-    const actual = generateFhirResponse(acuteWithHl7PendingCancellation, logger)
+    const actual = generateFhirResponse(parsedAcuteWithHl7PendingCancellation, logger)
     expect(actual.entry).toContainEqual(expect.objectContaining({
       resource: expect.objectContaining({
         resourceType: "RequestGroup",
@@ -1323,11 +1017,9 @@ describe("Test generateFhirResponse", () => {
   it("returns a Bundle containing a contained partial MedicationRequest Bundle Entry resource called with a prescription with an item with no dosage instructions", () => {
     mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
-
-    const prescription: Prescription = {
-      ...parsedAcuteDispensedWithSingleItem
-    }
-    delete prescription.lineItems[1].dosageInstruction
+    mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-444-444-444")
 
     const expectedMedicationRequest: MedicationRequestBundleEntryType = {
       fullUrl: "urn:uuid:MEDREQ-111-111-111",
@@ -1339,7 +1031,7 @@ describe("Test generateFhirResponse", () => {
         id: "MEDREQ-111-111-111",
         identifier: [{
           system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
-          value: "101875F7-400C-43FE-AC04-7F29DBF854AF"
+          value: "D37FD639-E831-420C-B37B-40481DCA910E"
         }],
         subject: {
           reference: "urn:uuid:PATIENT-123-567-890"
@@ -1357,7 +1049,7 @@ describe("Test generateFhirResponse", () => {
         },
         groupIdentifier: {
           system: "https://fhir.nhs.uk/Id/prescription-order-number",
-          value: "EA1CBC-A83008-F1F8A8"
+          value: "C0C3E6-A83008-93D8FL"
         },
         medicationCodeableConcept: {
           text: "Amoxicillin 250mg capsules"
@@ -1418,12 +1110,12 @@ describe("Test generateFhirResponse", () => {
       }
     }
 
-    const actual = generateFhirResponse(prescription, logger)
+    const actual = generateFhirResponse(parsedAcuteWithoutOptionalDosageInstruction, logger)
     expect(actual.entry).toContainEqual(expectedMedicationRequest)
   })
 
-  it("returns a Bundle containing a MedicationDispense Bundle Entry resource for each line item in each dispense notification when called with a dispensed prescription", () => {
-    /* Tests DN's where items previously dispensed are included again with 0 quantity in subsequent DN's*/
+  it("returns a Bundle containing a MedicationDispense Bundle Entry resource for each line item in each dispense notification when called with a dispensed prescription with cumulative dispense notifications", () => {
+    /* Tests where each DN represents the current state of the dispensed items at the time of the DN (cumulative)*/
     mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
@@ -1619,6 +1311,214 @@ describe("Test generateFhirResponse", () => {
         type: {
           coding: [{
             system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+            code: "0003",
+            display: "Item dispensed - partial"
+          }]
+        },
+        authorizingPrescription: [{
+          reference: "urn:uuid:MEDREQ-444-444-444"
+        }],
+        medicationCodeableConcept: {
+          text: "Azithromycin 250mg capsules"
+        },
+        quantity: {
+          value: 20,
+          unit: "tablet"
+        },
+        dosageInstruction: [{
+          text: "3 times a day for 10 days"
+        }],
+        extension:[{
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-TaskBusinessStatus",
+          valueCoding: {
+            system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+            code: "0006",
+            display: "Dispensed"
+          }
+        }]
+      }
+    }
+
+    const expectedMedicationDispense5:MedicationDispenseBundleEntryType = {
+      fullUrl: "urn:uuid:MEDDIS-555-555-555",
+      search: {
+        mode: "include"
+      },
+      resource: {
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-555-555-555",
+        identifier: [{
+          system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
+          value: "3CA6AF12-560E-4DB4-B419-6E0DD99BEE40"
+        }],
+        subject: {
+          reference: "urn:uuid:PATIENT-123-567-890"
+        },
+        status: "in-progress",
+        performer: [{
+          actor: {
+            reference: "urn:uuid:DISORG-123-567-890"
+          }
+        }],
+        type: {
+          coding: [{
+            system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+            code: "0001",
+            display: "Item fully dispensed"
+          }]
+        },
+        authorizingPrescription: [{
+          reference: "urn:uuid:MEDREQ-111-111-111"
+        }],
+        medicationCodeableConcept: {
+          text: "Amoxicillin 250mg capsules"
+        },
+        quantity: {
+          value: 20,
+          unit: "tablet"
+        },
+        dosageInstruction: [{
+          text: "2 times a day for 10 days"
+        }],
+        extension:[{
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-TaskBusinessStatus",
+          valueCoding: {
+            system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+            code: "0006",
+            display: "Dispensed"
+          }
+        }]
+      }
+    }
+
+    const expectedMedicationDispense6: MedicationDispenseBundleEntryType = {
+      fullUrl: "urn:uuid:MEDDIS-666-666-666",
+      search: {
+        mode: "include"
+      },
+      resource: {
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-666-666-666",
+        identifier: [{
+          system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
+          value: "18434F2E-AAE5-4001-8BB6-005ED2D3DF23"
+        }],
+        subject: {
+          reference: "urn:uuid:PATIENT-123-567-890"
+        },
+        status: "in-progress",
+        performer: [{
+          actor: {
+            reference: "urn:uuid:DISORG-123-567-890"
+          }
+        }],
+        type: {
+          coding: [{
+            system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+            code: "0001",
+            display: "Item fully dispensed"
+          }]
+        },
+        authorizingPrescription: [{
+          reference: "urn:uuid:MEDREQ-222-222-222"
+        }],
+        medicationCodeableConcept: {
+          text: "Co-codamol 30mg/500mg tablets"
+        },
+        quantity: {
+          value: 20,
+          unit: "tablet"
+        },
+        dosageInstruction: [{
+          text: "2 times a day for 10 days"
+        }],
+        extension:[{
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-TaskBusinessStatus",
+          valueCoding: {
+            system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+            code: "0006",
+            display: "Dispensed"
+          }
+        }]
+      }
+    }
+
+    const expectedMedicationDispense7: MedicationDispenseBundleEntryType = {
+      fullUrl: "urn:uuid:MEDDIS-777-777-777",
+      search: {
+        mode: "include"
+      },
+      resource: {
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-777-777-777",
+        identifier: [{
+          system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
+          value: "0D73CBCD-36E9-4943-9EBE-502CA6B85216"
+        }],
+        subject: {
+          reference: "urn:uuid:PATIENT-123-567-890"
+        },
+        status: "in-progress",
+        performer: [{
+          actor: {
+            reference: "urn:uuid:DISORG-123-567-890"
+          }
+        }],
+        type: {
+          coding: [{
+            system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+            code: "0001",
+            display: "Item fully dispensed"
+          }]
+        },
+        authorizingPrescription: [{
+          reference: "urn:uuid:MEDREQ-333-333-333"
+        }],
+        medicationCodeableConcept: {
+          text: "Pseudoephedrine hydrochloride 60mg tablets"
+        },
+        quantity: {
+          value: 30,
+          unit: "tablet"
+        },
+        dosageInstruction: [{
+          text: "3 times a day for 10 days"
+        }],
+        extension:[{
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-TaskBusinessStatus",
+          valueCoding: {
+            system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+            code: "0006",
+            display: "Dispensed"
+          }
+        }]
+      }
+    }
+
+    const expectedMedicationDispense8: MedicationDispenseBundleEntryType = {
+      fullUrl: "urn:uuid:MEDDIS-888-888-888",
+      search: {
+        mode: "include"
+      },
+      resource: {
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-888-888-888",
+        identifier: [{
+          system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
+          value: "453F161C-3A76-42B5-BA7F-7A4EBF61023B"
+        }],
+        subject: {
+          reference: "urn:uuid:PATIENT-123-567-890"
+        },
+        status: "in-progress",
+        performer: [{
+          actor: {
+            reference: "urn:uuid:DISORG-123-567-890"
+          }
+        }],
+        type: {
+          coding: [{
+            system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
             code: "0001",
             display: "Item fully dispensed"
           }]
@@ -1631,6 +1531,244 @@ describe("Test generateFhirResponse", () => {
         },
         quantity: {
           value: 30,
+          unit: "tablet"
+        },
+        dosageInstruction: [{
+          text: "3 times a day for 10 days"
+        }],
+        extension:[{
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-TaskBusinessStatus",
+          valueCoding: {
+            system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+            code: "0006",
+            display: "Dispensed"
+          }
+        }]
+      }
+    }
+
+    const actual = generateFhirResponse(parsedAcuteCumulativeMultipleDispenseNotifications, logger)
+    const noOfMedicationDispenses = actual.entry.filter((entry) => entry.resource.resourceType === "MedicationDispense").length
+    expect(noOfMedicationDispenses).toEqual(8)
+    expect(actual.entry).toContainEqual(expectedMedicationDispense1)
+    expect(actual.entry).toContainEqual(expectedMedicationDispense2)
+    expect(actual.entry).toContainEqual(expectedMedicationDispense3)
+    expect(actual.entry).toContainEqual(expectedMedicationDispense4)
+    expect(actual.entry).toContainEqual(expectedMedicationDispense5)
+    expect(actual.entry).toContainEqual(expectedMedicationDispense6)
+    expect(actual.entry).toContainEqual(expectedMedicationDispense7)
+    expect(actual.entry).toContainEqual(expectedMedicationDispense8)
+  })
+
+  it("returns a Bundle containing a MedicationDispense Bundle Entry resource for each line item in each dispense notification when called with a dispensed prescription with additive dispense notifications", () => {
+    /* Tests DN's where items previously dispensed are included in subsequent DN's with 0 quantity (additive)*/
+    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-444-444-444")
+    mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-111-111-111")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-222-222-222")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-333-333-333")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-444-444-444")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-555-555-555")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-666-666-666")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-777-777-777")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-888-888-888")
+
+    const expectedMedicationDispense1: MedicationDispenseBundleEntryType = {
+      fullUrl: "urn:uuid:MEDDIS-111-111-111",
+      search: {
+        mode: "include"
+      },
+      resource: {
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-111-111-111",
+        identifier: [{
+          system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
+          value: "3CA6AF12-560E-4DB4-B419-6E0DD99BEE40"
+        }],
+        subject: {
+          reference: "urn:uuid:PATIENT-123-567-890"
+        },
+        status: "unknown",
+        performer: [{
+          actor: {
+            reference: "urn:uuid:DISORG-123-567-890"
+          }
+        }],
+        type: {
+          coding: [{
+            system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+            code: "0003",
+            display: "Item dispensed - partial"
+          }]
+        },
+        authorizingPrescription: [{
+          reference: "urn:uuid:MEDREQ-111-111-111"
+        }],
+        medicationCodeableConcept: {
+          text: "Amoxicillin 250mg capsules"
+        },
+        quantity: {
+          value: 10,
+          unit: "tablet"
+        },
+        dosageInstruction: [{
+          text: "2 times a day for 10 days"
+        }],
+        extension:[{
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-TaskBusinessStatus",
+          valueCoding: {
+            system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+            code: "0006",
+            display: "Dispensed"
+          }
+        }]
+      }
+    }
+
+    const expectedMedicationDispense2: MedicationDispenseBundleEntryType = {
+      fullUrl: "urn:uuid:MEDDIS-222-222-222",
+      search: {
+        mode: "include"
+      },
+      resource: {
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-222-222-222",
+        identifier: [{
+          system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
+          value: "18434F2E-AAE5-4001-8BB6-005ED2D3DF23"
+        }],
+        subject: {
+          reference: "urn:uuid:PATIENT-123-567-890"
+        },
+        status: "unknown",
+        performer: [{
+          actor: {
+            reference: "urn:uuid:DISORG-123-567-890"
+          }
+        }],
+        type: {
+          coding: [{
+            system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+            code: "0001",
+            display: "Item fully dispensed"
+          }]
+        },
+        authorizingPrescription: [{
+          reference: "urn:uuid:MEDREQ-222-222-222"
+        }],
+        medicationCodeableConcept: {
+          text: "Co-codamol 30mg/500mg tablets"
+        },
+        quantity: {
+          value: 20,
+          unit: "tablet"
+        },
+        dosageInstruction: [{
+          text: "2 times a day for 10 days"
+        }],
+        extension:[{
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-TaskBusinessStatus",
+          valueCoding: {
+            system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+            code: "0006",
+            display: "Dispensed"
+          }
+        }]
+      }
+    }
+
+    const expectedMedicationDispense3: MedicationDispenseBundleEntryType = {
+      fullUrl: "urn:uuid:MEDDIS-333-333-333",
+      search: {
+        mode: "include"
+      },
+      resource: {
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-333-333-333",
+        identifier: [{
+          system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
+          value: "0D73CBCD-36E9-4943-9EBE-502CA6B85216"
+        }],
+        subject: {
+          reference: "urn:uuid:PATIENT-123-567-890"
+        },
+        status: "unknown",
+        performer: [{
+          actor: {
+            reference: "urn:uuid:DISORG-123-567-890"
+          }
+        }],
+        type: {
+          coding: [{
+            system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+            code: "0001",
+            display: "Item fully dispensed"
+          }]
+        },
+        authorizingPrescription: [{
+          reference: "urn:uuid:MEDREQ-333-333-333"
+        }],
+        medicationCodeableConcept: {
+          text: "Pseudoephedrine hydrochloride 60mg tablets"
+        },
+        quantity: {
+          value: 30,
+          unit: "tablet"
+        },
+        dosageInstruction: [{
+          text: "3 times a day for 10 days"
+        }],
+        extension:[{
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-TaskBusinessStatus",
+          valueCoding: {
+            system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+            code: "0006",
+            display: "Dispensed"
+          }
+        }]
+      }
+    }
+
+    const expectedMedicationDispense4: MedicationDispenseBundleEntryType = {
+      fullUrl: "urn:uuid:MEDDIS-444-444-444",
+      search: {
+        mode: "include"
+      },
+      resource: {
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-444-444-444",
+        identifier: [{
+          system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
+          value: "453F161C-3A76-42B5-BA7F-7A4EBF61023B"
+        }],
+        subject: {
+          reference: "urn:uuid:PATIENT-123-567-890"
+        },
+        status: "unknown",
+        performer: [{
+          actor: {
+            reference: "urn:uuid:DISORG-123-567-890"
+          }
+        }],
+        type: {
+          coding: [{
+            system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+            code: "0003",
+            display: "Item dispensed - partial"
+          }]
+        },
+        authorizingPrescription: [{
+          reference: "urn:uuid:MEDREQ-444-444-444"
+        }],
+        medicationCodeableConcept: {
+          text: "Azithromycin 250mg capsules"
+        },
+        quantity: {
+          value: 20,
           unit: "tablet"
         },
         dosageInstruction: [{
@@ -1838,7 +1976,7 @@ describe("Test generateFhirResponse", () => {
           text: "Azithromycin 250mg capsules"
         },
         quantity: {
-          value: 0,
+          value: 10,
           unit: "tablet"
         },
         dosageInstruction: [{
@@ -1855,7 +1993,7 @@ describe("Test generateFhirResponse", () => {
       }
     }
 
-    const actual = generateFhirResponse(parsedAcuteWithMultipleDispenseNotifications, logger)
+    const actual = generateFhirResponse(parsedAcuteAdditiveMultipleDispenseNotifications, logger)
     const noOfMedicationDispenses = actual.entry.filter((entry) => entry.resource.resourceType === "MedicationDispense").length
     expect(noOfMedicationDispenses).toEqual(8)
     expect(actual.entry).toContainEqual(expectedMedicationDispense1)
@@ -1868,8 +2006,8 @@ describe("Test generateFhirResponse", () => {
     expect(actual.entry).toContainEqual(expectedMedicationDispense8)
   })
 
-  it("returns a Bundle containing a MedicationDispense Bundle Entry resource for each line item in each alternative format dispense notification when called with a dispensed prescription", () => {
-    /* Tests DN's where items previously dispensed are not included in subsequent DN's*/
+  it("returns a Bundle containing a MedicationDispense Bundle Entry resource for each line item in each dispense notification when called with a dispensed prescription with alt additive dispense notifications", () => {
+    /* Tests DN's where items previously dispensed are not included in subsequent DN's (alt additive)*/
     mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
@@ -2195,7 +2333,7 @@ describe("Test generateFhirResponse", () => {
       }
     }
 
-    const actual = generateFhirResponse(parsedAltAcuteWithMultipleDispenseNotifications, logger)
+    const actual = generateFhirResponse(parsedAltAcuteAdditiveMultipleDispenseNotifications, logger)
     const noOfMedicationDispenses = actual.entry.filter((entry) => entry.resource.resourceType === "MedicationDispense").length
     expect(noOfMedicationDispenses).toEqual(6)
     expect(actual.entry).toContainEqual(expectedMedicationDispense1)
@@ -2206,11 +2344,299 @@ describe("Test generateFhirResponse", () => {
     expect(actual.entry).toContainEqual(expectedMedicationDispense6)
   })
 
+  it("returns a Bundle containing a MedicationDispense Bundle Entry resource for each component of each line item in each dispense notification when called with a dispensed prescription", () => {
+    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-444-444-444")
+    mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-111-111-AAA")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-111-111-BBB")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-111-111-CCC")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-222-222-AAA")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-222-222-BBB")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-222-222-CCC")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-333-333-AAA")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-333-333-BBB")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-333-333-CCC")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-444-444-AAA")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-444-444-BBB")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-444-444-CCC")
+
+    const expectedMedicationDispense1A: MedicationDispenseBundleEntryType = {
+      fullUrl: "urn:uuid:MEDDIS-111-111-AAA",
+      search: {
+        mode: "include"
+      },
+      resource: {
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-111-111-AAA",
+        identifier: [{
+          system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
+          value: "D37FD639-E831-420C-B37B-40481DCA910E"
+        }],
+        subject: {
+          reference: "urn:uuid:PATIENT-123-567-890"
+        },
+        status: "in-progress",
+        performer: [{
+          actor: {
+            reference: "urn:uuid:DISORG-123-567-890"
+          }
+        }],
+        type: {
+          coding: [{
+            system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+            code: "0001",
+            display: "Item fully dispensed"
+          }]
+        },
+        authorizingPrescription: [{
+          reference: "urn:uuid:MEDREQ-111-111-111"
+        }],
+        medicationCodeableConcept: {
+          text: "Amoxicillin 250mg capsules A"
+        },
+        quantity: {
+          value: 20,
+          unit: "tablet"
+        },
+        dosageInstruction: [{
+          text: "2 times a day for 10 days"
+        }],
+        extension:[{
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-TaskBusinessStatus",
+          valueCoding: {
+            system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+            code: "0006",
+            display: "Dispensed"
+          }
+        }]
+      }
+    }
+
+    const expectedMedicationDispense1B = structuredClone(expectedMedicationDispense1A)
+    expectedMedicationDispense1B.fullUrl = "urn:uuid:MEDDIS-111-111-BBB"
+    expectedMedicationDispense1B.resource.id = "MEDDIS-111-111-BBB"
+    expectedMedicationDispense1B.resource.medicationCodeableConcept.text = "Amoxicillin 250mg capsules B"
+    const expectedMedicationDispense1C = structuredClone(expectedMedicationDispense1A)
+    expectedMedicationDispense1C.fullUrl = "urn:uuid:MEDDIS-111-111-CCC"
+    expectedMedicationDispense1C.resource.id = "MEDDIS-111-111-CCC"
+    expectedMedicationDispense1C.resource.medicationCodeableConcept.text = "Amoxicillin 250mg capsules C"
+
+    const expectedMedicationDispense2A: MedicationDispenseBundleEntryType = {
+      fullUrl: "urn:uuid:MEDDIS-222-222-AAA",
+      search: {
+        mode: "include"
+      },
+      resource: {
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-222-222-AAA",
+        identifier: [{
+          system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
+          value: "407685A2-A1A2-4B6B-B281-CAED41733C2B"
+        }],
+        subject: {
+          reference: "urn:uuid:PATIENT-123-567-890"
+        },
+        status: "in-progress",
+        performer: [{
+          actor: {
+            reference: "urn:uuid:DISORG-123-567-890"
+          }
+        }],
+        type: {
+          coding: [{
+            system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+            code: "0001",
+            display: "Item fully dispensed"
+          }]
+        },
+        authorizingPrescription: [{
+          reference: "urn:uuid:MEDREQ-222-222-222"
+        }],
+        medicationCodeableConcept: {
+          text: "Co-codamol 30mg/500mg tablets A"
+        },
+        quantity: {
+          value: 20,
+          unit: "tablet"
+        },
+        dosageInstruction: [{
+          text: "2 times a day for 10 days"
+        }],
+        extension:[{
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-TaskBusinessStatus",
+          valueCoding: {
+            system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+            code: "0006",
+            display: "Dispensed"
+          }
+        }]
+      }
+    }
+    const expectedMedicationDispense2B = structuredClone(expectedMedicationDispense2A)
+    expectedMedicationDispense2B.fullUrl = "urn:uuid:MEDDIS-222-222-BBB"
+    expectedMedicationDispense2B.resource.id = "MEDDIS-222-222-BBB"
+    expectedMedicationDispense2B.resource.medicationCodeableConcept.text = "Co-codamol 30mg/500mg tablets B"
+    const expectedMedicationDispense2C = structuredClone(expectedMedicationDispense2A)
+    expectedMedicationDispense2C.fullUrl = "urn:uuid:MEDDIS-222-222-CCC"
+    expectedMedicationDispense2C.resource.id = "MEDDIS-222-222-CCC"
+    expectedMedicationDispense2C.resource.medicationCodeableConcept.text = "Co-codamol 30mg/500mg tablets C"
+
+    const expectedMedicationDispense3A: MedicationDispenseBundleEntryType = {
+      fullUrl: "urn:uuid:MEDDIS-333-333-AAA",
+      search: {
+        mode: "include"
+      },
+      resource: {
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-333-333-AAA",
+        identifier: [{
+          system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
+          value: "20D6D69F-7BDD-4798-86DF-30F902BD2936"
+        }],
+        subject: {
+          reference: "urn:uuid:PATIENT-123-567-890"
+        },
+        status: "in-progress",
+        performer: [{
+          actor: {
+            reference: "urn:uuid:DISORG-123-567-890"
+          }
+        }],
+        type: {
+          coding: [{
+            system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+            code: "0001",
+            display: "Item fully dispensed"
+          }]
+        },
+        authorizingPrescription: [{
+          reference: "urn:uuid:MEDREQ-333-333-333"
+        }],
+        medicationCodeableConcept: {
+          text: "Pseudoephedrine hydrochloride 60mg tablets A"
+        },
+        quantity: {
+          value: 30,
+          unit: "tablet"
+        },
+        dosageInstruction: [{
+          text: "3 times a day for 10 days"
+        }],
+        extension:[{
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-TaskBusinessStatus",
+          valueCoding: {
+            system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+            code: "0006",
+            display: "Dispensed"
+          }
+        }]
+      }
+    }
+    const expectedMedicationDispense3B = structuredClone(expectedMedicationDispense3A)
+    expectedMedicationDispense3B.fullUrl = "urn:uuid:MEDDIS-333-333-BBB"
+    expectedMedicationDispense3B.resource.id = "MEDDIS-333-333-BBB"
+    expectedMedicationDispense3B.resource.medicationCodeableConcept.text = "Pseudoephedrine hydrochloride 60mg tablets B"
+    const expectedMedicationDispense3C = structuredClone(expectedMedicationDispense3A)
+    expectedMedicationDispense3C.fullUrl = "urn:uuid:MEDDIS-333-333-CCC"
+    expectedMedicationDispense3C.resource.id = "MEDDIS-333-333-CCC"
+    expectedMedicationDispense3C.resource.medicationCodeableConcept.text = "Pseudoephedrine hydrochloride 60mg tablets C"
+
+    const expectedMedicationDispense4A: MedicationDispenseBundleEntryType = {
+      fullUrl: "urn:uuid:MEDDIS-444-444-AAA",
+      search: {
+        mode: "include"
+      },
+      resource: {
+        resourceType: "MedicationDispense",
+        id: "MEDDIS-444-444-AAA",
+        identifier: [{
+          system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
+          value: "BF1B0BD8-0E6D-4D90-989E-F32065200CA3"
+        }],
+        subject: {
+          reference: "urn:uuid:PATIENT-123-567-890"
+        },
+        status: "in-progress",
+        performer: [{
+          actor: {
+            reference: "urn:uuid:DISORG-123-567-890"
+          }
+        }],
+        type: {
+          coding: [{
+            system: "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+            code: "0001",
+            display: "Item fully dispensed"
+          }]
+        },
+        authorizingPrescription: [{
+          reference: "urn:uuid:MEDREQ-444-444-444"
+        }],
+        medicationCodeableConcept: {
+          text: "Azithromycin 250mg capsules A"
+        },
+        quantity: {
+          value: 30,
+          unit: "tablet"
+        },
+        dosageInstruction: [{
+          text: "3 times a day for 10 days"
+        }],
+        extension:[{
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-TaskBusinessStatus",
+          valueCoding: {
+            system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+            code: "0006",
+            display: "Dispensed"
+          }
+        }]
+      }
+    }
+    const expectedMedicationDispense4B = structuredClone(expectedMedicationDispense4A)
+    expectedMedicationDispense4B.fullUrl = "urn:uuid:MEDDIS-444-444-BBB"
+    expectedMedicationDispense4B.resource.id = "MEDDIS-444-444-BBB"
+    expectedMedicationDispense4B.resource.medicationCodeableConcept.text = "Azithromycin 250mg capsules B"
+    const expectedMedicationDispense4C = structuredClone(expectedMedicationDispense4A)
+    expectedMedicationDispense4C.fullUrl = "urn:uuid:MEDDIS-444-444-CCC"
+    expectedMedicationDispense4C.resource.id = "MEDDIS-444-444-CCC"
+    expectedMedicationDispense4C.resource.medicationCodeableConcept.text = "Azithromycin 250mg capsules C"
+
+    const actual = generateFhirResponse(parsedAcuteDispensedWithMultipleComponents, logger)
+    const noOfMedicationDispenses = actual.entry.filter((entry) => entry.resource.resourceType === "MedicationDispense").length
+    expect(noOfMedicationDispenses).toEqual(12)
+    expect(actual.entry).toContainEqual(expectedMedicationDispense1A)
+    expect(actual.entry).toContainEqual(expectedMedicationDispense1B)
+    expect(actual.entry).toContainEqual(expectedMedicationDispense1C)
+    expect(actual.entry).toContainEqual(expectedMedicationDispense2A)
+    expect(actual.entry).toContainEqual(expectedMedicationDispense2B)
+    expect(actual.entry).toContainEqual(expectedMedicationDispense2C)
+    expect(actual.entry).toContainEqual(expectedMedicationDispense3A)
+    expect(actual.entry).toContainEqual(expectedMedicationDispense3B)
+    expect(actual.entry).toContainEqual(expectedMedicationDispense3C)
+    expect(actual.entry).toContainEqual(expectedMedicationDispense4A)
+    expect(actual.entry).toContainEqual(expectedMedicationDispense4B)
+    expect(actual.entry).toContainEqual(expectedMedicationDispense4C)
+  })
+
   it("returns a Bundle containing a partial MedicationDispense Bundle Entry resource when called with a prescription with a dispense notification item with no dosage instruction", () => {
     mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-444-444-444")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-111-111-111")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-222-222-222")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-333-333-333")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-444-444-444")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-555-555-555")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-666-666-666")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-777-777-777")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-888-888-888")
 
     const expectedMedicationDispense: MedicationDispenseBundleEntryType = {
       fullUrl: "urn:uuid:MEDDIS-111-111-111",
@@ -2222,7 +2648,7 @@ describe("Test generateFhirResponse", () => {
         id: "MEDDIS-111-111-111",
         identifier: [{
           system: "https://fhir.nhs.uk/Id/prescription-order-item-number",
-          value: "101875F7-400C-43FE-AC04-7F29DBF854AF"
+          value: "D37FD639-E831-420C-B37B-40481DCA910E"
         }],
         subject: {
           reference: "urn:uuid:PATIENT-123-567-890"
@@ -2261,7 +2687,7 @@ describe("Test generateFhirResponse", () => {
       }
     }
 
-    const actual = generateFhirResponse(parsedAcuteDispensedWithSingleItem, logger)
+    const actual = generateFhirResponse(parsedAcuteWithoutOptionalDosageInstruction, logger)
     expect(actual.entry).toContainEqual(expectedMedicationDispense)
   })
 
@@ -2370,6 +2796,9 @@ describe("Test generateFhirResponse", () => {
           value: 0,
           unit: "pre-filled disposable injection"
         },
+        dosageInstruction: [{
+          text: "Inject 10 milligram - 5 times a day - Subcutaneous route - for 10 days"
+        }],
         extension:[{
           url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-TaskBusinessStatus",
           valueCoding: {
@@ -2401,7 +2830,7 @@ describe("Test generateFhirResponse", () => {
     mockUUID.mockImplementationOnce(() => "MEDDIS-777-777-777")
     mockUUID.mockImplementationOnce(() => "MEDDIS-888-888-888")
 
-    const actual = generateFhirResponse(parsedAcuteWithMultipleDispenseNotifications, logger)
+    const actual = generateFhirResponse(parsedAcuteCumulativeMultipleDispenseNotifications, logger)
     expect(actual.entry).toContainEqual(expect.objectContaining({
       resource: expect.objectContaining({
         resourceType: "MedicationDispense",
@@ -2760,8 +3189,8 @@ describe("Test generateFhirResponse", () => {
 
   })
 
-  it("returns Dispense Notification history actions with correct references when called with a prescription with multiple dispense notifications", () => {
-    /* Tests DN's where items previously dispensed are included again with 0 quantity in subsequent DN's*/
+  it("returns Dispense Notification history actions with correct references when called with a prescription with culmative dispense notifications", () => {
+    /* Tests where each DN represents the current state of the dispensed items at the time of the DN (cumulative)*/
     mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
@@ -2883,7 +3312,7 @@ describe("Test generateFhirResponse", () => {
       ]
     }
 
-    const actual = generateFhirResponse(parsedAcuteWithMultipleDispenseNotifications, logger)
+    const actual = generateFhirResponse(parsedAcuteCumulativeMultipleDispenseNotifications, logger)
     expect(actual.entry).toContainEqual(expect.objectContaining({
       resource: expect.objectContaining({
         resourceType: "RequestGroup",
@@ -2905,8 +3334,278 @@ describe("Test generateFhirResponse", () => {
     }))
   })
 
-  it("returns Dispense Notification history actions with correct references when called with a prescription with alternative format multiple dispense notifications", () => {
-    /* Tests DN's where items previously dispensed are not included in subsequent DN's*/
+  it("returns Dispense Notification history actions with correct references when called with a prescription with dispense notifications containing multiple components", () => {
+    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-444-444-444")
+    mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-111-111-AAA")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-111-111-BBB")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-111-111-CCC")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-222-222-AAA")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-222-222-BBB")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-222-222-CCC")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-333-333-AAA")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-333-333-BBB")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-333-333-CCC")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-444-444-AAA")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-444-444-BBB")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-444-444-CCC")
+
+    const expectedAction1: HistoryAction["action"][0] = {
+      title: "Dispense notification successful",
+      timingDateTime: "2025-04-24T11:16:02.000Z",
+      code: [
+        {
+          coding: [{
+            system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+            code: "0006",
+            display: "Dispensed"
+          }]
+        },
+        {
+          coding: [{
+            system: "https://tools.ietf.org/html/rfc4122",
+            code: "DF525024-FD4E-4292-9FF6-B67025791B69"
+          }]
+        }
+      ],
+      participant: [{
+        extension: [{
+          url: "http://hl7.org/fhir/5.0/StructureDefinition/extension-RequestOrchestration.action.participant.typeReference",
+          valueReference: {
+            identifier: {
+              system: "https://fhir.nhs.uk/Id/ods-organization-code",
+              value: "FA565"
+            }
+          }
+        }]
+      }],
+      action: [
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-111-111-AAA"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-111-111-BBB"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-111-111-CCC"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-222-222-AAA"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-222-222-BBB"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-222-222-CCC"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-333-333-AAA"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-333-333-BBB"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-333-333-CCC"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-444-444-AAA"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-444-444-BBB"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-444-444-CCC"
+          }
+        }
+      ]
+    }
+
+    const actual = generateFhirResponse(parsedAcuteDispensedWithMultipleComponents, logger)
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "RequestGroup",
+        action: expect.arrayContaining([expect.objectContaining({
+          title: "Prescription status transitions",
+          action: expect.arrayContaining([expectedAction1])
+        })])
+      })
+    }))
+  })
+
+  it("returns Dispense Notification history actions with correct references when called with a prescription with additive dispense notifications", () => {
+    /* Tests DN's where items previously dispensed are included in subsequent DN's with 0 quantity (additive)*/
+    mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-333-333-333")
+    mockUUID.mockImplementationOnce(() => "MEDREQ-444-444-444")
+    mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-111-111-111")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-222-222-222")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-333-333-333")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-444-444-444")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-555-555-555")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-666-666-666")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-777-777-777")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-888-888-888")
+
+    const expectedAction1: HistoryAction["action"][0] = {
+      title: "Dispense notification successful",
+      timingDateTime: "2025-04-24T11:45:32.000Z",
+      code: [
+        {
+          coding: [{
+            system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+            code: "0003",
+            display: "With Dispenser - Active"
+          }]
+        },
+        {
+          coding: [{
+            system: "https://tools.ietf.org/html/rfc4122",
+            code: "42A6A1A0-596C-482C-B018-0D15F8FFF9F3"
+          }]
+        }
+      ],
+      participant: [{
+        extension: [{
+          url: "http://hl7.org/fhir/5.0/StructureDefinition/extension-RequestOrchestration.action.participant.typeReference",
+          valueReference: {
+            identifier: {
+              system: "https://fhir.nhs.uk/Id/ods-organization-code",
+              value: "FA565"
+            }
+          }
+        }]
+      }],
+      action: [
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-111-111-111"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-222-222-222"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-333-333-333"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-444-444-444"
+          }
+        }
+      ]
+    }
+
+    const expectedAction2: HistoryAction["action"][0] = {
+      title: "Dispense notification successful",
+      timingDateTime: "2025-04-24T11:49:41.000Z",
+      code: [
+        {
+          coding: [{
+            system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+            code: "0006",
+            display: "Dispensed"
+          }]
+        },
+        {
+          coding: [{
+            system: "https://tools.ietf.org/html/rfc4122",
+            code: "B358A55E-A423-48E2-A9D8-2612B4E66604"
+          }]
+        }
+      ],
+      participant: [{
+        extension: [{
+          url: "http://hl7.org/fhir/5.0/StructureDefinition/extension-RequestOrchestration.action.participant.typeReference",
+          valueReference: {
+            identifier: {
+              system: "https://fhir.nhs.uk/Id/ods-organization-code",
+              value: "FA565"
+            }
+          }
+        }]
+      }],
+      action: [
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-555-555-555"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-666-666-666"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-777-777-777"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-888-888-888"
+          }
+        }
+      ]
+    }
+
+    const actual = generateFhirResponse(parsedAcuteAdditiveMultipleDispenseNotifications, logger)
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "RequestGroup",
+        action: expect.arrayContaining([expect.objectContaining({
+          title: "Prescription status transitions",
+          action: expect.arrayContaining([expectedAction1])
+        })])
+      })
+    }))
+
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "RequestGroup",
+        action: expect.arrayContaining([expect.objectContaining({
+          title: "Prescription status transitions",
+          action: expect.arrayContaining([expectedAction2])
+        })])
+      })
+    }))
+  })
+
+  it("returns Dispense Notification history actions with correct references when called with a prescription with alt additive dispense notifications", () => {
+    /* Tests DN's where items previously dispensed are not included in subsequent DN's (alt additive)*/
     mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
@@ -3016,7 +3715,7 @@ describe("Test generateFhirResponse", () => {
       ]
     }
 
-    const actual = generateFhirResponse(parsedAltAcuteWithMultipleDispenseNotifications, logger)
+    const actual = generateFhirResponse(parsedAltAcuteAdditiveMultipleDispenseNotifications, logger)
     expect(actual.entry).toContainEqual(expect.objectContaining({
       resource: expect.objectContaining({
         resourceType: "RequestGroup",
@@ -3093,14 +3792,13 @@ describe("Test generateFhirResponse", () => {
     }))
   })
 
-  it("returns a Dispense Notification history action with a correct reference when called with a prescription with a single dispense notification but mismatched ID's", () => {
+  it("returns a Dispense Notification history action with a correct reference when called with a prescription with a dispense notification with mismatched ID's", () => {
     mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDREQ-123-567-890")
     mockUUID.mockImplementationOnce(() => "DISORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDDIS-123-567-890")
 
-    const mockPrescription: Prescription = {...parsedAcuteDispensedWithSingleItem}
-    mockPrescription.history[4].messageId = "MIS-MATCHED-ID-1234"
+    const mockPrescription: Prescription = parseExample(acuteDispensedWithMismatchedIds)
 
     const expectedAction: HistoryAction["action"][0] = {
       title: "Dispense notification successful",
@@ -3151,7 +3849,7 @@ describe("Test generateFhirResponse", () => {
     }))
   })
 
-  it("returns Dispense Notification history actions without a reference when called with a prescription with multiple dispense notificiations with mismatched ID's", () => {
+  it("returns Dispense Notification history actions with correct references when called with a prescription with multiple dispense notificiations with mismatched ID's", () => {
     mockUUID.mockImplementationOnce(() => "PRESORG-123-567-890")
     mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
     mockUUID.mockImplementationOnce(() => "MEDREQ-222-222-222")
@@ -3163,10 +3861,11 @@ describe("Test generateFhirResponse", () => {
     mockUUID.mockImplementationOnce(() => "MEDDIS-333-333-333")
     mockUUID.mockImplementationOnce(() => "MEDDIS-444-444-444")
     mockUUID.mockImplementationOnce(() => "MEDDIS-555-555-555")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-666-666-666")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-777-777-777")
+    mockUUID.mockImplementationOnce(() => "MEDDIS-888-888-888")
 
-    const mockPrescription: Prescription = {...parsedAcuteWithMultipleDispenseNotifications}
-    mockPrescription.history[4].messageId = "MIS-MATCHED-ID-1111"
-    mockPrescription.history[5].messageId = "MIS-MATCHED-ID-2222"
+    const mockPrescription: Prescription = parseExample(acuteMultipleDispenseNotificationsWithMismatchedIds)
 
     const expectedAction1: HistoryAction["action"][0] = {
       title: "Dispense notification successful",
@@ -3177,6 +3876,12 @@ describe("Test generateFhirResponse", () => {
             system: "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
             code: "0003",
             display: "With Dispenser - Active"
+          }]
+        },
+        {
+          coding: [{
+            system: "https://tools.ietf.org/html/rfc4122",
+            code: "42A6A1A0-596C-482C-B018-0D15F8FFF9F3"
           }]
         }
       ],
@@ -3190,7 +3895,29 @@ describe("Test generateFhirResponse", () => {
             }
           }
         }]
-      }]
+      }],
+      action: [
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-111-111-111"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-222-222-222"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-333-333-333"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-444-444-444"
+          }
+        }
+      ]
     }
 
     const expectedAction2: HistoryAction["action"][0] = {
@@ -3203,6 +3930,12 @@ describe("Test generateFhirResponse", () => {
             code: "0006",
             display: "Dispensed"
           }]
+        },
+        {
+          coding: [{
+            system: "https://tools.ietf.org/html/rfc4122",
+            code: "B358A55E-A423-48E2-A9D8-2612B4E66604"
+          }]
         }
       ],
       participant: [{
@@ -3215,7 +3948,29 @@ describe("Test generateFhirResponse", () => {
             }
           }
         }]
-      }]
+      }],
+      action: [
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-555-555-555"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-666-666-666"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-777-777-777"
+          }
+        },
+        {
+          resource: {
+            reference: "urn:uuid:MEDDIS-888-888-888"
+          }
+        }
+      ]
     }
 
     const actual = generateFhirResponse(mockPrescription, logger)

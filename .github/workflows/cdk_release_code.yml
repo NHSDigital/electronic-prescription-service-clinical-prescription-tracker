@@ -81,7 +81,7 @@ jobs:
 
     steps:
       - name: Checkout local github actions
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ env.BRANCH_NAME }}
           fetch-depth: 0
@@ -109,7 +109,7 @@ jobs:
           role-session-name: cpt-api-pull-image
 
       - name: build_artifact download
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: build_artifact
 
@@ -251,7 +251,7 @@ jobs:
           DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
       - name: Checkout gh-pages
         if: ${{ !startsWith(inputs.STACK_NAME, 'cpt-pr-') }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: gh-pages
           path: gh-pages

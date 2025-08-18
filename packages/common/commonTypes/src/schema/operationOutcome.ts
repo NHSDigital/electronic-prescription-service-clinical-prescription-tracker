@@ -29,6 +29,7 @@ const httpErrorCoding = {
         "UNAUTHORIZED",
         "FORBIDDEN",
         "NOT_FOUND",
+        "REC_TIMEOUT",
         "SERVER_ERROR",
         "TIMEOUT"
       ]
@@ -41,8 +42,8 @@ const httpErrorCoding = {
         "401: The Server deemed you unauthorized to make this request",
         "403: Failed to Authenticate with the Server.",
         "404: The Server was unable to find the specified resource.",
-        "500: The Server has encountered an error processing the request.",
-        "504: The server has timed out whilst processing the request."
+        "408: The server has timed out whilst processing the request.",
+        "500: The Server has encountered an error processing the request."
       ]
     }
   },
