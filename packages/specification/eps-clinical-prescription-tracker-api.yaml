@@ -12,7 +12,7 @@ info:
     email: api.management@nhs.net
   description: |
     ## Overview
-    Use this API for real-time tracking of Electronic Prescription Service (EPS). It gives details about prescription status, dispensing progress and other essential prescription information. 
+    Use this API for real-time tracking of Electronic Prescription Service (EPS) prescriptions. It gives details about prescription status, dispensing progress and other essential prescription information. 
 
     ## Who can use this API
     Patient Medication Record (PMR) system suppliers can use the Prescription Tracker API to add prescription tracking into their systems.
@@ -28,7 +28,7 @@ info:
     This API is [in development](https://digital.nhs.uk/developer/guides-and-documentation/reference-guide#statuses), meaning the API will soon be available for testing via a sandbox service or an integration environment - but we expect to make breaking changes based on developer feedback.
 
     ## Service level
-    This API is a platinum service, meaning it is operational and supported 24 hours a day, 365 days a year.
+    This API is a Silver Plus service, meaning it is operational and supported 24 hours a day, 365 days a year.
 
     See [service levels](https://digital.nhs.uk/developer/guides-and-documentation/reference-guide#service-levels) for more details.
 
@@ -191,7 +191,7 @@ paths:
       summary: Retrieve prescription details
       description: |
         ## Overview
-        Use this endpoint to return a list of prescriptions for a given prescriptionId or nhsNumber.
+        Use this endpoint to return the details of a prescription for a given prescriptionId.
       parameters:
         - name: prescriptionId
           in: path
