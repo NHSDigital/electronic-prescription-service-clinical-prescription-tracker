@@ -120,6 +120,8 @@ jobs:
       CREATE_PROD_RELEASE_NOTES: true
       MARK_JIRA_RELEASED: false
       CREATE_INT_RC_RELEASE_NOTES: false
+      MTLS_KEY: clinical-tracker-mtls-1
+      IS_PULL_REQUEST: false
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}
@@ -167,6 +169,8 @@ jobs:
       ENABLE_MUTUAL_TLS: false
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       RUN_REGRESSION_TESTS: true
+      MTLS_KEY: clinical-tracker-mtls-1
+      IS_PULL_REQUEST: false
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.QA_CDK_PULL_IMAGE_ROLE }}
