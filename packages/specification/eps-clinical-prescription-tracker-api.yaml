@@ -161,9 +161,9 @@ paths:
 
             | HTTP status | Error code          | Description                                                                                                                               |
             | ----------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-            | 400         | `value`             | The Server was unable to process the request.                                                                                             |
-            | 404         | `not-found`         | The Server was unable to find the specified resource.                                                                                     |
-            | 408         | `timeout`           | The Server has timed out whilst processing the request.                                                                                   |
+            | 400         | `value`             | The server was unable to process the request.                                                                                             |
+            | 404         | `not-found`         | The server was unable to find the specified resource.                                                                                     |
+            | 408         | `timeout`           | The server has timed out whilst processing the request.                                                                                   |
 
             Any errors will be included in the returned OperationOutcome (below).
           content:
@@ -283,7 +283,7 @@ components:
       in: header
       name: nhsd-session-jobrole
       description: |
-        "The users job role code for the current session."
+        The users job role code for the current session.
       required: true
       schema:
         type: string
