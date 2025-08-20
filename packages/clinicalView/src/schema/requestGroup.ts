@@ -11,7 +11,7 @@ import {prescriptionTypeExtension} from "./extensions"
 
 export const requestGroup = {
   type: "object",
-  description: "A FHIR RequestGroup representing a prescription",
+  description: "A FHIR RequestGroup representing a prescription.",
   properties: {
     ...requestGroupCommonProperties,
     id: {

@@ -92,7 +92,7 @@ export type OperationOutcomeIssueType = FromSchema<typeof operationOutcomeIssue>
 
 export const operationOutcome = {
   type: "object",
-  description: "A collection of error, warning, or information messages that result from a system action",
+  description: "A collection of error, warning, or information messages that result from a system action.",
   properties: {
     resourceType: {
       type: "string",
