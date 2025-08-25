@@ -18,7 +18,7 @@
     "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
   },
   "devDependencies": {
-    "@redocly/cli": "^2.0.6",
+    "@redocly/cli": "^2.0.7",
     "clinicalView": "^1.0.0",
     "prescriptionSearch": "^1.0.0",
     "@cpt-common/common-types": "^1.0.0",
