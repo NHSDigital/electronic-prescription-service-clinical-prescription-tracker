@@ -1,5 +1,6 @@
 import {
   bundleEntryCommonProperties,
+  cancellationReasonCoding,
   intent,
   pendingCancellationExtension,
   subject
@@ -24,55 +25,6 @@ const status = {
   ]
 } as const satisfies JSONSchema
 export type MedicationRequestStatusType = FromSchema<typeof status>
-
-export const statusReason = {
-  type: "object",
-  properties: {
-    coding: {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          system: {
-            type: "string",
-            enum: ["https://fhir.nhs.uk/CodeSystem/medicationrequest-status-reason"]
-          },
-          code: {
-            type: "string",
-            enum: [
-              "0001",
-              "0002",
-              "0003",
-              "0004",
-              "0005",
-              "0006",
-              "0007",
-              "0008",
-              "0009"
-            ]
-          },
-          display: {
-            type: "string",
-            enum: [
-              "Prescribing Error",
-              "Clinical contra-indication",
-              "Change to medication treatment regime",
-              "Clinical grounds",
-              "At the Patients request",
-              "At the Pharmacists request",
-              "Notification of Death",
-              "Patient deducted - other reason",
-              "Patient deducted - registered with new practice"
-            ]
-          }
-        },
-        required: ["system", "code", "display"]
-      }
-    }
-  },
-  required: ["coding"]
-} as const satisfies JSONSchema
-export type StatusReasonCoding = FromSchema<typeof statusReason>["coding"][0]
 
 const courseOfTherapyType = {
   type: "object",
@@ -123,7 +75,16 @@ export const medicationRequest = {
     identifier: lineItemIdentifier,
     subject,
     status,
-    statusReason,
+    statusReason: {
+      type: "object",
+      properties: {
+        coding: {
+          type: "array",
+          items: cancellationReasonCoding
+        }
+      },
+      required: ["coding"]
+    },
     intent,
     requester: {
       type: "object",

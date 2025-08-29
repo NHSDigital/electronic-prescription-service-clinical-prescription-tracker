@@ -1,5 +1,5 @@
 import {FromSchema, JSONSchema} from "json-schema-to-ts"
-import {taskBusinessStatus} from "./elements"
+import {cancellationReasonCoding, taskBusinessStatus} from "./elements"
 
 export const prescriptionStatusExtension = {
   type: "object",
@@ -14,16 +14,32 @@ export const prescriptionStatusExtension = {
       type: "array",
       description: "Additional content defined by implementations.",
       items: {
-        type: "object",
-        properties: {
-          url: {
-            type: "string",
-            description: "Source of the definition for the extension code - a logical name or a URL.",
-            enum: ["status"]
+        oneOf: [
+          {
+            type: "object",
+            properties: {
+              url: {
+                type: "string",
+                description: "Source of the definition for the extension code - a logical name or a URL.",
+                enum: ["status"]
+              },
+              valueCoding: taskBusinessStatus
+            },
+            required: ["url", "valueCoding"]
           },
-          valueCoding: taskBusinessStatus
-        },
-        required: ["url", "valueCoding"]
+          {
+            type: "object",
+            properties: {
+              url: {
+                type: "string",
+                description: "Source of the definition for the extension code - a logical name or a URL.",
+                enum: ["cancellationReason"]
+              },
+              valueCoding: cancellationReasonCoding
+            },
+            required: ["valueCoding"]
+          }
+        ]
       }
     }
   },

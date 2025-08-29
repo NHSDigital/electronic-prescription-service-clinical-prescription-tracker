@@ -75,3 +75,43 @@ export const taskBusinessStatus = {
   required: ["system", "code", "display"]
 } as const satisfies JSONSchema
 export type PrescriptionStatusCoding = FromSchema<typeof taskBusinessStatus>
+
+export const cancellationReasonCoding = {
+  type: "object",
+  properties: {
+    system: {
+      type: "string",
+      enum: ["https://fhir.nhs.uk/CodeSystem/medicationrequest-status-reason"]
+    },
+    code: {
+      type: "string",
+      enum: [
+        "0001",
+        "0002",
+        "0003",
+        "0004",
+        "0005",
+        "0006",
+        "0007",
+        "0008",
+        "0009"
+      ]
+    },
+    display: {
+      type: "string",
+      enum: [
+        "Prescribing Error",
+        "Clinical contra-indication",
+        "Change to medication treatment regime",
+        "Clinical grounds",
+        "At the Patients request",
+        "At the Pharmacists request",
+        "Notification of Death",
+        "Patient deducted - other reason",
+        "Patient deducted - registered with new practice"
+      ]
+    }
+  },
+  required: ["system", "code", "display"]
+} as const satisfies JSONSchema
+export type CancellationReasonCoding = FromSchema<typeof cancellationReasonCoding>
