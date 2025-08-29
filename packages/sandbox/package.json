@@ -13,11 +13,11 @@
     "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
   },
   "dependencies": {
-    "@aws-lambda-powertools/commons": "^2.24.1",
-    "@aws-lambda-powertools/logger": "^2.24.1",
-    "@middy/core": "^6.4.1",
-    "@middy/input-output-logger": "^6.4.1",
-    "@nhs/fhir-middy-error-handler": "^2.1.43"
+    "@aws-lambda-powertools/commons": "^2.25.0",
+    "@aws-lambda-powertools/logger": "^2.25.2",
+    "@middy/core": "^6.4.4",
+    "@middy/input-output-logger": "^6.4.4",
+    "@nhs/fhir-middy-error-handler": "^2.1.46"
   },
   "devDependencies": {
     "@clinicaltracker_common/testing": "^1.0.0"

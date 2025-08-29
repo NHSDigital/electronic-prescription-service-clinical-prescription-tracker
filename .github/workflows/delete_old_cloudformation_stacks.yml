@@ -19,7 +19,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Checkout local github scripts
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ env.BRANCH_NAME }}
           sparse-checkout: |
@@ -47,7 +47,7 @@ jobs:
 
     steps:
       - name: Checkout local code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ env.BRANCH_NAME }}
           fetch-depth: 0

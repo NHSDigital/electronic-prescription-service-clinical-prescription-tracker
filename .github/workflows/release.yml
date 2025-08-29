@@ -8,7 +8,7 @@ env:
 
 jobs:
   quality_checks:
-    uses: NHSDigital/eps-workflow-quality-checks/.github/workflows/quality-checks.yml@v4.0.5
+    uses: NHSDigital/eps-workflow-quality-checks/.github/workflows/quality-checks.yml@v4.1.0
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -29,7 +29,7 @@ jobs:
       version_tag: ${{ steps.output_version_tag.outputs.VERSION_TAG }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ env.BRANCH_NAME }}
           fetch-depth: 0
@@ -139,6 +139,8 @@ jobs:
       CREATE_PROD_RELEASE_NOTES: true
       MARK_JIRA_RELEASED: false
       CREATE_INT_RC_RELEASE_NOTES: false
+      MTLS_KEY: clinical-tracker-mtls-1
+      IS_PULL_REQUEST: false
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}
@@ -186,6 +188,8 @@ jobs:
       ENABLE_MUTUAL_TLS: false
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       RUN_REGRESSION_TESTS: false
+      MTLS_KEY: clinical-tracker-mtls-1
+      IS_PULL_REQUEST: false
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.REF_CDK_PULL_IMAGE_ROLE }}
@@ -208,6 +212,8 @@ jobs:
       ENABLE_MUTUAL_TLS: false
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       RUN_REGRESSION_TESTS: true
+      MTLS_KEY: clinical-tracker-mtls-1
+      IS_PULL_REQUEST: false
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.QA_CDK_PULL_IMAGE_ROLE }}
@@ -234,6 +240,8 @@ jobs:
       CREATE_PROD_RELEASE_NOTES: true
       MARK_JIRA_RELEASED: false
       CREATE_INT_RC_RELEASE_NOTES: true
+      MTLS_KEY: clinical-tracker-mtls-1
+      IS_PULL_REQUEST: false
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.INT_CDK_PULL_IMAGE_ROLE }}
@@ -285,6 +293,8 @@ jobs:
       CREATE_PROD_RELEASE_NOTES: true
       MARK_JIRA_RELEASED: true
       CREATE_INT_RC_RELEASE_NOTES: false
+      MTLS_KEY: clinical-tracker-mtls-1
+      IS_PULL_REQUEST: false
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_DEPLOY_ROLE }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.PROD_CDK_PULL_IMAGE_ROLE }}

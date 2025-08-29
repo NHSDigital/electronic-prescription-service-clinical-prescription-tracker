@@ -9,7 +9,7 @@ env:
 
 jobs:
   quality_checks:
-    uses: NHSDigital/eps-workflow-quality-checks/.github/workflows/quality-checks.yml@v4.0.5
+    uses: NHSDigital/eps-workflow-quality-checks/.github/workflows/quality-checks.yml@v4.1.0
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -75,6 +75,8 @@ jobs:
       ENABLE_MUTUAL_TLS: false
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       RUN_REGRESSION_TESTS: true
+      MTLS_KEY: clinical-tracker-mtls-1
+      IS_PULL_REQUEST: true
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}
