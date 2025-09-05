@@ -7,7 +7,7 @@ import {
 } from "@cpt-common/common-types/schema"
 import {FromSchema, JSONSchema} from "json-schema-to-ts"
 import {historyAction, prescriptionLineItemsAction} from "./actions"
-import {prescriptionTypeExtension} from "./extensions"
+import {prescriptionNonDispensingReasonExtension, prescriptionTypeExtension} from "./extensions"
 
 export const requestGroup = {
   type: "object",
@@ -45,7 +45,8 @@ export const requestGroup = {
           prescriptionStatusExtension,
           medicationRepeatInformationExtension,
           pendingCancellationExtension,
-          prescriptionTypeExtension
+          prescriptionTypeExtension,
+          prescriptionNonDispensingReasonExtension
         ]
       }
     },

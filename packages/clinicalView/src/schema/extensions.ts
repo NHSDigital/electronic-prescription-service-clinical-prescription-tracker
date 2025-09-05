@@ -1,6 +1,6 @@
 import {taskBusinessStatus} from "@cpt-common/common-types/schema"
 import {FromSchema, JSONSchema} from "json-schema-to-ts"
-import {dispenseStatusCoding} from "./elements"
+import {dispenseStatusCoding, nonDispensingReasonCoding} from "./elements"
 export const prescriptionTypeExtension = {
   type: "object",
   properties: {
@@ -302,3 +302,17 @@ export const taskBusinessStatusExtension = {
   }
 } as const satisfies JSONSchema
 export type TaskBusinessStatusExtensionType = FromSchema<typeof taskBusinessStatusExtension>
+
+export const prescriptionNonDispensingReasonExtension = {
+  type: "object",
+  description: "The prescription non dispensing reason",
+  properties: {
+    url: {
+      type: "string",
+      description: "Source of the definition for the extension code - a logical name or a URL.",
+      enum: ["https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionNonDispensingReason"]
+    },
+    valueCoding: nonDispensingReasonCoding
+  }
+} as const satisfies JSONSchema
+export type PrescriptionNonDispensingReasonExtensionType = FromSchema<typeof prescriptionNonDispensingReasonExtension>

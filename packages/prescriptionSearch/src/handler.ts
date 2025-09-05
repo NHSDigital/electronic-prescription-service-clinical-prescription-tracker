@@ -100,13 +100,11 @@ export const newHandler = (params: HandlerParams) => {
   const newHandler = middy((event: APIGatewayEvent) => apiGatewayHandler(params, event))
     .use(injectLambdaContext(logger, {clearState: true}))
     .use(httpHeaderNormalizer())
-    .use(
-      inputOutputLogger({
-        logger: (request) => {
-          logger.info(request)
-        }
-      })
-    )
+    .use(inputOutputLogger({
+      logger: (request) => {
+        logger.info(request)
+      }
+    }))
     .use(errorHandler({logger}))
   return newHandler
 }
