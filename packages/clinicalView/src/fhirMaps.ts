@@ -2,9 +2,10 @@ import {TreatmentType} from "@cpt-common/common-types/fhir"
 import {SpineTreatmentTypeCode} from "@cpt-common/common-types/spine"
 import {SpineGenderCode} from "./parseSpineResponse"
 import {PerformerSiteTypeCoding, PrescriptionTypeCoding} from "./schema/extensions"
-import {CourseOfTherapyTypeCoding, MedicationRequestStatusType, StatusReasonCoding} from "./schema/medicationRequest"
+import {CourseOfTherapyTypeCoding, MedicationRequestStatusType} from "./schema/medicationRequest"
 import {GenderType} from "./schema/patient"
-import {DispenseStatusCoding} from "./schema/elements"
+import {DispenseStatusCoding, NonDispensingReasonCoding} from "./schema/elements"
+import {CancellationReasonCoding} from "@cpt-common/common-types/schema"
 
 export const GENDER_MAP: Record<SpineGenderCode, GenderType> = {
   1 : "male",
@@ -87,7 +88,7 @@ export const LINE_ITEM_STATUS_MAP: Record<DispenseStatusCoding["code"], Dispense
   "0008": "Item with dispenser"
 } as const
 
-export const LINE_ITEM_STATUS_REASON_MAP:Record<StatusReasonCoding["display"], StatusReasonCoding["code"]> = {
+export const CANCELLATION_REASON_MAP: Record<CancellationReasonCoding["display"], CancellationReasonCoding["code"]> = {
   "Prescribing Error": "0001",
   "Clinical contra-indication": "0002",
   "Change to medication treatment regime": "0003",
@@ -98,6 +99,21 @@ export const LINE_ITEM_STATUS_REASON_MAP:Record<StatusReasonCoding["display"], S
   "Patient deducted - other reason": "0008",
   "Patient deducted - registered with new practice": "0009"
 } as const
+
+export const NON_DISPENSING_REASON_MAP: Record<NonDispensingReasonCoding["code"],
+  NonDispensingReasonCoding["display"]> = {
+    "0001": "Not required as instructed by the patient",
+    "0002": "Clinically unsuitable",
+    "0003": "Owings note issued to patient",
+    "0004": "Prescription cancellation",
+    "0005": "Prescription cancellation due to death",
+    "0006": "Illegal NHS prescription",
+    "0007": "Prescribed out of scope item",
+    "0008": "Item or prescription expired",
+    "0009": "Not allowed on FP10",
+    "0010": "Patient did not collect medication",
+    "0011": "Patient purchased medication over the counter"
+  } as const
 
 export const MEDICATION_REQUEST_STATUS_MAP: Record<DispenseStatusCoding["code"], MedicationRequestStatusType> = {
   "0001": "completed",

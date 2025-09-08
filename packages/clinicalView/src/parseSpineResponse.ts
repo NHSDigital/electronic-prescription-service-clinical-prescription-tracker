@@ -1,6 +1,6 @@
 import {Logger} from "@aws-lambda-powertools/logger"
 import {IssueDetails, PatientDetailsSummary, PrescriptionDetailsSummary} from "@cpt-common/common-types/prescription"
-import {PrescriptionStatusCoding} from "@cpt-common/common-types/schema"
+import {CancellationReasonCoding, PrescriptionStatusCoding} from "@cpt-common/common-types/schema"
 import {ServiceError} from "@cpt-common/common-types/service"
 import {
   SPINE_TIMESTAMP_FORMAT,
@@ -11,9 +11,8 @@ import {
 import * as DateFns from "date-fns"
 import {XMLParser} from "fast-xml-parser"
 import {PerformerSiteTypeCoding, PrescriptionTypeCoding} from "./schema/extensions"
-import {StatusReasonCoding} from "./schema/medicationRequest"
 import {HistoryMessage} from "./schema/actions"
-import {DispenseStatusCoding} from "./schema/elements"
+import {DispenseStatusCoding, NonDispensingReasonCoding} from "./schema/elements"
 
 export const SPINE_DOB_FORMAT = "yyyymmdd" as const
 export const FHIR_DATE_FORMAT = "yyyy-mm-dd"
@@ -33,11 +32,13 @@ interface XmlDispenseNotification {
   dispNotifDocumentKey: string
   dispenseNotifDateTime: string
   statusPrescription: string
+  nonDispensingReasonPrescription: string
   [productLineItem: `productLineItem${string}`]: string
   [quantityLineItem: `quantityLineItem${string}`]: string
   [narrativeLineItem: `narrativeLineItem${string}`]: string
   [statusLineItem: `statusLineItem${string}`]: string
   [dosageLineItem: `dosageLineItem${string}`]: string
+  [nonDispensingReasonLineItem: `nonDispensingReasonLineItem${string}`]: string
   [componentsLineItem: `componentsLineItem${string}`]: string
 }
 
@@ -146,11 +147,12 @@ interface LineItemDetailsSummary {
 }
 
 interface LineItemDetails extends LineItemDetailsSummary, ComponentDetails {
-  cancellationReason?: StatusReasonCoding["display"]
+  cancellationReason?: CancellationReasonCoding["display"]
   pendingCancellation: boolean
 }
 
 interface DispenseNotificationLineItemDetails extends LineItemDetailsSummary {
+  nonDispensingReason?: NonDispensingReasonCoding["code"]
   components: Array<Partial<ComponentDetails>>
 }
 
@@ -173,7 +175,6 @@ interface HistoryEventDetails {
   timestamp: string
   org: string
   newStatus: PrescriptionStatusCoding["code"]
-  cancellationReason?: StatusReasonCoding["display"]
   isDispenseNotification: boolean
 }
 
@@ -184,6 +185,8 @@ interface PrescriptionDetails extends PrescriptionDetailsSummary, IssueDetails {
   nominatedDispenserOrg?: string
   nominatedDisperserType: PerformerSiteTypeCoding["code"]
   dispenserOrg?: string
+  cancellationReason?: CancellationReasonCoding["display"]
+  nonDispensingReason?: NonDispensingReasonCoding["code"]
   lastDispenseNotification?: string
   lineItems: {
     [key: string]: LineItemDetails
@@ -302,6 +305,14 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
   for (const xmlDispenseNotification of xmlDispenseNotifications) {
     const dispenseNotificationId = xmlDispenseNotification.dispenseNotificationID
     const dispenseNotificationDocumentKey = xmlDispenseNotification.dispNotifDocumentKey
+    const isLastDispenseNotification =dispenseNotificationId === prescriptionDetails.lastDispenseNotification
+    const nonDispensingReason =
+      xmlDispenseNotification.nonDispensingReasonPrescription as NonDispensingReasonCoding["code"] | undefined
+
+    if (isLastDispenseNotification && nonDispensingReason) {
+      prescriptionDetails.nonDispensingReason = nonDispensingReason
+    }
+
     logger.debug("Parsing dispense notification...", {dispenseNotificationId})
     const dispenseNotification: DispenseNotificationDetails = {
       dispenseNotificationId,
@@ -309,7 +320,7 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
       timestamp: DateFns.parse(
         xmlDispenseNotification.dispenseNotifDateTime, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
       status: xmlDispenseNotification.statusPrescription as PrescriptionStatusCoding["code"],
-      isLastDispenseNotification: dispenseNotificationId === prescriptionDetails.lastDispenseNotification,
+      isLastDispenseNotification,
       lineItems: {}
     }
 
@@ -321,19 +332,22 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
       */
       const status = xmlDispenseNotification[`statusLineItem${lineItemNo}`] as DispenseStatusCoding["code"]
       if(status) {
+        const nonDispensingReason =
+          xmlDispenseNotification[`nonDispensingReasonLineItem${lineItemNo}`] as NonDispensingReasonCoding["code"]
+          | undefined
+        const lineItem: DispenseNotificationLineItemDetails = {
+          lineItemNo,
+          lineItemId: LineItemDetails.lineItemId,
+          status,
+          ...(nonDispensingReason ? {nonDispensingReason: nonDispensingReason}: {}),
+          components: []
+        }
+
         /* The JSON string in components gets mangled a bit in the xml response, need to first remove any line breaks
         and tabs from it to get it back to a valid format before being able to JSON parse it */
         const rawSpineComponents = xmlDispenseNotification[`componentsLineItem${lineItemNo}`]
         const spineComponents: Array<spineComponentDetails> = rawSpineComponents ?
           JSON.parse(rawSpineComponents.replace(/\r?\n\t*|\r/gm, "")) : []
-
-        const lineItem: DispenseNotificationLineItemDetails = {
-          lineItemNo,
-          lineItemId: LineItemDetails.lineItemId,
-          status,
-          components: []
-        }
-
         for (const component of spineComponents){
           lineItem.components.push({
             itemName: component.product,
@@ -362,15 +376,17 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
 
     logger.debug("Parsing history event...", {scn: eventId})
     // Determine if cancellation reason is pending, but remove from value to return
-    let cancellationReason = xmlFilteredHistoryEvent.cancellationReason as StatusReasonCoding["display"] | undefined
+    let cancellationReason =
+      xmlFilteredHistoryEvent.cancellationReason as CancellationReasonCoding["display"] | undefined
     let pendingCancellation = false
     if (cancellationReason?.startsWith("Pending: ")){
       pendingCancellation = true
-      cancellationReason = cancellationReason.substring(9) as StatusReasonCoding["display"]
+      cancellationReason = cancellationReason.substring(9) as CancellationReasonCoding["display"]
     }
 
-    if (finalEvent){
+    if (finalEvent && cancellationReason){
       prescriptionDetails.prescriptionPendingCancellation = pendingCancellation
+      prescriptionDetails.cancellationReason = cancellationReason
     }
 
     const historyEvent: HistoryEventDetails = {
@@ -380,7 +396,6 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
       timestamp: DateFns.parse(xmlFilteredHistoryEvent.timestamp, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
       org: xmlFilteredHistoryEvent.agentPersonOrgCode,
       newStatus: xmlFilteredHistoryEvent.toStatus as PrescriptionStatusCoding["code"],
-      ...(cancellationReason ? {cancellationReason} : {}),
       isDispenseNotification: message.includes("Dispense notification successful")
     }
 
@@ -394,11 +409,12 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
       const lineItemNo = xmlEventLineItem.order
 
       // Determine if cancellation reason is pending, but remove from value to return
-      let itemCancellationReason = xmlEventLineItem.cancellationReason as StatusReasonCoding["display"] | undefined
+      let itemCancellationReason =
+        xmlEventLineItem.cancellationReason as CancellationReasonCoding["display"] | undefined
       let itemPendingCancellation = false
       if (itemCancellationReason?.startsWith("Pending: ")){
         itemPendingCancellation = true
-        itemCancellationReason = itemCancellationReason?.substring(9) as StatusReasonCoding["display"]
+        itemCancellationReason = itemCancellationReason?.substring(9) as CancellationReasonCoding["display"]
       }
 
       logger.debug("Parsing history event line item...", {scn: eventId, lineItemNo})
