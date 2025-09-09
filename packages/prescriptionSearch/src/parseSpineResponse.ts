@@ -8,8 +8,10 @@ import {
   SpineXmlError,
   SpineXmlResponse
 } from "@cpt-common/common-types/spine"
+import {validatePrescriptionId} from "@cpt-common/common-utils"
 import * as DateFns from "date-fns"
 import {XMLParser} from "fast-xml-parser"
+import {logger} from "./handler"
 
 interface ResponseIssueDetail {
   instanceNumber: string
@@ -76,6 +78,14 @@ export const parseSpineResponse = (
 const parsePrescriptions = (responsePrescriptions: Array<ResponsePrescription>): Array<Prescription> => {
   let parsedPrescriptions: Array<Prescription> = []
   for (const responsePrescription of responsePrescriptions){
+    const prescriptionId = responsePrescription.prescriptionID
+    const validationErrors = validatePrescriptionId(prescriptionId, logger)
+    if (validationErrors.length) {
+      logger.warn(
+        "Returned prescription ID is invalid, possible R1 prescription, removing from results", {prescriptionId})
+      continue
+    }
+
     const patientDetails: PatientDetailsSummary = {
       nhsNumber: responsePrescription.patientID,
       ...(responsePrescription.prefix ? {prefix: responsePrescription.prefix} : {}),
@@ -85,7 +95,7 @@ const parsePrescriptions = (responsePrescriptions: Array<ResponsePrescription>):
     }
 
     const prescriptionDetails: PatientSearchPrescriptionDetails = {
-      prescriptionId: responsePrescription.prescriptionID,
+      prescriptionId,
       deleted: responsePrescription.nextActivity === "purge",
       issueDate: DateFns.parse(responsePrescription.prescribedDate, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
       treatmentType: responsePrescription.prescriptionTreatmentType,

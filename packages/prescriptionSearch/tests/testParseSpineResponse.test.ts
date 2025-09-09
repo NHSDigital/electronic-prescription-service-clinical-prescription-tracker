@@ -11,6 +11,7 @@ import {
   errorAlt,
   multipleAcute,
   multipleErd,
+  multipleIncR1,
   multipleMixed,
   multipleRepeat,
   notFound,
@@ -650,6 +651,28 @@ describe("Test parseSpineResponse", () => {
       }
     ]
     const result: ParsedSpineResponse = parseSpineResponse(mockPrescription as SpineJsonResponse, logger)
+    expect(result).toEqual({prescriptions: expected})
+  })
+
+  it("returns a correctly parsed response when spine response contains an R1 prescription", async () => {
+    const expected: Array<Prescription> = [
+      {
+        nhsNumber: "5839945242",
+        prefix: "MS",
+        suffix: "OBE",
+        family: "TWITCHETT",
+        given: "STACEY",
+        prescriptionId: "335C70-A83008-84058A",
+        issueDate: "2025-02-04T00:00:00.000Z",
+        treatmentType: "0001",
+        issueNumber: 1,
+        status: "0001",
+        deleted: false,
+        prescriptionPendingCancellation: false,
+        itemsPendingCancellation: false
+      }
+    ]
+    const result: ParsedSpineResponse = parseSpineResponse(multipleIncR1 as SpineJsonResponse, logger)
     expect(result).toEqual({prescriptions: expected})
   })
 
