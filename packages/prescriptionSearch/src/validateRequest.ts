@@ -4,6 +4,7 @@ import {CommonHeaderParameters, ServiceError} from "@cpt-common/common-types/ser
 import {validateCommonHeaders, validateNhsNumber, validatePrescriptionId} from "@cpt-common/common-utils"
 import {PrescriptionSearchParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
 import {APIGatewayEvent, APIGatewayProxyEventQueryStringParameters} from "aws-lambda"
+import * as DateFns from "date-fns"
 
 export interface QueryStringSearchParameters {
   prescriptionID?: string
@@ -33,6 +34,11 @@ export const validateRequest = (
   } as unknown as PrescriptionSearchParams
 
   return [searchParameters, errors]
+}
+
+const TWO_YEARS = 2 * 365 * 24 * 60 * 60 * 1000
+const formatDateParameter = (date: number): string => {
+  return DateFns.format(new Date(date), "yyyyMMdd")
 }
 
 const validateQueryStringParameters = (
@@ -72,9 +78,12 @@ const validateQueryStringParameters = (
     errors = [...errors, ...nhsNumberErrors]
   }
 
+  const now = Date.now()
   const lowDate: string | undefined = eventQueryStringParameters?.lowDate
   const highDate: string | undefined = eventQueryStringParameters?.highDate
-  const creationDateRange = (lowDate || highDate) ? {lowDate, highDate} : undefined
+  const creationDateRange = (lowDate || highDate)
+    ? {lowDate, highDate}
+    : {lowDate: formatDateParameter(now - TWO_YEARS), highDate: formatDateParameter(now)}
 
   const searchParameters = {
     prescriptionId,
