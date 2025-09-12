@@ -23,6 +23,13 @@ const mockQueryStringParameters: APIGatewayProxyEventQueryStringParameters = {
 }
 
 describe("Test validateRequest", () => {
+  beforeEach(() => {
+    jest.useFakeTimers({now: new Date("2024-01-01T00:00:00.000Z")})
+  })
+
+  afterEach(() => {
+    jest.useRealTimers()
+  })
 
   it("updates the logger when called with a valid request", async () => {
     const appendKeySpy = jest.spyOn(Logger.prototype, "appendKeys")
@@ -46,7 +53,10 @@ describe("Test validateRequest", () => {
     const expected: PrescriptionSearchParams = {
       prescriptionId: "54F746-A83008-E8A05J",
       nhsNumber: undefined,
-      creationDateRange: undefined,
+      creationDateRange: {
+        highDate: "20240101",
+        lowDate: "20220101"
+      },
       requestId: "REQ-123-456-789",
       organizationId: "ORG-123-456-789",
       sdsRoleProfileId: "SESS-123-456-789",
@@ -68,7 +78,10 @@ describe("Test validateRequest", () => {
     const expectedParameters: PrescriptionSearchParams ={
       prescriptionId: undefined,
       nhsNumber: "123-456-7890",
-      creationDateRange: undefined,
+      creationDateRange: {
+        highDate: "20240101",
+        lowDate: "20220101"
+      },
       requestId: "REQ-123-456-789",
       organizationId: "ORG-123-456-789",
       sdsRoleProfileId: "SESS-123-456-789",
@@ -83,14 +96,14 @@ describe("Test validateRequest", () => {
   it("returns correct search parameters when called with a valid request with an optional low date", async () => {
     const mockEvent = {
       headers: mockHeaders,
-      queryStringParameters: {...mockQueryStringParameters, ...{lowDate: "2025-01-01"}}
+      queryStringParameters: {...mockQueryStringParameters, ...{lowDate: "20250101"}}
     } as unknown as APIGatewayProxyEvent
 
     const expected: PrescriptionSearchParams = {
       prescriptionId: "54F746-A83008-E8A05J",
       nhsNumber: undefined,
       creationDateRange: {
-        lowDate: "2025-01-01"
+        lowDate: "20250101"
       },
       requestId: "REQ-123-456-789",
       organizationId: "ORG-123-456-789",
@@ -106,14 +119,14 @@ describe("Test validateRequest", () => {
   it("returns correct search parameters when called with a valid request with an optional high date", async () => {
     const mockEvent = {
       headers: mockHeaders,
-      queryStringParameters: {...mockQueryStringParameters, ...{highDate: "2025-02-02"}}
+      queryStringParameters: {...mockQueryStringParameters, ...{highDate: "20250202"}}
     } as unknown as APIGatewayProxyEvent
 
     const expected: PrescriptionSearchParams = {
       prescriptionId: "54F746-A83008-E8A05J",
       nhsNumber: undefined,
       creationDateRange: {
-        highDate: "2025-02-02"
+        highDate: "20250202"
       },
       requestId: "REQ-123-456-789",
       organizationId: "ORG-123-456-789",
@@ -129,15 +142,15 @@ describe("Test validateRequest", () => {
   it("returns correct search parameters when called with a valid request with optional high and low dates", async () => {
     const mockEvent = {
       headers: mockHeaders,
-      queryStringParameters: {...mockQueryStringParameters, ...{lowDate: "2025-01-01", highDate: "2025-02-02"}}
+      queryStringParameters: {...mockQueryStringParameters, ...{lowDate: "20250101", highDate: "20250202"}}
     } as unknown as APIGatewayProxyEvent
 
     const expected: PrescriptionSearchParams = {
       prescriptionId: "54F746-A83008-E8A05J",
       nhsNumber: undefined,
       creationDateRange: {
-        lowDate: "2025-01-01",
-        highDate: "2025-02-02"
+        lowDate: "20250101",
+        highDate: "20250202"
       },
       requestId: "REQ-123-456-789",
       organizationId: "ORG-123-456-789",
