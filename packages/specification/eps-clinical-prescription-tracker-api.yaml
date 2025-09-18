@@ -17,7 +17,7 @@ info:
     ## Who can use this API
     This API is only available to be used by the Prescription Tracker at the moment, which is being tested with pharmacies from September 2025.
 
-    The Prescription Tracker API will be made available more widely in the future..
+    The Prescription Tracker API will be made available more widely in the future.
 
     ## Access modes
     This API only supports [user-restricted access](https://digital.nhs.uk/developer/guides-and-documentation/security-and-authorisation#user-restricted-apis), meaning we authenticate the end user.
