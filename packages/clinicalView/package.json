@@ -22,7 +22,7 @@
         "@NHSDigital/eps-spine-client": "^2.1.56",
         "@nhs/fhir-middy-error-handler": "^2.1.50",
         "date-fns": "^4.1.0",
-        "fast-xml-parser": "^5.2.5",
+        "fast-xml-parser": "^5.3.0",
         "json-schema-to-ts": "^3.1.0"
     },
     "devDependencies": {
