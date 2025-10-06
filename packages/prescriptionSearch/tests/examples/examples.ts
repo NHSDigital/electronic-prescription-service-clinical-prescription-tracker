@@ -2,6 +2,7 @@
 // JSON (OK) Responses
 export {default as singleAcute} from "./singleAcute.json"
 export {default as singleAcuteWithoutOptionalPatientDetails} from "./singleAcuteWithoutOptionalPatientDetails.json"
+export {default as singleAcuteWithTruncatedTimestamps} from "./singleAcuteWithTruncatedTimestamps.json"
 export {default as singleErd} from "./singleErd.json"
 export {default as singleRepeat} from "./singleRepeat.json"
 export {default as multipleAcute} from "./multipleAcute.json"

@@ -1,4 +1,5 @@
 import {
+  SPINE_TIMESTAMP_LENGTH,
   SPINE_TIMESTAMP_FORMAT,
   SpineTreatmentTypeCode,
   SpineXmlError,
@@ -6,6 +7,7 @@ import {
 } from "./spine"
 
 export {
+  SPINE_TIMESTAMP_LENGTH,
   SPINE_TIMESTAMP_FORMAT,
   SpineTreatmentTypeCode,
   SpineXmlError,

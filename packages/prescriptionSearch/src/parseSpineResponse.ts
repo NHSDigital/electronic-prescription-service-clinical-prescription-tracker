@@ -3,6 +3,7 @@ import {IssueDetails, PatientDetailsSummary, PrescriptionDetailsSummary} from "@
 import {PrescriptionStatusCoding} from "@cpt-common/common-types/schema"
 import {ServiceError} from "@cpt-common/common-types/service"
 import {
+  SPINE_TIMESTAMP_LENGTH,
   SPINE_TIMESTAMP_FORMAT,
   SpineTreatmentTypeCode,
   SpineXmlError,
@@ -97,11 +98,11 @@ const parsePrescriptions = (responsePrescriptions: Array<ResponsePrescription>):
     const prescriptionDetails: PatientSearchPrescriptionDetails = {
       prescriptionId,
       deleted: responsePrescription.nextActivity === "purge",
-      issueDate: DateFns.parse(responsePrescription.prescribedDate, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
+      issueDate: DateFns.parse(responsePrescription.prescribedDate.padEnd(SPINE_TIMESTAMP_LENGTH, "0"),
+        SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
       treatmentType: responsePrescription.prescriptionTreatmentType,
       ...(responsePrescription.maxRepeats && responsePrescription.maxRepeats !== "None" ?
         {maxRepeats: Number(responsePrescription.maxRepeats)} : {})
-      // maxRepeats: responsePrescription.maxRepeats === "None" ? undefined : Number(responsePrescription.maxRepeats)
     }
 
     for (const responseIssue of responsePrescription.issueDetail){
