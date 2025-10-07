@@ -29,6 +29,7 @@ export const altAcuteAdditiveMultipleDispenseNotifications = readXmlToString("al
 export const acuteWithPartialDispenseNotification = readXmlToString("acuteWithPartialDispenseNotification.xml")
 export const acuteDispensedWithMismatchedIds = readXmlToString("acuteDispensedWithMismatchedIds.xml")
 export const acuteMultipleDispenseNotificationsWithMismatchedIds = readXmlToString("acuteMultipleDispenseNotificationsWithMismatchedIds.xml")
+export const acuteDispensedWithTruncatedTimestamps = readXmlToString("acuteDispensedWithTruncatedTimestamps.xml")
 
 // Withdrawals & Amendments
 export const acuteWithWithdrawnDispenseNotification = readXmlToString("acuteWithWithdrawnDispenseNotification.xml")

@@ -4,6 +4,7 @@ import {CancellationReasonCoding, PrescriptionStatusCoding} from "@cpt-common/co
 import {ServiceError} from "@cpt-common/common-types/service"
 import {
   SPINE_TIMESTAMP_FORMAT,
+  SPINE_TIMESTAMP_LENGTH,
   SpineTreatmentTypeCode,
   SpineXmlError,
   SpineXmlResponse
@@ -252,7 +253,8 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
   logger.debug("Parsing prescription details...")
   const prescriptionDetails: PrescriptionDetails = {
     prescriptionId: xmlEpsRecord.prescriptionID,
-    issueDate: DateFns.parse(xmlEpsRecord.prescriptionTime, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
+    issueDate: DateFns.parse(xmlEpsRecord.prescriptionTime.padEnd(SPINE_TIMESTAMP_LENGTH, "0"),
+      SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
     issueNumber: Number(xmlEpsRecord.instanceNumber),
     status: xmlEpsRecord.prescriptionStatus as PrescriptionStatusCoding["code"],
     treatmentType: xmlEpsRecord.prescriptionTreatmentType as SpineTreatmentTypeCode,
@@ -318,7 +320,8 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
       dispenseNotificationId,
       dispenseNotificationDocumentKey,
       timestamp: DateFns.parse(
-        xmlDispenseNotification.dispenseNotifDateTime, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
+        xmlDispenseNotification.dispenseNotifDateTime.padEnd(SPINE_TIMESTAMP_LENGTH, "0"),
+        SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
       status: xmlDispenseNotification.statusPrescription as PrescriptionStatusCoding["code"],
       isLastDispenseNotification,
       lineItems: {}
@@ -393,7 +396,9 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
       eventId,
       internalId: xmlFilteredHistoryEvent.internalId, // This matches the DN doc key for relevant events.
       message: message as HistoryMessage,
-      timestamp: DateFns.parse(xmlFilteredHistoryEvent.timestamp, SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
+      timestamp: DateFns.parse(
+        xmlFilteredHistoryEvent.timestamp.padEnd(SPINE_TIMESTAMP_LENGTH, "0"),
+        SPINE_TIMESTAMP_FORMAT, new Date()).toISOString(),
       org: xmlFilteredHistoryEvent.agentPersonOrgCode,
       newStatus: xmlFilteredHistoryEvent.toStatus as PrescriptionStatusCoding["code"],
       isDispenseNotification: message.includes("Dispense notification successful")

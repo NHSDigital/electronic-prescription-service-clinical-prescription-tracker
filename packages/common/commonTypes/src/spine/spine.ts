@@ -30,4 +30,5 @@ interface SpineSoapEnvEnvelope<Response> {
 export type SpineXmlResponse<Response> = SpineSoapEnvelope<Response> | SpineSoapEnvEnvelope<Response>
 
 export const SPINE_TIMESTAMP_FORMAT = "yyyyMMddHHmmss" as const
+export const SPINE_TIMESTAMP_LENGTH = SPINE_TIMESTAMP_FORMAT.length
 export type SpineTreatmentTypeCode = "0001" | "0002" | "0003"

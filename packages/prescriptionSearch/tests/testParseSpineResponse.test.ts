@@ -17,6 +17,7 @@ import {
   notFound,
   singleAcute,
   singleAcuteWithoutOptionalPatientDetails,
+  singleAcuteWithTruncatedTimestamps,
   singleErd,
   singleRepeat
 } from "./examples/examples"
@@ -61,6 +62,28 @@ describe("Test parseSpineResponse", () => {
       }
     ]
     const result: ParsedSpineResponse = parseSpineResponse(singleAcuteWithoutOptionalPatientDetails as SpineJsonResponse, logger)
+    expect(result).toEqual({prescriptions: expected})
+  })
+
+  it("returns a correctly parsed response and no error when spine returns a single acute prescription with truncated timestamps", async () => {
+    const expected: Array<Prescription> = [
+      {
+        nhsNumber: "5839945242",
+        prefix: "MS",
+        suffix: "OBE",
+        family: "TWITCHETT",
+        given: "STACEY",
+        prescriptionId: "335C70-A83008-84058A",
+        issueDate: "2025-02-04T00:00:00.000Z",
+        treatmentType: "0001",
+        issueNumber: 1,
+        status: "0001",
+        deleted: false,
+        prescriptionPendingCancellation: false,
+        itemsPendingCancellation: false
+      }
+    ]
+    const result: ParsedSpineResponse = parseSpineResponse(singleAcuteWithTruncatedTimestamps as SpineJsonResponse, logger)
     expect(result).toEqual({prescriptions: expected})
   })
 
