@@ -40,7 +40,7 @@ jobs:
         uses: asdf-vm/actions/setup@1902764435ca0dd2f3388eea723a4f92a4eb8302
         with:
           asdf_branch: v0.14.1
-  
+
       - name: Cache asdf
         uses: actions/cache@v4
         with:
@@ -122,6 +122,7 @@ jobs:
       CREATE_INT_RC_RELEASE_NOTES: false
       MTLS_KEY: clinical-tracker-mtls-1
       IS_PULL_REQUEST: false
+      FORWARD_CSOC_LOGS: false
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}
@@ -132,7 +133,7 @@ jobs:
       INT_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
       PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
       DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
-  
+
   # release_dev_sandbox:
   #   needs: [get_commit_id, tag_release, package_code, release_dev]
   #   uses: ./.github/workflows/cdk_release_code.yml
@@ -171,6 +172,7 @@ jobs:
       RUN_REGRESSION_TESTS: true
       MTLS_KEY: clinical-tracker-mtls-1
       IS_PULL_REQUEST: false
+      FORWARD_CSOC_LOGS: false
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.QA_CDK_PULL_IMAGE_ROLE }}
