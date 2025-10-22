@@ -1,5 +1,12 @@
 FROM mcr.microsoft.com/devcontainers/base:ubuntu
 
+ARG TARGETARCH
+ENV TARGETARCH=${TARGETARCH}
+
+ARG ASDF_VERSION
+COPY .tool-versions.asdf /tmp/.tool-versions.asdf
+
+
 RUN apt-get update \
     && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y dist-upgrade \
@@ -12,23 +19,32 @@ RUN apt-get update \
     xz-utils tk-dev liblzma-dev netcat-traditional libyaml-dev
 
 # install aws stuff
-RUN wget -O /tmp/awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" && \
+# Download correct AWS CLI for arch
+RUN if [ "$TARGETARCH" = "arm64" ] || [ "$TARGETARCH" == "aarch64" ]; then \
+      wget -O /tmp/awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip"; \
+    else \
+      wget -O /tmp/awscliv2.zip "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"; \
+    fi && \
     unzip /tmp/awscliv2.zip -d /tmp/aws-cli && \
     /tmp/aws-cli/aws/install && \
-    rm tmp/awscliv2.zip && \
-    rm -rf /tmp/aws-cli
+    rm /tmp/awscliv2.zip && rm -rf /tmp/aws-cli
+
+RUN ASDF_VERSION=$(awk '!/^#/ && NF {print $1; exit}' /tmp/.tool-versions.asdf) && \
+    wget -O /tmp/asdf.tar.gz https://github.com/asdf-vm/asdf/releases/download/v${ASDF_VERSION}/asdf-v${ASDF_VERSION}-linux-amd64.tar.gz; \
+    tar -xvzf /tmp/asdf.tar.gz; \
+    mv asdf /usr/bin
 
 USER vscode
 
-# Install ASDF
-RUN git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.14.1; \
-    echo '. $HOME/.asdf/asdf.sh' >> ~/.bashrc; \
-    echo '. $HOME/.asdf/completions/asdf.bash' >> ~/.bashrc; \
+ENV PATH="/home/vscode/.asdf/shims/:$PATH"
+RUN \
+    echo 'PATH="/home/vscode/.asdf/shims/:$PATH"' >> ~/.bashrc; \
+    echo '. <(asdf completion bash)' >> ~/.bashrc; \
     echo '# Install Ruby Gems to ~/gems' >> ~/.bashrc; \
     echo 'export GEM_HOME="$HOME/gems"' >> ~/.bashrc; \
     echo 'export PATH="$HOME/gems/bin:$PATH"' >> ~/.bashrc;
 
-ENV PATH="$PATH:/home/vscode/.asdf/bin/:/workspaces/electronic-prescription-service-clinical-prescription-tracker/node_modules/.bin"
+ENV PATH="$PATH:/workspaces/electronic-prescription-service-clinical-prescription-tracker/node_modules/.bin"
 
 
 # Install ASDF plugins
@@ -45,8 +61,5 @@ WORKDIR /workspaces/electronic-prescription-service-clinical-prescription-tracke
 ADD .tool-versions /workspaces/electronic-prescription-service-clinical-prescription-tracker/.tool-versions
 ADD .tool-versions /home/vscode/.tool-versions
 
-RUN asdf install; \
-    asdf reshim python; \
-    asdf reshim poetry; \
-    asdf reshim nodejs; \
-    asdf direnv setup --shell bash --version 2.32.2;
+RUN asdf install python; \
+    asdf install
