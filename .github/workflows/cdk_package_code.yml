@@ -10,7 +10,6 @@ on:
         required: true
         type: string
 
-
 jobs:
   package_code:
     runs-on: ubuntu-22.04
@@ -24,12 +23,16 @@ jobs:
         with:
           ref: ${{ env.BRANCH_NAME }}
 
+      - name: Get asdf version
+        id: asdf-version
+        run: echo "version=$(awk '!/^#/ && NF {print $1; exit}' .tool-versions.asdf)" >> "$GITHUB_OUTPUT"
+
       # using git commit sha for version of action to ensure we have stable version
       - name: Install asdf
         uses: asdf-vm/actions/setup@1902764435ca0dd2f3388eea723a4f92a4eb8302
         with:
-          asdf_branch: v0.14.1
-  
+          asdf_version: ${{ steps.asdf-version.outputs.version }}
+
       - name: Cache asdf
         uses: actions/cache@v4
         with:
@@ -42,16 +45,16 @@ jobs:
       - name: Install asdf dependencies in .tool-versions
         uses: asdf-vm/actions/install@1902764435ca0dd2f3388eea723a4f92a4eb8302
         with:
-          asdf_branch: v0.14.1
+          asdf_version: ${{ steps.asdf-version.outputs.version }}
         env:
           PYTHON_CONFIGURE_OPTS: --enable-shared
 
       - name: Setting up .npmrc
         env:
-            NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-            echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> ~/.npmrc
-            echo "@nhsdigital:registry=https://npm.pkg.github.com" >> ~/.npmrc
+          echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> ~/.npmrc
+          echo "@nhsdigital:registry=https://npm.pkg.github.com" >> ~/.npmrc
 
       - name: make install
         run: |
@@ -62,7 +65,7 @@ jobs:
         run: |
           make download-get-secrets-layer
 
-      - name: 'Tar files'
+      - name: "Tar files"
         run: |
           tar -rf artifact.tar \
             .tool-versions \
