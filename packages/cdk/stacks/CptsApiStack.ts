@@ -20,6 +20,8 @@ export class CptsApiStack extends Stack {
     const enableMutalTls: boolean = this.node.tryGetContext("enableMutalTls")
     const trustStoreFile: string = this.node.tryGetContext("trustStoreFile")
     const truststoreVersion: string = this.node.tryGetContext("truststoreVersion")
+    const csocApiGatewayDestination: string = this.node.tryGetContext("csocApiGatewayDestination")
+    const forwardCsocLogs: boolean = this.node.tryGetContext("forwardCsocLogs")
 
     // Resources
     const functions = new Functions(this, "Functions", {
@@ -44,7 +46,9 @@ export class CptsApiStack extends Stack {
       trustStoreFile,
       truststoreVersion,
       functions: functions.functions,
-      stateMachines: stateMachines.stateMachines
+      stateMachines: stateMachines.stateMachines,
+      csocApiGatewayDestination: csocApiGatewayDestination,
+      forwardCsocLogs: forwardCsocLogs
     })
 
     nagSuppressions(this)

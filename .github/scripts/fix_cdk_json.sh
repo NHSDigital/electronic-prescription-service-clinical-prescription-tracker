@@ -57,3 +57,5 @@ fix_boolean_number_key enableMutualTls "${ENABLE_MUTUAL_TLS}"
 fix_string_key trustStoreFile "${TRUSTSTORE_FILE}"
 fix_string_key trustStoreVersion "${TRUSTSTORE_VERSION}"
 fix_string_key cfnDriftDetectionGroup "${CFN_DRIFT_DETECTION_GROUP}"
+fix_string_key csocApiGatewayDestination "arn:aws:logs:eu-west-2:693466633220:destination:api_gateway_log_destination" # CSOC API GW log destination - do not change
+fix_boolean_number_key forwardCsocLogs "${FORWARD_CSOC_LOGS}"

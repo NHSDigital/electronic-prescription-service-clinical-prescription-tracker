@@ -14,6 +14,8 @@ export interface ApisProps {
   readonly truststoreVersion: string
   functions: {[key: string]: LambdaFunction}
   stateMachines: {[key: string]: ExpressStateMachine}
+  readonly forwardCsocLogs: boolean
+  readonly csocApiGatewayDestination: string
 }
 
 export class Apis extends Construct {
@@ -27,7 +29,9 @@ export class Apis extends Construct {
       logRetentionInDays: props.logRetentionInDays,
       enableMutualTls: props.enableMutalTls,
       trustStoreKey: props.trustStoreFile,
-      truststoreVersion: props.truststoreVersion
+      truststoreVersion: props.truststoreVersion,
+      forwardCsocLogs: props.forwardCsocLogs,
+      csocApiGatewayDestination: props.csocApiGatewayDestination
     })
     const rootResource = apiGateway.api.root
 

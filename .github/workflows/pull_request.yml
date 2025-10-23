@@ -105,6 +105,7 @@ jobs:
       RUN_REGRESSION_TESTS: true
       MTLS_KEY: clinical-tracker-mtls-1
       IS_PULL_REQUEST: true
+      FORWARD_CSOC_LOGS: false
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}

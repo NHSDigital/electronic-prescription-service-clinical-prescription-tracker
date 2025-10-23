@@ -80,6 +80,7 @@ jobs:
       CREATE_INT_RC_RELEASE_NOTES: false
       MTLS_KEY: clinical-tracker-mtls-1
       IS_PULL_REQUEST: false
+      FORWARD_CSOC_LOGS: false
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}
@@ -129,6 +130,7 @@ jobs:
       RUN_REGRESSION_TESTS: true
       MTLS_KEY: clinical-tracker-mtls-1
       IS_PULL_REQUEST: false
+      FORWARD_CSOC_LOGS: false
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
       CDK_PULL_IMAGE_ROLE: ${{ secrets.QA_CDK_PULL_IMAGE_ROLE }}

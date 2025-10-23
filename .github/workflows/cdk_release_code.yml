@@ -56,6 +56,9 @@ on:
       IS_PULL_REQUEST:
         type: boolean
         required: true
+      FORWARD_CSOC_LOGS:
+        type: boolean
+        required: true
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE:
         required: true
@@ -159,6 +162,7 @@ jobs:
           TARGET_SPINE_SERVER: "${{ secrets.TARGET_SPINE_SERVER }}"
           ENABLE_MUTUAL_TLS: "${{ inputs.ENABLE_MUTUAL_TLS }}"
           TRUSTSTORE_FILE: ${{ inputs.TRUSTSTORE_FILE }}
+          FORWARD_CSOC_LOGS: "${{ inputs.FORWARD_CSOC_LOGS }}"
 
       - name: Show diff
         run: |

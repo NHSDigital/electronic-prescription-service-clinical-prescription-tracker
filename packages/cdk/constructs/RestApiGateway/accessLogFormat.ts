@@ -2,20 +2,20 @@ import {AccessLogFormat} from "aws-cdk-lib/aws-apigateway"
 
 export const accessLogFormat = () => {
   return AccessLogFormat.custom(JSON.stringify({
-    requestTime: "$context.requestTime",
-    apiId: "$context.apiId",
-    accountId: "$context.accountId",
-    resourcePath: "$context.resourcePath",
-    stage: "$context.stage",
     requestId: "$context.requestId",
-    extendedRequestId: "$context.extendedRequestId",
-    status: "$context.status",
+    ip: "$context.identity.sourceIp",
+    caller: "$context.identity.caller",
+    user: "$context.identity.user",
+    requestTime: "$context.requestTime",
     httpMethod: "$context.httpMethod",
+    resourcePath: "$context.resourcePath",
+    status: "$context.status",
     protocol: "$context.protocol",
-    path: "$context.path",
-    responseLatency: "$context.responseLatency",
     responseLength: "$context.responseLength",
-    domainName: "$context.domainName",
+    accountId: "$context.accountId",
+    apiId: "$context.apiId",
+    stage: "$context.stage",
+    api_key: "$context.identity.apiKey",
     identity: {
       sourceIp: "$context.identity.sourceIp",
       userAgent: "$context.identity.userAgent",
@@ -27,7 +27,7 @@ export const accessLogFormat = () => {
         validityNotAfter: "$context.identity.clientCert.validity.notAfter"
       }
     },
-    integration: {
+    integration:{
       error: "$context.integration.error",
       integrationStatus: "$context.integration.integrationStatus",
       latency: "$context.integration.latency",
