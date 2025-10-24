@@ -76,7 +76,7 @@ fi
 if [[ "${APIGEE_ENVIRONMENT}" == "prod" ]]; then
     jq '.components.securitySchemes."nhs-cis2-aal3" = {"$ref": "https://proxygen.prod.api.platform.nhs.uk/components/securitySchemes/nhs-cis2-aal3"}' "${SPEC_PATH}" > temp.json && mv temp.json "${SPEC_PATH}"
 else
-    jq '.components.securitySchemes."nhs-cis2-aal3" = {"$ref": "https://proxygen.ptl.api.platform.nhs.uk/components/securitySchemes/nhs-cis2-aal3"}' "${SPEC_PATH}" > temp.json && mv temp.json "${SPEC_PATH}"
+    jq '.components.securitySchemes."nhs-cis2-aal3" = {"$ref": "https://proxygen.ptlrestored.api.platform.nhs.uk/components/securitySchemes/nhs-cis2-aal3"}' "${SPEC_PATH}" > temp.json && mv temp.json "${SPEC_PATH}"
 fi
 
 # Find and replace the x-nhsd-apim.target.secret value
