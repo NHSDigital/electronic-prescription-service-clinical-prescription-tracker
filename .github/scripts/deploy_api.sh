@@ -24,9 +24,9 @@ if [ -z "${client_cert}" ]; then
     exit 1
 fi
 
-put_secret_lambda=lambda-resources-ProxygenPTLMTLSSecretPut
-instance_put_lambda=lambda-resources-ProxygenPTLInstancePut
-spec_publish_lambda=lambda-resources-ProxygenPTLSpecPublish
+put_secret_lambda=lambda-resources-pr-1639-ProxygenPTLMTLSSecretPut
+instance_put_lambda=lambda-resources-pr-1639-ProxygenPTLInstancePut
+spec_publish_lambda=lambda-resources-pr-1639-ProxygenPTLSpecPublish
 
 if [[ "$APIGEE_ENVIRONMENT" =~ ^(int|sandbox|prod)$ ]]; then 
     put_secret_lambda=lambda-resources-ProxygenProdMTLSSecretPut
