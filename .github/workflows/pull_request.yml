@@ -88,7 +88,7 @@ jobs:
     with:
       STACK_NAME: cpt-pr-${{needs.get_issue_number.outputs.issue_number}}
       AWS_ENVIRONMENT: res
-      APIGEE_ENVIRONMENT: internal-dev
+      APIGEE_ENVIRONMENT: res
       VERSION_NUMBER: PR-${{ needs.get_issue_number.outputs.issue_number }}
       COMMIT_ID: ${{ needs.get_commit_id.outputs.commit_id }}
       CDK_APP_Name: CptsApiApp
