@@ -219,7 +219,7 @@ jobs:
           AWS_ENVIRONMENT: ${{ inputs.AWS_ENVIRONMENT }}
           APIGEE_ENVIRONMENT: ${{ inputs.APIGEE_ENVIRONMENT }}
           PROXYGEN_PRIVATE_KEY_NAME: ClinicalTrackerProxygenPrivateKey
-          PROXYGEN_KID: eps-clinical-tracker
+          PROXYGEN_KID: eps-clinical-tracker-res
           DRY_RUN: false
           ENABLE_MUTUAL_TLS: ${{ inputs.ENABLE_MUTUAL_TLS }}
           MTLS_KEY: ${{ inputs.MTLS_KEY }}
