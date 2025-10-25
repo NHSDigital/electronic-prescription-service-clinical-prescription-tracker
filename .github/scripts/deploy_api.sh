@@ -24,9 +24,9 @@ if [ -z "${client_cert}" ]; then
     exit 1
 fi
 
-put_secret_lambda=lambda-resources-ProxygenPTLMTLSSecretPut
-instance_put_lambda=lambda-resources-ProxygenPTLInstancePut
-spec_publish_lambda=lambda-resources-ProxygenPTLSpecPublish
+put_secret_lambda=lambda-resources-pr-1639-ProxygenPTLMTLSSecretPut
+instance_put_lambda=lambda-resources-pr-1639-ProxygenPTLInstancePut
+spec_publish_lambda=lambda-resources-pr-1639-ProxygenPTLSpecPublish
 
 if [[ "$APIGEE_ENVIRONMENT" =~ ^(int|sandbox|prod)$ ]]; then 
     put_secret_lambda=lambda-resources-ProxygenProdMTLSSecretPut
@@ -76,7 +76,7 @@ fi
 if [[ "${APIGEE_ENVIRONMENT}" == "prod" ]]; then
     jq '.components.securitySchemes."nhs-cis2-aal3" = {"$ref": "https://proxygen.prod.api.platform.nhs.uk/components/securitySchemes/nhs-cis2-aal3"}' "${SPEC_PATH}" > temp.json && mv temp.json "${SPEC_PATH}"
 else
-    jq '.components.securitySchemes."nhs-cis2-aal3" = {"$ref": "https://proxygen.ptl.api.platform.nhs.uk/components/securitySchemes/nhs-cis2-aal3"}' "${SPEC_PATH}" > temp.json && mv temp.json "${SPEC_PATH}"
+    jq '.components.securitySchemes."nhs-cis2-aal3" = {"$ref": "https://proxygen.ptlrestored.api.platform.nhs.uk/components/securitySchemes/nhs-cis2-aal3"}' "${SPEC_PATH}" > temp.json && mv temp.json "${SPEC_PATH}"
 fi
 
 # Find and replace the x-nhsd-apim.target.secret value
