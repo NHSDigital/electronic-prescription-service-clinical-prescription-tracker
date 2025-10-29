@@ -118,7 +118,7 @@ jobs:
           role-session-name: cpt-api-pull-image
 
       - name: build_artifact download
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: build_artifact
 
