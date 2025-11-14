@@ -90,7 +90,7 @@ jobs:
 
     steps:
       - name: Checkout local github actions
-        uses: actions/checkout@v5
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
           ref: ${{ env.BRANCH_NAME }}
           fetch-depth: 0
@@ -111,14 +111,14 @@ jobs:
 
       - name: Configure AWS Credentials
         id: connect-aws-pull-image
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@00943011d9042930efac3dcd3a170e4273319bc8
         with:
           aws-region: eu-west-2
           role-to-assume: ${{ secrets.CDK_PULL_IMAGE_ROLE }}
           role-session-name: cpt-api-pull-image
 
       - name: build_artifact download
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53
         with:
           name: build_artifact
 
@@ -143,7 +143,7 @@ jobs:
 
       - name: Configure AWS Credentials
         id: connect-aws-deploy
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@00943011d9042930efac3dcd3a170e4273319bc8
         with:
           aws-region: eu-west-2
           role-to-assume: ${{ secrets.CLOUD_FORMATION_DEPLOY_ROLE }}
@@ -202,7 +202,7 @@ jobs:
           aws secretsmanager get-secret-value --secret-id "${client_cert_arn}" --query SecretString --output text > ~/.proxygen/tmp/client_cert
 
       - name: Configure AWS Credentials for api release
-        uses: aws-actions/configure-aws-credentials@v5
+        uses: aws-actions/configure-aws-credentials@00943011d9042930efac3dcd3a170e4273319bc8
         with:
           aws-region: eu-west-2
           role-to-assume: ${{ secrets.PROXYGEN_ROLE }}
@@ -226,7 +226,7 @@ jobs:
           IS_PULL_REQUEST: ${{ inputs.IS_PULL_REQUEST }}
         run: ./.github/scripts/deploy_api.sh
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
         name: Upload specs
         with:
           name: ${{ inputs.APIGEE_ENVIRONMENT }}-specs
@@ -263,7 +263,7 @@ jobs:
           DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
       - name: Checkout gh-pages
         if: ${{ !startsWith(inputs.STACK_NAME, 'cpt-pr-') }}
-        uses: actions/checkout@v5
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
         with:
           ref: gh-pages
           path: gh-pages
