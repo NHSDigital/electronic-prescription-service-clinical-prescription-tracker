@@ -22,6 +22,6 @@
     "clinicalView": "^1.0.0",
     "prescriptionSearch": "^1.0.0",
     "@cpt-common/common-types": "^1.0.0",
-    "tsx": "4.20.6"
+    "tsx": "4.21.0"
   }
 }
