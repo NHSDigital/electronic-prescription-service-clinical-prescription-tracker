@@ -176,3 +176,8 @@ cdk-watch:
 		--context versionNumber==$$VERSION_NUMBER \
 		--context commitId=$$COMMIT_ID \
 		--context logRetentionInDays=$$LOG_RETENTION_IN_DAYS
+
+create-npmrc:
+	gh auth login --scopes "read:packages"; \
+	echo "//npm.pkg.github.com/:_authToken=$$(gh auth token)" > .npmrc
+	echo "@nhsdigital:registry=https://npm.pkg.github.com" >> .npmrc
