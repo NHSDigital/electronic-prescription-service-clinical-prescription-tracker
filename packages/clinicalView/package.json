@@ -20,7 +20,7 @@
         "@cpt-common/common-utils": "^1.0.0",
         "@middy/http-header-normalizer": "^6.4.5",
         "@NHSDigital/eps-spine-client": "^2.1.69",
-        "@nhs/fhir-middy-error-handler": "^2.1.61",
+        "@nhs/fhir-middy-error-handler": "^2.1.62",
         "date-fns": "^4.1.0",
         "fast-xml-parser": "^5.3.2",
         "json-schema-to-ts": "^3.1.0"
