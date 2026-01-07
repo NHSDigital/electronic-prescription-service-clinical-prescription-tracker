@@ -1,5 +1,5 @@
 [project]
-python = "^3.12"
+python = "^3.14"
 name = "electronic-prescription-service-clinical-prescription-tracker"
 
 [tool.poetry]
@@ -15,21 +15,13 @@ repository = "https://github.com/NHSDigital/electronic-prescription-service-clin
 package-mode = false
 
 [tool.poetry.dependencies]
-python = "^3.12"
-requests = "^2.32.3"
-argparse = "^1.4.0"
-pre-commit = "^4.1.0"
-cfn-lint = "^1.27.0"
+python = "^3.14"
+requests = "^2.32.5"
 
-[tool.poetry.dev-dependencies]
-pre-commit = "^4.1.0"
-cfn-lint = "^1.27.0"
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^4.5.1"
 black = "^25.1.0"
 flake8 = "^7.1.2"
 pip-licenses = "^5.0.0"
 
 [tool.poetry.scripts]
-
-[build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
