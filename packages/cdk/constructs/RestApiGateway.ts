@@ -24,7 +24,7 @@ export interface RestApiGatewayProps {
   readonly logRetentionInDays: number
   readonly enableMutualTls: boolean
   readonly trustStoreKey: string
-  readonly truststoreVersion: string
+  readonly trustStoreVersion: string
   readonly forwardCsocLogs: boolean
   readonly csocApiGatewayDestination: string
 }
@@ -88,7 +88,7 @@ export class RestApiGateway extends Construct {
     const mtlsConfig: MTLSConfig | undefined = props.enableMutualTls ? {
       bucket: truststoreBucket,
       key: props.trustStoreKey,
-      version: props.truststoreVersion
+      version: props.trustStoreVersion
     } : undefined
 
     const apiGateway = new RestApi(this, "ApiGateway", {
