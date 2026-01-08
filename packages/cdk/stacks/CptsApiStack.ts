@@ -17,7 +17,7 @@ export class CptsApiStack extends Stack {
     const logRetentionInDays: number = Number(this.node.tryGetContext("logRetentionInDays"))
     const logLevel: string = this.node.tryGetContext("logLevel")
     const targetSpineServer: string = this.node.tryGetContext("targetSpineServer")
-    const enableMutalTls: boolean = this.node.tryGetContext("enableMutalTls")
+    const enableMutalTls: boolean = this.node.tryGetContext("enableMutualTls")
     const trustStoreFile: string = this.node.tryGetContext("trustStoreFile")
     const truststoreVersion: string = this.node.tryGetContext("truststoreVersion")
     const csocApiGatewayDestination: string = this.node.tryGetContext("csocApiGatewayDestination")
