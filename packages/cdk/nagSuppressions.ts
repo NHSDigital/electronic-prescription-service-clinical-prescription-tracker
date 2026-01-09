@@ -49,22 +49,6 @@ export const nagSuppressions = (stack: Stack) => {
       }
     ]
   )
-
-  safeAddNagSuppressionGroup(
-    stack,
-    [
-      "/CptsApiStack/Functions/PrescriptionSearchLambda/cpt-PrescriptionSearch/Resource",
-      "/CptsApiStack/Functions/ClinicalViewLambda/cpt-ClinicalView/Resource",
-      "/CptsApiStack/Functions/StatusLambda/cpt-Status/Resource",
-      "/CptsApiStack/Apis/ApiGateway/ApiGateway/DeploymentStage.prod/Resource"
-    ],
-    [
-      {
-        id: "AwsSolutions-L1",
-        reason: "Suppress error for not running latest runtime. This is on our backlog"
-      }
-    ]
-  )
 }
 
 const safeAddNagSuppression = (stack: Stack, path: string, suppressions: Array<NagPackSuppression>) => {
