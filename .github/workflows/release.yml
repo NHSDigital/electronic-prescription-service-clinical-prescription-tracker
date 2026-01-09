@@ -72,7 +72,7 @@ jobs:
       CDK_APP_Name: CptsApiApp
       LOG_RETENTION_IN_DAYS: 30
       LOG_LEVEL: DEBUG
-      ENABLE_MUTUAL_TLS: false
+      ENABLE_MUTUAL_TLS: true
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       RUN_REGRESSION_TESTS: true
       CREATE_INT_RELEASE_NOTES: true
@@ -126,7 +126,7 @@ jobs:
       CDK_APP_Name: CptsApiApp
       LOG_RETENTION_IN_DAYS: 30
       LOG_LEVEL: DEBUG
-      ENABLE_MUTUAL_TLS: false
+      ENABLE_MUTUAL_TLS: true
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       RUN_REGRESSION_TESTS: false
       MTLS_KEY: clinical-tracker-mtls-1
@@ -151,7 +151,7 @@ jobs:
       CDK_APP_Name: CptsApiApp
       LOG_RETENTION_IN_DAYS: 30
       LOG_LEVEL: DEBUG
-      ENABLE_MUTUAL_TLS: false
+      ENABLE_MUTUAL_TLS: true
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       RUN_REGRESSION_TESTS: true
       MTLS_KEY: clinical-tracker-mtls-1
@@ -176,7 +176,7 @@ jobs:
       CDK_APP_Name: CptsApiApp
       LOG_RETENTION_IN_DAYS: 30
       LOG_LEVEL: DEBUG
-      ENABLE_MUTUAL_TLS: false
+      ENABLE_MUTUAL_TLS: true
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       RUN_REGRESSION_TESTS: false # these do not work currently
       CREATE_INT_RELEASE_NOTES: true
@@ -230,7 +230,7 @@ jobs:
       CDK_APP_Name: CptsApiApp
       LOG_RETENTION_IN_DAYS: 30
       LOG_LEVEL: DEBUG
-      ENABLE_MUTUAL_TLS: false
+      ENABLE_MUTUAL_TLS: true
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       RUN_REGRESSION_TESTS: false
       CREATE_INT_RELEASE_NOTES: true
