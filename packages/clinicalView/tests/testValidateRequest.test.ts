@@ -4,7 +4,7 @@ import {validateRequest} from "../src/validateRequest"
 
 // Types
 import {APIGatewayProxyEvent, APIGatewayProxyEventHeaders, APIGatewayProxyEventPathParameters} from "aws-lambda"
-import {ClinicalViewParams} from "@nhsdigital/eps-spine-client/lib/live-spine-client"
+import {ClinicalViewParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
 import {ServiceError} from "@cpt-common/common-types/service"
 
 const logger: Logger = new Logger({serviceName: "clinicalView", logLevel: "DEBUG"})

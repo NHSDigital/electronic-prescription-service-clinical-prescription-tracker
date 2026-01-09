@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import {PrescriptionSearchParams} from "@nhsdigital/eps-spine-client/lib/live-spine-client"
+import {PrescriptionSearchParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
 import {Logger} from "@aws-lambda-powertools/logger"
 import {ServiceError} from "@cpt-common/common-types/service"
 import {jest} from "@jest/globals"

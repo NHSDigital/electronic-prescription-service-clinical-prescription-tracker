@@ -5,9 +5,9 @@ import MockAdapter from "axios-mock-adapter"
 import axios from "axios"
 import {MiddyfiedHandler} from "@middy/core"
 import {Logger} from "@aws-lambda-powertools/logger"
-import {createSpineClient} from "@nhsdigital/eps-spine-client"
+import {createSpineClient} from "@NHSDigital/eps-spine-client"
 import {APIGatewayProxyEvent, APIGatewayProxyEventHeaders, Context} from "aws-lambda"
-import {SpineClient} from "@nhsdigital/eps-spine-client/lib/spine-client"
+import {SpineClient} from "@NHSDigital/eps-spine-client/lib/spine-client"
 
 const clinicalViewUrl = `https://live/syncservice-pds/pds`
 const mockAxios = new MockAdapter(axios)
