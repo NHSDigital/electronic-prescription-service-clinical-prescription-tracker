@@ -14,8 +14,7 @@
     "lint": "npm run extract-schemas && redocly lint --extends=recommended --config ./redocly.yaml",
     "resolve": "npm run extract-schemas && redocly bundle eps-clinical-prescription-tracker-api.yaml -d -o dist/eps-clinical-prescription-tracker-api.resolved.json",
     "extract-schemas": "tsx ./scripts/extractSchemas.ts",
-    "clean": "rm -rf lib coverage",
-    "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
+    "clean": "rm -rf lib coverage"
   },
   "devDependencies": {
     "@redocly/cli": "^2.14.3",

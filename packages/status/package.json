@@ -9,8 +9,7 @@
     "unit": "POWERTOOLS_DEV=true NODE_OPTIONS=--experimental-vm-modules jest --no-cache --coverage",
     "lint": "eslint  --max-warnings 0 --fix --config ../../eslint.config.mjs .",
     "compile": "tsc --build",
-    "test": "npm run compile && npm run unit",
-    "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
+    "test": "npm run compile && npm run unit"
   },
   "dependencies": {
     "@aws-lambda-powertools/commons": "^2.28.1",
@@ -19,7 +18,7 @@
     "@middy/core": "^6.4.5",
     "@middy/input-output-logger": "^6.4.5",
     "@nhs/fhir-middy-error-handler": "^2.1.65",
-    "@NHSDigital/eps-spine-client": "^2.1.73"
+    "@nhsdigital/eps-spine-client": "^2.1.73"
   },
   "devDependencies": {
     "axios-mock-adapter": "^2.1.0",
