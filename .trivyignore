@@ -1,0 +1,3 @@
+# ignore warning about sandbox package as this is a false positive
+# we have a package called sandbox, but the scanner picks up the npm package sandbox
+GHSA-gc25-3vc5-2jf9
