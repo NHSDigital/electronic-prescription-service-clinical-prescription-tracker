@@ -2,7 +2,7 @@
 import {Logger} from "@aws-lambda-powertools/logger"
 import {CommonHeaderParameters, ServiceError} from "@cpt-common/common-types/service"
 import {validateCommonHeaders, validateNhsNumber, validatePrescriptionId} from "@cpt-common/common-utils"
-import {PrescriptionSearchParams} from "@NHSDigital/eps-spine-client/lib/live-spine-client"
+import {PrescriptionSearchParams} from "@nhsdigital/eps-spine-client/lib/live-spine-client"
 import {APIGatewayEvent, APIGatewayProxyEventQueryStringParameters} from "aws-lambda"
 import * as DateFns from "date-fns"
 

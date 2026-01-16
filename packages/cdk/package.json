@@ -5,16 +5,14 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest --passWithNoTests",
-    "cdk": "cdk",
     "lint": "eslint  --max-warnings 0 --fix --config ../../eslint.config.mjs ."
   },
   "dependencies": {
+    "@nhsdigital/eps-cdk-constructs": "^1.1.2",
+    "aws-cdk": "^2.1100.3",
     "aws-cdk-lib": "^2.234.1",
     "cdk-nag": "^2.37.55",
     "constructs": "^10.4.4",
-    "source-map-support": "^0.5.21"
-  },
-  "devDependencies": {
-    "aws-cdk": "^2.1100.3"
+    "tsx": "^4.21.0"
   }
 }
