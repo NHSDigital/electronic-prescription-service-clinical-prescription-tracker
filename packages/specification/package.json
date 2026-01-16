@@ -15,12 +15,11 @@
     "resolve": "npm run extract-schemas && redocly bundle eps-clinical-prescription-tracker-api.yaml -d -o dist/eps-clinical-prescription-tracker-api.resolved.json",
     "extract-schemas": "tsx ./scripts/extractSchemas.ts",
     "deploy-api": "tsx ./scripts/deploy_api.ts",
-    "clean": "rm -rf lib coverage",
-    "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
+    "clean": "rm -rf lib coverage"
   },
   "devDependencies": {
     "@cpt-common/common-types": "^1.0.0",
-    "@redocly/cli": "^2.14.1",
+    "@redocly/cli": "^2.14.4",
     "clinicalView": "^1.0.0",
     "prescriptionSearch": "^1.0.0",
     "tsx": "4.21.0"

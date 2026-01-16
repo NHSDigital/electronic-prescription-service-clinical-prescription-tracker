@@ -35,7 +35,7 @@ const insightsLayerArn = "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsi
 const baseDir = resolve(__dirname, "../../..")
 const getDefaultLambdaOptions = (packageBasePath: string):NodejsFunctionProps => {
   return {
-    runtime: Runtime.NODEJS_22_X,
+    runtime: Runtime.NODEJS_24_X,
     projectRoot: baseDir,
     memorySize: 256,
     timeout: Duration.seconds(50),

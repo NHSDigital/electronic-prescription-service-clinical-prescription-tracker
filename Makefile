@@ -112,15 +112,8 @@ deep-clean: clean
 check-licenses: check-licenses-node check-licenses-python
 
 check-licenses-node:
-	npm run check-licenses
-	npm run check-licenses --workspace packages/cdk
-	npm run check-licenses --workspace packages/clinicalView
-	npm run check-licenses --workspace packages/common/commonTypes
-	npm run check-licenses --workspace packages/common/commonUtils
-	npm run check-licenses --workspace packages/prescriptionSearch
-	npm run check-licenses --workspace packages/sandbox
-	npm run check-licenses --workspace packages/status
-
+	echo "not implemented in console"
+	exit 1
 
 check-licenses-python:
 	scripts/check_python_licenses.sh
