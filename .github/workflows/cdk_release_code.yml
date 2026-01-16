@@ -184,6 +184,13 @@ jobs:
           APIGEE_ENVIRONMENT: ${{ inputs.APIGEE_ENVIRONMENT }}
           IS_PULL_REQUEST: ${{ inputs.IS_PULL_REQUEST }}
 
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        name: Upload specs
+        with:
+          name: ${{ inputs.APIGEE_ENVIRONMENT }}-specs
+          path: |
+            ./packages/specification/dist/eps-clinical-prescription-tracker-api.resolved.json
+
       - name: create_int_release_notes
         uses: ./.github/actions/update_confluence_jira
         if: ${{ inputs.CREATE_INT_RELEASE_NOTES == true && always() && !failure() && !cancelled() }}
