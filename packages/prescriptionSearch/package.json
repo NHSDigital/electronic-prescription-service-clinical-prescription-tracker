@@ -17,7 +17,7 @@
     "@cpt-common/common-types": "^1.0.0",
     "@cpt-common/common-utils": "^1.0.0",
     "@middy/http-header-normalizer": "^7.0.2",
-    "@NHSDigital/eps-spine-client": "^2.1.74",
+    "@nhsdigital/eps-spine-client": "^2.1.74",
     "date-fns": "^4.1.0",
     "fast-xml-parser": "^5.3.3",
     "json-schema-to-ts": "^3.1.0"
