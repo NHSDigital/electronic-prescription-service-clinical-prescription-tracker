@@ -8,7 +8,7 @@
     "lint": "eslint  --max-warnings 0 --fix --config ../../eslint.config.mjs ."
   },
   "dependencies": {
-    "@nhsdigital/eps-cdk-constructs": "1.1.1",
+    "@nhsdigital/eps-cdk-constructs": "^1.1.2",
     "aws-cdk": "^2.1100.3",
     "aws-cdk-lib": "^2.234.1",
     "cdk-nag": "^2.37.55",

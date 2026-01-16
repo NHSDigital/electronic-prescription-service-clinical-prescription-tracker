@@ -25,6 +25,6 @@
     "tsx": "4.21.0"
   },
   "dependencies": {
-    "@nhsdigital/eps-deployment-utils": "1.1.1"
+    "@nhsdigital/eps-deployment-utils": "^1.1.2"
   }
 }
