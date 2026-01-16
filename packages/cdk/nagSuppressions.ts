@@ -19,6 +19,20 @@ export const nagSuppressions = (stack: Stack) => {
       }
     ]
   )
+  safeAddNagSuppressionGroup(
+    stack,
+    [
+      "/CptsApiStack/Functions/PrescriptionSearchLambda/cpt-matthew-popat-dev-PrescriptionSearch/Resource",
+      "/CptsApiStack/Functions/ClinicalViewLambda/cpt-matthew-popat-dev-ClinicalView/Resource",
+      "/CptsApiStack/Functions/StatusLambda/cpt-matthew-popat-dev-Status/Resource"
+    ],
+    [
+      {
+        id: "AwsSolutions-L1",
+        reason: "We will update the runtime later"
+      }
+    ]
+  )
 
   safeAddNagSuppression(
     stack,

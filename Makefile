@@ -1,5 +1,13 @@
 SHELL = /bin/bash
 .SHELLFLAGS = -o pipefail -c
+export CDK_CONFIG_stackName=${stack_name}
+export CDK_CONFIG_versionNumber=undefined
+export CDK_CONFIG_commitId=undefined
+export CDK_CONFIG_isPullRequest=true # Turns off mTLS and drift detection when true
+export CDK_CONFIG_logRetentionInDays=30
+export CDK_CONFIG_logLevel=DEBUG
+export CDK_CONFIG_targetSpineServer=https://example.org
+export CDK_CONFIG_forwardCsocLogs=false
 
 guard-%:
 	@ if [ "${${*}}" = "" ]; then \
@@ -128,54 +136,29 @@ cfn-guard:
 
 cdk-deploy:
 	REQUIRE_APPROVAL="$${REQUIRE_APPROVAL:-any-change}" && \
-	VERSION_NUMBER="$${VERSION_NUMBER:-undefined}" && \
-	COMMIT_ID="$${COMMIT_ID:-undefined}" && \
-		npx cdk deploy \
-		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/CptsApiApp.ts" \
+	npx cdk deploy \
+		--app "npx tsx packages/cdk/bin/CptsApiApp.ts" \
 		--all \
 		--ci true \
-		--require-approval $${REQUIRE_APPROVAL} \
-		--context accountId=$$ACCOUNT_ID \
-		--context stackName=$$stack_name \
-		--context versionNumber==$$VERSION_NUMBER \
-		--context commitId=$$COMMIT_ID \
-		--context logRetentionInDays=$$LOG_RETENTION_IN_DAYS
-
+		--require-approval $${REQUIRE_APPROVAL}
 
 cdk-synth: download-get-secrets-layer
+	CDK_CONFIG_stackName=cpt \
 	npx cdk synth \
 		--quiet \
-		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/CptsApiApp.ts" \
-		--context accountId=undefined \
-		--context stackName=cpt \
-		--context versionNumber=undefined \
-		--context commitId=undefined \
-		--context logRetentionInDays=30
+		--app "npx tsx packages/cdk/bin/CptsApiApp.ts"
 
 cdk-diff:
-	npx cdk diff \
-		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/CptsApiApp.ts" \
-		--context accountId=$$ACCOUNT_ID \
-		--context stackName=$$stack_name \
-		--context versionNumber==$$VERSION_NUMBER \
-		--context commitId=$$COMMIT_ID \
-		--context logRetentionInDays=$$LOG_RETENTION_IN_DAYS
+	npx cdk diff --app "npx tsx packages/cdk/bin/CptsApiApp.ts"
 
 cdk-watch:
 	REQUIRE_APPROVAL="$${REQUIRE_APPROVAL:-any-change}" && \
-	VERSION_NUMBER="$${VERSION_NUMBER:-undefined}" && \
-	COMMIT_ID="$${COMMIT_ID:-undefined}" && \
-		npx cdk deploy \
-		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/CptsApiApp.ts" \
+	npx cdk deploy \
+		--app "npx tsx packages/cdk/bin/CptsApiApp.ts" \
 		--watch \
 		--all \
 		--ci true \
-		--require-approval $${REQUIRE_APPROVAL} \
-		--context accountId=$$ACCOUNT_ID \
-		--context stackName=$$stack_name \
-		--context versionNumber==$$VERSION_NUMBER \
-		--context commitId=$$COMMIT_ID \
-		--context logRetentionInDays=$$LOG_RETENTION_IN_DAYS
+		--require-approval $${REQUIRE_APPROVAL}
 
 create-npmrc:
 	gh auth login --scopes "read:packages"; \

@@ -9,9 +9,10 @@ import {StateMachineEndpoint} from "../constructs/RestApiGateway/StateMachineEnd
 export interface ApisProps {
   readonly stackName: string
   readonly logRetentionInDays: number
-  readonly enableMutualTls: boolean
-  readonly trustStoreFile: string
-  readonly trustStoreVersion: string
+  readonly mutualTlsConfig: {
+    key: string
+    version: string
+  } | undefined
   functions: {[key: string]: LambdaFunction}
   stateMachines: {[key: string]: ExpressStateMachine}
   readonly forwardCsocLogs: boolean
@@ -27,9 +28,7 @@ export class Apis extends Construct {
     const apiGateway = new RestApiGateway(this, "ApiGateway", {
       stackName: props.stackName,
       logRetentionInDays: props.logRetentionInDays,
-      enableMutualTls: props.enableMutualTls,
-      trustStoreKey: props.trustStoreFile,
-      trustStoreVersion: props.trustStoreVersion,
+      mutualTlsConfig: props.mutualTlsConfig,
       forwardCsocLogs: props.forwardCsocLogs,
       csocApiGatewayDestination: props.csocApiGatewayDestination
     })

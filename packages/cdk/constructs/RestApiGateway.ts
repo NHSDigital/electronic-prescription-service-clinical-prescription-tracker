@@ -22,9 +22,10 @@ import {ApiGateway as ApiGatewayTarget} from "aws-cdk-lib/aws-route53-targets"
 export interface RestApiGatewayProps {
   readonly stackName: string
   readonly logRetentionInDays: number
-  readonly enableMutualTls: boolean
-  readonly trustStoreKey: string
-  readonly trustStoreVersion: string
+  readonly mutualTlsConfig: {
+    key: string
+    version: string
+  } | undefined
   readonly forwardCsocLogs: boolean
   readonly csocApiGatewayDestination: string
 }
@@ -85,10 +86,10 @@ export class RestApiGateway extends Construct {
       validation: CertificateValidation.fromDns(hostedZone)
     })
 
-    const mtlsConfig: MTLSConfig | undefined = props.enableMutualTls ? {
+    const mtlsConfig: MTLSConfig | undefined = props.mutualTlsConfig ? {
       bucket: truststoreBucket,
-      key: props.trustStoreKey,
-      version: props.trustStoreVersion
+      key: props.mutualTlsConfig.key,
+      version: props.mutualTlsConfig.version
     } : undefined
 
     const apiGateway = new RestApi(this, "ApiGateway", {
@@ -100,7 +101,7 @@ export class RestApiGateway extends Construct {
         endpointType: EndpointType.REGIONAL,
         mtls: mtlsConfig
       },
-      disableExecuteApiEndpoint: props.enableMutualTls,
+      disableExecuteApiEndpoint: props.mutualTlsConfig ? true : false,
       endpointConfiguration: {
         types: [EndpointType.REGIONAL]
       },

@@ -1,54 +1,50 @@
-import {App, Stack, StackProps} from "aws-cdk-lib"
+import {App, Stack} from "aws-cdk-lib"
 import {nagSuppressions} from "../nagSuppressions"
 import {Functions} from "../resources/Functions"
 import {StateMachines} from "../resources/StateMachines"
 import {Apis} from "../resources/Apis"
+import {StandardStackProps} from "@nhsdigital/eps-cdk-constructs"
 
-export interface CptsApiStackProps extends StackProps {
-  readonly stackName: string
-  readonly version: string
-  readonly commitId: string
+export interface CptsApiStackProps extends StandardStackProps {
+  readonly logRetentionInDays: number
+  readonly logLevel: string
+  readonly targetSpineServer: string
+  readonly mutualTlsConfig: {
+    key: string
+    version: string
+  } | undefined
+  readonly csocApiGatewayDestination: string
+  readonly forwardCsocLogs: boolean
 }
+
 export class CptsApiStack extends Stack {
   public constructor(scope: App, id: string, props: CptsApiStackProps){
     super(scope, id, props)
-
-    // Context
-    const logRetentionInDays: number = Number(this.node.tryGetContext("logRetentionInDays"))
-    const logLevel: string = this.node.tryGetContext("logLevel")
-    const targetSpineServer: string = this.node.tryGetContext("targetSpineServer")
-    const enableMutualTls: boolean = this.node.tryGetContext("enableMutalTls")
-    const trustStoreFile: string = this.node.tryGetContext("trustStoreFile")
-    const trustStoreVersion: string = this.node.tryGetContext("truststoreVersion")
-    const csocApiGatewayDestination: string = this.node.tryGetContext("csocApiGatewayDestination")
-    const forwardCsocLogs: boolean = this.node.tryGetContext("forwardCsocLogs")
 
     // Resources
     const functions = new Functions(this, "Functions", {
       stackName: props.stackName,
       version: props.version,
       commitId: props.commitId,
-      targetSpineServer,
-      logRetentionInDays,
-      logLevel
+      targetSpineServer: props.targetSpineServer,
+      logRetentionInDays: props.logRetentionInDays,
+      logLevel: props.logLevel
     })
 
     const stateMachines = new StateMachines(this, "StateMachines", {
       stackName: props.stackName,
-      logRetentionInDays,
+      logRetentionInDays: props.logRetentionInDays,
       functions: functions.functions
     })
 
     new Apis(this, "Apis", {
       stackName: props.stackName,
-      logRetentionInDays,
-      enableMutualTls,
-      trustStoreFile,
-      trustStoreVersion,
+      logRetentionInDays: props.logRetentionInDays,
+      mutualTlsConfig: props.mutualTlsConfig,
       functions: functions.functions,
       stateMachines: stateMachines.stateMachines,
-      csocApiGatewayDestination: csocApiGatewayDestination,
-      forwardCsocLogs: forwardCsocLogs
+      csocApiGatewayDestination: props.csocApiGatewayDestination,
+      forwardCsocLogs: props.forwardCsocLogs
     })
 
     nagSuppressions(this)

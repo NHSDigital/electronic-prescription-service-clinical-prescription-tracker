@@ -5,17 +5,16 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest --passWithNoTests",
-    "cdk": "cdk",
     "lint": "eslint  --max-warnings 0 --fix --config ../../eslint.config.mjs .",
     "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
   },
   "dependencies": {
+    "@nhsdigital/eps-cdk-constructs": "1.1.1",
+    "aws-cdk": "^2.1100.1",
     "aws-cdk-lib": "^2.223.0",
     "cdk-nag": "^2.37.55",
     "constructs": "^10.4.4",
-    "source-map-support": "^0.5.21"
-  },
-  "devDependencies": {
-    "aws-cdk": "^2.1100.1"
+    "source-map-support": "^0.5.21",
+    "tsx": "^4.21.0"
   }
 }

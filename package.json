@@ -37,7 +37,6 @@
     "jest-junit": "^16.0.0",
     "license-checker": "^25.0.1",
     "ts-jest": "^29.4.6",
-    "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
   "dependencies": {
