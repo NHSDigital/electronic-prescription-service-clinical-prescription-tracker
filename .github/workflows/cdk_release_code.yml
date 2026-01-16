@@ -108,10 +108,6 @@ jobs:
         with:
           name: build_artifact
 
-      - name: extract build_artifact
-        run: |
-          tar -xf artifact.tar
-
       - name: Get asdf version
         id: asdf-version
         run: echo "version=$(awk '!/^#/ && NF {print $1; exit}' .tool-versions.asdf)" >> "$GITHUB_OUTPUT"
@@ -176,7 +172,7 @@ jobs:
         shell: bash
         if: ${{ inputs.DEPLOY_APIGEE == true && always() && !failure() && !cancelled() }}
         working-directory: ./packages/specification
-        run: npx deploy-api
+        run: npm run deploy-api
         env:
           VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}
           STACK_NAME: ${{ inputs.STACK_NAME }}
