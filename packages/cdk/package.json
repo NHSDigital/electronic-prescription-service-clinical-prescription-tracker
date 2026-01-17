@@ -9,7 +9,7 @@
     "lint": "eslint  --max-warnings 0 --fix --config ../../eslint.config.mjs ."
   },
   "dependencies": {
-    "aws-cdk-lib": "^2.234.1",
+    "aws-cdk-lib": "^2.235.0",
     "cdk-nag": "^2.37.55",
     "constructs": "^10.4.4",
     "source-map-support": "^0.5.21"
