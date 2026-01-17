@@ -19,7 +19,7 @@
     "@middy/core": "^7.0.2",
     "@middy/input-output-logger": "^7.0.2",
     "@nhs/fhir-middy-error-handler": "^2.1.66",
-    "@nhsdigital/eps-spine-client": "^2.1.74"
+    "@nhsdigital/eps-spine-client": "^2.1.78"
   },
   "devDependencies": {
     "axios-mock-adapter": "^2.1.0",
