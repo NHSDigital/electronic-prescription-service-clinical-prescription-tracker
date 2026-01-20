@@ -1,5 +1,6 @@
 SHELL = /bin/bash
 .SHELLFLAGS = -o pipefail -c
+export CDK_APP_NAME=CptsApiApp
 export CDK_CONFIG_stackName=${stack_name}
 export CDK_CONFIG_versionNumber=undefined
 export CDK_CONFIG_commitId=undefined
@@ -77,7 +78,6 @@ lint-specification: compile-specification
 	npm run lint --workspace packages/specification
 
 test: compile
-	npm run test --workspace packages/cdk
 	npm run test --workspace packages/clinicalView
 	npm run test --workspace packages/common/commonUtils
 	npm run test --workspace packages/prescriptionSearch
@@ -85,7 +85,6 @@ test: compile
 	npm run test --workspace packages/status
 
 clean:
-	rm -rf packages/cdk/coverage
 	rm -rf packages/cdk/lib
 	rm -rf packages/clinicalView/coverage
 	rm -rf packages/clinicalView/lib
@@ -129,29 +128,18 @@ cfn-guard:
 
 cdk-deploy:
 	REQUIRE_APPROVAL="$${REQUIRE_APPROVAL:-any-change}" && \
-	npx cdk deploy \
-		--app "npx tsx packages/cdk/bin/CptsApiApp.ts" \
-		--all \
-		--ci true \
-		--require-approval $${REQUIRE_APPROVAL}
+	npm run cdk-deploy --workspace packages/cdk
 
 cdk-synth: download-get-secrets-layer
 	CDK_CONFIG_stackName=cpt \
-	npx cdk synth \
-		--quiet \
-		--app "npx tsx packages/cdk/bin/CptsApiApp.ts"
+	npm run cdk-synth --workspace packages/cdk
 
 cdk-diff:
-	npx cdk diff --app "npx tsx packages/cdk/bin/CptsApiApp.ts"
+	npm run cdk-diff --workspace packages/cdk
 
 cdk-watch:
 	REQUIRE_APPROVAL="$${REQUIRE_APPROVAL:-any-change}" && \
-	npx cdk deploy \
-		--app "npx tsx packages/cdk/bin/CptsApiApp.ts" \
-		--watch \
-		--all \
-		--ci true \
-		--require-approval $${REQUIRE_APPROVAL}
+	npm run cdk-watch --workspace packages/cdk
 
 create-npmrc:
 	gh auth login --scopes "read:packages"; \

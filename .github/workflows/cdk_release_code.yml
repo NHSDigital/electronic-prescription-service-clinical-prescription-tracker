@@ -143,14 +143,10 @@ jobs:
           role-session-name: cpt-api-deployment
 
       - name: Deploy AWS infrastructure and code
-        run: |
-          npx cdk deploy \
-              --app "npx tsx packages/cdk/bin/${{ inputs.CDK_APP_NAME }}.ts" \
-              --all \
-              --require-approval=never \
-              --ci true
+        run: npm run cdk-deploy --workspace packages/cdk
         shell: bash
         env:
+          CDK_APP_NAME: "${{ inputs.CDK_APP_NAME }}"
           CDK_CONFIG_stackName: "${{ inputs.STACK_NAME }}"
           CDK_CONFIG_versionNumber: "${{ inputs.VERSION_NUMBER }}"
           CDK_CONFIG_commitId: "${{ inputs.COMMIT_ID }}"
@@ -158,8 +154,9 @@ jobs:
           CDK_CONFIG_logRetentionInDays: "${{ inputs.LOG_RETENTION_IN_DAYS }}"
           CDK_CONFIG_logLevel: "${{ inputs.LOG_LEVEL }}"
           CDK_CONFIG_targetSpineServer: "${{ secrets.TARGET_SPINE_SERVER }}"
-          CDK_CONFIG_truststoreFile: ${{ inputs.TRUSTSTORE_FILE }}
+          CDK_CONFIG_truststoreFile: "${{ inputs.TRUSTSTORE_FILE }}"
           CDK_CONFIG_forwardCsocLogs: "${{ inputs.FORWARD_CSOC_LOGS }}"
+          REQUIRE_APPROVAL: "never"
 
       - name: Configure AWS Credentials for api release
         uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
