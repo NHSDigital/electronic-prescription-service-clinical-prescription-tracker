@@ -9,7 +9,7 @@ async function main() {
     clientCertExportName = "ClinicalTrackerClientSandboxCertSecret"
     clientPrivateKeyExportName = "ClinicalTrackerClientSandboxKeySecret"
   }
-  const specFilePath = "./packages/specification/dist/eps-clinical-prescription-tracker-api.resolved.json"
+  const specFilePath = "./dist/eps-clinical-prescription-tracker-api.resolved.json"
   const spec = JSON.parse(fs.readFileSync(specFilePath, "utf8"))
   await deployApi(
     {
