@@ -109,9 +109,7 @@ jobs:
           name: build_artifact
 
       - name: extract build_artifact
-        run: |
-          mkdir -p .build
-          tar -xf artifact.tar -C .build
+        run: tar -xf artifact.tar
 
       - name: Get asdf version
         id: asdf-version
