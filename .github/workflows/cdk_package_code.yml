@@ -65,15 +65,19 @@ jobs:
         run: |
           make download-get-secrets-layer
 
+      - name: "Tar files"
+        run: |
+          tar -rf artifact.tar \
+            .tool-versions \
+            .tool-versions.asdf \
+            packages \
+            node_modules \
+            package.json \
+            tsconfig.defaults.json \
+            cdk.json
+
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         name: upload build artifact
         with:
           name: build_artifact
-          path: |
-            .tool-versions
-            .tool-versions.asdf
-            packages
-            node_modules
-            package.json
-            tsconfig.defaults.json
-            cdk.json
+          path: artifact.tar

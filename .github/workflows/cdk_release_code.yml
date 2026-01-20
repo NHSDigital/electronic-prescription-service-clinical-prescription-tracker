@@ -108,6 +108,11 @@ jobs:
         with:
           name: build_artifact
 
+      - name: extract build_artifact
+        run: |
+          mkdir -p .build
+          tar -xf artifact.tar -C .build
+
       - name: Get asdf version
         id: asdf-version
         run: echo "version=$(awk '!/^#/ && NF {print $1; exit}' .tool-versions.asdf)" >> "$GITHUB_OUTPUT"
