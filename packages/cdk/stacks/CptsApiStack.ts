@@ -19,10 +19,15 @@ export class CptsApiStack extends Stack {
     const targetSpineServer: string = this.node.tryGetContext("targetSpineServer")
     const enableMutalTls: boolean = this.node.tryGetContext("enableMutualTls")
     const trustStoreFile: string = this.node.tryGetContext("trustStoreFile")
-    const truststoreVersion: string = this.node.tryGetContext("truststoreVersion")
+    const truststoreVersion: string = this.node.tryGetContext("trustStoreVersion")
     const csocApiGatewayDestination: string = this.node.tryGetContext("csocApiGatewayDestination")
     const forwardCsocLogs: boolean = this.node.tryGetContext("forwardCsocLogs")
 
+    if (enableMutalTls) {
+      if (!trustStoreFile || !truststoreVersion) {
+        throw new Error("Mutual TLS is enabled but trust store file or version is not provided in context.")
+      }
+    }
     // Resources
     const functions = new Functions(this, "Functions", {
       stackName: props.stackName,
