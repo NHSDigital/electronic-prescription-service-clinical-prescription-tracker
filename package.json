@@ -21,7 +21,8 @@
     "packages/prescriptionSearch",
     "packages/sandbox",
     "packages/specification",
-    "packages/status"
+    "packages/status",
+    "packages/reportingUtils"
   ],
   "devDependencies": {
     "@types/aws-lambda": "^8.10.159",

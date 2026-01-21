@@ -39,6 +39,10 @@
 		{
 			"name": "packages/status",
 			"path": "../packages/status"
+		},
+		{
+			"name": "packages/reportingUtils",
+			"path": "../packages/reportingUtils"
 		}
 	],
 	"settings": {
