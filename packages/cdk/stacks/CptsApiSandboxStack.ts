@@ -1,13 +1,8 @@
-import {StackProps, Stack, App} from "aws-cdk-lib"
-
-export interface CptsApiSandboxStackProps extends StackProps {
-  readonly stackName: string
-  readonly version: string
-  readonly commitId: string
-}
+import {Stack, App} from "aws-cdk-lib"
+import {StandardStackProps} from "@nhsdigital/eps-cdk-constructs"
 
 export class CptsApiSandboxStack extends Stack {
-  public constructor(scope: App, id: string, props: CptsApiSandboxStackProps){
+  public constructor(scope: App, id: string, props: StandardStackProps){
     super(scope, id, props)
 
     // PLACEHOLDER FOR SANDBOX RESOURCES
