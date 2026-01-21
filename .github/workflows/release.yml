@@ -78,7 +78,7 @@ jobs:
       CREATE_PROD_RELEASE_NOTES: true
       MARK_JIRA_RELEASED: false
       CREATE_INT_RC_RELEASE_NOTES: false
-      MTLS_KEY: clinical-tracker-mtls-1
+      MTLS_KEY: clinical-tracker-mtls-2
       IS_PULL_REQUEST: false
       FORWARD_CSOC_LOGS: false
     secrets:
@@ -128,7 +128,7 @@ jobs:
       ENABLE_MUTUAL_TLS: true
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       RUN_REGRESSION_TESTS: false
-      MTLS_KEY: clinical-tracker-mtls-1
+      MTLS_KEY: clinical-tracker-mtls-2
       IS_PULL_REQUEST: false
       FORWARD_CSOC_LOGS: false
     secrets:
@@ -153,7 +153,7 @@ jobs:
       ENABLE_MUTUAL_TLS: true
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       RUN_REGRESSION_TESTS: true
-      MTLS_KEY: clinical-tracker-mtls-1
+      MTLS_KEY: clinical-tracker-mtls-2
       IS_PULL_REQUEST: false
       FORWARD_CSOC_LOGS: false
     secrets:
@@ -182,7 +182,7 @@ jobs:
       CREATE_PROD_RELEASE_NOTES: true
       MARK_JIRA_RELEASED: false
       CREATE_INT_RC_RELEASE_NOTES: true
-      MTLS_KEY: clinical-tracker-mtls-1
+      MTLS_KEY: clinical-tracker-mtls-2
       IS_PULL_REQUEST: false
       FORWARD_CSOC_LOGS: false
     secrets:
@@ -236,7 +236,7 @@ jobs:
       CREATE_PROD_RELEASE_NOTES: true
       MARK_JIRA_RELEASED: true
       CREATE_INT_RC_RELEASE_NOTES: false
-      MTLS_KEY: clinical-tracker-mtls-1
+      MTLS_KEY: clinical-tracker-mtls-2
       IS_PULL_REQUEST: false
       FORWARD_CSOC_LOGS: true
     secrets:

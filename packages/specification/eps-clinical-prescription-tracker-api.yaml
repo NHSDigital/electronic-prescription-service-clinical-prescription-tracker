@@ -326,7 +326,7 @@ x-nhsd-apim:
     url: https://cpt.dev.eps.national.nhs.uk
     security:
       type: mtls
-      secret: clinical-tracker-mtls-1
+      secret: clinical-tracker-mtls-2
   target-identity:
     - name: cis2-uuid
       header: "nhsd-identity-uuid"
