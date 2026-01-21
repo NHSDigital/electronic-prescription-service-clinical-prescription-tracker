@@ -120,6 +120,30 @@ jobs:
       PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
       TARGET_SPINE_SERVER: ${{ secrets.DEV_TARGET_SPINE_SERVER }}
       REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
+  release_qa:
+    needs: [get_issue_number, package_code, get_commit_id]
+    uses: ./.github/workflows/cdk_release_code.yml
+    with:
+      STACK_NAME: cpt
+      AWS_ENVIRONMENT: qa
+      APIGEE_ENVIRONMENT: internal-qa
+      VERSION_NUMBER: PR-${{ needs.get_issue_number.outputs.issue_number }}
+      COMMIT_ID: ${{ needs.get_commit_id.outputs.commit_id }}
+      CDK_APP_Name: CptsApiApp
+      LOG_RETENTION_IN_DAYS: 30
+      LOG_LEVEL: DEBUG
+      ENABLE_MUTUAL_TLS: true
+      TRUSTSTORE_FILE: clinical-tracker-truststore.pem
+      RUN_REGRESSION_TESTS: true
+      MTLS_KEY: clinical-tracker-mtls-1
+      IS_PULL_REQUEST: false
+      FORWARD_CSOC_LOGS: false
+    secrets:
+      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
+      CDK_PULL_IMAGE_ROLE: ${{ secrets.QA_CDK_PULL_IMAGE_ROLE }}
+      PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
+      TARGET_SPINE_SERVER: ${{ secrets.QA_TARGET_SPINE_SERVER }}
+      REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
 
   # release_sandbox_code:
   #   needs: [get_issue_number, package_code, get_commit_id]
