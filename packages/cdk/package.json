@@ -10,7 +10,7 @@
     "tsx": "tsx"
   },
   "dependencies": {
-    "@nhsdigital/eps-cdk-constructs": "^1.1.2",
+    "@nhsdigital/eps-cdk-constructs": "^1.1.4",
     "aws-cdk": "^2.1101.0",
     "aws-cdk-lib": "^2.235.1",
     "cdk-nag": "^2.37.55",

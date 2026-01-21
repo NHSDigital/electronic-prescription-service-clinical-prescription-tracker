@@ -11,26 +11,29 @@ async function main() {
   }
   const specFilePath = "./dist/eps-clinical-prescription-tracker-api.resolved.json"
   const spec = JSON.parse(fs.readFileSync(specFilePath, "utf8"))
-  await deployApi(
-    {
-      spec,
-      apiName: "clinical-prescription-tracker",
-      version: getConfigFromEnvVar("VERSION_NUMBER"),
-      apigeeEnvironment,
-      isPullRequest: getBooleanConfigFromEnvVar("IS_PULL_REQUEST"),
-      awsEnvironment: getConfigFromEnvVar("AWS_ENVIRONMENT"),
-      stackName: getConfigFromEnvVar("STACK_NAME"),
-      mtlsSecretName: "clinical-tracker-mtls-1",
-      clientCertExportName,
-      clientPrivateKeyExportName,
-      proxygenPrivateKeyExportName: "ClinicalTrackerProxygenPrivateKey",
-      proxygenKid: "eps-clinical-tracker",
-      hiddenPaths: []
-    },
-    true,
-    false
-  )
-  fs.writeFileSync(specFilePath, JSON.stringify(spec))
+  try {
+    await deployApi(
+      {
+        spec,
+        apiName: "clinical-prescription-tracker",
+        version: getConfigFromEnvVar("VERSION_NUMBER"),
+        apigeeEnvironment,
+        isPullRequest: getBooleanConfigFromEnvVar("IS_PULL_REQUEST"),
+        awsEnvironment: getConfigFromEnvVar("AWS_ENVIRONMENT"),
+        stackName: getConfigFromEnvVar("STACK_NAME"),
+        mtlsSecretName: "clinical-tracker-mtls-1",
+        clientCertExportName,
+        clientPrivateKeyExportName,
+        proxygenPrivateKeyExportName: "ClinicalTrackerProxygenPrivateKey",
+        proxygenKid: "eps-clinical-tracker",
+        hiddenPaths: []
+      },
+      true,
+      false
+    )
+  } finally {
+    fs.writeFileSync(specFilePath, JSON.stringify(spec))
+  }
 }
 
 main().catch((err) => {
