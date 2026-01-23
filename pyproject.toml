@@ -20,7 +20,7 @@ requests = "^2.32.5"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.5.1"
-black = "^25.1.0"
+black = "^26.1.0"
 flake8 = "^7.1.2"
 pip-licenses = "^5.0.0"
 
