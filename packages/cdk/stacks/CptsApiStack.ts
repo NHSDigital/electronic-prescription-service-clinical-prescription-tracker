@@ -6,6 +6,7 @@ import {Apis} from "../resources/Apis"
 import {StandardStackProps} from "@nhsdigital/eps-cdk-constructs"
 
 export interface CptsApiStackProps extends StandardStackProps {
+  readonly stackName: string
   readonly logRetentionInDays: number
   readonly logLevel: string
   readonly targetSpineServer: string
