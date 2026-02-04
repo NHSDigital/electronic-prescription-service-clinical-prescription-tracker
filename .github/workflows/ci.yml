@@ -4,9 +4,6 @@ on:
   push:
     branches: [main]
 
-env:
-  BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
-
 jobs:
   get_asdf_version:
     runs-on: ubuntu-22.04
@@ -64,12 +61,13 @@ jobs:
     needs: [get_commit_id, tag_release, package_code]
     uses: ./.github/workflows/cdk_release_code.yml
     with:
+      BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
       STACK_NAME: cpt
       AWS_ENVIRONMENT: dev
       APIGEE_ENVIRONMENT: internal-dev
       VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
       COMMIT_ID: ${{ needs.get_commit_id.outputs.commit_id }}
-      CDK_APP_Name: CptsApiApp
+      CDK_APP_NAME: CptsApiApp
       LOG_RETENTION_IN_DAYS: 30
       LOG_LEVEL: DEBUG
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
@@ -90,17 +88,19 @@ jobs:
       INT_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
       PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
       DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
+      APIM_STATUS_API_KEY: ${{ secrets.APIM_STATUS_API_KEY }}
 
   # release_dev_sandbox:
   #   needs: [get_commit_id, tag_release, package_code, release_dev]
   #   uses: ./.github/workflows/cdk_release_code.yml
   #   with:
+  #     BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
   #     STACK_NAME: cpt-sandbox
   #     AWS_ENVIRONMENT: dev
   #     APIGEE_ENVIRONMENT: internal-dev-sandbox
   #     VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
   #     COMMIT_ID: ${{ needs.get_commit_id.outputs.commit_id }}
-  #     CDK_APP_Name: CptsApiSandboxApp
+  #     CDK_APP_NAME: CptsApiSandboxApp
   #     LOG_RETENTION_IN_DAYS: 30
   #     LOG_LEVEL: DEBUG
   #     TRUSTSTORE_FILE: clinical-tracker-sandbox-truststore.pem
@@ -110,17 +110,19 @@ jobs:
   #     PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
   #     TARGET_SPINE_SERVER: sandbox
   #     REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
+  #     APIM_STATUS_API_KEY: ${{ secrets.APIM_STATUS_API_KEY }}
 
   release_qa:
     needs: [get_commit_id, tag_release, package_code, release_dev] # TODO: add sandbox back once implemented
     uses: ./.github/workflows/cdk_release_code.yml
     with:
+      BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
       STACK_NAME: cpt
       AWS_ENVIRONMENT: qa
       APIGEE_ENVIRONMENT: internal-qa
       VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
       COMMIT_ID: ${{ needs.get_commit_id.outputs.commit_id }}
-      CDK_APP_Name: CptsApiApp
+      CDK_APP_NAME: CptsApiApp
       LOG_RETENTION_IN_DAYS: 30
       LOG_LEVEL: DEBUG
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
@@ -133,3 +135,4 @@ jobs:
       PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
       TARGET_SPINE_SERVER: ${{ secrets.QA_TARGET_SPINE_SERVER }}
       REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
+      APIM_STATUS_API_KEY: ${{ secrets.APIM_STATUS_API_KEY }}

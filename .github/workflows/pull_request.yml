@@ -4,9 +4,6 @@ on:
   pull_request:
     branches: [main]
 
-env:
-  BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
-
 jobs:
   dependabot-auto-approve-and-merge:
     needs: quality_checks
@@ -100,12 +97,13 @@ jobs:
     needs: [get_issue_number, package_code, get_commit_id]
     uses: ./.github/workflows/cdk_release_code.yml
     with:
+      BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
       STACK_NAME: cpt-pr-${{needs.get_issue_number.outputs.issue_number}}
       AWS_ENVIRONMENT: dev
       APIGEE_ENVIRONMENT: internal-dev
       VERSION_NUMBER: PR-${{ needs.get_issue_number.outputs.issue_number }}
       COMMIT_ID: ${{ needs.get_commit_id.outputs.commit_id }}
-      CDK_APP_Name: CptsApiApp
+      CDK_APP_NAME: CptsApiApp
       LOG_RETENTION_IN_DAYS: 30
       LOG_LEVEL: DEBUG
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
@@ -118,17 +116,19 @@ jobs:
       PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
       TARGET_SPINE_SERVER: ${{ secrets.DEV_TARGET_SPINE_SERVER }}
       REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
+      APIM_STATUS_API_KEY: ${{ secrets.APIM_STATUS_API_KEY }}
 
   # release_sandbox_code:
   #   needs: [get_issue_number, package_code, get_commit_id]
   #   uses: ./.github/workflows/cdk_release_code.yml
   #   with:
+  #     BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
   #     STACK_NAME: cpt-pr-${{needs.get_issue_number.outputs.issue_number}}-sandbox
   #     AWS_ENVIRONMENT: dev
   #     APIGEE_ENVIRONMENT: internal-dev-sandbox
   #     VERSION_NUMBER: PR-${{ needs.get_issue_number.outputs.issue_number }}
   #     COMMIT_ID: ${{ needs.get_commit_id.outputs.commit_id }}
-  #     CDK_APP_Name: CptsApiSandboxApp
+  #     CDK_APP_NAME: CptsApiSandboxApp
   #     LOG_RETENTION_IN_DAYS: 30
   #     LOG_LEVEL: DEBUG
   #     TRUSTSTORE_FILE: clinical-tracker-sandbox-truststore.pem
@@ -138,18 +138,20 @@ jobs:
   #     PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
   #     TARGET_SPINE_SERVER: sandbox
   #     REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
+  #     APIM_STATUS_API_KEY: ${{ secrets.APIM_STATUS_API_KEY }}
 
   # uncomment this if we want to release to ref from a pull request
   # release_ref:
   #   needs: [get_commit_id, get_issue_number, package_code, release_code]
   #   uses: ./.github/workflows/cdk_release_code.yml
   #   with:
+  #     BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
   #     STACK_NAME: cpt
   #     AWS_ENVIRONMENT: ref
   #     APIGEE_ENVIRONMENT: ref
   #     VERSION_NUMBER: PR-${{ needs.get_issue_number.outputs.issue_number }}
   #     COMMIT_ID: ${{ needs.get_commit_id.outputs.commit_id }}
-  #     CDK_APP_Name: CptsApiApp
+  #     CDK_APP_NAME: CptsApiApp
   #     LOG_RETENTION_IN_DAYS: 30
   #     LOG_LEVEL: DEBUG
   #     TRUSTSTORE_FILE: clinical-tracker-truststore.pem
@@ -159,3 +161,4 @@ jobs:
   #     PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
   #     TARGET_SPINE_SERVER: ${{ secrets.REF_TARGET_SPINE_SERVER }}
   #     REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
+  #     APIM_STATUS_API_KEY: ${{ secrets.APIM_STATUS_API_KEY }}

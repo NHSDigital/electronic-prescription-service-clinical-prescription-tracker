@@ -15,27 +15,30 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      packages: read
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Checkout local github scripts
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         with:
-          ref: ${{ env.BRANCH_NAME }}
-          sparse-checkout: |
-            .github/scripts
+          ref: ${{ github.event.ref.BRANCH_NAME }}
+          fetch-depth: 0
+
+      - name: install dependencies
+        uses: ./.github/actions/install_dependencies
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
         with:
           aws-region: eu-west-2
           role-to-assume: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-          role-session-name: cpt-api-delete-old-stacks
 
       - name: delete stacks
         shell: bash
-        working-directory: .github/scripts
-        run: ./delete_stacks.sh
+        run: npm run delete-old-pr-stacks --workspace packages/cdk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -44,22 +47,28 @@ jobs:
     permissions:
       id-token: write
       contents: read
+      packages: read
 
     steps:
       - name: Checkout local code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
         with:
-          ref: ${{ env.BRANCH_NAME }}
+          ref: ${{ github.event.ref.BRANCH_NAME }}
           fetch-depth: 0
+
+      - name: install dependencies
+        uses: ./.github/actions/install_dependencies
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708
         with:
           aws-region: eu-west-2
           role-to-assume: ${{ secrets.PROXYGEN_PTL_ROLE }}
-          role-session-name: cpt-api-delete-old-proxygen
 
       - name: delete proxygen deployments
         shell: bash
-        working-directory: .github/scripts
-        run: ./delete_proxygen_deployments.sh
+        run: npm run delete-old-pr-deployments --workspace packages/specification
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
