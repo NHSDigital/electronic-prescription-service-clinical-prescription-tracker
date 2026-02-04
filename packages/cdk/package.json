@@ -2,7 +2,7 @@
   "name": "cdk",
   "version": "0.1.0",
   "scripts": {
-    "cdk-synth": "cdk synth --quiet --app \"npm run tsx -- bin/${CDK_APP_NAME}.ts\"",
+    "cdk-synth": "cdk synth --output ../../cdk.out --quiet --app \"npm run tsx -- bin/${CDK_APP_NAME}.ts\"",
     "cdk-diff": "cdk diff --app \"npm run tsx -- bin/${CDK_APP_NAME}.ts\"",
     "cdk-deploy": "cdk deploy --app \"npm run tsx -- bin/${CDK_APP_NAME}.ts\" --all --ci true --require-approval ${REQUIRE_APPROVAL}",
     "cdk-watch": "cdk deploy --app \"npm run tsx -- bin/${CDK_APP_NAME}.ts\" --watch --all --ci true --require-approval ${REQUIRE_APPROVAL}",
