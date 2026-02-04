@@ -5,6 +5,7 @@ export CDK_CONFIG_stackName=${stack_name}
 export CDK_CONFIG_versionNumber=undefined
 export CDK_CONFIG_commitId=undefined
 export CDK_CONFIG_isPullRequest=true # Turns off mTLS and drift detection when true
+export CDK_CONFIG_environment=dev
 export CDK_CONFIG_logRetentionInDays=30
 export CDK_CONFIG_logLevel=DEBUG
 export CDK_CONFIG_targetSpineServer=https://example.org

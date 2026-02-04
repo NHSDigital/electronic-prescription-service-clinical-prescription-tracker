@@ -9,14 +9,12 @@ import {
 import {CptsApiStack} from "../stacks/CptsApiStack"
 
 async function main() {
-  const {app, props} = createApp(
-    {
-      productName: "Prescription Tracker API",
-      appName: "CptsApiApp",
-      repoName: "electronic-prescription-service-clinical-prescription-tracker",
-      driftDetectionGroup: "cpt-api"
-    }
-  )
+  const {app, props} = createApp({
+    productName: "Prescription Tracker API",
+    appName: "CptsApiApp",
+    repoName: "electronic-prescription-service-clinical-prescription-tracker",
+    driftDetectionGroup: "cpt-api"
+  })
 
   let mutualTlsConfig: {key: string, version: string} | undefined = undefined
   if (!props.isPullRequest) {

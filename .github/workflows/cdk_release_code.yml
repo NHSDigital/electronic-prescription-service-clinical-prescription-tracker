@@ -131,6 +131,7 @@ jobs:
           role-session-name: cpt-api-deployment
 
       - name: delete old CDK stacks
+        if: ${{ inputs.IS_PULL_REQUEST != true }}
         run: npm run delete-main-stacks --workspace packages/cdk
         shell: bash
         env:
@@ -146,6 +147,7 @@ jobs:
           CDK_CONFIG_versionNumber: "${{ inputs.VERSION_NUMBER }}"
           CDK_CONFIG_commitId: "${{ inputs.COMMIT_ID }}"
           CDK_CONFIG_isPullRequest: "${{ inputs.IS_PULL_REQUEST }}"
+          CDK_CONFIG_environment: "${{ inputs.AWS_ENVIRONMENT }}"
           CDK_CONFIG_logRetentionInDays: "${{ inputs.LOG_RETENTION_IN_DAYS }}"
           CDK_CONFIG_logLevel: "${{ inputs.LOG_LEVEL }}"
           CDK_CONFIG_targetSpineServer: "${{ secrets.TARGET_SPINE_SERVER }}"
