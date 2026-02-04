@@ -3,6 +3,9 @@ name: cdk package code
 on:
   workflow_call:
     inputs:
+      BRANCH_NAME:
+        required: true
+        type: string
       VERSION_NUMBER:
         required: true
         type: string
@@ -20,6 +23,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.BRANCH_NAME }}
 
       - name: install dependencies
         uses: ./.github/actions/install_dependencies

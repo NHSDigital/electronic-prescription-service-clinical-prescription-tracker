@@ -90,6 +90,7 @@ jobs:
     needs: [get_issue_number, get_commit_id]
     uses: ./.github/workflows/cdk_package_code.yml
     with:
+      BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
       VERSION_NUMBER: PR-${{ needs.get_issue_number.outputs.issue_number }}
       COMMIT_ID: ${{ needs.get_commit_id.outputs.commit_id }}
 

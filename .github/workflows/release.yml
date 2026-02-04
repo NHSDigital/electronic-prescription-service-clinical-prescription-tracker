@@ -53,6 +53,7 @@ jobs:
     needs: [get_commit_id, tag_release]
     uses: ./.github/workflows/cdk_package_code.yml
     with:
+      BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
       VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
       COMMIT_ID: ${{ needs.get_commit_id.outputs.commit_id }}
 
