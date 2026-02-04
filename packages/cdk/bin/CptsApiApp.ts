@@ -1,4 +1,5 @@
 import {
+  calculateVersionedStackName,
   createApp,
   getBooleanConfigFromEnvVar,
   getConfigFromEnvVar,
@@ -9,9 +10,12 @@ import {CptsApiStack} from "../stacks/CptsApiStack"
 
 async function main() {
   const {app, props} = createApp(
-    "CptsApiApp",
-    "electronic-prescription-service-clinical-prescription-tracker",
-    "cpt-api"
+    {
+      productName: "Prescription Tracker API",
+      appName: "CptsApiApp",
+      repoName: "electronic-prescription-service-clinical-prescription-tracker",
+      driftDetectionGroup: "cpt-api"
+    }
   )
 
   let mutualTlsConfig: {key: string, version: string} | undefined = undefined
@@ -25,6 +29,7 @@ async function main() {
 
   new CptsApiStack(app, "CptsApiStack", {
     ...props,
+    stackName: calculateVersionedStackName(getConfigFromEnvVar("stackName"), props),
     logRetentionInDays: getNumberConfigFromEnvVar("logRetentionInDays"),
     logLevel: getConfigFromEnvVar("logLevel"),
     targetSpineServer: getConfigFromEnvVar("targetSpineServer"),
