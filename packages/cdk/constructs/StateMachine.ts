@@ -108,7 +108,7 @@ export class ExpressStateMachine extends Construct {
         cloudwatchEncryptionKMSPolicy,
         ...(props.additionalPolicies ?? [])
       ]
-    })
+    }).withoutPolicyUpdates()
 
     const stateMachine = new StateMachine(this, "StateMachine", {
       stateMachineName: props.stateMachineName,

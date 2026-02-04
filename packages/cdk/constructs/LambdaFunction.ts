@@ -128,7 +128,7 @@ export class LambdaFunction extends Construct {
         lambdaDecryptSecretsKMSPolicy,
         ...(props.additionalPolicies ?? [])
       ]
-    })
+    }).withoutPolicyUpdates()
 
     const getSecretsLambdaLayer = new LayerVersion(this, "GetSecretsLambdaLayer", {
       description: "get secrets layer",

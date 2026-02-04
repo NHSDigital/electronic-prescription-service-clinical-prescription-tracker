@@ -117,7 +117,7 @@ export class RestApiGateway extends Construct {
     const role = new Role(this, "ApiGatewayRole", {
       assumedBy: new ServicePrincipal("apigateway.amazonaws.com"),
       managedPolicies: []
-    })
+    }).withoutPolicyUpdates()
 
     new ARecord(this, "ARecord", {
       recordName: props.stackName,
