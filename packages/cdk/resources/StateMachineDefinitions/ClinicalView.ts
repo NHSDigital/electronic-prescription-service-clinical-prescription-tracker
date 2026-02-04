@@ -1,4 +1,4 @@
-import {Function, IFunction} from "aws-cdk-lib/aws-lambda"
+import {IFunction} from "aws-cdk-lib/aws-lambda"
 import {LambdaInvoke} from "aws-cdk-lib/aws-stepfunctions-tasks"
 import {Construct} from "constructs"
 import {
@@ -9,7 +9,6 @@ import {
   Pass,
   TaskInput
 } from "aws-cdk-lib/aws-stepfunctions"
-import {Fn} from "aws-cdk-lib"
 import {CatchAllErrorPass} from "../../constructs/StateMachine/CatchAllErrorPass"
 import {
   extractPrescriptionIdExpression,
@@ -19,6 +18,7 @@ import {
 
 export interface DefinitionProps {
   readonly clinicalViewFunction: IFunction
+  readonly getStatusUpdatesFunction: IFunction
 }
 
 export class ClinicalView extends Construct {
@@ -26,10 +26,6 @@ export class ClinicalView extends Construct {
 
   public constructor(scope: Construct, id: string, props: DefinitionProps){
     super(scope, id)
-
-    // Imports
-    const getStatusUpdates = Function.fromFunctionArn(
-      this, "GetStatusUpdates", `${Fn.importValue("psu:functions:GetStatusUpdates:FunctionArn")}:$LATEST`)
 
     // States
     const catchAllError = new CatchAllErrorPass(this, "Catch All Error")
@@ -58,7 +54,7 @@ export class ClinicalView extends Construct {
     })
 
     const invokeGetStatusUpdates = new LambdaInvoke(this, "Invoke Get Status Updates", {
-      lambdaFunction: getStatusUpdates,
+      lambdaFunction: props.getStatusUpdatesFunction,
       payload: TaskInput.fromObject({
         schemaVersion: 1,
         prescriptions: [{
