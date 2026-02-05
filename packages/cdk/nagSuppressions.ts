@@ -9,8 +9,7 @@ export const nagSuppressions = (stack: Stack) => {
       "/CptsApiStack/Functions/PrescriptionSearchLambda/LambdaPutLogsManagedPolicy/Resource",
       "/CptsApiStack/Functions/ClinicalViewLambda/LambdaPutLogsManagedPolicy/Resource",
       "/CptsApiStack/Functions/StatusLambda/LambdaPutLogsManagedPolicy/Resource",
-      "/CptsApiStack/StateMachines/ClinicalViewStateMachine/StateMachinePutLogsManagedPolicy",
-      "/CptsApiStack/StateMachines/ClinicalViewStateMachine/StateMachineRole/DefaultPolicy/Resource"
+      "/CptsApiStack/StateMachines/ClinicalViewStateMachine/StateMachinePutLogsManagedPolicy"
     ],
     [
       {

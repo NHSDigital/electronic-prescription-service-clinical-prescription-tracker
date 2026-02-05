@@ -2,14 +2,14 @@ import {IResource, LambdaIntegration} from "aws-cdk-lib/aws-apigateway"
 import {IRole} from "aws-cdk-lib/aws-iam"
 import {HttpMethod} from "aws-cdk-lib/aws-lambda"
 import {Construct} from "constructs"
-import {LambdaFunction} from "../LambdaFunction"
+import {TypescriptLambdaFunction} from "@nhsdigital/eps-cdk-constructs"
 
 export interface LambdaEndpointProps {
   parentResource: IResource
   readonly resourceName: string
   readonly method: HttpMethod
   restApiGatewayRole: IRole
-  lambdaFunction: LambdaFunction
+  lambdaFunction: TypescriptLambdaFunction
 }
 
 export class LambdaEndpoint extends Construct {
@@ -22,7 +22,6 @@ export class LambdaEndpoint extends Construct {
     resource.addMethod(props.method, new LambdaIntegration(props.lambdaFunction.function, {
       credentialsRole: props.restApiGatewayRole
     }))
-    props.restApiGatewayRole.addManagedPolicy(props.lambdaFunction.executionPolicy)
 
     this.resource = resource
   }

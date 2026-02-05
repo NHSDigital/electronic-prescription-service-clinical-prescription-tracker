@@ -1,7 +1,7 @@
 import {Fn} from "aws-cdk-lib"
 import {IManagedPolicy, ManagedPolicy} from "aws-cdk-lib/aws-iam"
 import {Construct} from "constructs"
-import {LambdaFunction} from "../constructs/LambdaFunction"
+import {TypescriptLambdaFunction} from "@nhsdigital/eps-cdk-constructs"
 
 export interface FunctionsProps {
   readonly stackName: string
@@ -13,7 +13,7 @@ export interface FunctionsProps {
 }
 
 export class Functions extends Construct {
-  functions: {[key: string]: LambdaFunction}
+  functions: {[key: string]: TypescriptLambdaFunction}
 
   public constructor(scope: Construct, id: string, props: FunctionsProps){
     super(scope, id)
@@ -37,37 +37,43 @@ export class Functions extends Construct {
     }
 
     // Resources
-    const prescriptionSearchLambda = new LambdaFunction(this, "PrescriptionSearchLambda", {
-      stackName: props.stackName,
+    const prescriptionSearchLambda = new TypescriptLambdaFunction(this, "PrescriptionSearchLambda", {
       functionName: `${props.stackName}-PrescriptionSearch`,
+      projectBaseDir: "../..",
       packageBasePath: "packages/prescriptionSearch",
       entryPoint: "src/handler.ts",
       environmentVariables: {...lambdaDefaultEnvironmentVariables},
       additionalPolicies: [lambdaAccessSecretsPolicy],
       logRetentionInDays: props.logRetentionInDays,
-      logLevel: props.logLevel
+      logLevel: props.logLevel,
+      version: props.version,
+      commitId: props.commitId
     })
 
-    const clinicalViewLambda = new LambdaFunction(this, "ClinicalViewLambda", {
-      stackName: props.stackName,
+    const clinicalViewLambda = new TypescriptLambdaFunction(this, "ClinicalViewLambda", {
       functionName: `${props.stackName}-ClinicalView`,
+      projectBaseDir: "../..",
       packageBasePath: "packages/clinicalView",
       entryPoint: "src/handler.ts",
       environmentVariables: {...lambdaDefaultEnvironmentVariables},
       additionalPolicies: [lambdaAccessSecretsPolicy],
       logRetentionInDays: props.logRetentionInDays,
-      logLevel: props.logLevel
+      logLevel: props.logLevel,
+      version: props.version,
+      commitId: props.commitId
     })
 
-    const statusLambda = new LambdaFunction(this, "StatusLambda", {
-      stackName: props.stackName,
+    const statusLambda = new TypescriptLambdaFunction(this, "StatusLambda", {
       functionName: `${props.stackName}-Status`,
+      projectBaseDir: "../..",
       packageBasePath: "packages/status",
       entryPoint: "src/handler.ts",
       environmentVariables: {...lambdaDefaultEnvironmentVariables},
       additionalPolicies: [lambdaAccessSecretsPolicy],
       logRetentionInDays: props.logRetentionInDays,
-      logLevel: props.logLevel
+      logLevel: props.logLevel,
+      version: props.version,
+      commitId: props.commitId
     })
 
     this.functions = {

@@ -8,7 +8,12 @@ import {
   RestApi,
   SecurityPolicy
 } from "aws-cdk-lib/aws-apigateway"
-import {IRole, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam"
+import {
+  IManagedPolicy,
+  IRole,
+  Role,
+  ServicePrincipal
+} from "aws-cdk-lib/aws-iam"
 import {Stream} from "aws-cdk-lib/aws-kinesis"
 import {Key} from "aws-cdk-lib/aws-kms"
 import {CfnSubscriptionFilter, LogGroup} from "aws-cdk-lib/aws-logs"
@@ -28,6 +33,7 @@ export interface RestApiGatewayProps {
   } | undefined
   readonly forwardCsocLogs: boolean
   readonly csocApiGatewayDestination: string
+  readonly executionPolicies: Array<IManagedPolicy>
 }
 
 export class RestApiGateway extends Construct {
@@ -116,7 +122,7 @@ export class RestApiGateway extends Construct {
 
     const role = new Role(this, "ApiGatewayRole", {
       assumedBy: new ServicePrincipal("apigateway.amazonaws.com"),
-      managedPolicies: []
+      managedPolicies: props.executionPolicies
     }).withoutPolicyUpdates()
 
     new ARecord(this, "ARecord", {

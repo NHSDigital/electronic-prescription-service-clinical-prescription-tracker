@@ -2,7 +2,7 @@ import {HttpMethod} from "aws-cdk-lib/aws-lambda"
 import {Construct} from "constructs"
 import {RestApiGateway} from "../constructs/RestApiGateway"
 import {LambdaEndpoint} from "../constructs/RestApiGateway/LambdaEndpoint"
-import {LambdaFunction} from "../constructs/LambdaFunction"
+import {TypescriptLambdaFunction} from "@nhsdigital/eps-cdk-constructs"
 import {ExpressStateMachine} from "../constructs/StateMachine"
 import {StateMachineEndpoint} from "../constructs/RestApiGateway/StateMachineEndpoint"
 
@@ -13,7 +13,7 @@ export interface ApisProps {
     key: string
     version: string
   } | undefined
-  functions: {[key: string]: LambdaFunction}
+  functions: {[key: string]: TypescriptLambdaFunction}
   stateMachines: {[key: string]: ExpressStateMachine}
   readonly forwardCsocLogs: boolean
   readonly csocApiGatewayDestination: string
@@ -30,7 +30,12 @@ export class Apis extends Construct {
       logRetentionInDays: props.logRetentionInDays,
       mutualTlsConfig: props.mutualTlsConfig,
       forwardCsocLogs: props.forwardCsocLogs,
-      csocApiGatewayDestination: props.csocApiGatewayDestination
+      csocApiGatewayDestination: props.csocApiGatewayDestination,
+      executionPolicies: [
+        props.functions.prescriptionSearch.executionPolicy,
+        props.stateMachines.clinicalView.executionPolicy,
+        props.functions.status.executionPolicy
+      ]
     })
     const rootResource = apiGateway.api.root
 
