@@ -1,7 +1,9 @@
-import {Fn} from "aws-cdk-lib"
+import {Fn, RemovalPolicy} from "aws-cdk-lib"
 import {IManagedPolicy, ManagedPolicy} from "aws-cdk-lib/aws-iam"
 import {Construct} from "constructs"
 import {TypescriptLambdaFunction} from "@nhsdigital/eps-cdk-constructs"
+import {Code, LayerVersion} from "aws-cdk-lib/aws-lambda"
+import {join, resolve} from "path"
 
 export interface FunctionsProps {
   readonly stackName: string
@@ -11,6 +13,8 @@ export interface FunctionsProps {
   readonly logRetentionInDays: number
   readonly logLevel: string
 }
+
+const baseDir = resolve(__dirname, "../../..")
 
 export class Functions extends Construct {
   functions: {[key: string]: TypescriptLambdaFunction}
@@ -36,13 +40,20 @@ export class Functions extends Construct {
       AWS_LAMBDA_EXEC_WRAPPER: "/opt/get-secrets-layer"
     }
 
+    const getSecretsLambdaLayer = new LayerVersion(this, "GetSecretsLambdaLayer", {
+      description: "get secrets layer",
+      code: Code.fromAsset(join(baseDir, "packages/getSecretLayer/lib/get-secrets-layer.zip")),
+      removalPolicy: RemovalPolicy.RETAIN
+    })
+
     // Resources
     const prescriptionSearchLambda = new TypescriptLambdaFunction(this, "PrescriptionSearchLambda", {
       functionName: `${props.stackName}-PrescriptionSearch`,
-      projectBaseDir: "../..",
+      projectBaseDir: baseDir,
       packageBasePath: "packages/prescriptionSearch",
       entryPoint: "src/handler.ts",
       environmentVariables: {...lambdaDefaultEnvironmentVariables},
+      layers: [getSecretsLambdaLayer],
       additionalPolicies: [lambdaAccessSecretsPolicy],
       logRetentionInDays: props.logRetentionInDays,
       logLevel: props.logLevel,
@@ -52,10 +63,11 @@ export class Functions extends Construct {
 
     const clinicalViewLambda = new TypescriptLambdaFunction(this, "ClinicalViewLambda", {
       functionName: `${props.stackName}-ClinicalView`,
-      projectBaseDir: "../..",
+      projectBaseDir: baseDir,
       packageBasePath: "packages/clinicalView",
       entryPoint: "src/handler.ts",
       environmentVariables: {...lambdaDefaultEnvironmentVariables},
+      layers: [getSecretsLambdaLayer],
       additionalPolicies: [lambdaAccessSecretsPolicy],
       logRetentionInDays: props.logRetentionInDays,
       logLevel: props.logLevel,
@@ -65,10 +77,11 @@ export class Functions extends Construct {
 
     const statusLambda = new TypescriptLambdaFunction(this, "StatusLambda", {
       functionName: `${props.stackName}-Status`,
-      projectBaseDir: "../..",
+      projectBaseDir: baseDir,
       packageBasePath: "packages/status",
       entryPoint: "src/handler.ts",
       environmentVariables: {...lambdaDefaultEnvironmentVariables},
+      layers: [getSecretsLambdaLayer],
       additionalPolicies: [lambdaAccessSecretsPolicy],
       logRetentionInDays: props.logRetentionInDays,
       logLevel: props.logLevel,
