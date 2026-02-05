@@ -3,5 +3,5 @@ vulnerabilities:
     statement: downstream dependency for fast-xml-parser - waiting for redocly update
     expired_at: 2026-03-01
   - id: CVE-2026-25547
-    statement: downstream dependency for glob - waiting for redocly update
+    statement: downstream dependency for @isaacs/brace-expansion - waiting for redocly update
     expired_at: 2026-03-01
