@@ -1,5 +1,5 @@
 import {Fn, RemovalPolicy} from "aws-cdk-lib"
-import {IManagedPolicy, ManagedPolicy} from "aws-cdk-lib/aws-iam"
+import {ManagedPolicy} from "aws-cdk-lib/aws-iam"
 import {Construct} from "constructs"
 import {TypescriptLambdaFunction} from "@nhsdigital/eps-cdk-constructs"
 import {Code, LayerVersion} from "aws-cdk-lib/aws-lambda"
@@ -23,8 +23,11 @@ export class Functions extends Construct {
     super(scope, id)
 
     // Imports
-    const lambdaAccessSecretsPolicy: IManagedPolicy = ManagedPolicy.fromManagedPolicyArn(
+    const lambdaAccessSecretsPolicy = ManagedPolicy.fromManagedPolicyArn(
       this, "lambdaAccessSecretsPolicy", Fn.importValue("account-resources:LambdaAccessSecretsPolicy"))
+
+    const lambdaDecryptSecretsKMSPolicy = ManagedPolicy.fromManagedPolicyArn(
+      this, "lambdaDecryptSecretsKMSPolicy", Fn.importValue("account-resources:LambdaDecryptSecretsKMSPolicy"))
 
     const lambdaDefaultEnvironmentVariables: {[key: string]: string} = {
       NODE_OPTIONS: "--enable-source-maps",
@@ -54,7 +57,7 @@ export class Functions extends Construct {
       entryPoint: "src/handler.ts",
       environmentVariables: {...lambdaDefaultEnvironmentVariables},
       layers: [getSecretsLambdaLayer],
-      additionalPolicies: [lambdaAccessSecretsPolicy],
+      additionalPolicies: [lambdaAccessSecretsPolicy, lambdaDecryptSecretsKMSPolicy],
       logRetentionInDays: props.logRetentionInDays,
       logLevel: props.logLevel,
       version: props.version,
@@ -68,7 +71,7 @@ export class Functions extends Construct {
       entryPoint: "src/handler.ts",
       environmentVariables: {...lambdaDefaultEnvironmentVariables},
       layers: [getSecretsLambdaLayer],
-      additionalPolicies: [lambdaAccessSecretsPolicy],
+      additionalPolicies: [lambdaAccessSecretsPolicy, lambdaDecryptSecretsKMSPolicy],
       logRetentionInDays: props.logRetentionInDays,
       logLevel: props.logLevel,
       version: props.version,
@@ -82,7 +85,7 @@ export class Functions extends Construct {
       entryPoint: "src/handler.ts",
       environmentVariables: {...lambdaDefaultEnvironmentVariables},
       layers: [getSecretsLambdaLayer],
-      additionalPolicies: [lambdaAccessSecretsPolicy],
+      additionalPolicies: [lambdaAccessSecretsPolicy, lambdaDecryptSecretsKMSPolicy],
       logRetentionInDays: props.logRetentionInDays,
       logLevel: props.logLevel,
       version: props.version,
