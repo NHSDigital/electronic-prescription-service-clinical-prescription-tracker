@@ -135,6 +135,7 @@ jobs:
         run: npm run delete-main-stacks --workspace packages/cdk
         shell: bash
         env:
+          AWS_ENVIRONMENT: "${{ inputs.AWS_ENVIRONMENT }}"
           APIGEE_ENVIRONMENT: "${{ inputs.APIGEE_ENVIRONMENT }}"
           APIM_STATUS_API_KEY: "${{ secrets.APIM_STATUS_API_KEY }}"
 
