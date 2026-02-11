@@ -3,7 +3,7 @@ vulnerabilities:
     statement: downstream dependency for fast-xml-parser - waiting for redocly update
     expired_at: 2026-03-01
   - id: CVE-2026-25547
-    statement:  isaacs/brace-expansion vulnerability accepted as risk - dependency of aws-sdk/client-dynamodb
+    statement: downstream dependency for @isaacs/brace-expansion - waiting for redocly update
     expired_at: 2026-03-01
   - id: CVE-2026-25639
     statement:  axios vulnerability accepted as risk - dependency of axios-retry

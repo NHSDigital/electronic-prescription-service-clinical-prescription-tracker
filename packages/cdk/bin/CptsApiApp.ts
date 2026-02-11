@@ -1,42 +1,43 @@
-import {App, Aspects, Tags} from "aws-cdk-lib"
-import {AwsSolutionsChecks} from "cdk-nag"
+import {
+  calculateVersionedStackName,
+  createApp,
+  getBooleanConfigFromEnvVar,
+  getConfigFromEnvVar,
+  getNumberConfigFromEnvVar,
+  getTrustStoreVersion
+} from "@nhsdigital/eps-cdk-constructs"
 import {CptsApiStack} from "../stacks/CptsApiStack"
 
-const app = new App()
+async function main() {
+  const {app, props} = createApp({
+    productName: "Prescription Tracker API",
+    appName: "CptsApiApp",
+    repoName: "electronic-prescription-service-clinical-prescription-tracker",
+    driftDetectionGroup: "cpt-api"
+  })
 
-/* Required Context:
-  - stackName
-  - version
-  - commit
-  - logRetentionInDays
-  - logLevel
-  - targetSpineServer
-  - enableMutalTls
-  - truststoreVersion
-*/
+  let mutualTlsConfig: {key: string, version: string} | undefined = undefined
+  if (!props.isPullRequest) {
+    const trustStoreFile = getConfigFromEnvVar("trustStoreFile")
+    mutualTlsConfig = {
+      key: trustStoreFile,
+      version: await getTrustStoreVersion(trustStoreFile)
+    }
+  }
 
-const accountId = app.node.tryGetContext("accountId")
-const stackName = app.node.tryGetContext("stackName")
-const version = app.node.tryGetContext("versionNumber")
-const commit = app.node.tryGetContext("commitId")
-const cfnDriftDetectionGroup = app.node.tryGetContext("cfnDriftDetectionGroup")
+  new CptsApiStack(app, "CptsApiStack", {
+    ...props,
+    stackName: calculateVersionedStackName(getConfigFromEnvVar("stackName"), props),
+    logRetentionInDays: getNumberConfigFromEnvVar("logRetentionInDays"),
+    logLevel: getConfigFromEnvVar("logLevel"),
+    targetSpineServer: getConfigFromEnvVar("targetSpineServer"),
+    mutualTlsConfig,
+    csocApiGatewayDestination: "arn:aws:logs:eu-west-2:693466633220:destination:api_gateway_log_destination", // CSOC API GW log destination - do not change
+    forwardCsocLogs: getBooleanConfigFromEnvVar("forwardCsocLogs")
+  })
+}
 
-Aspects.of(app).add(new AwsSolutionsChecks({verbose: true}))
-
-Tags.of(app).add("accountId", accountId)
-Tags.of(app).add("stackName", stackName)
-Tags.of(app).add("version", version)
-Tags.of(app).add("commit", commit)
-Tags.of(app).add("cdkApp", "CptsApiApp")
-Tags.of(app).add("repo", "electronic-prescription-service-clinical-prescription-tracker")
-Tags.of(app).add("cfnDriftDetectionGroup", cfnDriftDetectionGroup)
-
-new CptsApiStack(app, "CptsApiStack", {
-  env: {
-    region: "eu-west-2",
-    account: accountId
-  },
-  stackName: stackName,
-  version: version,
-  commitId: commit
+main().catch((error) => {
+  console.error(error)
+  process.exit(1)
 })

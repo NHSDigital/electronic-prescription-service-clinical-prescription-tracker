@@ -3,6 +3,9 @@ name: cdk release code
 on:
   workflow_call:
     inputs:
+      BRANCH_NAME:
+        required: true
+        type: string
       STACK_NAME:
         required: true
         type: string
@@ -26,9 +29,6 @@ on:
         type: string
       LOG_LEVEL:
         type: string
-      ENABLE_MUTUAL_TLS:
-        required: true
-        type: boolean
       TRUSTSTORE_FILE:
         required: true
         type: string
@@ -50,9 +50,6 @@ on:
       CREATE_INT_RC_RELEASE_NOTES:
         type: boolean
         default: false
-      MTLS_KEY:
-        type: string
-        required: true
       IS_PULL_REQUEST:
         type: boolean
         required: true
@@ -62,7 +59,7 @@ on:
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE:
         required: true
-      CDK_PULL_IMAGE_ROLE:
+      APIM_STATUS_API_KEY:
         required: true
       PROXYGEN_ROLE:
         required: false
@@ -80,19 +77,19 @@ on:
         required: false
 
 jobs:
-  release_code_and_api:
+  release_code:
     runs-on: ubuntu-22.04
     environment: ${{ inputs.AWS_ENVIRONMENT }}
     name: deploy cdk app ${{ inputs.CDK_APP_NAME }}
     permissions:
       id-token: write
-      contents: write
+      contents: read
 
     steps:
       - name: Checkout local github actions
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ env.BRANCH_NAME }}
+          ref: ${{ inputs.BRANCH_NAME }}
           fetch-depth: 0
           sparse-checkout: |
             .github
@@ -109,37 +106,19 @@ jobs:
           TARGET_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
           DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
 
-      - name: Configure AWS Credentials
-        id: connect-aws-pull-image
-        uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
-        with:
-          aws-region: eu-west-2
-          role-to-assume: ${{ secrets.CDK_PULL_IMAGE_ROLE }}
-          role-session-name: cpt-api-pull-image
-
       - name: build_artifact download
         uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
         with:
           name: build_artifact
 
       - name: extract build_artifact
-        run: |
-          mkdir -p .build
-          tar -xf artifact.tar -C .build
+        run: tar -xf artifact.tar
 
-      - name: Retrieve AWS Account ID
-        id: retrieve-account-id
-        run: echo "ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)" >> "$GITHUB_ENV"
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        run: |
-          aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin ${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com
-
-      - name: Pull cdk-utils-build from Amazon ECR
-        run: |
-          docker pull "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:latest"
-          docker tag "${{ env.ACCOUNT_ID }}.dkr.ecr.eu-west-2.amazonaws.com/cdk-utils-build-repo:latest" cdk-utils-build-repo:latest
+      - name: install dependencies
+        uses: ./.github/actions/install_dependencies
+        with:
+          npm-required: false
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure AWS Credentials
         id: connect-aws-deploy
@@ -148,90 +127,90 @@ jobs:
           aws-region: eu-west-2
           role-to-assume: ${{ secrets.CLOUD_FORMATION_DEPLOY_ROLE }}
           role-session-name: cpt-api-deployment
-          output-credentials: true
 
-      - name: fix cdk.json for deployment
-        run: |
-          ./.github/scripts/fix_cdk_json.sh
+      - name: delete old CDK stacks
+        if: ${{ inputs.IS_PULL_REQUEST != true }}
+        run: npm run delete-main-stacks --workspace packages/cdk
+        shell: bash
         env:
-          STACK_NAME: "${{ inputs.STACK_NAME }}"
-          VERSION_NUMBER: "${{ inputs.VERSION_NUMBER }}"
-          COMMIT_ID: "${{ inputs.COMMIT_ID }}"
-          LOG_RETENTION_IN_DAYS: "${{ inputs.LOG_RETENTION_IN_DAYS }}"
-          LOG_LEVEL: "${{ inputs.LOG_LEVEL }}"
-          TARGET_SPINE_SERVER: "${{ secrets.TARGET_SPINE_SERVER }}"
-          ENABLE_MUTUAL_TLS: "${{ inputs.ENABLE_MUTUAL_TLS }}"
-          TRUSTSTORE_FILE: ${{ inputs.TRUSTSTORE_FILE }}
-          FORWARD_CSOC_LOGS: "${{ inputs.FORWARD_CSOC_LOGS }}"
+          AWS_ENVIRONMENT: "${{ inputs.AWS_ENVIRONMENT }}"
+          APIGEE_ENVIRONMENT: "${{ inputs.APIGEE_ENVIRONMENT }}"
+          APIM_STATUS_API_KEY: "${{ secrets.APIM_STATUS_API_KEY }}"
 
-      - name: Show diff
-        run: |
-          docker run \
-          -v "$(pwd)/.build":/home/cdkuser/workspace/ \
-          -e AWS_ACCESS_KEY_ID=${{ steps.connect-aws-deploy.outputs.aws-access-key-id }} \
-          -e AWS_SECRET_ACCESS_KEY=${{ steps.connect-aws-deploy.outputs.aws-secret-access-key }} \
-          -e AWS_SESSION_TOKEN=${{ steps.connect-aws-deploy.outputs.aws-session-token }} \
-          -e AWS_REGION="eu-west-2" \
-          -e SHOW_DIFF="true" \
-          -e DEPLOY_CODE="false" \
-          -e CDK_APP_PATH="packages/cdk/bin/CptsApiApp.ts" \
-          cdk-utils-build-repo:latest
+      - name: Deploy AWS infrastructure and code
+        run: npm run cdk-deploy --workspace packages/cdk
         shell: bash
+        env:
+          CDK_APP_NAME: "${{ inputs.CDK_APP_NAME }}"
+          CDK_CONFIG_stackName: "${{ inputs.STACK_NAME }}"
+          CDK_CONFIG_versionNumber: "${{ inputs.VERSION_NUMBER }}"
+          CDK_CONFIG_commitId: "${{ inputs.COMMIT_ID }}"
+          CDK_CONFIG_isPullRequest: "${{ inputs.IS_PULL_REQUEST }}"
+          CDK_CONFIG_environment: "${{ inputs.AWS_ENVIRONMENT }}"
+          CDK_CONFIG_logRetentionInDays: "${{ inputs.LOG_RETENTION_IN_DAYS }}"
+          CDK_CONFIG_logLevel: "${{ inputs.LOG_LEVEL }}"
+          CDK_CONFIG_targetSpineServer: "${{ secrets.TARGET_SPINE_SERVER }}"
+          CDK_CONFIG_truststoreFile: "${{ inputs.TRUSTSTORE_FILE }}"
+          CDK_CONFIG_forwardCsocLogs: "${{ inputs.FORWARD_CSOC_LOGS }}"
+          REQUIRE_APPROVAL: "never"
 
-      - name: Deploy code
-        run: |
-          docker run \
-          -v "$(pwd)/.build":/home/cdkuser/workspace/ \
-          -e AWS_ACCESS_KEY_ID=${{ steps.connect-aws-deploy.outputs.aws-access-key-id }} \
-          -e AWS_SECRET_ACCESS_KEY=${{ steps.connect-aws-deploy.outputs.aws-secret-access-key }} \
-          -e AWS_SESSION_TOKEN=${{ steps.connect-aws-deploy.outputs.aws-session-token }} \
-          -e AWS_REGION="eu-west-2" \
-          -e SHOW_DIFF="false" \
-          -e DEPLOY_CODE="true" \
-          -e CDK_APP_PATH="packages/cdk/bin/CptsApiApp.ts" \
-          cdk-utils-build-repo:latest
-        shell: bash
+  release_api:
+    runs-on: ubuntu-22.04
+    environment: ${{ inputs.AWS_ENVIRONMENT }}
+    name: deploy proxgen api
+    needs: [release_code]
+    permissions:
+      id-token: write
+      contents: write
 
-      - name: get mtls secrets
-        shell: bash
-        run: |
-          mkdir -p ~/.proxygen/tmp
-          client_private_key_arn=$(aws cloudformation list-exports --query "Exports[?Name=='account-resources:ClinicalTrackerClientKeySecret'].Value" --output text)
-          client_cert_arn=$(aws cloudformation list-exports --query "Exports[?Name=='account-resources:ClinicalTrackerClientCertSecret'].Value" --output text)
-          aws secretsmanager get-secret-value --secret-id "${client_private_key_arn}" --query SecretString --output text > ~/.proxygen/tmp/client_private_key
-          aws secretsmanager get-secret-value --secret-id "${client_cert_arn}" --query SecretString --output text > ~/.proxygen/tmp/client_cert
+    steps:
+      - name: Checkout local github actions
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
+        with:
+          ref: ${{ inputs.BRANCH_NAME }}
+          fetch-depth: 0
+          sparse-checkout: |
+            .github
+
+      - name: build_artifact download
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+        with:
+          name: build_artifact
+
+      - name: extract build_artifact
+        run: tar -xf artifact.tar
+
+      - name: install dependencies
+        uses: ./.github/actions/install_dependencies
+        with:
+          npm-required: false
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure AWS Credentials for api release
         uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
         with:
           aws-region: eu-west-2
           role-to-assume: ${{ secrets.PROXYGEN_ROLE }}
-          role-session-name: cpt-api-proxygen
 
-      - name: Deploy CPT API
+      - name: Deploy Apigee API
         shell: bash
         if: ${{ inputs.DEPLOY_APIGEE == true && always() && !failure() && !cancelled() }}
+        working-directory: ./packages/specification
+        run: npm run deploy-api
         env:
-          API_TYPE: standard
           VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}
-          SPEC_PATH: ./.build/packages/specification/dist/eps-clinical-prescription-tracker-api.resolved.json
           STACK_NAME: ${{ inputs.STACK_NAME }}
           AWS_ENVIRONMENT: ${{ inputs.AWS_ENVIRONMENT }}
           APIGEE_ENVIRONMENT: ${{ inputs.APIGEE_ENVIRONMENT }}
-          PROXYGEN_PRIVATE_KEY_NAME: ClinicalTrackerProxygenPrivateKey
-          PROXYGEN_KID: eps-clinical-tracker
-          DRY_RUN: false
-          ENABLE_MUTUAL_TLS: ${{ inputs.ENABLE_MUTUAL_TLS }}
-          MTLS_KEY: ${{ inputs.MTLS_KEY }}
           IS_PULL_REQUEST: ${{ inputs.IS_PULL_REQUEST }}
-        run: ./.github/scripts/deploy_api.sh
 
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         name: Upload specs
+        if: ${{ inputs.DEPLOY_APIGEE == true && always() }}
         with:
           name: ${{ inputs.APIGEE_ENVIRONMENT }}-specs
           path: |
-            ./.build/packages/specification/dist/eps-clinical-prescription-tracker-api.resolved.json
+            ./packages/specification/dist/eps-clinical-prescription-tracker-api.resolved.json
 
       - name: create_int_release_notes
         uses: ./.github/actions/update_confluence_jira
@@ -287,8 +266,9 @@ jobs:
     name: Regression Tests
     uses: ./.github/workflows/run_regression_tests.yml
     if: ${{ always() && !failure() && !cancelled() && inputs.RUN_REGRESSION_TESTS == true }}
-    needs: [release_code_and_api]
+    needs: [release_code, release_api]
     with:
+      BRANCH_NAME: ${{ inputs.BRANCH_NAME }}
       ENVIRONMENT: ${{ inputs.APIGEE_ENVIRONMENT }}
       VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}
     secrets:

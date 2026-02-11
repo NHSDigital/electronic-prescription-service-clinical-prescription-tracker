@@ -30,6 +30,6 @@
       "path": "../clinicalView"
     }
   ],
-  "include": ["resources/**/*", "constructs/**/*", "policies/**/*", "stacks/**/*", "tests/**/*", "nagSuppressions.ts"],
+  "include": ["resources/**/*", "constructs/**/*", "policies/**/*", "stacks/**/*", "tests/**/*", "scripts/**/*", "nagSuppressions.ts"],
   "exclude": ["node_modules", "cdk.out"]
 }
