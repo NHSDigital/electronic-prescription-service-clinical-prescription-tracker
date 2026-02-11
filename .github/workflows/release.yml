@@ -80,7 +80,6 @@ jobs:
       FORWARD_CSOC_LOGS: false
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-      CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}
       PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
       TARGET_SPINE_SERVER: ${{ secrets.DEV_TARGET_SPINE_SERVER }}
       REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
@@ -106,7 +105,6 @@ jobs:
   #     TRUSTSTORE_FILE: clinical-tracker-sandbox-truststore.pem
   #   secrets:
   #     CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-  #     CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}
   #     PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
   #     TARGET_SPINE_SERVER: sandbox
   #     REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
@@ -131,7 +129,6 @@ jobs:
       FORWARD_CSOC_LOGS: false
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.REF_CLOUD_FORMATION_DEPLOY_ROLE }}
-      CDK_PULL_IMAGE_ROLE: ${{ secrets.REF_CDK_PULL_IMAGE_ROLE }}
       PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
       TARGET_SPINE_SERVER: ${{ secrets.REF_TARGET_SPINE_SERVER }}
       REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
@@ -156,7 +153,6 @@ jobs:
       FORWARD_CSOC_LOGS: false
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
-      CDK_PULL_IMAGE_ROLE: ${{ secrets.QA_CDK_PULL_IMAGE_ROLE }}
       PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
       TARGET_SPINE_SERVER: ${{ secrets.QA_TARGET_SPINE_SERVER }}
       REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
@@ -185,7 +181,6 @@ jobs:
       FORWARD_CSOC_LOGS: false
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
-      CDK_PULL_IMAGE_ROLE: ${{ secrets.INT_CDK_PULL_IMAGE_ROLE }}
       PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PROD_ROLE }}
       TARGET_SPINE_SERVER: ${{ secrets.INT_TARGET_SPINE_SERVER }}
       REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
@@ -211,7 +206,6 @@ jobs:
   #     TRUSTSTORE_FILE: clinical-tracker-sandbox-truststore.pem
   #   secrets:
   #     CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.INT_CLOUD_FORMATION_DEPLOY_ROLE }}
-  #     CDK_PULL_IMAGE_ROLE: ${{ secrets.INT_CDK_PULL_IMAGE_ROLE }}
   #     PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PROD_ROLE }}
   #     TARGET_SPINE_SERVER: sandbox
   #     REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
@@ -240,7 +234,6 @@ jobs:
       FORWARD_CSOC_LOGS: true
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_DEPLOY_ROLE }}
-      CDK_PULL_IMAGE_ROLE: ${{ secrets.PROD_CDK_PULL_IMAGE_ROLE }}
       PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PROD_ROLE }}
       TARGET_SPINE_SERVER: ${{ secrets.PROD_TARGET_SPINE_SERVER }}
       REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}

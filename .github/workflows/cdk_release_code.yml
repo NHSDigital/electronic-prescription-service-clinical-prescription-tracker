@@ -59,8 +59,6 @@ on:
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE:
         required: true
-      CDK_PULL_IMAGE_ROLE:
-        required: true
       APIM_STATUS_API_KEY:
         required: true
       PROXYGEN_ROLE:
