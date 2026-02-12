@@ -6,10 +6,6 @@
   "author": "NHS Digital",
   "license": "MIT",
   "type": "module",
-  "engines": {
-    "node": "20.10.x",
-    "npm": "10.2.x"
-  },
   "scripts": {
     "lint": "npm run extract-schemas && redocly lint --extends=recommended --config ./redocly.yaml",
     "resolve": "npm run extract-schemas && redocly bundle eps-clinical-prescription-tracker-api.yaml -d -o dist/eps-clinical-prescription-tracker-api.resolved.json",
@@ -26,6 +22,6 @@
     "tsx": "4.21.0"
   },
   "dependencies": {
-    "@nhsdigital/eps-deployment-utils": "^1.3.0"
+    "@nhsdigital/eps-deployment-utils": "^1.3.1"
   }
 }
