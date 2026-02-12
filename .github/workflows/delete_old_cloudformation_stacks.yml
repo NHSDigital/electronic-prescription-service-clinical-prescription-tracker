@@ -12,25 +12,27 @@ jobs:
   delete-old-cloudformation-stacks:
     # The type of runner that the job will run on
     runs-on: ubuntu-22.04
-    permissions:
+    permissions: &common_permissions
       id-token: write
       contents: read
-      packages: read
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Checkout local github scripts
+      - &checkout
+        name: Checkout local github scripts
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.event.ref.BRANCH_NAME }}
           fetch-depth: 0
 
-      - name: install dependencies
+      - &install_dependencies
+        name: install dependencies
         uses: ./.github/actions/install_dependencies
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Configure AWS Credentials
+      - &configure_aws_credentials
+        name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
         with:
           aws-region: eu-west-2
@@ -44,29 +46,12 @@ jobs:
 
   delete-old-proxygen-deployments:
     runs-on: ubuntu-22.04
-    permissions:
-      id-token: write
-      contents: read
-      packages: read
+    permissions: *common_permissions
 
     steps:
-      - name: Checkout local code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ github.event.ref.BRANCH_NAME }}
-          fetch-depth: 0
-
-      - name: install dependencies
-        uses: ./.github/actions/install_dependencies
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
-        with:
-          aws-region: eu-west-2
-          role-to-assume: ${{ secrets.PROXYGEN_PTL_ROLE }}
-
+      - *checkout
+      - *install_dependencies
+      - *configure_aws_credentials
       - name: delete proxygen deployments
         shell: bash
         run: npm run delete-old-pr-deployments --workspace packages/specification

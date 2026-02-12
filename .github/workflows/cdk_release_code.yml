@@ -86,7 +86,8 @@ jobs:
       contents: read
 
     steps:
-      - name: Checkout local github actions
+      - &checkout
+        name: Checkout local github actions
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ inputs.BRANCH_NAME }}
@@ -106,15 +107,18 @@ jobs:
           TARGET_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
           DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
 
-      - name: build_artifact download
+      - &download_artifact
+        name: build_artifact download
         uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
         with:
           name: build_artifact
 
-      - name: extract build_artifact
+      - &extract_artifact
+        name: extract build_artifact
         run: tar -xf artifact.tar
 
-      - name: install dependencies
+      - &install_dependencies
+        name: install dependencies
         uses: ./.github/actions/install_dependencies
         with:
           npm-required: false
@@ -164,27 +168,10 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout local github actions
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8
-        with:
-          ref: ${{ inputs.BRANCH_NAME }}
-          fetch-depth: 0
-          sparse-checkout: |
-            .github
-
-      - name: build_artifact download
-        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
-        with:
-          name: build_artifact
-
-      - name: extract build_artifact
-        run: tar -xf artifact.tar
-
-      - name: install dependencies
-        uses: ./.github/actions/install_dependencies
-        with:
-          npm-required: false
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - *checkout
+      - *download_artifact
+      - *extract_artifact
+      - *install_dependencies
 
       - name: Configure AWS Credentials for api release
         uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7

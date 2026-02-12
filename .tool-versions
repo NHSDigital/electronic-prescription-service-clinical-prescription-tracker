@@ -3,5 +3,5 @@ python 3.14.2
 poetry 2.2.1
 shellcheck 0.9.0
 direnv 2.32.2
-actionlint 1.6.26
+actionlint 1.7.10
 ruby 3.3.0
