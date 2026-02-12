@@ -137,6 +137,7 @@
 			"GrapeCity.gc-excelviewer",
 			"redhat.vscode-xml",
 			"streetsidesoftware.code-spell-checker",
+			"timonwong.shellcheck",
 			"mkhl.direnv",
 			"tamasfe.even-better-toml"
 		]

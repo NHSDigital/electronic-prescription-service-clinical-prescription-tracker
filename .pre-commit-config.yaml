@@ -102,6 +102,15 @@ repos:
         types_or: [yaml]
         pass_filenames: false
 
+      - id: lint-scripts
+        name: Lint scripts
+        entry: make
+        args: ["lint-scripts"]
+        language: system
+        files: ^scripts
+        types_or: [sh, shell]
+        pass_filenames: false
+
   - repo: local
     hooks:
       - id: git-secrets
