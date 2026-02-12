@@ -1,7 +1,7 @@
 import {deleteUnusedPrStacks} from "@nhsdigital/eps-cdk-constructs"
 
 deleteUnusedPrStacks(
-  "cpt",
+  "cpt-api",
   "electronic-prescription-service-clinical-prescription-tracker",
   "dev.eps.national.nhs.uk."
 ).catch((error) => {

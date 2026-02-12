@@ -2,7 +2,7 @@ import {deleteUnusedMainStacks, getActiveApiVersions, getConfigFromEnvVar} from 
 
 const awsEnvironment = getConfigFromEnvVar("AWS_ENVIRONMENT", "")
 deleteUnusedMainStacks(
-  "cpt",
+  "cpt-api",
   () => getActiveApiVersions("clinical-prescription-tracker"),
   `${awsEnvironment}.eps.national.nhs.uk.`
 ).catch((error) => {

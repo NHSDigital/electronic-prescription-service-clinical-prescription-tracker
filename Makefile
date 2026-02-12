@@ -132,7 +132,7 @@ cdk-deploy:
 	npm run cdk-deploy --workspace packages/cdk
 
 cdk-synth: download-get-secrets-layer
-	CDK_CONFIG_stackName=cpt \
+	CDK_CONFIG_stackName=cpt-api \
 	npm run cdk-synth --workspace packages/cdk
 
 cdk-diff:

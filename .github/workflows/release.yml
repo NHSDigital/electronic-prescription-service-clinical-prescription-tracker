@@ -62,7 +62,7 @@ jobs:
     uses: ./.github/workflows/cdk_release_code.yml
     with:
       BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
-      STACK_NAME: cpt
+      STACK_NAME: cpt-api
       AWS_ENVIRONMENT: dev
       APIGEE_ENVIRONMENT: internal-dev
       VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
@@ -94,7 +94,7 @@ jobs:
   #   uses: ./.github/workflows/cdk_release_code.yml
   #   with:
   #     BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
-  #     STACK_NAME: cpt-sandbox
+  #     STACK_NAME: cpt-api-sandbox
   #     AWS_ENVIRONMENT: dev
   #     APIGEE_ENVIRONMENT: internal-dev-sandbox
   #     VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
@@ -115,7 +115,7 @@ jobs:
     uses: ./.github/workflows/cdk_release_code.yml
     with:
       BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
-      STACK_NAME: cpt
+      STACK_NAME: cpt-api
       AWS_ENVIRONMENT: ref
       APIGEE_ENVIRONMENT: ref
       VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
@@ -139,7 +139,7 @@ jobs:
     uses: ./.github/workflows/cdk_release_code.yml
     with:
       BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
-      STACK_NAME: cpt
+      STACK_NAME: cpt-api
       AWS_ENVIRONMENT: qa
       APIGEE_ENVIRONMENT: internal-qa
       VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
@@ -163,7 +163,7 @@ jobs:
     uses: ./.github/workflows/cdk_release_code.yml
     with:
       BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
-      STACK_NAME: cpt
+      STACK_NAME: cpt-api
       AWS_ENVIRONMENT: int
       APIGEE_ENVIRONMENT: int
       VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
@@ -195,7 +195,7 @@ jobs:
   #   uses: ./.github/workflows/cdk_release_code.yml
   #   with:
   #     BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
-  #     STACK_NAME: cpt-sandbox
+  #     STACK_NAME: cpt-api-sandbox
   #     AWS_ENVIRONMENT: int
   #     APIGEE_ENVIRONMENT: sandbox
   #     VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
@@ -216,7 +216,7 @@ jobs:
     uses: ./.github/workflows/cdk_release_code.yml
     with:
       BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
-      STACK_NAME: cpt
+      STACK_NAME: cpt-api
       AWS_ENVIRONMENT: prod
       APIGEE_ENVIRONMENT: prod
       VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
