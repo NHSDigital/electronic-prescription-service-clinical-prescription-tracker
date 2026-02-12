@@ -54,7 +54,7 @@ sbom:
 	docker build -t eps-sbom -f ~/git_actions/eps-actions-sbom/Dockerfile ~/git_actions/eps-actions-sbom/
 	docker run -it --rm -v $${LOCAL_WORKSPACE_FOLDER:-.}:/github/workspace eps-sbom
 
-lint: lint-node lint-python lint-githubactions lint-scripts lint-specification
+lint: lint-node lint-githubactions lint-specification
 
 lint-node: compile
 	npm run lint --workspace packages/cdk
@@ -66,14 +66,8 @@ lint-node: compile
 	npm run lint --workspace packages/sandbox
 	npm run lint --workspace packages/status
 
-lint-python:
-#	poetry run flake8 scripts/*.py --config .flake8
-
 lint-githubactions:
 	actionlint
-
-lint-scripts:
-	shellcheck scripts/*.sh
 
 lint-specification: compile-specification
 	npm run lint --workspace packages/specification
@@ -109,23 +103,11 @@ deep-clean: clean
 	rm -rf .venv
 	find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +
 
-check-licenses: check-licenses-node check-licenses-python
-
-check-licenses-node:
-	echo "not implemented in console"
-	exit 1
-
-check-licenses-python:
-	scripts/check_python_licenses.sh
-
 aws-configure:
 	aws configure sso --region eu-west-2
 
 aws-login:
 	aws sso login --sso-session sso-session
-
-cfn-guard:
-	./scripts/run_cfn_guard.sh
 
 cdk-deploy:
 	REQUIRE_APPROVAL="$${REQUIRE_APPROVAL:-any-change}" && \
