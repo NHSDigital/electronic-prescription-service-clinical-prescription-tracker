@@ -102,15 +102,6 @@ repos:
         types_or: [yaml]
         pass_filenames: false
 
-      - id: lint-githubaction-scripts
-        name: Lint github action scripts
-        entry: make
-        args: ["lint-githubaction-scripts"]
-        language: system
-        files: ^.github/scripts
-        types_or: [sh, shell]
-        pass_filenames: false
-
   - repo: local
     hooks:
       - id: git-secrets

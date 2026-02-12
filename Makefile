@@ -54,7 +54,7 @@ sbom:
 	docker build -t eps-sbom -f ~/git_actions/eps-actions-sbom/Dockerfile ~/git_actions/eps-actions-sbom/
 	docker run -it --rm -v $${LOCAL_WORKSPACE_FOLDER:-.}:/github/workspace eps-sbom
 
-lint: lint-node lint-python lint-githubactions lint-githubaction-scripts lint-specification
+lint: lint-node lint-python lint-githubactions lint-specification
 
 lint-node: compile
 	npm run lint --workspace packages/cdk
@@ -71,9 +71,6 @@ lint-python:
 
 lint-githubactions:
 	actionlint
-
-lint-githubaction-scripts:
-	shellcheck .github/scripts/*.sh
 
 lint-specification: compile-specification
 	npm run lint --workspace packages/specification
