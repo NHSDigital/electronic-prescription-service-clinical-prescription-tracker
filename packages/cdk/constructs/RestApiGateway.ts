@@ -8,7 +8,12 @@ import {
   RestApi,
   SecurityPolicy
 } from "aws-cdk-lib/aws-apigateway"
-import {IRole, Role, ServicePrincipal} from "aws-cdk-lib/aws-iam"
+import {
+  IManagedPolicy,
+  IRole,
+  Role,
+  ServicePrincipal
+} from "aws-cdk-lib/aws-iam"
 import {Stream} from "aws-cdk-lib/aws-kinesis"
 import {Key} from "aws-cdk-lib/aws-kms"
 import {CfnSubscriptionFilter, LogGroup} from "aws-cdk-lib/aws-logs"
@@ -22,11 +27,13 @@ import {ApiGateway as ApiGatewayTarget} from "aws-cdk-lib/aws-route53-targets"
 export interface RestApiGatewayProps {
   readonly stackName: string
   readonly logRetentionInDays: number
-  readonly enableMutualTls: boolean
-  readonly trustStoreKey: string
-  readonly truststoreVersion: string
+  readonly mutualTlsConfig: {
+    key: string
+    version: string
+  } | undefined
   readonly forwardCsocLogs: boolean
   readonly csocApiGatewayDestination: string
+  readonly executionPolicies: Array<IManagedPolicy>
 }
 
 export class RestApiGateway extends Construct {
@@ -85,10 +92,10 @@ export class RestApiGateway extends Construct {
       validation: CertificateValidation.fromDns(hostedZone)
     })
 
-    const mtlsConfig: MTLSConfig | undefined = props.enableMutualTls ? {
+    const mtlsConfig: MTLSConfig | undefined = props.mutualTlsConfig ? {
       bucket: truststoreBucket,
-      key: props.trustStoreKey,
-      version: props.truststoreVersion
+      key: props.mutualTlsConfig.key,
+      version: props.mutualTlsConfig.version
     } : undefined
 
     const apiGateway = new RestApi(this, "ApiGateway", {
@@ -100,7 +107,7 @@ export class RestApiGateway extends Construct {
         endpointType: EndpointType.REGIONAL,
         mtls: mtlsConfig
       },
-      disableExecuteApiEndpoint: props.enableMutualTls,
+      disableExecuteApiEndpoint: props.mutualTlsConfig ? true : false,
       endpointConfiguration: {
         types: [EndpointType.REGIONAL]
       },
@@ -115,8 +122,8 @@ export class RestApiGateway extends Construct {
 
     const role = new Role(this, "ApiGatewayRole", {
       assumedBy: new ServicePrincipal("apigateway.amazonaws.com"),
-      managedPolicies: []
-    })
+      managedPolicies: props.executionPolicies
+    }).withoutPolicyUpdates()
 
     new ARecord(this, "ARecord", {
       recordName: props.stackName,

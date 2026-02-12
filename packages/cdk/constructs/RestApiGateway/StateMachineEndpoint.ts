@@ -57,8 +57,6 @@ export class StateMachineEndpoint extends Construct{
       methodResponses: []
     })
 
-    props.restApiGatewayRole.addManagedPolicy(props.stateMachine.executionPolicy)
-
     this.resource = resource
   }
 }

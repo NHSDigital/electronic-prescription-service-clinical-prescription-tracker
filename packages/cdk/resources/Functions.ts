@@ -1,7 +1,9 @@
-import {Fn} from "aws-cdk-lib"
-import {IManagedPolicy, ManagedPolicy} from "aws-cdk-lib/aws-iam"
+import {Fn, RemovalPolicy} from "aws-cdk-lib"
+import {ManagedPolicy} from "aws-cdk-lib/aws-iam"
 import {Construct} from "constructs"
-import {LambdaFunction} from "../constructs/LambdaFunction"
+import {TypescriptLambdaFunction} from "@nhsdigital/eps-cdk-constructs"
+import {Code, LayerVersion} from "aws-cdk-lib/aws-lambda"
+import {join, resolve} from "path"
 
 export interface FunctionsProps {
   readonly stackName: string
@@ -12,15 +14,20 @@ export interface FunctionsProps {
   readonly logLevel: string
 }
 
+const baseDir = resolve(__dirname, "../../..")
+
 export class Functions extends Construct {
-  functions: {[key: string]: LambdaFunction}
+  functions: {[key: string]: TypescriptLambdaFunction}
 
   public constructor(scope: Construct, id: string, props: FunctionsProps){
     super(scope, id)
 
     // Imports
-    const lambdaAccessSecretsPolicy: IManagedPolicy = ManagedPolicy.fromManagedPolicyArn(
+    const lambdaAccessSecretsPolicy = ManagedPolicy.fromManagedPolicyArn(
       this, "lambdaAccessSecretsPolicy", Fn.importValue("account-resources:LambdaAccessSecretsPolicy"))
+
+    const lambdaDecryptSecretsKMSPolicy = ManagedPolicy.fromManagedPolicyArn(
+      this, "lambdaDecryptSecretsKMSPolicy", Fn.importValue("account-resources:LambdaDecryptSecretsKMSPolicy"))
 
     const lambdaDefaultEnvironmentVariables: {[key: string]: string} = {
       NODE_OPTIONS: "--enable-source-maps",
@@ -36,38 +43,53 @@ export class Functions extends Construct {
       AWS_LAMBDA_EXEC_WRAPPER: "/opt/get-secrets-layer"
     }
 
+    const getSecretsLambdaLayer = new LayerVersion(this, "GetSecretsLambdaLayer", {
+      description: "get secrets layer",
+      code: Code.fromAsset(join(baseDir, "packages/getSecretLayer/lib/get-secrets-layer.zip")),
+      removalPolicy: RemovalPolicy.RETAIN
+    })
+
     // Resources
-    const prescriptionSearchLambda = new LambdaFunction(this, "PrescriptionSearchLambda", {
-      stackName: props.stackName,
+    const prescriptionSearchLambda = new TypescriptLambdaFunction(this, "PrescriptionSearchLambda", {
       functionName: `${props.stackName}-PrescriptionSearch`,
+      projectBaseDir: baseDir,
       packageBasePath: "packages/prescriptionSearch",
       entryPoint: "src/handler.ts",
       environmentVariables: {...lambdaDefaultEnvironmentVariables},
-      additionalPolicies: [lambdaAccessSecretsPolicy],
+      layers: [getSecretsLambdaLayer],
+      additionalPolicies: [lambdaAccessSecretsPolicy, lambdaDecryptSecretsKMSPolicy],
       logRetentionInDays: props.logRetentionInDays,
-      logLevel: props.logLevel
+      logLevel: props.logLevel,
+      version: props.version,
+      commitId: props.commitId
     })
 
-    const clinicalViewLambda = new LambdaFunction(this, "ClinicalViewLambda", {
-      stackName: props.stackName,
+    const clinicalViewLambda = new TypescriptLambdaFunction(this, "ClinicalViewLambda", {
       functionName: `${props.stackName}-ClinicalView`,
+      projectBaseDir: baseDir,
       packageBasePath: "packages/clinicalView",
       entryPoint: "src/handler.ts",
       environmentVariables: {...lambdaDefaultEnvironmentVariables},
-      additionalPolicies: [lambdaAccessSecretsPolicy],
+      layers: [getSecretsLambdaLayer],
+      additionalPolicies: [lambdaAccessSecretsPolicy, lambdaDecryptSecretsKMSPolicy],
       logRetentionInDays: props.logRetentionInDays,
-      logLevel: props.logLevel
+      logLevel: props.logLevel,
+      version: props.version,
+      commitId: props.commitId
     })
 
-    const statusLambda = new LambdaFunction(this, "StatusLambda", {
-      stackName: props.stackName,
+    const statusLambda = new TypescriptLambdaFunction(this, "StatusLambda", {
       functionName: `${props.stackName}-Status`,
+      projectBaseDir: baseDir,
       packageBasePath: "packages/status",
       entryPoint: "src/handler.ts",
       environmentVariables: {...lambdaDefaultEnvironmentVariables},
-      additionalPolicies: [lambdaAccessSecretsPolicy],
+      layers: [getSecretsLambdaLayer],
+      additionalPolicies: [lambdaAccessSecretsPolicy, lambdaDecryptSecretsKMSPolicy],
       logRetentionInDays: props.logRetentionInDays,
-      logLevel: props.logLevel
+      logLevel: props.logLevel,
+      version: props.version,
+      commitId: props.commitId
     })
 
     this.functions = {

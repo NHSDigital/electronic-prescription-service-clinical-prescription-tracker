@@ -11,18 +11,17 @@
         "unit": "POWERTOOLS_DEV=true NODE_OPTIONS=--experimental-vm-modules jest --no-cache --coverage",
         "lint": "eslint  --max-warnings 0 --fix --config ../../eslint.config.mjs .",
         "compile": "tsc --build",
-        "test": "npm run compile && npm run unit",
-        "check-licenses": "license-checker --failOn GPL --failOn LGPL --start ../.."
+        "test": "npm run compile && npm run unit"
     },
     "dependencies": {
-        "@aws-lambda-powertools/logger": "^2.27.0",
+        "@aws-lambda-powertools/logger": "^2.30.2",
         "@cpt-common/common-types": "^1.0.0",
         "@cpt-common/common-utils": "^1.0.0",
-        "@middy/http-header-normalizer": "^6.4.5",
-        "@NHSDigital/eps-spine-client": "^2.1.66",
-        "@nhs/fhir-middy-error-handler": "^2.1.58",
+        "@middy/http-header-normalizer": "^7.0.2",
+        "@nhsdigital/eps-spine-client": "^2.1.78",
+        "@nhs/fhir-middy-error-handler": "^2.1.72",
         "date-fns": "^4.1.0",
-        "fast-xml-parser": "^5.3.1",
+        "fast-xml-parser": "^5.3.4",
         "json-schema-to-ts": "^3.1.0"
     },
     "devDependencies": {

@@ -1,5 +1,15 @@
 SHELL = /bin/bash
 .SHELLFLAGS = -o pipefail -c
+export CDK_APP_NAME=CptsApiApp
+export CDK_CONFIG_stackName=${stack_name}
+export CDK_CONFIG_versionNumber=undefined
+export CDK_CONFIG_commitId=undefined
+export CDK_CONFIG_isPullRequest=true # Turns off mTLS and drift detection when true
+export CDK_CONFIG_environment=dev
+export CDK_CONFIG_logRetentionInDays=30
+export CDK_CONFIG_logLevel=DEBUG
+export CDK_CONFIG_targetSpineServer=https://example.org
+export CDK_CONFIG_forwardCsocLogs=false
 
 guard-%:
 	@ if [ "${${*}}" = "" ]; then \
@@ -69,7 +79,6 @@ lint-specification: compile-specification
 	npm run lint --workspace packages/specification
 
 test: compile
-	npm run test --workspace packages/cdk
 	npm run test --workspace packages/clinicalView
 	npm run test --workspace packages/common/commonUtils
 	npm run test --workspace packages/prescriptionSearch
@@ -77,7 +86,6 @@ test: compile
 	npm run test --workspace packages/status
 
 clean:
-	rm -rf packages/cdk/coverage
 	rm -rf packages/cdk/lib
 	rm -rf packages/clinicalView/coverage
 	rm -rf packages/clinicalView/lib
@@ -104,15 +112,8 @@ deep-clean: clean
 check-licenses: check-licenses-node check-licenses-python
 
 check-licenses-node:
-	npm run check-licenses
-	npm run check-licenses --workspace packages/cdk
-	npm run check-licenses --workspace packages/clinicalView
-	npm run check-licenses --workspace packages/common/commonTypes
-	npm run check-licenses --workspace packages/common/commonUtils
-	npm run check-licenses --workspace packages/prescriptionSearch
-	npm run check-licenses --workspace packages/sandbox
-	npm run check-licenses --workspace packages/status
-
+	echo "not implemented in console"
+	exit 1
 
 check-licenses-python:
 	scripts/check_python_licenses.sh
@@ -128,51 +129,20 @@ cfn-guard:
 
 cdk-deploy:
 	REQUIRE_APPROVAL="$${REQUIRE_APPROVAL:-any-change}" && \
-	VERSION_NUMBER="$${VERSION_NUMBER:-undefined}" && \
-	COMMIT_ID="$${COMMIT_ID:-undefined}" && \
-		npx cdk deploy \
-		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/CptsApiApp.ts" \
-		--all \
-		--ci true \
-		--require-approval $${REQUIRE_APPROVAL} \
-		--context accountId=$$ACCOUNT_ID \
-		--context stackName=$$stack_name \
-		--context versionNumber==$$VERSION_NUMBER \
-		--context commitId=$$COMMIT_ID \
-		--context logRetentionInDays=$$LOG_RETENTION_IN_DAYS
-
+	npm run cdk-deploy --workspace packages/cdk
 
 cdk-synth: download-get-secrets-layer
-	npx cdk synth \
-		--quiet \
-		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/CptsApiApp.ts" \
-		--context accountId=undefined \
-		--context stackName=cpt \
-		--context versionNumber=undefined \
-		--context commitId=undefined \
-		--context logRetentionInDays=30
+	CDK_CONFIG_stackName=cpt \
+	npm run cdk-synth --workspace packages/cdk
 
 cdk-diff:
-	npx cdk diff \
-		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/CptsApiApp.ts" \
-		--context accountId=$$ACCOUNT_ID \
-		--context stackName=$$stack_name \
-		--context versionNumber==$$VERSION_NUMBER \
-		--context commitId=$$COMMIT_ID \
-		--context logRetentionInDays=$$LOG_RETENTION_IN_DAYS
+	npm run cdk-diff --workspace packages/cdk
 
 cdk-watch:
 	REQUIRE_APPROVAL="$${REQUIRE_APPROVAL:-any-change}" && \
-	VERSION_NUMBER="$${VERSION_NUMBER:-undefined}" && \
-	COMMIT_ID="$${COMMIT_ID:-undefined}" && \
-		npx cdk deploy \
-		--app "npx ts-node --prefer-ts-exts packages/cdk/bin/CptsApiApp.ts" \
-		--watch \
-		--all \
-		--ci true \
-		--require-approval $${REQUIRE_APPROVAL} \
-		--context accountId=$$ACCOUNT_ID \
-		--context stackName=$$stack_name \
-		--context versionNumber==$$VERSION_NUMBER \
-		--context commitId=$$COMMIT_ID \
-		--context logRetentionInDays=$$LOG_RETENTION_IN_DAYS
+	npm run cdk-watch --workspace packages/cdk
+
+create-npmrc:
+	gh auth login --scopes "read:packages"; \
+	echo "//npm.pkg.github.com/:_authToken=$$(gh auth token)" > .npmrc
+	echo "@nhsdigital:registry=https://npm.pkg.github.com" >> .npmrc

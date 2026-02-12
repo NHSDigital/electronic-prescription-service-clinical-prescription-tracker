@@ -2,17 +2,18 @@ import {HttpMethod} from "aws-cdk-lib/aws-lambda"
 import {Construct} from "constructs"
 import {RestApiGateway} from "../constructs/RestApiGateway"
 import {LambdaEndpoint} from "../constructs/RestApiGateway/LambdaEndpoint"
-import {LambdaFunction} from "../constructs/LambdaFunction"
+import {TypescriptLambdaFunction} from "@nhsdigital/eps-cdk-constructs"
 import {ExpressStateMachine} from "../constructs/StateMachine"
 import {StateMachineEndpoint} from "../constructs/RestApiGateway/StateMachineEndpoint"
 
 export interface ApisProps {
   readonly stackName: string
   readonly logRetentionInDays: number
-  readonly enableMutalTls: boolean
-  readonly trustStoreFile: string
-  readonly truststoreVersion: string
-  functions: {[key: string]: LambdaFunction}
+  readonly mutualTlsConfig: {
+    key: string
+    version: string
+  } | undefined
+  functions: {[key: string]: TypescriptLambdaFunction}
   stateMachines: {[key: string]: ExpressStateMachine}
   readonly forwardCsocLogs: boolean
   readonly csocApiGatewayDestination: string
@@ -27,11 +28,14 @@ export class Apis extends Construct {
     const apiGateway = new RestApiGateway(this, "ApiGateway", {
       stackName: props.stackName,
       logRetentionInDays: props.logRetentionInDays,
-      enableMutualTls: props.enableMutalTls,
-      trustStoreKey: props.trustStoreFile,
-      truststoreVersion: props.truststoreVersion,
+      mutualTlsConfig: props.mutualTlsConfig,
       forwardCsocLogs: props.forwardCsocLogs,
-      csocApiGatewayDestination: props.csocApiGatewayDestination
+      csocApiGatewayDestination: props.csocApiGatewayDestination,
+      executionPolicies: [
+        props.functions.prescriptionSearch.executionPolicy,
+        props.stateMachines.clinicalView.executionPolicy,
+        props.functions.status.executionPolicy
+      ]
     })
     const rootResource = apiGateway.api.root
 

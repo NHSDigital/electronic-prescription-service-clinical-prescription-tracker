@@ -4,9 +4,6 @@ on:
   push:
     branches: [main]
 
-env:
-  BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
-
 jobs:
   get_asdf_version:
     runs-on: ubuntu-22.04
@@ -15,7 +12,7 @@ jobs:
       tag_format: ${{ steps.load-config.outputs.TAG_FORMAT }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
       - name: Get asdf version
         id: asdf-version
@@ -26,7 +23,7 @@ jobs:
           TAG_FORMAT=$(yq '.TAG_FORMAT' .github/config/settings.yml)
           echo "TAG_FORMAT=$TAG_FORMAT" >> "$GITHUB_OUTPUT"
   quality_checks:
-    uses: NHSDigital/eps-common-workflows/.github/workflows/quality-checks.yml@a7daff06de7b695f601d9b1723ca184daca7d898
+    uses: NHSDigital/eps-common-workflows/.github/workflows/quality-checks.yml@5ccebbf821beef2de6abdce9e392b3cbeb4999e3
     needs: [get_asdf_version]
     with:
       asdfVersion: ${{ needs.get_asdf_version.outputs.asdf_version }}
@@ -45,12 +42,11 @@ jobs:
 
   tag_release:
     needs: [quality_checks, get_commit_id, get_asdf_version]
-    uses: NHSDigital/eps-common-workflows/.github/workflows/tag-release.yml@a7daff06de7b695f601d9b1723ca184daca7d898
+    uses: NHSDigital/eps-common-workflows/.github/workflows/tag-release.yml@5ccebbf821beef2de6abdce9e392b3cbeb4999e3
     with:
       dry_run: true
       asdfVersion: ${{ needs.get_asdf_version.outputs.asdf_version }}
       branch_name: main
-      publish_package: false
       tag_format: ${{ needs.get_asdf_version.outputs.tag_format }}
     secrets: inherit
 
@@ -58,6 +54,7 @@ jobs:
     needs: [get_commit_id, tag_release]
     uses: ./.github/workflows/cdk_package_code.yml
     with:
+      BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
       VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
       COMMIT_ID: ${{ needs.get_commit_id.outputs.commit_id }}
 
@@ -65,27 +62,25 @@ jobs:
     needs: [get_commit_id, tag_release, package_code]
     uses: ./.github/workflows/cdk_release_code.yml
     with:
+      BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
       STACK_NAME: cpt
       AWS_ENVIRONMENT: dev
       APIGEE_ENVIRONMENT: internal-dev
       VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
       COMMIT_ID: ${{ needs.get_commit_id.outputs.commit_id }}
-      CDK_APP_Name: CptsApiApp
+      CDK_APP_NAME: CptsApiApp
       LOG_RETENTION_IN_DAYS: 30
       LOG_LEVEL: DEBUG
-      ENABLE_MUTUAL_TLS: false
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       RUN_REGRESSION_TESTS: true
       CREATE_INT_RELEASE_NOTES: true
       CREATE_PROD_RELEASE_NOTES: true
       MARK_JIRA_RELEASED: false
       CREATE_INT_RC_RELEASE_NOTES: false
-      MTLS_KEY: clinical-tracker-mtls-1
       IS_PULL_REQUEST: false
       FORWARD_CSOC_LOGS: false
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-      CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}
       PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
       TARGET_SPINE_SERVER: ${{ secrets.DEV_TARGET_SPINE_SERVER }}
       REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
@@ -93,49 +88,49 @@ jobs:
       INT_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
       PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
       DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
+      APIM_STATUS_API_KEY: ${{ secrets.APIM_STATUS_API_KEY }}
 
   # release_dev_sandbox:
   #   needs: [get_commit_id, tag_release, package_code, release_dev]
   #   uses: ./.github/workflows/cdk_release_code.yml
   #   with:
+  #     BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
   #     STACK_NAME: cpt-sandbox
   #     AWS_ENVIRONMENT: dev
   #     APIGEE_ENVIRONMENT: internal-dev-sandbox
   #     VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
   #     COMMIT_ID: ${{ needs.get_commit_id.outputs.commit_id }}
-  #     CDK_APP_Name: CptsApiSandboxApp
+  #     CDK_APP_NAME: CptsApiSandboxApp
   #     LOG_RETENTION_IN_DAYS: 30
   #     LOG_LEVEL: DEBUG
-  #     ENABLE_MUTUAL_TLS: false
   #     TRUSTSTORE_FILE: clinical-tracker-sandbox-truststore.pem
   #   secrets:
   #     CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_DEPLOY_ROLE }}
-  #     CDK_PULL_IMAGE_ROLE: ${{ secrets.DEV_CDK_PULL_IMAGE_ROLE }}
   #     PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
   #     TARGET_SPINE_SERVER: sandbox
   #     REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
+  #     APIM_STATUS_API_KEY: ${{ secrets.APIM_STATUS_API_KEY }}
 
   release_qa:
     needs: [get_commit_id, tag_release, package_code, release_dev] # TODO: add sandbox back once implemented
     uses: ./.github/workflows/cdk_release_code.yml
     with:
+      BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
       STACK_NAME: cpt
       AWS_ENVIRONMENT: qa
       APIGEE_ENVIRONMENT: internal-qa
       VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
       COMMIT_ID: ${{ needs.get_commit_id.outputs.commit_id }}
-      CDK_APP_Name: CptsApiApp
+      CDK_APP_NAME: CptsApiApp
       LOG_RETENTION_IN_DAYS: 30
       LOG_LEVEL: DEBUG
-      ENABLE_MUTUAL_TLS: false
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       RUN_REGRESSION_TESTS: true
-      MTLS_KEY: clinical-tracker-mtls-1
       IS_PULL_REQUEST: false
       FORWARD_CSOC_LOGS: false
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
-      CDK_PULL_IMAGE_ROLE: ${{ secrets.QA_CDK_PULL_IMAGE_ROLE }}
       PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
       TARGET_SPINE_SERVER: ${{ secrets.QA_TARGET_SPINE_SERVER }}
       REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
+      APIM_STATUS_API_KEY: ${{ secrets.APIM_STATUS_API_KEY }}
