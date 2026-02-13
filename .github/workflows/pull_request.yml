@@ -99,7 +99,7 @@ jobs:
     uses: ./.github/workflows/cdk_release_code.yml
     with:
       BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
-      STACK_NAME: cpt-pr-${{needs.get_issue_number.outputs.issue_number}}
+      STACK_NAME: cpt-api-pr-${{needs.get_issue_number.outputs.issue_number}}
       AWS_ENVIRONMENT: dev
       APIGEE_ENVIRONMENT: internal-dev
       VERSION_NUMBER: PR-${{ needs.get_issue_number.outputs.issue_number }}
@@ -123,7 +123,7 @@ jobs:
   #   uses: ./.github/workflows/cdk_release_code.yml
   #   with:
   #     BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
-  #     STACK_NAME: cpt-pr-${{needs.get_issue_number.outputs.issue_number}}-sandbox
+  #     STACK_NAME: cpt-api-pr-${{needs.get_issue_number.outputs.issue_number}}-sandbox
   #     AWS_ENVIRONMENT: dev
   #     APIGEE_ENVIRONMENT: internal-dev-sandbox
   #     VERSION_NUMBER: PR-${{ needs.get_issue_number.outputs.issue_number }}
@@ -145,7 +145,7 @@ jobs:
   #   uses: ./.github/workflows/cdk_release_code.yml
   #   with:
   #     BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
-  #     STACK_NAME: cpt
+  #     STACK_NAME: cpt-api
   #     AWS_ENVIRONMENT: ref
   #     APIGEE_ENVIRONMENT: ref
   #     VERSION_NUMBER: PR-${{ needs.get_issue_number.outputs.issue_number }}

@@ -147,11 +147,9 @@ These are used to do common commands related to cdk
 
 - `lint` Runs lint for all code.
 - `lint-node` Runs lint for node code including cdk.
-- `lint-python` Runs lint for python code
 - `lint-githubactions` lints the repos github actions
 - `lint-specification` lints the API specification
 - `test` Runs unit tests for all code.
-- `cfn-guard` runs cfn-guard for cdk resources.
 
 #### Compiling
 
@@ -159,12 +157,6 @@ These are used to do common commands related to cdk
 - `compile-node` Runs TypeScript compiler (tsc) for the project.
 - `compile-packages` Compiles specific packages.
 - `compile-specification` Compiles the OpenAPI specification files.
-
-#### Check licenses
-
-- `check-licenses` Checks licenses for all packages used - calls check-licenses-node, check-licenses-python.
-- `check-licenses-node` Checks licenses for all node code.
-- `check-licenses-python` Checks licenses for all python code.
 
 #### CLI Login to AWS
 

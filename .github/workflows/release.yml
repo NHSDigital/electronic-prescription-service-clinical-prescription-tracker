@@ -62,7 +62,7 @@ jobs:
     uses: ./.github/workflows/cdk_release_code.yml
     with:
       BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
-      STACK_NAME: cpt
+      STACK_NAME: cpt-api
       AWS_ENVIRONMENT: dev
       APIGEE_ENVIRONMENT: internal-dev
       VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
@@ -72,10 +72,6 @@ jobs:
       LOG_LEVEL: DEBUG
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       RUN_REGRESSION_TESTS: true
-      CREATE_INT_RELEASE_NOTES: true
-      CREATE_PROD_RELEASE_NOTES: true
-      MARK_JIRA_RELEASED: false
-      CREATE_INT_RC_RELEASE_NOTES: false
       IS_PULL_REQUEST: false
       FORWARD_CSOC_LOGS: false
     secrets:
@@ -83,10 +79,6 @@ jobs:
       PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
       TARGET_SPINE_SERVER: ${{ secrets.DEV_TARGET_SPINE_SERVER }}
       REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
-      DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-      INT_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-      PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-      DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
       APIM_STATUS_API_KEY: ${{ secrets.APIM_STATUS_API_KEY }}
 
   # release_dev_sandbox:
@@ -94,7 +86,7 @@ jobs:
   #   uses: ./.github/workflows/cdk_release_code.yml
   #   with:
   #     BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
-  #     STACK_NAME: cpt-sandbox
+  #     STACK_NAME: cpt-api-sandbox
   #     AWS_ENVIRONMENT: dev
   #     APIGEE_ENVIRONMENT: internal-dev-sandbox
   #     VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
@@ -115,7 +107,7 @@ jobs:
     uses: ./.github/workflows/cdk_release_code.yml
     with:
       BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
-      STACK_NAME: cpt
+      STACK_NAME: cpt-api
       AWS_ENVIRONMENT: ref
       APIGEE_ENVIRONMENT: ref
       VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
@@ -139,7 +131,7 @@ jobs:
     uses: ./.github/workflows/cdk_release_code.yml
     with:
       BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
-      STACK_NAME: cpt
+      STACK_NAME: cpt-api
       AWS_ENVIRONMENT: qa
       APIGEE_ENVIRONMENT: internal-qa
       VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
@@ -163,7 +155,7 @@ jobs:
     uses: ./.github/workflows/cdk_release_code.yml
     with:
       BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
-      STACK_NAME: cpt
+      STACK_NAME: cpt-api
       AWS_ENVIRONMENT: int
       APIGEE_ENVIRONMENT: int
       VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
@@ -173,10 +165,6 @@ jobs:
       LOG_LEVEL: DEBUG
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       RUN_REGRESSION_TESTS: false # these do not work currently
-      CREATE_INT_RELEASE_NOTES: true
-      CREATE_PROD_RELEASE_NOTES: true
-      MARK_JIRA_RELEASED: false
-      CREATE_INT_RC_RELEASE_NOTES: true
       IS_PULL_REQUEST: false
       FORWARD_CSOC_LOGS: false
     secrets:
@@ -184,10 +172,6 @@ jobs:
       PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PROD_ROLE }}
       TARGET_SPINE_SERVER: ${{ secrets.INT_TARGET_SPINE_SERVER }}
       REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
-      DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-      INT_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-      PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-      DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
       APIM_STATUS_API_KEY: ${{ secrets.APIM_STATUS_API_KEY }}
 
     # release_sandbox:
@@ -195,7 +179,7 @@ jobs:
   #   uses: ./.github/workflows/cdk_release_code.yml
   #   with:
   #     BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
-  #     STACK_NAME: cpt-sandbox
+  #     STACK_NAME: cpt-api-sandbox
   #     AWS_ENVIRONMENT: int
   #     APIGEE_ENVIRONMENT: sandbox
   #     VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
@@ -216,7 +200,7 @@ jobs:
     uses: ./.github/workflows/cdk_release_code.yml
     with:
       BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
-      STACK_NAME: cpt
+      STACK_NAME: cpt-api
       AWS_ENVIRONMENT: prod
       APIGEE_ENVIRONMENT: prod
       VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
@@ -226,10 +210,6 @@ jobs:
       LOG_LEVEL: DEBUG
       TRUSTSTORE_FILE: clinical-tracker-truststore.pem
       RUN_REGRESSION_TESTS: false
-      CREATE_INT_RELEASE_NOTES: true
-      CREATE_PROD_RELEASE_NOTES: true
-      MARK_JIRA_RELEASED: true
-      CREATE_INT_RC_RELEASE_NOTES: false
       IS_PULL_REQUEST: false
       FORWARD_CSOC_LOGS: true
     secrets:
@@ -237,8 +217,4 @@ jobs:
       PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PROD_ROLE }}
       TARGET_SPINE_SERVER: ${{ secrets.PROD_TARGET_SPINE_SERVER }}
       REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
-      DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-      INT_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.INT_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-      PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE: ${{ secrets.PROD_CLOUD_FORMATION_CHECK_VERSION_ROLE }}
-      DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
       APIM_STATUS_API_KEY: ${{ secrets.APIM_STATUS_API_KEY }}

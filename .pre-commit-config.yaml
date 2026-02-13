@@ -77,20 +77,13 @@ repos:
         types_or: [ts, tsx, javascript, jsx, json]
         pass_filenames: false
 
-      - id: lint-getSecretLayer
-        name: Lint getSecretLayer
-        entry: make
-        args: ["lint-go"]
+      - id: lint-specification
+        name: Lint specification
+        entry: npm
+        args: ["run", "--prefix=packages/specification", "lint"]
         language: system
-        files: ^packages\/getSecretLayer
-        pass_filenames: false
-
-      - id: lint-cloudformation
-        name: Lint cloudformation
-        entry: make
-        args: ["lint-cloudformation"]
-        language: system
-        files: ^cloudformation
+        files: ^packages\/specification
+        types_or: [ts, tsx, javascript, jsx, json]
         pass_filenames: false
 
       - id: lint-githubactions
@@ -100,15 +93,6 @@ repos:
         language: system
         files: ^.github
         types_or: [yaml]
-        pass_filenames: false
-
-      - id: lint-githubaction-scripts
-        name: Lint github action scripts
-        entry: make
-        args: ["lint-githubaction-scripts"]
-        language: system
-        files: ^.github/scripts
-        types_or: [sh, shell]
         pass_filenames: false
 
   - repo: local
