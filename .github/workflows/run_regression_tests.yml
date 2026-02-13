@@ -49,7 +49,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run Regression Testing
-        working-directory: scripts
         env:
           TARGET_ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
           VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}
