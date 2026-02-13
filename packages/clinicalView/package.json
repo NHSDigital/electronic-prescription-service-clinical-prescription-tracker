@@ -14,7 +14,7 @@
         "test": "npm run compile && npm run unit"
     },
     "dependencies": {
-        "@aws-lambda-powertools/logger": "^2.30.2",
+        "@aws-lambda-powertools/logger": "^2.31.0",
         "@cpt-common/common-types": "^1.0.0",
         "@cpt-common/common-utils": "^1.0.0",
         "@middy/http-header-normalizer": "^7.0.2",
