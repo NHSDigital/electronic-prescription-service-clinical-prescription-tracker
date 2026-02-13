@@ -119,7 +119,7 @@ jobs:
           CDK_CONFIG_logRetentionInDays: "${{ inputs.LOG_RETENTION_IN_DAYS }}"
           CDK_CONFIG_logLevel: "${{ inputs.LOG_LEVEL }}"
           CDK_CONFIG_targetSpineServer: "${{ secrets.TARGET_SPINE_SERVER }}"
-          CDK_CONFIG_truststoreFile: "${{ inputs.TRUSTSTORE_FILE }}"
+          CDK_CONFIG_trustStoreFile: "${{ inputs.TRUSTSTORE_FILE }}"
           CDK_CONFIG_forwardCsocLogs: "${{ inputs.FORWARD_CSOC_LOGS }}"
           REQUIRE_APPROVAL: "never"
 
