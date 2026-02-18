@@ -48,4 +48,13 @@ export const nagSuppressions = (stack: Stack) => {
       }
     ]
   )
+
+  safeAddNagSuppression(
+    stack,
+    "/CptsApiStack/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource",
+    [{
+      id: "AwsSolutions-L1",
+      reason: "CDK creates Python 3.13 lambdas for custom resources but Python 3.14 is now available. This can be removed once CDK updates to Python 3.14 runtimes."
+    }]
+  )
 }
