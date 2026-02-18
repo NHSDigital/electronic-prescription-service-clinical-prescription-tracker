@@ -3,8 +3,7 @@ import {
   createApp,
   getBooleanConfigFromEnvVar,
   getConfigFromEnvVar,
-  getNumberConfigFromEnvVar,
-  getTrustStoreVersion
+  getNumberConfigFromEnvVar
 } from "@nhsdigital/eps-cdk-constructs"
 import {CptsApiStack} from "../stacks/CptsApiStack"
 
@@ -16,22 +15,13 @@ async function main() {
     driftDetectionGroup: "cpt-api"
   })
 
-  let mutualTlsConfig: {key: string, version: string} | undefined = undefined
-  if (!props.isPullRequest) {
-    const trustStoreFile = getConfigFromEnvVar("trustStoreFile")
-    mutualTlsConfig = {
-      key: trustStoreFile,
-      version: await getTrustStoreVersion(trustStoreFile)
-    }
-  }
-
   new CptsApiStack(app, "CptsApiStack", {
     ...props,
     stackName: calculateVersionedStackName(getConfigFromEnvVar("stackName"), props),
     logRetentionInDays: getNumberConfigFromEnvVar("logRetentionInDays"),
     logLevel: getConfigFromEnvVar("logLevel"),
     targetSpineServer: getConfigFromEnvVar("targetSpineServer"),
-    mutualTlsConfig,
+    mutualTlsTrustStoreKey: props.isPullRequest ? undefined : getConfigFromEnvVar("trustStoreFile"),
     csocApiGatewayDestination: "arn:aws:logs:eu-west-2:693466633220:destination:api_gateway_log_destination", // CSOC API GW log destination - do not change
     forwardCsocLogs: getBooleanConfigFromEnvVar("forwardCsocLogs")
   })
