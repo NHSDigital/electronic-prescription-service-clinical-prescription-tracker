@@ -41,6 +41,7 @@ jobs:
       - name: "Tar files"
         run: |
           tar -rf artifact.tar \
+            .github \
             .tool-versions \
             .tool-versions.asdf \
             packages \

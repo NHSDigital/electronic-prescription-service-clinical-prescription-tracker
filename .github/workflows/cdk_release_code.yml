@@ -63,15 +63,6 @@ jobs:
       contents: read
 
     steps:
-      - &checkout
-        name: Checkout local github actions
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ inputs.BRANCH_NAME }}
-          fetch-depth: 0
-          sparse-checkout: |
-            .github
-
       - &download_artifact
         name: build_artifact download
         uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
@@ -89,7 +80,8 @@ jobs:
           npm-required: false
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Configure AWS Credentials
+      - &assume_deploy_role
+        name: Configure AWS Credentials
         id: connect-aws-deploy
         uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
         with:
@@ -133,10 +125,19 @@ jobs:
       contents: write
 
     steps:
-      - *checkout
       - *download_artifact
       - *extract_artifact
       - *install_dependencies
+
+      - *assume_deploy_role
+      - name: get mtls secrets
+        shell: bash
+        run: |
+          mkdir -p ~/.proxygen/tmp
+          client_private_key_arn=$(aws cloudformation list-exports --query "Exports[?Name=='account-resources:ClinicalTrackerClientKeySecret'].Value" --output text)
+          client_cert_arn=$(aws cloudformation list-exports --query "Exports[?Name=='account-resources:ClinicalTrackerClientCertSecret'].Value" --output text)
+          aws secretsmanager get-secret-value --secret-id "${client_private_key_arn}" --query SecretString --output text > ~/.proxygen/tmp/client_private_key
+          aws secretsmanager get-secret-value --secret-id "${client_cert_arn}" --query SecretString --output text > ~/.proxygen/tmp/client_cert
 
       - name: Configure AWS Credentials for api release
         uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
