@@ -1,22 +1,18 @@
-name: "Delete old cloudformation stacks"
+name: "Delete old pull request deployments"
 
-# Controls when the action will run - in this case triggered manually
 on:
   workflow_dispatch:
   schedule:
     - cron: "0 2,14 * * *"
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "combine-prs"
   delete-old-cloudformation-stacks:
-    # The type of runner that the job will run on
     runs-on: ubuntu-22.04
     permissions: &common_permissions
       id-token: write
       contents: read
+      packages: read
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - &checkout
         name: Checkout local github scripts
