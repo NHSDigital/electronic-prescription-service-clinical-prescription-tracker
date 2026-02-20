@@ -27,8 +27,7 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - &configure_aws_credentials
-        name: Configure AWS Credentials
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
         with:
           aws-region: eu-west-2
@@ -47,7 +46,13 @@ jobs:
     steps:
       - *checkout
       - *install_dependencies
-      - *configure_aws_credentials
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
+        with:
+          aws-region: eu-west-2
+          role-to-assume: ${{ secrets.PROXYGEN_PTL_ROLE }}
+
       - name: delete proxygen deployments
         shell: bash
         run: npm run delete-old-pr-deployments --workspace packages/specification
