@@ -3,14 +3,10 @@ import * as fs from "fs"
 
 async function main() {
   const apigeeEnvironment = getConfigFromEnvVar("APIGEE_ENVIRONMENT")
-  let clientCertExportName = "ClinicalTrackerClientCertSecret"
-  let clientPrivateKeyExportName = "ClinicalTrackerClientKeySecret"
-  if (apigeeEnvironment.includes("sandbox")) {
-    clientCertExportName = "ClinicalTrackerClientSandboxCertSecret"
-    clientPrivateKeyExportName = "ClinicalTrackerClientSandboxKeySecret"
-  }
   const specFilePath = "./dist/eps-clinical-prescription-tracker-api.resolved.json"
   const spec = JSON.parse(fs.readFileSync(specFilePath, "utf8"))
+  const clientCert = fs.readFileSync("~/.proxygen/tmp/client_cert", "utf8")
+  const clientPrivateKey = fs.readFileSync("~/.proxygen/tmp/client_private_key", "utf8")
   try {
     await deployApi(
       {
@@ -22,8 +18,8 @@ async function main() {
         awsEnvironment: getConfigFromEnvVar("AWS_ENVIRONMENT"),
         stackName: getConfigFromEnvVar("STACK_NAME"),
         mtlsSecretName: "clinical-tracker-mtls-1",
-        clientCertExportName,
-        clientPrivateKeyExportName,
+        clientCert,
+        clientPrivateKey,
         proxygenPrivateKeyExportName: "ClinicalTrackerProxygenPrivateKey",
         proxygenKid: "eps-clinical-tracker",
         hiddenPaths: []
