@@ -41,11 +41,13 @@ jobs:
       - name: "Tar files"
         run: |
           tar -rf artifact.tar \
+            .github \
             .tool-versions \
             .tool-versions.asdf \
             packages \
             node_modules \
             package.json \
+            package-lock.json \
             tsconfig.defaults.json
 
       - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
