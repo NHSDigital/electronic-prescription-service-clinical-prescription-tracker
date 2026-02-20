@@ -13,29 +13,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Get asdf version
-      id: asdf-version
-      shell: bash
-      run: echo "version=$(awk '!/^#/ && NF {print $1; exit}' .tool-versions.asdf)" >> "$GITHUB_OUTPUT"
-
-    - name: Install asdf
-      uses: asdf-vm/actions/setup@b7bcd026f18772e44fe1026d729e1611cc435d47
-      with:
-        asdf_version: ${{ steps.asdf-version.outputs.version }}
-
-    - name: Cache asdf
-      uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306
-      with:
-        path: ~/.asdf
-        key: ${{ runner.os }}-asdf-${{ hashFiles('**/.tool-versions') }}
-
-    - name: Install asdf dependencies in .tool-versions
-      uses: asdf-vm/actions/install@b7bcd026f18772e44fe1026d729e1611cc435d47
-      with:
-        asdf_version: ${{ steps.asdf-version.outputs.version }}
-      env:
-        PYTHON_CONFIGURE_OPTS: --enable-shared
-
     - name: Setting up .npmrc
       if: ${{ inputs.npm-required == 'true' }}
       env:

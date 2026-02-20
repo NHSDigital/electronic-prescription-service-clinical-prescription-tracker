@@ -41,6 +41,12 @@ on:
       FORWARD_CSOC_LOGS:
         type: boolean
         required: true
+      runtime_docker_image:
+        required: true
+        type: string
+      verify_published_from_main_image:
+        type: boolean
+        required: true
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE:
         required: true
@@ -54,15 +60,31 @@ on:
         required: false
 
 jobs:
+  verify_attestation:
+    uses: NHSDigital/eps-common-workflows/.github/workflows/verify-attestation.yml@36677e1d6bfaa010d7b78942a1ade12fbefecb80
+    with:
+      runtime_docker_image: "${{ inputs.runtime_docker_image }}"
+      verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
+
   release_code:
     runs-on: ubuntu-22.04
+    needs: verify_attestation
     environment: ${{ inputs.AWS_ENVIRONMENT }}
+    container:
+      image: ${{ needs.verify_attestation.outputs.pinned_image }}
+      options: --user 1001:1001 --group-add 128
+    defaults:
+      run:
+        shell: bash
     name: deploy cdk app ${{ inputs.CDK_APP_NAME }}
     permissions:
       id-token: write
       contents: read
 
     steps:
+      - name: copy .tool-versions
+        run: |
+          cp /home/vscode/.tool-versions "$HOME/.tool-versions"
       - &download_artifact
         name: build_artifact download
         uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
@@ -119,12 +141,21 @@ jobs:
     runs-on: ubuntu-22.04
     environment: ${{ inputs.AWS_ENVIRONMENT }}
     name: deploy proxgen api
-    needs: [release_code]
+    needs: [release_code, verify_attestation]
+    container:
+      image: ${{ needs.verify_attestation.outputs.pinned_image }}
+      options: --user 1001:1001 --group-add 128
+    defaults:
+      run:
+        shell: bash
     permissions:
       id-token: write
       contents: write
 
     steps:
+      - name: copy .tool-versions
+        run: |
+          cp /home/vscode/.tool-versions "$HOME/.tool-versions"
       - *download_artifact
       - *extract_artifact
       - *install_dependencies
@@ -195,5 +226,6 @@ jobs:
       BRANCH_NAME: ${{ inputs.BRANCH_NAME }}
       ENVIRONMENT: ${{ inputs.APIGEE_ENVIRONMENT }}
       VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}
+      runtime_docker_image: "${{ inputs.runtime_docker_image }}"
     secrets:
       REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}

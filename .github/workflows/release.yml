@@ -4,28 +4,33 @@ on:
   workflow_dispatch:
 
 jobs:
-  get_asdf_version:
+  get_config_values:
     runs-on: ubuntu-22.04
     outputs:
-      asdf_version: ${{ steps.asdf-version.outputs.version }}
       tag_format: ${{ steps.load-config.outputs.TAG_FORMAT }}
+      devcontainer_version: ${{ steps.load-config.outputs.DEVCONTAINER_VERSION }}
+      devcontainer_image: ${{ steps.load-config.outputs.DEVCONTAINER_IMAGE }}
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
 
-      - name: Get asdf version
-        id: asdf-version
-        run: echo "version=$(awk '!/^#/ && NF {print $1; exit}' .tool-versions.asdf)" >> "$GITHUB_OUTPUT"
       - name: Load config value
         id: load-config
         run: |
           TAG_FORMAT=$(yq '.TAG_FORMAT' .github/config/settings.yml)
-          echo "TAG_FORMAT=$TAG_FORMAT" >> "$GITHUB_OUTPUT"
+          DEVCONTAINER_IMAGE=$(jq -r '.build.args.IMAGE_NAME' .devcontainer/devcontainer.json)
+          DEVCONTAINER_VERSION=$(jq -r '.build.args.IMAGE_VERSION' .devcontainer/devcontainer.json)
+          {
+            echo "TAG_FORMAT=$TAG_FORMAT" 
+            echo "DEVCONTAINER_IMAGE=$DEVCONTAINER_IMAGE"
+            echo "DEVCONTAINER_VERSION=$DEVCONTAINER_VERSION"
+          } >> "$GITHUB_OUTPUT"
+
   quality_checks:
-    uses: NHSDigital/eps-common-workflows/.github/workflows/quality-checks.yml@997a1946c83bb2a9eda418847ed640738af949ff
-    needs: [get_asdf_version]
+    uses: NHSDigital/eps-common-workflows/.github/workflows/quality-checks-devcontainer.yml@36677e1d6bfaa010d7b78942a1ade12fbefecb80
+    needs: [get_config_values]
     with:
-      asdfVersion: ${{ needs.get_asdf_version.outputs.asdf_version }}
+      runtime_docker_image: "${{ needs.get_config_values.outputs.devcontainer_image }}:githubactions-${{ needs.get_config_values.outputs.devcontainer_version }}"
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -40,27 +45,32 @@ jobs:
           echo "commit_id=${{ github.sha }}" >> "$GITHUB_OUTPUT"
 
   tag_release:
-    needs: [quality_checks, get_commit_id, get_asdf_version]
-    uses: NHSDigital/eps-common-workflows/.github/workflows/tag-release.yml@997a1946c83bb2a9eda418847ed640738af949ff
+    needs: [quality_checks, get_commit_id, get_config_values]
+    uses: NHSDigital/eps-common-workflows/.github/workflows/tag-release-devcontainer.yml@36677e1d6bfaa010d7b78942a1ade12fbefecb80
     with:
       dry_run: false
-      asdfVersion: ${{ needs.get_asdf_version.outputs.asdf_version }}
+      runtime_docker_image: "${{ needs.get_config_values.outputs.devcontainer_image }}:githubactions-${{ needs.get_config_values.outputs.devcontainer_version }}"
       branch_name: main
-      tag_format: ${{ needs.get_asdf_version.outputs.tag_format }}
+      tag_format: ${{ needs.get_config_values.outputs.tag_format }}
+      verify_published_from_main_image: true
     secrets: inherit
 
   package_code:
-    needs: [get_commit_id, tag_release]
+    needs: [get_commit_id, tag_release, get_config_values]
     uses: ./.github/workflows/cdk_package_code.yml
     with:
+      runtime_docker_image: "${{ needs.get_config_values.outputs.devcontainer_image }}:githubactions-${{ needs.get_config_values.outputs.devcontainer_version }}"
+      verify_published_from_main_image: true
       BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
       VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
       COMMIT_ID: ${{ needs.get_commit_id.outputs.commit_id }}
 
   release_dev:
-    needs: [get_commit_id, tag_release, package_code]
+    needs: [get_commit_id, tag_release, package_code, get_config_values]
     uses: ./.github/workflows/cdk_release_code.yml
     with:
+      runtime_docker_image: "${{ needs.get_config_values.outputs.devcontainer_image }}:githubactions-${{ needs.get_config_values.outputs.devcontainer_version }}"
+      verify_published_from_main_image: true
       BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
       STACK_NAME: cpt-api
       AWS_ENVIRONMENT: dev
@@ -103,9 +113,11 @@ jobs:
   #     APIM_STATUS_API_KEY: ${{ secrets.APIM_STATUS_API_KEY }}
 
   release_ref:
-    needs: [get_commit_id, tag_release, package_code, release_dev] # TODO: add sandbox back once implemented
+    needs: [get_commit_id, tag_release, package_code, release_dev, get_config_values] # TODO: add sandbox back once implemented
     uses: ./.github/workflows/cdk_release_code.yml
     with:
+      runtime_docker_image: "${{ needs.get_config_values.outputs.devcontainer_image }}:githubactions-${{ needs.get_config_values.outputs.devcontainer_version }}"
+      verify_published_from_main_image: true
       BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
       STACK_NAME: cpt-api
       AWS_ENVIRONMENT: ref
@@ -127,9 +139,11 @@ jobs:
       APIM_STATUS_API_KEY: ${{ secrets.APIM_STATUS_API_KEY }}
 
   release_qa:
-    needs: [get_commit_id, tag_release, package_code, release_dev] # TODO: add sandbox back once implemented
+    needs: [get_commit_id, tag_release, package_code, release_dev, get_config_values] # TODO: add sandbox back once implemented
     uses: ./.github/workflows/cdk_release_code.yml
     with:
+      runtime_docker_image: "${{ needs.get_config_values.outputs.devcontainer_image }}:githubactions-${{ needs.get_config_values.outputs.devcontainer_version }}"
+      verify_published_from_main_image: true
       BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
       STACK_NAME: cpt-api
       AWS_ENVIRONMENT: qa
@@ -151,9 +165,11 @@ jobs:
       APIM_STATUS_API_KEY: ${{ secrets.APIM_STATUS_API_KEY }}
 
   release_int:
-    needs: [get_commit_id, tag_release, package_code, release_qa]
+    needs: [get_commit_id, tag_release, package_code, release_qa, get_config_values]
     uses: ./.github/workflows/cdk_release_code.yml
     with:
+      runtime_docker_image: "${{ needs.get_config_values.outputs.devcontainer_image }}:githubactions-${{ needs.get_config_values.outputs.devcontainer_version }}"
+      verify_published_from_main_image: true
       BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
       STACK_NAME: cpt-api
       AWS_ENVIRONMENT: int
@@ -196,9 +212,11 @@ jobs:
   #     APIM_STATUS_API_KEY: ${{ secrets.APIM_STATUS_API_KEY }}
 
   release_prod:
-    needs: [get_commit_id, tag_release, package_code, release_int] # TODO: add sandbox back once implemented
+    needs: [get_commit_id, tag_release, package_code, release_int, get_config_values] # TODO: add sandbox back once implemented
     uses: ./.github/workflows/cdk_release_code.yml
     with:
+      runtime_docker_image: "${{ needs.get_config_values.outputs.devcontainer_image }}:githubactions-${{ needs.get_config_values.outputs.devcontainer_version }}"
+      verify_published_from_main_image: true
       BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
       STACK_NAME: cpt-api
       AWS_ENVIRONMENT: prod

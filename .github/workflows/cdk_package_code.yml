@@ -12,15 +12,37 @@ on:
       COMMIT_ID:
         required: true
         type: string
+      runtime_docker_image:
+        required: true
+        type: string
+      verify_published_from_main_image:
+        type: boolean
+        required: true
 
 jobs:
+  verify_attestation:
+    uses: NHSDigital/eps-common-workflows/.github/workflows/verify-attestation.yml@36677e1d6bfaa010d7b78942a1ade12fbefecb80
+    with:
+      runtime_docker_image: "${{ inputs.runtime_docker_image }}"
+      verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
+
   package_code:
     runs-on: ubuntu-22.04
+    needs: verify_attestation
+    container:
+      image: ${{ needs.verify_attestation.outputs.pinned_image }}
+      options: --user 1001:1001 --group-add 128
+    defaults:
+      run:
+        shell: bash
     permissions:
       id-token: write
       contents: read
       packages: read
     steps:
+      - name: copy .tool-versions
+        run: |
+          cp /home/vscode/.tool-versions "$HOME/.tool-versions"
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -42,8 +64,6 @@ jobs:
         run: |
           tar -rf artifact.tar \
             .github \
-            .tool-versions \
-            .tool-versions.asdf \
             packages \
             node_modules \
             package.json \
