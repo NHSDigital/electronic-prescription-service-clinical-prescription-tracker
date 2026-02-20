@@ -11,3 +11,6 @@ vulnerabilities:
   - id: CVE-2026-25639
     statement:  axios vulnerability accepted as risk - dependency of axios-retry
     expired_at: 2026-04-01
+  - id: CVE-2026-26996
+    statement:  minimatch vulnerability accepted as risk - dependency of multiple packages
+    expired_at: 2026-04-01
