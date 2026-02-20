@@ -17,7 +17,7 @@ guard-%:
 		exit 1; \
 	fi
 
-.PHONY: install build test publish release clean
+.PHONY: install build test publish release clean lint
 
 install: install-python install-hooks install-node
 
@@ -48,13 +48,7 @@ download-get-secrets-layer:
 	mkdir -p packages/getSecretLayer/lib
 	curl -LJ https://github.com/NHSDigital/electronic-prescription-service-get-secrets/releases/download/$$(curl -s "https://api.github.com/repos/NHSDigital/electronic-prescription-service-get-secrets/releases/latest" | jq -r .tag_name)/get-secrets-layer.zip -o packages/getSecretLayer/lib/get-secrets-layer.zip
 
-sbom:
-	mkdir -p ~/git_actions
-	git -C ~/git_actions/eps-actions-sbom/ pull || git clone https://github.com/NHSDigital/eps-action-sbom.git ~/git_actions/eps-actions-sbom/
-	docker build -t eps-sbom -f ~/git_actions/eps-actions-sbom/Dockerfile ~/git_actions/eps-actions-sbom/
-	docker run -it --rm -v $${LOCAL_WORKSPACE_FOLDER:-.}:/github/workspace eps-sbom
-
-lint: lint-node lint-githubactions lint-specification
+lint: lint-node lint-specification
 
 lint-node: compile
 	npm run lint --workspace packages/cdk
@@ -65,9 +59,6 @@ lint-node: compile
 	npm run lint --workspace packages/prescriptionSearch
 	npm run lint --workspace packages/sandbox
 	npm run lint --workspace packages/status
-
-lint-githubactions:
-	actionlint
 
 lint-specification: compile-specification
 	npm run lint --workspace packages/specification
@@ -103,12 +94,6 @@ deep-clean: clean
 	rm -rf .venv
 	find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +
 
-aws-configure:
-	aws configure sso --region eu-west-2
-
-aws-login:
-	aws sso login --sso-session sso-session
-
 cdk-deploy:
 	REQUIRE_APPROVAL="$${REQUIRE_APPROVAL:-any-change}" && \
 	npm run cdk-deploy --workspace packages/cdk
@@ -124,7 +109,5 @@ cdk-watch:
 	REQUIRE_APPROVAL="$${REQUIRE_APPROVAL:-any-change}" && \
 	npm run cdk-watch --workspace packages/cdk
 
-create-npmrc:
-	gh auth login --scopes "read:packages"; \
-	echo "//npm.pkg.github.com/:_authToken=$$(gh auth token)" > .npmrc
-	echo "@nhsdigital:registry=https://npm.pkg.github.com" >> .npmrc
+%:
+	@$(MAKE) -f /usr/local/share/eps/Mk/common.mk $@
