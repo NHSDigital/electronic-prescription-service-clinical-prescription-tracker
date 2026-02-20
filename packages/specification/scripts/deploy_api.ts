@@ -5,8 +5,8 @@ async function main() {
   const apigeeEnvironment = getConfigFromEnvVar("APIGEE_ENVIRONMENT")
   const specFilePath = "./dist/eps-clinical-prescription-tracker-api.resolved.json"
   const spec = JSON.parse(fs.readFileSync(specFilePath, "utf8"))
-  const clientCert = fs.readFileSync("~/.proxygen/tmp/client_cert", "utf8")
-  const clientPrivateKey = fs.readFileSync("~/.proxygen/tmp/client_private_key", "utf8")
+  const clientCert = fs.readFileSync("/tmp/proxygen/client_cert", "utf8")
+  const clientPrivateKey = fs.readFileSync("/tmp/proxygen/client_private_key", "utf8")
   try {
     await deployApi(
       {

@@ -133,11 +133,11 @@ jobs:
       - name: get mtls secrets
         shell: bash
         run: |
-          mkdir -p ~/.proxygen/tmp
+          mkdir -p /tmp/proxygen
           client_private_key_arn=$(aws cloudformation list-exports --query "Exports[?Name=='account-resources:ClinicalTrackerClientKeySecret'].Value" --output text)
           client_cert_arn=$(aws cloudformation list-exports --query "Exports[?Name=='account-resources:ClinicalTrackerClientCertSecret'].Value" --output text)
-          aws secretsmanager get-secret-value --secret-id "${client_private_key_arn}" --query SecretString --output text > ~/.proxygen/tmp/client_private_key
-          aws secretsmanager get-secret-value --secret-id "${client_cert_arn}" --query SecretString --output text > ~/.proxygen/tmp/client_cert
+          aws secretsmanager get-secret-value --secret-id "${client_private_key_arn}" --query SecretString --output text > /tmp/proxygen/client_private_key
+          aws secretsmanager get-secret-value --secret-id "${client_cert_arn}" --query SecretString --output text > /tmp/proxygen/client_cert
 
       - name: Configure AWS Credentials for api release
         uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
