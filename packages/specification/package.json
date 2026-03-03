@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@cpt-common/common-types": "^1.0.0",
-    "@redocly/cli": "^2.18.1",
+    "@redocly/cli": "^2.19.1",
     "clinicalView": "^1.0.0",
     "prescriptionSearch": "^1.0.0",
     "tsx": "4.21.0"
