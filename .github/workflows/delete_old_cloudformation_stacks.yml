@@ -20,7 +20,13 @@ jobs:
         with:
           ref: ${{ github.event.ref.BRANCH_NAME }}
           fetch-depth: 0
-
+      - &setup_npmrc
+        name: Setting up .npmrc
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> ~/.npmrc
+          echo "@nhsdigital:registry=https://npm.pkg.github.com" >> ~/.npmrc
       - &install_dependencies
         name: install dependencies
         uses: ./.github/actions/install_dependencies
@@ -45,6 +51,7 @@ jobs:
 
     steps:
       - *checkout
+      - *setup_npmrc
       - *install_dependencies
 
       - name: Configure AWS Credentials
