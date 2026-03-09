@@ -6,8 +6,13 @@ on:
     - cron: "0 2,14 * * *"
 
 jobs:
+  get_config_values:
+    uses: NHSDigital/eps-common-workflows/.github/workflows/get-repo-config.yml@8404cf6e3a61ac8de4d1644e175e288aa4965815
+    with:
+      verify_published_from_main_image: false
   delete-old-cloudformation-stacks:
-    runs-on: ubuntu-22.04
+    needs: [get_config_values]
+    runs-on: ${{ needs.get_config_values.outputs.pinned_image }}
     permissions: &common_permissions
       id-token: write
       contents: read
@@ -46,7 +51,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   delete-old-proxygen-deployments:
-    runs-on: ubuntu-22.04
+    needs: [get_config_values]
+    runs-on: ${{ needs.get_config_values.outputs.pinned_image }}
     permissions: *common_permissions
 
     steps:
