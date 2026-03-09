@@ -41,12 +41,9 @@ on:
       FORWARD_CSOC_LOGS:
         type: boolean
         required: true
-      runtime_docker_image:
+      pinned_image:
         required: true
         type: string
-      verify_published_from_main_image:
-        type: boolean
-        required: true
     secrets:
       CLOUD_FORMATION_DEPLOY_ROLE:
         required: true
@@ -60,18 +57,11 @@ on:
         required: false
 
 jobs:
-  verify_attestation:
-    uses: NHSDigital/eps-common-workflows/.github/workflows/verify-attestation.yml@36677e1d6bfaa010d7b78942a1ade12fbefecb80
-    with:
-      runtime_docker_image: "${{ inputs.runtime_docker_image }}"
-      verify_published_from_main_image: ${{ inputs.verify_published_from_main_image }}
-
   release_code:
     runs-on: ubuntu-22.04
-    needs: verify_attestation
     environment: ${{ inputs.AWS_ENVIRONMENT }}
     container:
-      image: ${{ needs.verify_attestation.outputs.pinned_image }}
+      image: ${{ inputs.pinned_image }}
       options: --user 1001:1001 --group-add 128
     defaults:
       run:
@@ -141,9 +131,9 @@ jobs:
     runs-on: ubuntu-22.04
     environment: ${{ inputs.AWS_ENVIRONMENT }}
     name: deploy proxgen api
-    needs: [release_code, verify_attestation]
+    needs: [release_code]
     container:
-      image: ${{ needs.verify_attestation.outputs.pinned_image }}
+      image: ${{ inputs.pinned_image }}
       options: --user 1001:1001 --group-add 128
     defaults:
       run:
@@ -226,6 +216,6 @@ jobs:
       BRANCH_NAME: ${{ inputs.BRANCH_NAME }}
       ENVIRONMENT: ${{ inputs.APIGEE_ENVIRONMENT }}
       VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}
-      runtime_docker_image: "${{ inputs.runtime_docker_image }}"
+      pinned_image: ${{ inputs.pinned_image }}
     secrets:
       REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
