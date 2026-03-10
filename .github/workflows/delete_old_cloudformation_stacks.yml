@@ -6,21 +6,34 @@ on:
     - cron: "0 2,14 * * *"
 
 jobs:
+  get_config_values:
+    uses: NHSDigital/eps-common-workflows/.github/workflows/get-repo-config.yml@141907b215220e95e3ed3811d0fe8fa18675dbed
+    with:
+      verify_published_from_main_image: false
   delete-old-cloudformation-stacks:
+    needs: [get_config_values]
     runs-on: ubuntu-22.04
+    container:
+      image: ${{ needs.get_config_values.outputs.pinned_image }}
+      options: --user 1001:1001 --group-add 128
+    defaults:
+      run:
+        shell: bash
     permissions: &common_permissions
       id-token: write
       contents: read
       packages: read
 
     steps:
+      - name: copy .tool-versions
+        run: |
+          cp /home/vscode/.tool-versions "$HOME/.tool-versions"
       - &checkout
         name: Checkout local github scripts
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ github.event.ref.BRANCH_NAME }}
           fetch-depth: 0
-
       - &install_dependencies
         name: install dependencies
         uses: ./.github/actions/install_dependencies
@@ -40,10 +53,20 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   delete-old-proxygen-deployments:
+    needs: [get_config_values]
     runs-on: ubuntu-22.04
+    container:
+      image: ${{ needs.get_config_values.outputs.pinned_image }}
+      options: --user 1001:1001 --group-add 128
+    defaults:
+      run:
+        shell: bash
     permissions: *common_permissions
 
     steps:
+      - name: copy .tool-versions
+        run: |
+          cp /home/vscode/.tool-versions "$HOME/.tool-versions"
       - *checkout
       - *install_dependencies
 
