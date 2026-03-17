@@ -1,0 +1,82 @@
+{
+  "resourceType": "Bundle",
+  "type": "searchset",
+  "total": 1,
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:d8f49d19-66d1-46ac-a8d3-7b0c5c468f76",
+      "search": {
+        "mode": "include"
+      },
+      "resource": {
+        "resourceType": "Patient",
+        "identifier": [
+          {
+            "system": "https://fhir.nhs.uk/Id/nhs-number",
+            "value": "5839945242"
+          }
+        ],
+        "name": [
+          {
+            "prefix": [
+              "MS"
+            ],
+            "given": [
+              "STACEY"
+            ],
+            "family": "TWITCHETT"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:9c6f185b-5061-4259-a5a5-8ed6008fc844",
+      "search": {
+        "mode": "match"
+      },
+      "resource": {
+        "resourceType": "RequestGroup",
+        "identifier": [
+          {
+            "system": "https://fhir.nhs.uk/Id/prescription-order-number",
+            "value": "B57FE1-A83008-196009"
+          }
+        ],
+        "subject": {
+          "reference": "urn:uuid:d8f49d19-66d1-46ac-a8d3-7b0c5c468f76"
+        },
+        "status": "active",
+        "intent": "order",
+        "authoredOn": "2026-02-27T00:00:00.000Z",
+        "extension": [
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+            "extension": [
+              {
+                "url": "status",
+                "valueCoding": {
+                  "system": "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+                  "code": "0001",
+                  "display": "To be Dispensed"
+                }
+              }
+            ]
+          },
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
+            "extension": [
+              {
+                "url": "prescriptionPendingCancellation",
+                "valueBoolean": false
+              },
+              {
+                "url": "lineItemPendingCancellation",
+                "valueBoolean": false
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

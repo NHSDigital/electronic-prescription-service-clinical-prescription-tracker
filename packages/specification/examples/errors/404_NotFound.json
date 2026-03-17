@@ -1,0 +1,22 @@
+{
+  "resourceType": "OperationOutcome",
+  "meta": {
+    "lastUpdated": "2026-02-27T11:43:12.191Z"
+  },
+  "issue": [
+    {
+      "code": "not-found",
+      "severity": "error",
+      "diagnostics": "not found",
+      "details": {
+        "coding": [
+          {
+            "system": "https://fhir.nhs.uk/CodeSystem/http-error-codes",
+            "code": "NOT_FOUND",
+            "display": "404: The Server was unable to find the specified resource."
+          }
+        ]
+      }
+    }
+  ]
+}
