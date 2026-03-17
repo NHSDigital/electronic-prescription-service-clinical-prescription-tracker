@@ -37,7 +37,6 @@ export class Functions extends Construct {
       SpineASIDARN: Fn.importValue("account-resources:SpineASID"),
       SpinePartyKeyARN: Fn.importValue("account-resources:SpinePartyKey"),
       SpineCAChainARN: Fn.importValue("account-resources:SpineCAChain"),
-      ServiceSearchApiKeyARN: Fn.importValue("account-resources:ServiceSearchApiKey"),
       VERSION_NUMBER: props.version,
       COMMIT_ID: props.commitId,
       AWS_LAMBDA_EXEC_WRAPPER: "/opt/get-secrets-layer"

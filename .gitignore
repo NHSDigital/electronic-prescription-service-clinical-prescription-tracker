@@ -29,3 +29,4 @@ _site/
 vendor
 .npmrc
 cdk.out
+.trivy_out/
