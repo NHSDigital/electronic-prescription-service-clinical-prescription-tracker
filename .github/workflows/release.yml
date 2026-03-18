@@ -38,7 +38,7 @@ jobs:
       branch_name: main
       tag_format: ${{ needs.get_config_values.outputs.tag_format }}
       update_jira: true
-      jira_release_prefix: "psu"
+      jira_release_prefix: "cpt-api"
     secrets:
       EXECUTE_JIRA_LAMBDA_ROLE: ${{ secrets.DEV_CLOUD_FORMATION_EXECUTE_LAMBDA_ROLE }}
   
