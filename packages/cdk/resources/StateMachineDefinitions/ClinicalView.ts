@@ -9,7 +9,7 @@ import {
   Pass,
   TaskInput
 } from "aws-cdk-lib/aws-stepfunctions"
-import {CatchAllErrorPass} from "../../constructs/StateMachine/CatchAllErrorPass"
+import {CatchAllErrorPass} from "@nhsdigital/eps-cdk-constructs"
 import {
   extractPrescriptionIdExpression,
   extractDispenserOdsCodeExpression,

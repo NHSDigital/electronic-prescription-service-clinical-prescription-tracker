@@ -9,6 +9,7 @@
 **/schemas/resources/*.json
 .#*
 __pycache__/
+.env
 .envrc
 .idea
 .vscode/settings.json
@@ -29,3 +30,4 @@ _site/
 vendor
 .npmrc
 cdk.out
+*.tgz
