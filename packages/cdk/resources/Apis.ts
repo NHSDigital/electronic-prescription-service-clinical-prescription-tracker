@@ -1,9 +1,11 @@
 import {HttpMethod} from "aws-cdk-lib/aws-lambda"
 import {Construct} from "constructs"
-import {RestApiGateway} from "@nhsdigital/eps-cdk-constructs"
-import {LambdaEndpoint} from "../constructs/RestApiGateway/LambdaEndpoint"
-import {TypescriptLambdaFunction} from "@nhsdigital/eps-cdk-constructs"
-import {ExpressStateMachine} from "../constructs/StateMachine"
+import {
+  RestApiGateway,
+  TypescriptLambdaFunction,
+  ExpressStateMachine,
+  LambdaEndpoint
+} from "@nhsdigital/eps-cdk-constructs"
 import {StateMachineEndpoint} from "../constructs/RestApiGateway/StateMachineEndpoint"
 
 export interface ApisProps {
