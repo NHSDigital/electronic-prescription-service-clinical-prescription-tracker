@@ -17,7 +17,7 @@ guard-%:
 		exit 1; \
 	fi
 
-.PHONY: install compile test publish release clean lint
+.PHONY: install compile test publish release clean lint install-node install-python install-hooks compile-node compile-packages compile-specification lint-node lint-specification cdk-deploy cdk-synth cdk-diff cdk-watch download-get-secrets-layer deep-clean
 
 install: install-python install-hooks install-node
 
