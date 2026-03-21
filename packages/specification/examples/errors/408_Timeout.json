@@ -1,0 +1,22 @@
+{
+  "resourceType": "OperationOutcome",
+  "meta": {
+    "lastUpdated": "2026-02-27T11:43:12.191Z"
+  },
+  "issue": [
+    {
+      "code": "timeout",
+      "severity": "error",
+      "diagnostics": "timeout",
+      "details": {
+        "coding": [
+          {
+            "system": "https://fhir.nhs.uk/CodeSystem/http-error-codes",
+            "code": "TIMEOUT",
+            "display": "408: The server has timed out whilst processing the request."
+          }
+        ]
+      }
+    }
+  ]
+}

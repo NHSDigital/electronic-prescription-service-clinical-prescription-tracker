@@ -1,0 +1,467 @@
+{
+  "resourceType": "Bundle",
+  "type": "searchset",
+  "total": 7,
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:b81d48a2-e889-47b8-959d-a9248da3326e",
+      "search": {
+        "mode": "include"
+      },
+      "resource": {
+        "resourceType": "Patient",
+        "identifier": [
+          {
+            "system": "https://fhir.nhs.uk/Id/nhs-number",
+            "value": "9732730684"
+          }
+        ],
+        "name": [
+          {
+            "prefix": [
+              "MISS"
+            ],
+            "given": [
+              "ETTA"
+            ],
+            "family": "CORY"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:14629ad8-6adf-436e-be46-4b057578dc10",
+      "search": {
+        "mode": "match"
+      },
+      "resource": {
+        "resourceType": "RequestGroup",
+        "identifier": [
+          {
+            "system": "https://fhir.nhs.uk/Id/prescription-order-number",
+            "value": "7B7EF0-A83008-3220F7"
+          }
+        ],
+        "subject": {
+          "reference": "urn:uuid:b81d48a2-e889-47b8-959d-a9248da3326e"
+        },
+        "status": "active",
+        "intent": "reflex-order",
+        "authoredOn": "2026-02-27T00:00:00.000Z",
+        "extension": [
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+            "extension": [
+              {
+                "url": "status",
+                "valueCoding": {
+                  "system": "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+                  "code": "0001",
+                  "display": "To be Dispensed"
+                }
+              }
+            ]
+          },
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
+            "extension": [
+              {
+                "url": "numberOfRepeatsIssued",
+                "valueInteger": 1
+              },
+              {
+                "url": "numberOfRepeatsAllowed",
+                "valueInteger": 7
+              }
+            ]
+          },
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
+            "extension": [
+              {
+                "url": "prescriptionPendingCancellation",
+                "valueBoolean": false
+              },
+              {
+                "url": "lineItemPendingCancellation",
+                "valueBoolean": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:20b56e01-a7f1-4f4d-bff7-08d81a9d56a1",
+      "search": {
+        "mode": "match"
+      },
+      "resource": {
+        "resourceType": "RequestGroup",
+        "identifier": [
+          {
+            "system": "https://fhir.nhs.uk/Id/prescription-order-number",
+            "value": "7B7EF0-A83008-3220F7"
+          }
+        ],
+        "subject": {
+          "reference": "urn:uuid:b81d48a2-e889-47b8-959d-a9248da3326e"
+        },
+        "status": "active",
+        "intent": "reflex-order",
+        "authoredOn": "2026-02-27T00:00:00.000Z",
+        "extension": [
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+            "extension": [
+              {
+                "url": "status",
+                "valueCoding": {
+                  "system": "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+                  "code": "9000",
+                  "display": "Repeat Dispense future instance"
+                }
+              }
+            ]
+          },
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
+            "extension": [
+              {
+                "url": "numberOfRepeatsIssued",
+                "valueInteger": 2
+              },
+              {
+                "url": "numberOfRepeatsAllowed",
+                "valueInteger": 7
+              }
+            ]
+          },
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
+            "extension": [
+              {
+                "url": "prescriptionPendingCancellation",
+                "valueBoolean": false
+              },
+              {
+                "url": "lineItemPendingCancellation",
+                "valueBoolean": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:6b15b7b4-d2e0-4967-a411-3f9aca753a29",
+      "search": {
+        "mode": "match"
+      },
+      "resource": {
+        "resourceType": "RequestGroup",
+        "identifier": [
+          {
+            "system": "https://fhir.nhs.uk/Id/prescription-order-number",
+            "value": "7B7EF0-A83008-3220F7"
+          }
+        ],
+        "subject": {
+          "reference": "urn:uuid:b81d48a2-e889-47b8-959d-a9248da3326e"
+        },
+        "status": "active",
+        "intent": "reflex-order",
+        "authoredOn": "2026-02-27T00:00:00.000Z",
+        "extension": [
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+            "extension": [
+              {
+                "url": "status",
+                "valueCoding": {
+                  "system": "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+                  "code": "9000",
+                  "display": "Repeat Dispense future instance"
+                }
+              }
+            ]
+          },
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
+            "extension": [
+              {
+                "url": "numberOfRepeatsIssued",
+                "valueInteger": 3
+              },
+              {
+                "url": "numberOfRepeatsAllowed",
+                "valueInteger": 7
+              }
+            ]
+          },
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
+            "extension": [
+              {
+                "url": "prescriptionPendingCancellation",
+                "valueBoolean": false
+              },
+              {
+                "url": "lineItemPendingCancellation",
+                "valueBoolean": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:13968907-3b6d-4825-b815-34a4678d54b4",
+      "search": {
+        "mode": "match"
+      },
+      "resource": {
+        "resourceType": "RequestGroup",
+        "identifier": [
+          {
+            "system": "https://fhir.nhs.uk/Id/prescription-order-number",
+            "value": "7B7EF0-A83008-3220F7"
+          }
+        ],
+        "subject": {
+          "reference": "urn:uuid:b81d48a2-e889-47b8-959d-a9248da3326e"
+        },
+        "status": "active",
+        "intent": "reflex-order",
+        "authoredOn": "2026-02-27T00:00:00.000Z",
+        "extension": [
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+            "extension": [
+              {
+                "url": "status",
+                "valueCoding": {
+                  "system": "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+                  "code": "9000",
+                  "display": "Repeat Dispense future instance"
+                }
+              }
+            ]
+          },
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
+            "extension": [
+              {
+                "url": "numberOfRepeatsIssued",
+                "valueInteger": 4
+              },
+              {
+                "url": "numberOfRepeatsAllowed",
+                "valueInteger": 7
+              }
+            ]
+          },
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
+            "extension": [
+              {
+                "url": "prescriptionPendingCancellation",
+                "valueBoolean": false
+              },
+              {
+                "url": "lineItemPendingCancellation",
+                "valueBoolean": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:572b7777-871e-4f1f-bc6d-a18102ef3060",
+      "search": {
+        "mode": "match"
+      },
+      "resource": {
+        "resourceType": "RequestGroup",
+        "identifier": [
+          {
+            "system": "https://fhir.nhs.uk/Id/prescription-order-number",
+            "value": "7B7EF0-A83008-3220F7"
+          }
+        ],
+        "subject": {
+          "reference": "urn:uuid:b81d48a2-e889-47b8-959d-a9248da3326e"
+        },
+        "status": "active",
+        "intent": "reflex-order",
+        "authoredOn": "2026-02-27T00:00:00.000Z",
+        "extension": [
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+            "extension": [
+              {
+                "url": "status",
+                "valueCoding": {
+                  "system": "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+                  "code": "9000",
+                  "display": "Repeat Dispense future instance"
+                }
+              }
+            ]
+          },
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
+            "extension": [
+              {
+                "url": "numberOfRepeatsIssued",
+                "valueInteger": 5
+              },
+              {
+                "url": "numberOfRepeatsAllowed",
+                "valueInteger": 7
+              }
+            ]
+          },
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
+            "extension": [
+              {
+                "url": "prescriptionPendingCancellation",
+                "valueBoolean": false
+              },
+              {
+                "url": "lineItemPendingCancellation",
+                "valueBoolean": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:b54b05f5-5d5b-4e4e-890b-1295a40f532f",
+      "search": {
+        "mode": "match"
+      },
+      "resource": {
+        "resourceType": "RequestGroup",
+        "identifier": [
+          {
+            "system": "https://fhir.nhs.uk/Id/prescription-order-number",
+            "value": "7B7EF0-A83008-3220F7"
+          }
+        ],
+        "subject": {
+          "reference": "urn:uuid:b81d48a2-e889-47b8-959d-a9248da3326e"
+        },
+        "status": "active",
+        "intent": "reflex-order",
+        "authoredOn": "2026-02-27T00:00:00.000Z",
+        "extension": [
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+            "extension": [
+              {
+                "url": "status",
+                "valueCoding": {
+                  "system": "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+                  "code": "9000",
+                  "display": "Repeat Dispense future instance"
+                }
+              }
+            ]
+          },
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
+            "extension": [
+              {
+                "url": "numberOfRepeatsIssued",
+                "valueInteger": 6
+              },
+              {
+                "url": "numberOfRepeatsAllowed",
+                "valueInteger": 7
+              }
+            ]
+          },
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
+            "extension": [
+              {
+                "url": "prescriptionPendingCancellation",
+                "valueBoolean": false
+              },
+              {
+                "url": "lineItemPendingCancellation",
+                "valueBoolean": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:913f4465-621a-4581-a1fc-e2d69ae792a1",
+      "search": {
+        "mode": "match"
+      },
+      "resource": {
+        "resourceType": "RequestGroup",
+        "identifier": [
+          {
+            "system": "https://fhir.nhs.uk/Id/prescription-order-number",
+            "value": "7B7EF0-A83008-3220F7"
+          }
+        ],
+        "subject": {
+          "reference": "urn:uuid:b81d48a2-e889-47b8-959d-a9248da3326e"
+        },
+        "status": "active",
+        "intent": "reflex-order",
+        "authoredOn": "2026-02-27T00:00:00.000Z",
+        "extension": [
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+            "extension": [
+              {
+                "url": "status",
+                "valueCoding": {
+                  "system": "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+                  "code": "9000",
+                  "display": "Repeat Dispense future instance"
+                }
+              }
+            ]
+          },
+            {
+              "url": "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
+              "extension": [
+                {
+                  "url": "numberOfRepeatsIssued",
+                  "valueInteger": 7
+                },
+                {
+                  "url": "numberOfRepeatsAllowed",
+                  "valueInteger": 7
+                }
+              ]
+            },
+            {
+              "url": "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
+              "extension": [
+                {
+                  "url": "prescriptionPendingCancellation",
+                  "valueBoolean": false
+                },
+                {
+                  "url": "lineItemPendingCancellation",
+                  "valueBoolean": false
+                }
+              ]
+            }
+        ]
+      }
+    }
+  ]
+}
