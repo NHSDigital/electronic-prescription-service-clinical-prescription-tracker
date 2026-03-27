@@ -1,0 +1,578 @@
+{
+  "resourceType": "Bundle",
+  "type": "searchset",
+  "total": 1,
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:781ef0ca-d3dd-4443-b9cf-fde36b81c5cb",
+      "search": {
+        "mode": "include"
+      },
+      "resource": {
+        "resourceType": "Patient",
+        "id": "781ef0ca-d3dd-4443-b9cf-fde36b81c5cb",
+        "identifier": [
+          {
+            "system": "https://fhir.nhs.uk/Id/nhs-number",
+            "value": "5839945242"
+          }
+        ],
+        "name": [
+          {
+            "prefix": [
+              "MS"
+            ],
+            "given": [
+              "STACEY"
+            ],
+            "family": "TWITCHETT"
+          }
+        ],
+        "birthDate": "1948-04-30",
+        "gender": "female",
+        "address": [
+          {
+            "line": [
+              "10 HEATHFIELD",
+              "COBHAM",
+              "SURREY"
+            ],
+            "postalCode": "KT11 2QY",
+            "text": "10 HEATHFIELD, COBHAM, SURREY, KT11 2QY",
+            "type": "both",
+            "use": "home"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:a625e6b3-1349-4f7c-93c6-21237404256d",
+      "search": {
+        "mode": "include"
+      },
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "a625e6b3-1349-4f7c-93c6-21237404256d",
+        "organization": {
+          "identifier": {
+            "system": "https://fhir.nhs.uk/Id/ods-organization-code",
+            "value": "A83008"
+          }
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:e667fa39-6cde-40ae-ad00-5de756026da9",
+      "search": {
+        "mode": "include"
+      },
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "e667fa39-6cde-40ae-ad00-5de756026da9",
+        "identifier": [
+          {
+            "system": "https://fhir.nhs.uk/Id/prescription-order-item-number",
+            "value": "89A65B52-F6D8-42FB-B7EB-796B30A74B5F"
+          }
+        ],
+        "subject": {
+          "reference": "urn:uuid:781ef0ca-d3dd-4443-b9cf-fde36b81c5cb"
+        },
+        "status": "active",
+        "intent": "order",
+        "requester": {
+          "reference": "urn:uuid:a625e6b3-1349-4f7c-93c6-21237404256d"
+        },
+        "groupIdentifier": {
+          "system": "https://fhir.nhs.uk/Id/prescription-order-number",
+          "value": "9BD1F0-A83008-D1BF3X"
+        },
+        "medicationCodeableConcept": {
+          "text": "Amoxicillin 250mg capsules"
+        },
+        "courseOfTherapyType": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-course-of-therapy",
+              "code": "acute",
+              "display": "Short course (acute) therapy"
+            }
+          ]
+        },
+        "dispenseRequest": {
+          "quantity": {
+            "value": 20,
+            "unit": "tablet"
+          },
+          "performer": {
+            "identifier": [
+              {
+                "system": "https://fhir.nhs.uk/Id/ods-organization-code",
+                "value": "FA565"
+              }
+            ]
+          },
+          "extension": [
+            {
+              "url": "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PerformerSiteType",
+              "valueCoding": {
+                "system": "https://fhir.nhs.uk/CodeSystem/dispensing-site-preference",
+                "code": "P1",
+                "display": "Other (e.g. Community Pharmacy)"
+              }
+            }
+          ]
+        },
+        "dosageInstruction": [
+          {
+            "text": "2 times a day for 10 days"
+          }
+        ],
+        "substitution": {
+          "allowedBoolean": false
+        },
+        "extension": [
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-DispensingInformation",
+            "extension": [
+              {
+                "url": "dispenseStatus",
+                "valueCoding": {
+                  "system": "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+                  "code": "0007",
+                  "display": "Item to be dispensed"
+                }
+              }
+            ]
+          },
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
+            "extension": [
+              {
+                "url": "lineItemPendingCancellation",
+                "valueBoolean": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:63a24a00-57eb-4db2-a4ad-8a5c3d0a1086",
+      "search": {
+        "mode": "include"
+      },
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "63a24a00-57eb-4db2-a4ad-8a5c3d0a1086",
+        "identifier": [
+          {
+            "system": "https://fhir.nhs.uk/Id/prescription-order-item-number",
+            "value": "E32FEC8C-310B-4B72-9863-EF5A0A39740B"
+          }
+        ],
+        "subject": {
+          "reference": "urn:uuid:781ef0ca-d3dd-4443-b9cf-fde36b81c5cb"
+        },
+        "status": "active",
+        "intent": "order",
+        "requester": {
+          "reference": "urn:uuid:a625e6b3-1349-4f7c-93c6-21237404256d"
+        },
+        "groupIdentifier": {
+          "system": "https://fhir.nhs.uk/Id/prescription-order-number",
+          "value": "9BD1F0-A83008-D1BF3X"
+        },
+        "medicationCodeableConcept": {
+          "text": "Co-codamol 30mg/500mg tablets"
+        },
+        "courseOfTherapyType": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-course-of-therapy",
+              "code": "acute",
+              "display": "Short course (acute) therapy"
+            }
+          ]
+        },
+        "dispenseRequest": {
+          "quantity": {
+            "value": 20,
+            "unit": "tablet"
+          },
+          "performer": {
+            "identifier": [
+              {
+                "system": "https://fhir.nhs.uk/Id/ods-organization-code",
+                "value": "FA565"
+              }
+            ]
+          },
+          "extension": [
+            {
+              "url": "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PerformerSiteType",
+              "valueCoding": {
+                "system": "https://fhir.nhs.uk/CodeSystem/dispensing-site-preference",
+                "code": "P1",
+                "display": "Other (e.g. Community Pharmacy)"
+              }
+            }
+          ]
+        },
+        "dosageInstruction": [
+          {
+            "text": "2 times a day for 10 days"
+          }
+        ],
+        "substitution": {
+          "allowedBoolean": false
+        },
+        "extension": [
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-DispensingInformation",
+            "extension": [
+              {
+                "url": "dispenseStatus",
+                "valueCoding": {
+                  "system": "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+                  "code": "0007",
+                  "display": "Item to be dispensed"
+                }
+              }
+            ]
+          },
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
+            "extension": [
+              {
+                "url": "lineItemPendingCancellation",
+                "valueBoolean": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:c652d930-6695-4819-95a4-3e46d7e5fdaa",
+      "search": {
+        "mode": "include"
+      },
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "c652d930-6695-4819-95a4-3e46d7e5fdaa",
+        "identifier": [
+          {
+            "system": "https://fhir.nhs.uk/Id/prescription-order-item-number",
+            "value": "86221C58-42CD-4151-B8E1-112A88B7C2A1"
+          }
+        ],
+        "subject": {
+          "reference": "urn:uuid:781ef0ca-d3dd-4443-b9cf-fde36b81c5cb"
+        },
+        "status": "active",
+        "intent": "order",
+        "requester": {
+          "reference": "urn:uuid:a625e6b3-1349-4f7c-93c6-21237404256d"
+        },
+        "groupIdentifier": {
+          "system": "https://fhir.nhs.uk/Id/prescription-order-number",
+          "value": "9BD1F0-A83008-D1BF3X"
+        },
+        "medicationCodeableConcept": {
+          "text": "Pseudoephedrine hydrochloride 60mg tablets"
+        },
+        "courseOfTherapyType": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-course-of-therapy",
+              "code": "acute",
+              "display": "Short course (acute) therapy"
+            }
+          ]
+        },
+        "dispenseRequest": {
+          "quantity": {
+            "value": 30,
+            "unit": "tablet"
+          },
+          "performer": {
+            "identifier": [
+              {
+                "system": "https://fhir.nhs.uk/Id/ods-organization-code",
+                "value": "FA565"
+              }
+            ]
+          },
+          "extension": [
+            {
+              "url": "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PerformerSiteType",
+              "valueCoding": {
+                "system": "https://fhir.nhs.uk/CodeSystem/dispensing-site-preference",
+                "code": "P1",
+                "display": "Other (e.g. Community Pharmacy)"
+              }
+            }
+          ]
+        },
+        "dosageInstruction": [
+          {
+            "text": "3 times a day for 10 days"
+          }
+        ],
+        "substitution": {
+          "allowedBoolean": false
+        },
+        "extension": [
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-DispensingInformation",
+            "extension": [
+              {
+                "url": "dispenseStatus",
+                "valueCoding": {
+                  "system": "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+                  "code": "0007",
+                  "display": "Item to be dispensed"
+                }
+              }
+            ]
+          },
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
+            "extension": [
+              {
+                "url": "lineItemPendingCancellation",
+                "valueBoolean": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:8a681c3e-9096-44c8-9363-0a3e73dede16",
+      "search": {
+        "mode": "include"
+      },
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "8a681c3e-9096-44c8-9363-0a3e73dede16",
+        "identifier": [
+          {
+            "system": "https://fhir.nhs.uk/Id/prescription-order-item-number",
+            "value": "0E089446-C024-41D2-BE74-BA4B6772AA75"
+          }
+        ],
+        "subject": {
+          "reference": "urn:uuid:781ef0ca-d3dd-4443-b9cf-fde36b81c5cb"
+        },
+        "status": "active",
+        "intent": "order",
+        "requester": {
+          "reference": "urn:uuid:a625e6b3-1349-4f7c-93c6-21237404256d"
+        },
+        "groupIdentifier": {
+          "system": "https://fhir.nhs.uk/Id/prescription-order-number",
+          "value": "9BD1F0-A83008-D1BF3X"
+        },
+        "medicationCodeableConcept": {
+          "text": "Azithromycin 250mg capsules"
+        },
+        "courseOfTherapyType": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-course-of-therapy",
+              "code": "acute",
+              "display": "Short course (acute) therapy"
+            }
+          ]
+        },
+        "dispenseRequest": {
+          "quantity": {
+            "value": 30,
+            "unit": "tablet"
+          },
+          "performer": {
+            "identifier": [
+              {
+                "system": "https://fhir.nhs.uk/Id/ods-organization-code",
+                "value": "FA565"
+              }
+            ]
+          },
+          "extension": [
+            {
+              "url": "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PerformerSiteType",
+              "valueCoding": {
+                "system": "https://fhir.nhs.uk/CodeSystem/dispensing-site-preference",
+                "code": "P1",
+                "display": "Other (e.g. Community Pharmacy)"
+              }
+            }
+          ]
+        },
+        "dosageInstruction": [
+          {
+            "text": "3 times a day for 10 days"
+          }
+        ],
+        "substitution": {
+          "allowedBoolean": false
+        },
+        "extension": [
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-DispensingInformation",
+            "extension": [
+              {
+                "url": "dispenseStatus",
+                "valueCoding": {
+                  "system": "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+                  "code": "0007",
+                  "display": "Item to be dispensed"
+                }
+              }
+            ]
+          },
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
+            "extension": [
+              {
+                "url": "lineItemPendingCancellation",
+                "valueBoolean": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:a3537c4e-ad29-4dd9-a99b-91466241c0f0",
+      "search": {
+        "mode": "match"
+      },
+      "resource": {
+        "resourceType": "RequestGroup",
+        "id": "a3537c4e-ad29-4dd9-a99b-91466241c0f0",
+        "identifier": [
+          {
+            "system": "https://fhir.nhs.uk/Id/prescription-order-number",
+            "value": "9BD1F0-A83008-D1BF3X"
+          }
+        ],
+        "subject": {
+          "reference": "urn:uuid:781ef0ca-d3dd-4443-b9cf-fde36b81c5cb"
+        },
+        "status": "active",
+        "intent": "order",
+        "author": {
+          "identifier": {
+            "system": "https://fhir.nhs.uk/Id/ods-organization-code",
+            "value": "A83008"
+          }
+        },
+        "authoredOn": "2026-02-27T00:00:00.000Z",
+        "extension": [
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+            "extension": [
+              {
+                "url": "status",
+                "valueCoding": {
+                  "system": "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+                  "code": "0001",
+                  "display": "To be Dispensed"
+                }
+              }
+            ]
+          },
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionType",
+            "valueCoding": {
+              "system": "https://fhir.nhs.uk/CodeSystem/prescription-type",
+              "code": "0101",
+              "display": "Primary Care Prescriber - Medical Prescriber"
+            }
+          },
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
+            "extension": [
+              {
+                "url": "prescriptionPendingCancellation",
+                "valueBoolean": false
+              }
+            ]
+          }
+        ],
+        "action": [
+          {
+            "title": "Prescription Line Items(Medications)",
+            "timingTiming": {
+              "repeat": {
+                "frequency": 1,
+                "period": 28,
+                "periodUnit": "d"
+              }
+            },
+            "action": [
+              {
+                "resource": {
+                  "reference": "urn:uuid:e667fa39-6cde-40ae-ad00-5de756026da9"
+                }
+              },
+              {
+                "resource": {
+                  "reference": "urn:uuid:63a24a00-57eb-4db2-a4ad-8a5c3d0a1086"
+                }
+              },
+              {
+                "resource": {
+                  "reference": "urn:uuid:c652d930-6695-4819-95a4-3e46d7e5fdaa"
+                }
+              },
+              {
+                "resource": {
+                  "reference": "urn:uuid:8a681c3e-9096-44c8-9363-0a3e73dede16"
+                }
+              }
+            ]
+          },
+          {
+            "title": "Prescription status transitions",
+            "action": [
+              {
+                "title": "Prescription upload successful",
+                "timingDateTime": "2026-02-27T15:35:28.000Z",
+                "code": [
+                  {
+                    "coding": [
+                      {
+                        "system": "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+                        "code": "0001",
+                        "display": "To be Dispensed"
+                      }
+                    ]
+                  }
+                ],
+                "participant": [
+                  {
+                    "extension": [
+                      {
+                        "url": "http://hl7.org/fhir/5.0/StructureDefinition/extension-RequestOrchestration.action.participant.typeReference",
+                        "valueReference": {
+                          "identifier": {
+                            "system": "https://fhir.nhs.uk/Id/ods-organization-code",
+                            "value": "A83008"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

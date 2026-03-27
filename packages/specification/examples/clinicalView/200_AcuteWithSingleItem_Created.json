@@ -1,0 +1,275 @@
+{
+  "resourceType": "Bundle",
+  "type": "searchset",
+  "total": 1,
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:dc6fc4a7-5471-4d93-bc40-afeeb5f71041",
+      "search": {
+        "mode": "include"
+      },
+      "resource": {
+        "resourceType": "Patient",
+        "id": "dc6fc4a7-5471-4d93-bc40-afeeb5f71041",
+        "identifier": [
+          {
+            "system": "https://fhir.nhs.uk/Id/nhs-number",
+            "value": "9732730684"
+          }
+        ],
+        "name": [
+          {
+            "prefix": [
+              "MISS"
+            ],
+            "given": [
+              "ETTA"
+            ],
+            "family": "CORY"
+          }
+        ],
+        "birthDate": "1999-01-04",
+        "gender": "female",
+        "address": [
+          {
+            "line": [
+              "123 Dale Avenue",
+              "Long Eaton",
+              "Nottingham"
+            ],
+            "postalCode": "NG10 1NP",
+            "text": "123 Dale Avenue, Long Eaton, Nottingham, NG10 1NP",
+            "type": "both",
+            "use": "home"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:bb9dba95-d330-48b0-bde5-c28b836ffd02",
+      "search": {
+        "mode": "include"
+      },
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "bb9dba95-d330-48b0-bde5-c28b836ffd02",
+        "organization": {
+          "identifier": {
+            "system": "https://fhir.nhs.uk/Id/ods-organization-code",
+            "value": "A99968"
+          }
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:7dfcca73-e409-453c-9e7f-a5f49c73a0e5",
+      "search": {
+        "mode": "include"
+      },
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "7dfcca73-e409-453c-9e7f-a5f49c73a0e5",
+        "identifier": [
+          {
+            "system": "https://fhir.nhs.uk/Id/prescription-order-item-number",
+            "value": "BB61EF23-705E-4A59-BCD7-D04DAD742237"
+          }
+        ],
+        "subject": {
+          "reference": "urn:uuid:dc6fc4a7-5471-4d93-bc40-afeeb5f71041"
+        },
+        "status": "active",
+        "intent": "order",
+        "requester": {
+          "reference": "urn:uuid:bb9dba95-d330-48b0-bde5-c28b836ffd02"
+        },
+        "groupIdentifier": {
+          "system": "https://fhir.nhs.uk/Id/prescription-order-number",
+          "value": "689CD8-A83008-EBBE3S"
+        },
+        "medicationCodeableConcept": {
+          "text": "Methotrexate 10mg/0.2ml solution for injection pre-filled syringes"
+        },
+        "courseOfTherapyType": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-course-of-therapy",
+              "code": "acute",
+              "display": "Short course (acute) therapy"
+            }
+          ]
+        },
+        "dispenseRequest": {
+          "quantity": {
+            "value": 1,
+            "unit": "pre-filled disposable injection"
+          },
+          "performer": {
+            "identifier": [
+              {
+                "system": "https://fhir.nhs.uk/Id/ods-organization-code",
+                "value": "X25"
+              }
+            ]
+          },
+          "extension": [
+            {
+              "url": "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PerformerSiteType",
+              "valueCoding": {
+                "system": "https://fhir.nhs.uk/CodeSystem/dispensing-site-preference",
+                "code": "P1",
+                "display": "Other (e.g. Community Pharmacy)"
+              }
+            }
+          ]
+        },
+        "dosageInstruction": [
+          {
+            "text": "Inject 10 milligram - 5 times a day - Subcutaneous route - for 10 days"
+          }
+        ],
+        "substitution": {
+          "allowedBoolean": false
+        },
+        "extension": [
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-DispensingInformation",
+            "extension": [
+              {
+                "url": "dispenseStatus",
+                "valueCoding": {
+                  "system": "https://fhir.nhs.uk/CodeSystem/medicationdispense-type",
+                  "code": "0007",
+                  "display": "Item to be dispensed"
+                }
+              }
+            ]
+          },
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
+            "extension": [
+              {
+                "url": "lineItemPendingCancellation",
+                "valueBoolean": false
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:fa2b929f-1db3-46ca-aaff-7fef051b0f0e",
+      "search": {
+        "mode": "match"
+      },
+      "resource": {
+        "resourceType": "RequestGroup",
+        "id": "fa2b929f-1db3-46ca-aaff-7fef051b0f0e",
+        "identifier": [
+          {
+            "system": "https://fhir.nhs.uk/Id/prescription-order-number",
+            "value": "689CD8-A83008-EBBE3S"
+          }
+        ],
+        "subject": {
+          "reference": "urn:uuid:dc6fc4a7-5471-4d93-bc40-afeeb5f71041"
+        },
+        "status": "active",
+        "intent": "order",
+        "author": {
+          "identifier": {
+            "system": "https://fhir.nhs.uk/Id/ods-organization-code",
+            "value": "A99968"
+          }
+        },
+        "authoredOn": "2026-03-06T15:41:24.000Z",
+        "extension": [
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+            "extension": [
+              {
+                "url": "status",
+                "valueCoding": {
+                  "system": "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+                  "code": "0001",
+                  "display": "To be Dispensed"
+                }
+              }
+            ]
+          },
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionType",
+            "valueCoding": {
+              "system": "https://fhir.nhs.uk/CodeSystem/prescription-type",
+              "code": "1001",
+              "display": "Outpatient Community Prescriber - Medical Prescriber"
+            }
+          },
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
+            "extension": [
+              {
+                "url": "prescriptionPendingCancellation",
+                "valueBoolean": false
+              }
+            ]
+          }
+        ],
+        "action": [
+          {
+            "title": "Prescription Line Items(Medications)",
+            "timingTiming": {
+              "repeat": {
+                "frequency": 1,
+                "period": 28,
+                "periodUnit": "d"
+              }
+            },
+            "action": [
+              {
+                "resource": {
+                  "reference": "urn:uuid:7dfcca73-e409-453c-9e7f-a5f49c73a0e5"
+                }
+              }
+            ]
+          },
+          {
+            "title": "Prescription status transitions",
+            "action": [
+              {
+                "title": "Prescription upload successful",
+                "timingDateTime": "2026-03-06T15:41:26.000Z",
+                "code": [
+                  {
+                    "coding": [
+                      {
+                        "system": "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+                        "code": "0001",
+                        "display": "To be Dispensed"
+                      }
+                    ]
+                  }
+                ],
+                "participant": [
+                  {
+                    "extension": [
+                      {
+                        "url": "http://hl7.org/fhir/5.0/StructureDefinition/extension-RequestOrchestration.action.participant.typeReference",
+                        "valueReference": {
+                          "identifier": {
+                            "system": "https://fhir.nhs.uk/Id/ods-organization-code",
+                            "value": "A99968"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
