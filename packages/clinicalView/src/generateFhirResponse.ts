@@ -145,7 +145,7 @@ const generateRequestGroupExtensions = (prescription: Prescription): Array<Exten
 
   logger.info("Generating PrescriptionStatus extension...")
   const prescriptionStatusExtension: Extension & PrescriptionStatusExtensionType = {
-    url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+    url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
     extension: [{
       url: "status",
       valueCoding: {
@@ -198,7 +198,7 @@ const generateRequestGroupExtensions = (prescription: Prescription): Array<Exten
 
   if (prescription.cancellationReason){
     const cancellationReasonExtension: Extension & PrescriptionStatusExtensionType = {
-      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
       extension: [{
         url: "cancellationReason",
         valueCoding: {

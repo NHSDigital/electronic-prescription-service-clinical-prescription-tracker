@@ -8,7 +8,7 @@ export const prescriptionStatusExtension = {
     url: {
       type: "string",
       description: "Source of the definition for the extension code - a logical name or a URL.",
-      enum: ["https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory"]
+      enum: ["https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory"]
     },
     extension: {
       type: "array",
