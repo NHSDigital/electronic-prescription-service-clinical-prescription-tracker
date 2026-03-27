@@ -39,7 +39,7 @@ const httpErrorCoding = {
       description: "A representation of the meaning of the code in the system.",
       enum: [
         "400: The Server was unable to process the request.",
-        "401: The Server deemed you unauthorized to make this request",
+        "401: The Server deemed you unauthorized to make this request.",
         "403: Failed to Authenticate with the Server.",
         "404: The Server was unable to find the specified resource.",
         "408: The server has timed out whilst processing the request.",

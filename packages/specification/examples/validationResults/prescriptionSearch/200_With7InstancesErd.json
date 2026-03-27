@@ -1,0 +1,1242 @@
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 254
+        }
+      ],
+      "severity": "warning",
+      "code": "processing",
+      "diagnostics": "Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation)",
+      "location": [
+        "Patient",
+        "Line[1] Col[254]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 290
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_Unknown"
+        }
+      ],
+      "severity": "information",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_Unknown"
+          }
+        ]
+      },
+      "diagnostics": "Unknown extension https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+      "location": [
+        "RequestGroup.extension[0]",
+        "Line[1] Col[290]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 701
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_Simple_WRONG"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_Simple_WRONG"
+          }
+        ]
+      },
+      "diagnostics": "The Extension 'https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation' definition is for a simple extension, so it must contain a value, not extensions",
+      "location": [
+        "RequestGroup.extension[2]",
+        "Line[1] Col[701]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 701
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Validation_VAL_Profile_Maximum"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Validation_VAL_Profile_Maximum"
+          }
+        ]
+      },
+      "diagnostics": "Extension.extension: max allowed = 0, but found 2 (from https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0)",
+      "location": [
+        "RequestGroup.extension[2]",
+        "Line[1] Col[701]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 640
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_SubExtension_Invalid"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_SubExtension_Invalid"
+          }
+        ]
+      },
+      "diagnostics": "Sub-extension url 'prescriptionPendingCancellation' is not defined by the Extension https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0",
+      "location": [
+        "RequestGroup.extension[2].extension[0][url='prescriptionPendingCancellation']",
+        "Line[1] Col[640]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 699
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_SubExtension_Invalid"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_SubExtension_Invalid"
+          }
+        ]
+      },
+      "diagnostics": "Sub-extension url 'lineItemPendingCancellation' is not defined by the Extension https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0",
+      "location": [
+        "RequestGroup.extension[2].extension[1][url='lineItemPendingCancellation']",
+        "Line[1] Col[699]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 965
+        }
+      ],
+      "severity": "warning",
+      "code": "processing",
+      "diagnostics": "Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation)",
+      "location": [
+        "RequestGroup",
+        "Line[1] Col[965]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 306
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_Unknown"
+        }
+      ],
+      "severity": "information",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_Unknown"
+          }
+        ]
+      },
+      "diagnostics": "Unknown extension https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+      "location": [
+        "RequestGroup.extension[0]",
+        "Line[1] Col[306]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 717
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_Simple_WRONG"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_Simple_WRONG"
+          }
+        ]
+      },
+      "diagnostics": "The Extension 'https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation' definition is for a simple extension, so it must contain a value, not extensions",
+      "location": [
+        "RequestGroup.extension[2]",
+        "Line[1] Col[717]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 717
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Validation_VAL_Profile_Maximum"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Validation_VAL_Profile_Maximum"
+          }
+        ]
+      },
+      "diagnostics": "Extension.extension: max allowed = 0, but found 2 (from https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0)",
+      "location": [
+        "RequestGroup.extension[2]",
+        "Line[1] Col[717]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 656
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_SubExtension_Invalid"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_SubExtension_Invalid"
+          }
+        ]
+      },
+      "diagnostics": "Sub-extension url 'prescriptionPendingCancellation' is not defined by the Extension https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0",
+      "location": [
+        "RequestGroup.extension[2].extension[0][url='prescriptionPendingCancellation']",
+        "Line[1] Col[656]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 715
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_SubExtension_Invalid"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_SubExtension_Invalid"
+          }
+        ]
+      },
+      "diagnostics": "Sub-extension url 'lineItemPendingCancellation' is not defined by the Extension https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0",
+      "location": [
+        "RequestGroup.extension[2].extension[1][url='lineItemPendingCancellation']",
+        "Line[1] Col[715]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 981
+        }
+      ],
+      "severity": "warning",
+      "code": "processing",
+      "diagnostics": "Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation)",
+      "location": [
+        "RequestGroup",
+        "Line[1] Col[981]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 306
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_Unknown"
+        }
+      ],
+      "severity": "information",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_Unknown"
+          }
+        ]
+      },
+      "diagnostics": "Unknown extension https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+      "location": [
+        "RequestGroup.extension[0]",
+        "Line[1] Col[306]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 717
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_Simple_WRONG"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_Simple_WRONG"
+          }
+        ]
+      },
+      "diagnostics": "The Extension 'https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation' definition is for a simple extension, so it must contain a value, not extensions",
+      "location": [
+        "RequestGroup.extension[2]",
+        "Line[1] Col[717]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 717
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Validation_VAL_Profile_Maximum"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Validation_VAL_Profile_Maximum"
+          }
+        ]
+      },
+      "diagnostics": "Extension.extension: max allowed = 0, but found 2 (from https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0)",
+      "location": [
+        "RequestGroup.extension[2]",
+        "Line[1] Col[717]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 656
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_SubExtension_Invalid"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_SubExtension_Invalid"
+          }
+        ]
+      },
+      "diagnostics": "Sub-extension url 'prescriptionPendingCancellation' is not defined by the Extension https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0",
+      "location": [
+        "RequestGroup.extension[2].extension[0][url='prescriptionPendingCancellation']",
+        "Line[1] Col[656]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 715
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_SubExtension_Invalid"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_SubExtension_Invalid"
+          }
+        ]
+      },
+      "diagnostics": "Sub-extension url 'lineItemPendingCancellation' is not defined by the Extension https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0",
+      "location": [
+        "RequestGroup.extension[2].extension[1][url='lineItemPendingCancellation']",
+        "Line[1] Col[715]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 981
+        }
+      ],
+      "severity": "warning",
+      "code": "processing",
+      "diagnostics": "Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation)",
+      "location": [
+        "RequestGroup",
+        "Line[1] Col[981]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 306
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_Unknown"
+        }
+      ],
+      "severity": "information",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_Unknown"
+          }
+        ]
+      },
+      "diagnostics": "Unknown extension https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+      "location": [
+        "RequestGroup.extension[0]",
+        "Line[1] Col[306]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 717
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_Simple_WRONG"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_Simple_WRONG"
+          }
+        ]
+      },
+      "diagnostics": "The Extension 'https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation' definition is for a simple extension, so it must contain a value, not extensions",
+      "location": [
+        "RequestGroup.extension[2]",
+        "Line[1] Col[717]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 717
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Validation_VAL_Profile_Maximum"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Validation_VAL_Profile_Maximum"
+          }
+        ]
+      },
+      "diagnostics": "Extension.extension: max allowed = 0, but found 2 (from https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0)",
+      "location": [
+        "RequestGroup.extension[2]",
+        "Line[1] Col[717]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 656
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_SubExtension_Invalid"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_SubExtension_Invalid"
+          }
+        ]
+      },
+      "diagnostics": "Sub-extension url 'prescriptionPendingCancellation' is not defined by the Extension https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0",
+      "location": [
+        "RequestGroup.extension[2].extension[0][url='prescriptionPendingCancellation']",
+        "Line[1] Col[656]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 715
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_SubExtension_Invalid"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_SubExtension_Invalid"
+          }
+        ]
+      },
+      "diagnostics": "Sub-extension url 'lineItemPendingCancellation' is not defined by the Extension https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0",
+      "location": [
+        "RequestGroup.extension[2].extension[1][url='lineItemPendingCancellation']",
+        "Line[1] Col[715]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 981
+        }
+      ],
+      "severity": "warning",
+      "code": "processing",
+      "diagnostics": "Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation)",
+      "location": [
+        "RequestGroup",
+        "Line[1] Col[981]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 306
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_Unknown"
+        }
+      ],
+      "severity": "information",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_Unknown"
+          }
+        ]
+      },
+      "diagnostics": "Unknown extension https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+      "location": [
+        "RequestGroup.extension[0]",
+        "Line[1] Col[306]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 717
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_Simple_WRONG"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_Simple_WRONG"
+          }
+        ]
+      },
+      "diagnostics": "The Extension 'https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation' definition is for a simple extension, so it must contain a value, not extensions",
+      "location": [
+        "RequestGroup.extension[2]",
+        "Line[1] Col[717]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 717
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Validation_VAL_Profile_Maximum"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Validation_VAL_Profile_Maximum"
+          }
+        ]
+      },
+      "diagnostics": "Extension.extension: max allowed = 0, but found 2 (from https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0)",
+      "location": [
+        "RequestGroup.extension[2]",
+        "Line[1] Col[717]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 656
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_SubExtension_Invalid"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_SubExtension_Invalid"
+          }
+        ]
+      },
+      "diagnostics": "Sub-extension url 'prescriptionPendingCancellation' is not defined by the Extension https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0",
+      "location": [
+        "RequestGroup.extension[2].extension[0][url='prescriptionPendingCancellation']",
+        "Line[1] Col[656]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 715
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_SubExtension_Invalid"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_SubExtension_Invalid"
+          }
+        ]
+      },
+      "diagnostics": "Sub-extension url 'lineItemPendingCancellation' is not defined by the Extension https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0",
+      "location": [
+        "RequestGroup.extension[2].extension[1][url='lineItemPendingCancellation']",
+        "Line[1] Col[715]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 981
+        }
+      ],
+      "severity": "warning",
+      "code": "processing",
+      "diagnostics": "Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation)",
+      "location": [
+        "RequestGroup",
+        "Line[1] Col[981]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 306
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_Unknown"
+        }
+      ],
+      "severity": "information",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_Unknown"
+          }
+        ]
+      },
+      "diagnostics": "Unknown extension https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+      "location": [
+        "RequestGroup.extension[0]",
+        "Line[1] Col[306]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 717
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_Simple_WRONG"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_Simple_WRONG"
+          }
+        ]
+      },
+      "diagnostics": "The Extension 'https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation' definition is for a simple extension, so it must contain a value, not extensions",
+      "location": [
+        "RequestGroup.extension[2]",
+        "Line[1] Col[717]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 717
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Validation_VAL_Profile_Maximum"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Validation_VAL_Profile_Maximum"
+          }
+        ]
+      },
+      "diagnostics": "Extension.extension: max allowed = 0, but found 2 (from https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0)",
+      "location": [
+        "RequestGroup.extension[2]",
+        "Line[1] Col[717]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 656
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_SubExtension_Invalid"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_SubExtension_Invalid"
+          }
+        ]
+      },
+      "diagnostics": "Sub-extension url 'prescriptionPendingCancellation' is not defined by the Extension https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0",
+      "location": [
+        "RequestGroup.extension[2].extension[0][url='prescriptionPendingCancellation']",
+        "Line[1] Col[656]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 715
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_SubExtension_Invalid"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_SubExtension_Invalid"
+          }
+        ]
+      },
+      "diagnostics": "Sub-extension url 'lineItemPendingCancellation' is not defined by the Extension https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0",
+      "location": [
+        "RequestGroup.extension[2].extension[1][url='lineItemPendingCancellation']",
+        "Line[1] Col[715]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 981
+        }
+      ],
+      "severity": "warning",
+      "code": "processing",
+      "diagnostics": "Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation)",
+      "location": [
+        "RequestGroup",
+        "Line[1] Col[981]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 306
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_Unknown"
+        }
+      ],
+      "severity": "information",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_Unknown"
+          }
+        ]
+      },
+      "diagnostics": "Unknown extension https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+      "location": [
+        "RequestGroup.extension[0]",
+        "Line[1] Col[306]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 717
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_Simple_WRONG"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_Simple_WRONG"
+          }
+        ]
+      },
+      "diagnostics": "The Extension 'https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation' definition is for a simple extension, so it must contain a value, not extensions",
+      "location": [
+        "RequestGroup.extension[2]",
+        "Line[1] Col[717]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 717
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Validation_VAL_Profile_Maximum"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Validation_VAL_Profile_Maximum"
+          }
+        ]
+      },
+      "diagnostics": "Extension.extension: max allowed = 0, but found 2 (from https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0)",
+      "location": [
+        "RequestGroup.extension[2]",
+        "Line[1] Col[717]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 656
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_SubExtension_Invalid"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_SubExtension_Invalid"
+          }
+        ]
+      },
+      "diagnostics": "Sub-extension url 'prescriptionPendingCancellation' is not defined by the Extension https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0",
+      "location": [
+        "RequestGroup.extension[2].extension[0][url='prescriptionPendingCancellation']",
+        "Line[1] Col[656]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 715
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_SubExtension_Invalid"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_SubExtension_Invalid"
+          }
+        ]
+      },
+      "diagnostics": "Sub-extension url 'lineItemPendingCancellation' is not defined by the Extension https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0",
+      "location": [
+        "RequestGroup.extension[2].extension[1][url='lineItemPendingCancellation']",
+        "Line[1] Col[715]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 981
+        }
+      ],
+      "severity": "warning",
+      "code": "processing",
+      "diagnostics": "Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation)",
+      "location": [
+        "RequestGroup",
+        "Line[1] Col[981]"
+      ]
+    }
+  ]
+}
