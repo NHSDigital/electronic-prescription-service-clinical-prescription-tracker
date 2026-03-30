@@ -135,7 +135,7 @@ describe("Test generateFhirResponse: RequestGroup resource structure & extension
 
   it("returns a RequestGroup with a status PrescriptionStatus extension when called", () => {
     const expected: PrescriptionStatusExtensionType = {
-      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
       extension: [{
         url: "status",
         valueCoding: {
@@ -255,7 +255,7 @@ describe("Test generateFhirResponse: RequestGroup resource structure & extension
       }]
     }
     const expectedCancellationReason: PrescriptionStatusExtensionType = {
-      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
       extension:[{
         url: "cancellationReason",
         valueCoding: {
@@ -295,7 +295,7 @@ describe("Test generateFhirResponse: RequestGroup resource structure & extension
       }]
     }
     const expectedCancellationReason = {
-      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
       extension:[{
         url: "cancellationReason",
         valueCoding: {
@@ -335,7 +335,7 @@ describe("Test generateFhirResponse: RequestGroup resource structure & extension
       }]
     }
     const expectedCancellationReason: PrescriptionStatusExtensionType = {
-      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
       extension:[{
         url: "cancellationReason",
         valueCoding: {
