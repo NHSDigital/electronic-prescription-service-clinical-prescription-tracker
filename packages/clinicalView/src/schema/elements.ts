@@ -52,6 +52,13 @@ export const medicationCodeableConcept = {
 export const quantity ={
   type: "object",
   properties: {
+    system: {
+      type: "string",
+      enum: ["http://unitsofmeasure.org"]
+    },
+    code: {
+      type: "string"
+    },
     value: {
       type: "integer"
     },
@@ -59,7 +66,7 @@ export const quantity ={
       type: "string"
     }
   },
-  required: ["value", "unit"]
+  required: ["system", "code", "value", "unit"]
 } as const satisfies JSONSchema
 
 export const dosageInstruction = {
