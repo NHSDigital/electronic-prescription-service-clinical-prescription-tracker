@@ -745,6 +745,10 @@ describe("Test generateFhirResponse: MedicationRequest resource structure", () =
           value: "C0C3E6-A83008-93D8FL"
         },
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Amoxicillin 250mg capsules"
         },
         courseOfTherapyType: {
@@ -827,6 +831,10 @@ describe("Test generateFhirResponse: MedicationRequest resource structure", () =
           value: "C0C3E6-A83008-93D8FL"
         },
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Co-codamol 30mg/500mg tablets"
         },
         courseOfTherapyType: {
@@ -909,6 +917,10 @@ describe("Test generateFhirResponse: MedicationRequest resource structure", () =
           value: "C0C3E6-A83008-93D8FL"
         },
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Pseudoephedrine hydrochloride 60mg tablets"
         },
         courseOfTherapyType: {
@@ -991,6 +1003,10 @@ describe("Test generateFhirResponse: MedicationRequest resource structure", () =
           value: "C0C3E6-A83008-93D8FL"
         },
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Azithromycin 250mg capsules"
         },
         courseOfTherapyType: {
@@ -1096,6 +1112,10 @@ describe("Test generateFhirResponse: MedicationRequest resource structure", () =
           value: "EA1CBC-A83008-F1F8A8"
         },
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Amoxicillin 250mg capsules"
         },
         courseOfTherapyType: {
@@ -1189,6 +1209,10 @@ describe("Test generateFhirResponse: MedicationRequest resource structure", () =
           value: "C0C3E6-A83008-93D8FL"
         },
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Amoxicillin 250mg capsules"
         },
         courseOfTherapyType: {
@@ -1294,6 +1318,10 @@ describe("Test generateFhirResponse: MedicationRequest resource structure", () =
           value: "54F746-A83008-E8A05J"
         },
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Amoxicillin 250mg capsules"
         },
         courseOfTherapyType: {
@@ -1405,6 +1433,10 @@ describe("Test generateFhirResponse: MedicationRequest resource structure", () =
           value: "65C4B1-A83008-AA9C1I"
         },
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Amoxicillin 250mg capsules"
         },
         courseOfTherapyType: {
@@ -1521,6 +1553,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-111-111-111"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Amoxicillin 250mg capsules"
         },
         quantity: {
@@ -1573,6 +1609,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-222-222-222"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Co-codamol 30mg/500mg tablets"
         },
         quantity: {
@@ -1625,6 +1665,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-333-333-333"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Pseudoephedrine hydrochloride 60mg tablets"
         },
         quantity: {
@@ -1677,6 +1721,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-444-444-444"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Azithromycin 250mg capsules"
         },
         quantity: {
@@ -1729,6 +1777,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-111-111-111"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Amoxicillin 250mg capsules"
         },
         quantity: {
@@ -1781,6 +1833,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-222-222-222"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Co-codamol 30mg/500mg tablets"
         },
         quantity: {
@@ -1833,6 +1889,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-333-333-333"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Pseudoephedrine hydrochloride 60mg tablets"
         },
         quantity: {
@@ -1885,6 +1945,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-444-444-444"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Azithromycin 250mg capsules"
         },
         quantity: {
@@ -1972,6 +2036,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-111-111-111"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Amoxicillin 250mg capsules"
         },
         quantity: {
@@ -2024,6 +2092,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-222-222-222"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Co-codamol 30mg/500mg tablets"
         },
         quantity: {
@@ -2076,6 +2148,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-333-333-333"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Pseudoephedrine hydrochloride 60mg tablets"
         },
         quantity: {
@@ -2128,6 +2204,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-444-444-444"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Azithromycin 250mg capsules"
         },
         quantity: {
@@ -2180,6 +2260,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-111-111-111"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Amoxicillin 250mg capsules"
         },
         quantity: {
@@ -2232,6 +2316,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-222-222-222"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Co-codamol 30mg/500mg tablets"
         },
         quantity: {
@@ -2284,6 +2372,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-333-333-333"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Pseudoephedrine hydrochloride 60mg tablets"
         },
         quantity: {
@@ -2336,6 +2428,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-444-444-444"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Azithromycin 250mg capsules"
         },
         quantity: {
@@ -2421,6 +2517,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-111-111-111"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Amoxicillin 250mg capsules"
         },
         quantity: {
@@ -2473,6 +2573,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-222-222-222"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Co-codamol 30mg/500mg tablets"
         },
         quantity: {
@@ -2525,6 +2629,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-333-333-333"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Pseudoephedrine hydrochloride 60mg tablets"
         },
         quantity: {
@@ -2577,6 +2685,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-444-444-444"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Azithromycin 250mg capsules"
         },
         quantity: {
@@ -2629,6 +2741,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-111-111-111"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Amoxicillin 250mg capsules"
         },
         quantity: {
@@ -2681,6 +2797,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-444-444-444"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Azithromycin 250mg capsules"
         },
         quantity: {
@@ -2763,6 +2883,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-111-111-111"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Amoxicillin 250mg capsules A"
         },
         quantity: {
@@ -2824,6 +2948,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-222-222-222"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Co-codamol 30mg/500mg tablets A"
         },
         quantity: {
@@ -2884,6 +3012,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-333-333-333"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Pseudoephedrine hydrochloride 60mg tablets A"
         },
         quantity: {
@@ -2944,6 +3076,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-444-444-444"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Azithromycin 250mg capsules A"
         },
         quantity: {
@@ -3036,6 +3172,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-111-111-111"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Amoxicillin 250mg capsules"
         },
         quantity: {
@@ -3096,6 +3236,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-111-111-111"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: ""
         },
         quantity: {
@@ -3154,6 +3298,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-111-111-111"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Methotrexate 10mg/0.2ml solution for injection pre-filled syringes"
         },
         quantity: {
@@ -3374,6 +3522,10 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           reference: "urn:uuid:MEDREQ-111-111-111"
         }],
         medicationCodeableConcept: {
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: "Amoxicillin 250mg capsules"
         },
         quantity: {

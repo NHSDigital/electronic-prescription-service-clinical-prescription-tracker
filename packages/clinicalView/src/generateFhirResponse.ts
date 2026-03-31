@@ -367,6 +367,11 @@ const generateMedicationRequests = (
           value: prescription.prescriptionId
         },
         medicationCodeableConcept: {
+          // Hard code the generic SNOWMED code
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: lineItem.itemName
         },
         courseOfTherapyType: {
@@ -521,6 +526,11 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
               reference: `urn:uuid:${medicationRequestResourceIds[lineItem.lineItemNo]}`
             }],
             medicationCodeableConcept: {
+              // Hard code the generic SNOWMED code
+              coding: [{
+                system: "http://snomed.info/sct",
+                code: "138875005"
+              }],
               text: component.itemName ?? ""
             },
             quantity: {
