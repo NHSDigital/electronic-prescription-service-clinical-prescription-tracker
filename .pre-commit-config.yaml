@@ -26,10 +26,9 @@ repos:
       - id: check-vulnerabilities
         name: Check for vulnerabilities
         description: Run grype to check for vulnerabilities in dependencies
-        entry: bash
-        args:
-          - -c
-          - make grype-scan-local
+        entry: make
+        args: ["grype-scan-local"]
+        verbose: true
         language: system
         pass_filenames: false
         always_run: true
