@@ -26,11 +26,7 @@ repos:
       - id: check-vulnerabilities
         name: Check for vulnerabilities
         description: Run grype to check for vulnerabilities in dependencies
-        entry: bash
-        args:
-          - -c
-          - |
-            grype --fail-on high .
+        entry: grype --fail-on high .
         verbose: true
         language: unsupported
         pass_filenames: false
