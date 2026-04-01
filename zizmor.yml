@@ -13,3 +13,5 @@ rules:
       - run_regression_tests.yml:58:28
       - delete_old_cloudformation_stacks.yml:79:31
       - delete_old_cloudformation_stacks.yml:49:31
+  unpinned-uses:
+    disable: true

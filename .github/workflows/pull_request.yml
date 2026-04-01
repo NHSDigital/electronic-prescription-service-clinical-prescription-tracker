@@ -28,6 +28,9 @@ jobs:
   quality_checks:
     uses: NHSDigital/eps-common-workflows/.github/workflows/quality-checks-devcontainer.yml@test_zizmor
     needs: [get_config_values]
+    permissions:
+      contents: read
+      id-token: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
     secrets:
