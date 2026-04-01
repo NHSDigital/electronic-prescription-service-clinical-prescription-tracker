@@ -30,6 +30,7 @@ repos:
         args:
           - -c
           - |
+            echo $PWD
             make grype-scan-local
         verbose: true
         language: system
