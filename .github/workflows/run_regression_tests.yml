@@ -21,23 +21,22 @@ on:
     secrets:
       REGRESSION_TESTS_PEM:
         required: true
-permissions:
-  id-token: write
-  contents: write
+
+permissions: {}
 
 jobs:
 
   run_regression_tests:
     runs-on: ubuntu-22.04
+    permissions:
+      id-token: write
+      contents: write
     container:
       image: ${{ inputs.pinned_image }}
       options: --user 1001:1001 --group-add 128
     defaults:
       run:
         shell: bash
-    permissions:
-      id-token: write
-      contents: write
 
     steps:
       - name: copy .tool-versions

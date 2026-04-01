@@ -55,6 +55,7 @@ on:
         required: true
       REGRESSION_TESTS_PEM:
         required: false
+permissions: {}
 
 jobs:
   release_code:
