@@ -89,6 +89,10 @@ jobs:
   package_code:
     needs: [get_issue_number, get_commit_id, get_config_values]
     uses: ./.github/workflows/cdk_package_code.yml
+    permissions:
+      contents: read
+      packages: read
+      id-token: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
