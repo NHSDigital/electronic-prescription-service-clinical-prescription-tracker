@@ -124,8 +124,6 @@ repos:
         types_or: [yaml]
         pass_filenames: false
 
-  - repo: local
-    hooks:
       - id: git-secrets
         name: Git Secrets
         description: git-secrets scans commits, commit messages, and --no-ff merges to prevent adding secrets into your git repositories.
