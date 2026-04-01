@@ -31,6 +31,7 @@ jobs:
     permissions:
       contents: read
       id-token: write
+      packages: read
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
     secrets:
