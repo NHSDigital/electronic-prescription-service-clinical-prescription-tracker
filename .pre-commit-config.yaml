@@ -30,8 +30,7 @@ repos:
         args:
           - -c
           - |
-            echo $PWD
-            make grype-scan-local
+            grype --fail-on high .
         verbose: true
         language: system
         pass_filenames: false
