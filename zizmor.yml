@@ -1,0 +1,15 @@
+rules:
+  unpinned-images:
+    # these workflows use unpinned images because they are using a full image passed in that contains the tag
+    ignore:
+      - cdk_package_code.yml:24:7
+      - cdk_release_code.yml:64:7
+      - cdk_release_code.yml:136:7
+      - delete_old_cloudformation_stacks.yml:18:7
+      - delete_old_cloudformation_stacks.yml:61:7
+      - run_regression_tests.yml:33:7
+  secrets-outside-env:
+    ignore:
+      - run_regression_tests.yml:58:28
+      - delete_old_cloudformation_stacks.yml:79:31
+      - delete_old_cloudformation_stacks.yml:49:31

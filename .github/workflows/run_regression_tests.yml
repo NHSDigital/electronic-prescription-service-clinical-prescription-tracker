@@ -21,6 +21,9 @@ on:
     secrets:
       REGRESSION_TESTS_PEM:
         required: true
+permissions:
+  id-token: write
+  contents: write
 
 jobs:
 
@@ -45,6 +48,7 @@ jobs:
         with:
           ref: ${{ inputs.BRANCH_NAME }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Generate a token to authenticate regression testing
         id: generate-token
@@ -65,7 +69,7 @@ jobs:
         env:
           TARGET_ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
           VERSION_NUMBER: ${{ inputs.VERSION_NUMBER }}
-          GITHUB-TOKEN: ${{ steps.generate-token.outputs.token }}
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |
           if [[ "$TARGET_ENVIRONMENT" != "prod" && "$TARGET_ENVIRONMENT" != "ref" ]]; then
             # this should be the tag of the tests you want to run
@@ -81,7 +85,7 @@ jobs:
             poetry run python -u run_regression_tests.py \
             --env="$TARGET_ENVIRONMENT" \
             --pr_label="$VERSION_NUMBER" \
-            --token=${{ steps.generate-token.outputs.token }} \
+            --token="${GITHUB_TOKEN}" \
             --is_called_from_github=true \
             --product=CPTS-FHIR \
             --regression_test_repo_tag "${REGRESSION_TEST_REPO_TAG}" \

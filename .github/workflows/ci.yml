@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
 
+permissions: {}
 jobs:
   get_config_values:
     uses: NHSDigital/eps-common-workflows/.github/workflows/get-repo-config.yml@5ac2707dd9cd60ad127275179495b9c890d74711
@@ -38,7 +39,6 @@ jobs:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       branch_name: main
       tag_format: ${{ needs.get_config_values.outputs.tag_format }}
-    secrets: inherit
 
   package_code:
     needs: [get_commit_id, tag_release, get_config_values]
