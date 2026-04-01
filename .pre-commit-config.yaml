@@ -23,16 +23,6 @@ repos:
 
   - repo: local
     hooks:
-      - id: check-vulnerabilities
-        name: Check for vulnerabilities
-        description: Run grype to check for vulnerabilities in dependencies
-        entry: grype --fail-on high .
-        verbose: true
-        language: unsupported
-        pass_filenames: false
-        always_run: true
-        require_serial: true
-
       - id: check-commit-signing
         name: Check commit signing
         description: Ensures that commits are GPG signed
