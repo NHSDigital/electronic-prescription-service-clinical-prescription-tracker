@@ -60,6 +60,9 @@ jobs:
   release_dev:
     needs: [get_commit_id, tag_release, package_code, get_config_values]
     uses: ./.github/workflows/cdk_release_code.yml
+    permissions:
+      contents: write
+      id-token: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
@@ -106,6 +109,9 @@ jobs:
   release_qa:
     needs: [get_commit_id, tag_release, package_code, release_dev, get_config_values] # TODO: add sandbox back once implemented
     uses: ./.github/workflows/cdk_release_code.yml
+    permissions:
+      contents: write
+      id-token: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
