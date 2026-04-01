@@ -25,11 +25,28 @@ export const lineItemIdentifier = {
 export const medicationCodeableConcept = {
   type: "object",
   properties: {
+    coding: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          system: {
+            type: "string",
+            enum: ["http://snomed.info/sct"]
+          },
+          code: {
+            type: "string",
+            enum: ["138875005"]
+          }
+        },
+        required: ["system", "code"]
+      }
+    },
     text: {
       type: "string"
     }
   },
-  required: ["text"]
+  required: ["coding", "text"]
 } as const satisfies JSONSchema
 
 export const quantity ={
