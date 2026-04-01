@@ -383,6 +383,8 @@ const generateMedicationRequests = (
         },
         dispenseRequest: {
           quantity: {
+            system: "http://unitsofmeasure.org",
+            code: `${lineItem.quantity}`, // has to be a string
             value: lineItem.quantity,
             unit: lineItem.quantityForm
           },
@@ -534,6 +536,8 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
               text: component.itemName ?? ""
             },
             quantity: {
+              system: "http://unitsofmeasure.org",
+              code: `${component.quantity ?? 0}`, // has to be a string
               value: component.quantity ?? 0,
               unit: component.quantityForm ?? ""
             },

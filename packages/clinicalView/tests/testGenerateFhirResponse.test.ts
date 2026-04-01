@@ -760,6 +760,8 @@ describe("Test generateFhirResponse: MedicationRequest resource structure", () =
         },
         dispenseRequest: {
           quantity: {
+            system: "http://unitsofmeasure.org",
+            code: "20",
             value: 20,
             unit: "tablet"
           },
@@ -846,6 +848,8 @@ describe("Test generateFhirResponse: MedicationRequest resource structure", () =
         },
         dispenseRequest: {
           quantity: {
+            system: "http://unitsofmeasure.org",
+            code: "20",
             value: 20,
             unit: "tablet"
           },
@@ -932,6 +936,8 @@ describe("Test generateFhirResponse: MedicationRequest resource structure", () =
         },
         dispenseRequest: {
           quantity: {
+            system: "http://unitsofmeasure.org",
+            code: "30",
             value: 30,
             unit: "tablet"
           },
@@ -1018,6 +1024,8 @@ describe("Test generateFhirResponse: MedicationRequest resource structure", () =
         },
         dispenseRequest: {
           quantity: {
+            system: "http://unitsofmeasure.org",
+            code: "30",
             value: 30,
             unit: "tablet"
           },
@@ -1127,6 +1135,8 @@ describe("Test generateFhirResponse: MedicationRequest resource structure", () =
         },
         dispenseRequest: {
           quantity: {
+            system: "http://unitsofmeasure.org",
+            code: "20",
             value: 20,
             unit: "tablet"
           },
@@ -1224,6 +1234,8 @@ describe("Test generateFhirResponse: MedicationRequest resource structure", () =
         },
         dispenseRequest: {
           quantity: {
+            system: "http://unitsofmeasure.org",
+            code: "20",
             value: 20,
             unit: "tablet"
           },
@@ -1333,6 +1345,8 @@ describe("Test generateFhirResponse: MedicationRequest resource structure", () =
         },
         dispenseRequest: {
           quantity: {
+            system: "http://unitsofmeasure.org",
+            code: "20",
             value: 20,
             unit: "tablet"
           },
@@ -1448,6 +1462,8 @@ describe("Test generateFhirResponse: MedicationRequest resource structure", () =
         },
         dispenseRequest: {
           quantity: {
+            system: "http://unitsofmeasure.org",
+            code: "20",
             value: 20,
             unit: "tablet"
           },
@@ -1560,6 +1576,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Amoxicillin 250mg capsules"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "10",
           value: 10,
           unit: "tablet"
         },
@@ -1616,6 +1634,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Co-codamol 30mg/500mg tablets"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "20",
           value: 20,
           unit: "tablet"
         },
@@ -1672,6 +1692,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Pseudoephedrine hydrochloride 60mg tablets"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "30",
           value: 30,
           unit: "tablet"
         },
@@ -1728,6 +1750,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Azithromycin 250mg capsules"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "20",
           value: 20,
           unit: "tablet"
         },
@@ -1784,6 +1808,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Amoxicillin 250mg capsules"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "20",
           value: 20,
           unit: "tablet"
         },
@@ -1840,6 +1866,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Co-codamol 30mg/500mg tablets"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "20",
           value: 20,
           unit: "tablet"
         },
@@ -1896,6 +1924,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Pseudoephedrine hydrochloride 60mg tablets"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "30",
           value: 30,
           unit: "tablet"
         },
@@ -1952,6 +1982,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Azithromycin 250mg capsules"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "30",
           value: 30,
           unit: "tablet"
         },
@@ -2043,6 +2075,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Amoxicillin 250mg capsules"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "10",
           value: 10,
           unit: "tablet"
         },
@@ -2099,6 +2133,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Co-codamol 30mg/500mg tablets"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "20",
           value: 20,
           unit: "tablet"
         },
@@ -2155,6 +2191,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Pseudoephedrine hydrochloride 60mg tablets"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "30",
           value: 30,
           unit: "tablet"
         },
@@ -2211,6 +2249,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Azithromycin 250mg capsules"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "20",
           value: 20,
           unit: "tablet"
         },
@@ -2267,6 +2307,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Amoxicillin 250mg capsules"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "10",
           value: 10,
           unit: "tablet"
         },
@@ -2323,6 +2365,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Co-codamol 30mg/500mg tablets"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "0",
           value: 0,
           unit: "tablet"
         },
@@ -2379,6 +2423,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Pseudoephedrine hydrochloride 60mg tablets"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "0",
           value: 0,
           unit: "tablet"
         },
@@ -2435,6 +2481,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Azithromycin 250mg capsules"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "10",
           value: 10,
           unit: "tablet"
         },
@@ -2524,6 +2572,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Amoxicillin 250mg capsules"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "10",
           value: 10,
           unit: "tablet"
         },
@@ -2580,6 +2630,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Co-codamol 30mg/500mg tablets"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "20",
           value: 20,
           unit: "tablet"
         },
@@ -2636,6 +2688,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Pseudoephedrine hydrochloride 60mg tablets"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "30",
           value: 30,
           unit: "tablet"
         },
@@ -2692,6 +2746,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Azithromycin 250mg capsules"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "20",
           value: 20,
           unit: "tablet"
         },
@@ -2748,6 +2804,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Amoxicillin 250mg capsules"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "10",
           value: 10,
           unit: "tablet"
         },
@@ -2804,6 +2862,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Azithromycin 250mg capsules"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "10",
           value: 10,
           unit: "tablet"
         },
@@ -2890,6 +2950,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Amoxicillin 250mg capsules A"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "20",
           value: 20,
           unit: "tablet"
         },
@@ -2955,6 +3017,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Co-codamol 30mg/500mg tablets A"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "20",
           value: 20,
           unit: "tablet"
         },
@@ -3019,6 +3083,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Pseudoephedrine hydrochloride 60mg tablets A"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "30",
           value: 30,
           unit: "tablet"
         },
@@ -3083,6 +3149,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Azithromycin 250mg capsules A"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "30",
           value: 30,
           unit: "tablet"
         },
@@ -3179,6 +3247,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Amoxicillin 250mg capsules"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "20",
           value: 20,
           unit: "tablet"
         },
@@ -3243,6 +3313,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: ""
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "0",
           value: 0,
           unit: ""
         },
@@ -3305,6 +3377,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Methotrexate 10mg/0.2ml solution for injection pre-filled syringes"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "0",
           value: 0,
           unit: "pre-filled disposable injection"
         },
@@ -3529,6 +3603,8 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
           text: "Amoxicillin 250mg capsules"
         },
         quantity: {
+          system: "http://unitsofmeasure.org",
+          code: "0",
           value: 0,
           unit: "tablet"
         },
@@ -3547,7 +3623,6 @@ describe("Test generateFhirResponse: MedicationDispense resource structure", () 
     }
 
     const actual = generateFhirResponse(parsedAcuteWithNonDispensedItem, logger)
-    logger.info("", actual)
     expect(actual.entry).toContainEqual(expectedMedicationDispense)
   })
 })
