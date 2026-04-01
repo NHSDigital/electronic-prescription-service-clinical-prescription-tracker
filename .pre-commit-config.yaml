@@ -32,7 +32,7 @@ repos:
           - |
             grype --fail-on high .
         verbose: true
-        language: system
+        language: unsupported
         pass_filenames: false
         always_run: true
         require_serial: true
