@@ -11,6 +11,10 @@ jobs:
     uses: NHSDigital/eps-common-workflows/.github/workflows/get-repo-config.yml@test_zizmor
     with:
       verify_published_from_main_image: false
+    permissions:
+      attestations: read
+      contents: read
+      packages: read
   dependabot-auto-approve-and-merge:
     needs: quality_checks
     uses: NHSDigital/eps-common-workflows/.github/workflows/dependabot-auto-approve-and-merge.yml@test_zizmor
