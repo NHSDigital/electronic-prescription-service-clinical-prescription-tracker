@@ -23,6 +23,13 @@ repos:
 
   - repo: local
     hooks:
+      - id: check-vulnerabilities
+        name: Check for vulnerabilities
+        description: Run grype to check for vulnerabilities in dependencies
+        entry: make
+        args: ["grype-scan-local"]
+        language: system
+
       - id: check-commit-signing
         name: Check commit signing
         description: Ensures that commits are GPG signed
