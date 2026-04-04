@@ -3782,7 +3782,10 @@ describe("Test generateFhirResponse: prescription history Action structure", () 
               }
             }
           }]
-        }]
+        }],
+        resource: {
+          reference: "urn:uuid:RGROUP-123-567-890"
+        }
       },
       {
         title: "Release Request successful",
@@ -3804,7 +3807,10 @@ describe("Test generateFhirResponse: prescription history Action structure", () 
               }
             }
           }]
-        }]
+        }],
+        resource: {
+          reference: "urn:uuid:RGROUP-123-567-890"
+        }
       },
       {
         title: "Dispense notification successful",
