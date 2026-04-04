@@ -26,3 +26,4 @@ root=\\\"2\.1
 codeSystem=\"2\.1
 codeSystem=\\\"2\.1
 poetry\.lock
+token="\${GITHUB_TOKEN}"

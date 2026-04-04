@@ -3,14 +3,24 @@ name: deploy to environments
 on:
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   get_config_values:
     uses: NHSDigital/eps-common-workflows/.github/workflows/get-repo-config.yml@5ac2707dd9cd60ad127275179495b9c890d74711
+    permissions:
+      attestations: read
+      contents: read
+      packages: read
     with:
       verify_published_from_main_image: true
   quality_checks:
     uses: NHSDigital/eps-common-workflows/.github/workflows/quality-checks-devcontainer.yml@5ac2707dd9cd60ad127275179495b9c890d74711
     needs: [get_config_values]
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
     secrets:
@@ -46,6 +56,10 @@ jobs:
   package_code:
     needs: [get_commit_id, tag_release, get_config_values]
     uses: ./.github/workflows/cdk_package_code.yml
+    permissions:
+      contents: read
+      packages: read
+      id-token: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
@@ -55,6 +69,9 @@ jobs:
   release_dev:
     needs: [get_commit_id, tag_release, package_code, get_config_values]
     uses: ./.github/workflows/cdk_release_code.yml
+    permissions:
+      contents: write
+      id-token: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
@@ -101,6 +118,9 @@ jobs:
   release_ref:
     needs: [get_commit_id, tag_release, package_code, release_dev, get_config_values] # TODO: add sandbox back once implemented
     uses: ./.github/workflows/cdk_release_code.yml
+    permissions:
+      contents: write
+      id-token: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
@@ -126,6 +146,9 @@ jobs:
   release_qa:
     needs: [get_commit_id, tag_release, package_code, release_dev, get_config_values] # TODO: add sandbox back once implemented
     uses: ./.github/workflows/cdk_release_code.yml
+    permissions:
+      contents: write
+      id-token: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
@@ -151,6 +174,9 @@ jobs:
   release_int:
     needs: [get_commit_id, tag_release, package_code, release_qa, get_config_values]
     uses: ./.github/workflows/cdk_release_code.yml
+    permissions:
+      contents: write
+      id-token: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
@@ -197,6 +223,9 @@ jobs:
   release_prod:
     needs: [get_commit_id, tag_release, package_code, release_int, get_config_values] # TODO: add sandbox back once implemented
     uses: ./.github/workflows/cdk_release_code.yml
+    permissions:
+      contents: write
+      id-token: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
       BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}

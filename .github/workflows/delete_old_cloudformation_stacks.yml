@@ -5,11 +5,16 @@ on:
   schedule:
     - cron: "0 2,14 * * *"
 
+permissions: {}
 jobs:
   get_config_values:
     uses: NHSDigital/eps-common-workflows/.github/workflows/get-repo-config.yml@5ac2707dd9cd60ad127275179495b9c890d74711
     with:
       verify_published_from_main_image: false
+    permissions:
+      attestations: read
+      contents: read
+      packages: read
   delete-old-cloudformation-stacks:
     needs: [get_config_values]
     runs-on: ubuntu-22.04
@@ -34,6 +39,7 @@ jobs:
         with:
           ref: ${{ github.event.ref.BRANCH_NAME }}
           fetch-depth: 0
+          persist-credentials: false
       - &install_dependencies
         name: install dependencies
         uses: ./.github/actions/install_dependencies
