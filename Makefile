@@ -22,7 +22,7 @@ guard-%:
 install: install-python install-hooks install-node
 
 install-node:
-	npm ci
+	npm ci --ignore-scripts true
 
 install-python:
 	poetry install
