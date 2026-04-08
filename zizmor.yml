@@ -6,13 +6,13 @@ rules:
       - cdk_release_code.yml:65:7
       - cdk_release_code.yml:137:7
       - delete_old_cloudformation_stacks.yml:22:7
-      - delete_old_cloudformation_stacks.yml:65:7
+      - delete_old_cloudformation_stacks.yml:64:7
       - run_regression_tests.yml:35:7
   secrets-outside-env:
     # these are ignored because they are using known secrets
     ignore:
       - run_regression_tests.yml:57:28
-      - delete_old_cloudformation_stacks.yml:83:31
-      - delete_old_cloudformation_stacks.yml:53:31
+      - delete_old_cloudformation_stacks.yml:82:31
+      - delete_old_cloudformation_stacks.yml:52:31
   unpinned-uses:
     disable: true
