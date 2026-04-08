@@ -57,7 +57,7 @@ jobs:
       packages: read
       id-token: write
     with:
-      BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
+      BRANCH_NAME: main
       VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
       COMMIT_ID: ${{ needs.get_commit_id.outputs.commit_id }}
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
@@ -70,7 +70,7 @@ jobs:
       id-token: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
-      BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
+      BRANCH_NAME: main
       STACK_NAME: cpt-api
       AWS_ENVIRONMENT: dev
       APIGEE_ENVIRONMENT: internal-dev
@@ -119,7 +119,7 @@ jobs:
       id-token: write
     with:
       pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
-      BRANCH_NAME: ${{ github.event.ref.BRANCH_NAME }}
+      BRANCH_NAME: main
       STACK_NAME: cpt-api
       AWS_ENVIRONMENT: qa
       APIGEE_ENVIRONMENT: internal-qa
