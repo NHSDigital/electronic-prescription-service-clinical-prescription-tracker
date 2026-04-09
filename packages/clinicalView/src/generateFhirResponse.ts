@@ -380,7 +380,7 @@ const generateMedicationRequests = (
             code: "continuous-repeat-dispensing",
             display: "Continuous long term (repeat dispensing)"
           }]
-        }: {
+        } : {
           coding: [{
             system: "http://terminology.hl7.org/CodeSystem/medicationrequest-course-of-therapy",
             code: HL7_COURSE_OF_THERAPY_TYPE_MAP[prescription.treatmentType].code,
