@@ -2,7 +2,7 @@ import {TreatmentType} from "@cpt-common/common-types/fhir"
 import {SpineTreatmentTypeCode} from "@cpt-common/common-types/spine"
 import {SpineGenderCode} from "./parseSpineResponse"
 import {PerformerSiteTypeCoding, PrescriptionTypeCoding} from "./schema/extensions"
-import {CourseOfTherapyTypeHl7CodingType, MedicationRequestStatusType} from "./schema/medicationRequest"
+import {CourseOfTherapyTypeHl7Coding, MedicationRequestStatusType} from "./schema/medicationRequest"
 import {GenderType} from "./schema/patient"
 import {DispenseStatusCoding, NonDispensingReasonCoding} from "./schema/elements"
 import {CancellationReasonCoding} from "@cpt-common/common-types/schema"
@@ -126,9 +126,8 @@ export const MEDICATION_REQUEST_STATUS_MAP: Record<DispenseStatusCoding["code"],
   "0008": "active"
 }
 
-// for acute & repeat
 export const HL7_COURSE_OF_THERAPY_TYPE_MAP: Record<Exclude<SpineTreatmentTypeCode, "0003">,
-  {code: CourseOfTherapyTypeHl7CodingType["code"], display: CourseOfTherapyTypeHl7CodingType["display"]}> = {
+  {code: CourseOfTherapyTypeHl7Coding["code"], display: CourseOfTherapyTypeHl7Coding["display"]}> = {
     [TreatmentType.ACUTE]: {code: "acute", display: "Short course (acute) therapy"},
     [TreatmentType.REPEAT]: {code: "continuous", display: "Continuous long term therapy"}
   }

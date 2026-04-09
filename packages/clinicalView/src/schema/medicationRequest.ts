@@ -26,7 +26,6 @@ const status = {
 } as const satisfies JSONSchema
 export type MedicationRequestStatusType = FromSchema<typeof status>
 
-// for acute & repeat
 const courseOfTherapyTypeHl7Coding = {
   type: "object",
   properties: {
@@ -51,9 +50,8 @@ const courseOfTherapyTypeHl7Coding = {
   },
   required: ["system", "code", "display"]
 } as const satisfies JSONSchema
-export type CourseOfTherapyTypeHl7CodingType = FromSchema<typeof courseOfTherapyTypeHl7Coding>
+export type CourseOfTherapyTypeHl7Coding = FromSchema<typeof courseOfTherapyTypeHl7Coding>
 
-// only for eRD's
 const courseOfTherapyTypeFhirCoding = {
   type: "object",
   properties: {
@@ -72,7 +70,7 @@ const courseOfTherapyTypeFhirCoding = {
   },
   required: ["system", "code", "display"]
 } as const satisfies JSONSchema
-export type CourseOfTherapyTypeFhirCodingType = FromSchema<typeof courseOfTherapyTypeFhirCoding>
+export type CourseOfTherapyTypeFhirCoding = FromSchema<typeof courseOfTherapyTypeFhirCoding>
 
 const courseOfTherapyType = {
   type: "object",
@@ -89,7 +87,7 @@ const courseOfTherapyType = {
   },
   required: ["coding"]
 } as const satisfies JSONSchema
-export type CourseOfTherapyTypeCoding = CourseOfTherapyTypeHl7CodingType | CourseOfTherapyTypeFhirCodingType
+export type CourseOfTherapyTypeCoding = CourseOfTherapyTypeHl7Coding | CourseOfTherapyTypeFhirCoding
 
 export const medicationRequest = {
   type: "object",
