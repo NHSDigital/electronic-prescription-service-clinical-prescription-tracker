@@ -1,4 +1,4 @@
-import {App, Stack} from "aws-cdk-lib"
+import {App, Fn, Stack} from "aws-cdk-lib"
 import {nagSuppressions} from "../nagSuppressions"
 import {Functions} from "../resources/Functions"
 import {StateMachines} from "../resources/StateMachines"
@@ -35,9 +35,11 @@ export class CptsApiStack extends Stack {
       functions: functions.functions
     })
 
+    const stackUUID = Fn.select(2, Fn.split("/", this.stackId))
+
     new Apis(this, "Apis", {
       stackName: props.stackName,
-      stackUUID: this.getLogicalId(),
+      stackUUID: stackUUID,
       logRetentionInDays: props.logRetentionInDays,
       mutualTlsTrustStoreKey: props.mutualTlsTrustStoreKey,
       functions: functions.functions,
