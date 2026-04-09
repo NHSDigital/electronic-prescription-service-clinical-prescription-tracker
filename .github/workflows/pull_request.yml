@@ -133,7 +133,7 @@ jobs:
       APIM_STATUS_API_KEY: ${{ secrets.APIM_STATUS_API_KEY }}
 
   release_qa:
-    needs: [get_commit_id, tag_release, package_code, get_config_values]
+    needs: [get_issue_number, package_code, get_commit_id, get_config_values]
     uses: ./.github/workflows/cdk_release_code.yml
     permissions:
       contents: write
@@ -144,7 +144,7 @@ jobs:
       STACK_NAME: cpt-api
       AWS_ENVIRONMENT: qa
       APIGEE_ENVIRONMENT: internal-qa
-      VERSION_NUMBER: ${{ needs.tag_release.outputs.version_tag }}
+      VERSION_NUMBER: PR-${{ needs.get_issue_number.outputs.issue_number }}
       COMMIT_ID: ${{ needs.get_commit_id.outputs.commit_id }}
       CDK_APP_NAME: CptsApiApp
       LOG_RETENTION_IN_DAYS: 30
