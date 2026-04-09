@@ -37,6 +37,7 @@ export class CptsApiStack extends Stack {
 
     new Apis(this, "Apis", {
       stackName: props.stackName,
+      stackUUID: this.getLogicalId(),
       logRetentionInDays: props.logRetentionInDays,
       mutualTlsTrustStoreKey: props.mutualTlsTrustStoreKey,
       functions: functions.functions,

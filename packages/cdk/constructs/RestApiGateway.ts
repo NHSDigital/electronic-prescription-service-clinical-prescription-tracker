@@ -30,6 +30,7 @@ import {NagSuppressions} from "cdk-nag"
 
 export interface RestApiGatewayProps {
   readonly stackName: string
+  readonly stackUUID: string
   readonly logRetentionInDays: number
   readonly mutualTlsTrustStoreKey: string | undefined
   readonly forwardCsocLogs: boolean
@@ -102,7 +103,7 @@ export class RestApiGateway extends Construct {
     let mtlsConfig: MTLSConfig | undefined
 
     if (props.mutualTlsTrustStoreKey) {
-      const trustStoreKeyPrefix = `cpt-api/${props.stackName}-truststore`
+      const trustStoreKeyPrefix = `cpt-api/${props.stackName}-${props.stackUUID}-truststore`
       const logGroup = new LogGroup(scope, "LambdaLogGroup", {
         encryptionKey: cloudWatchLogsKmsKey,
         logGroupName: `/aws/lambda/${props.stackName}-truststore-deployment`,
