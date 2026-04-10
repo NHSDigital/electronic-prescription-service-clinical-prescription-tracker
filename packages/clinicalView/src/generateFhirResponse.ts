@@ -52,6 +52,7 @@ interface MedicationDispenseResourceIds {
   [key: string]: Array<UUID>
 }
 interface ResourceIds {
+  requestGroup: UUID,
   medicationRequest: MedicationRequestResourceIds
   medicationDispense?: MedicationDispenseResourceIds
 
@@ -115,6 +116,7 @@ export const generateFhirResponse = (prescription: Prescription, logger: Logger)
   responseBundle.entry.push(prescriberPractitionerRole, ...medicationRequests)
 
   const resourceIds: ResourceIds = {
+    requestGroup: requestGroupResourceId,
     medicationRequest: medicationRequestResourceIds
   }
 
@@ -652,7 +654,10 @@ const generateHistoryAction = (
           }
         }]
       }],
-      ...(referenceActions.length ? {action: referenceActions} : {})
+      ...(referenceActions.length ? {action: referenceActions} : {
+        resource: {
+          reference: `urn:uuid:${resourceIds.requestGroup}`
+        }})
     }
     historyAction.action?.push(eventAction)
   }

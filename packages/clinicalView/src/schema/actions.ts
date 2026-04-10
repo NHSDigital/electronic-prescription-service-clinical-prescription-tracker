@@ -177,11 +177,28 @@ export const historyAction = {
               required: ["extension"]
             }
           },
+          resource: {
+            type: "object",
+            properties: {
+              reference: {
+                type: "string"
+              }
+            },
+            required: ["reference"]
+          },
           action: {
             type: "array",
             items: referenceAction
           }
         },
+        oneOf: [
+          {
+            required: ["resource"]
+          },
+          {
+            required: ["action"]
+          }
+        ],
         required: [
           "title",
           "timingDateTime",
