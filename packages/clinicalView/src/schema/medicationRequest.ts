@@ -26,42 +26,68 @@ const status = {
 } as const satisfies JSONSchema
 export type MedicationRequestStatusType = FromSchema<typeof status>
 
+const courseOfTherapyTypeHl7Coding = {
+  type: "object",
+  properties: {
+    system: {
+      type: "string",
+      enum: ["http://terminology.hl7.org/CodeSystem/medicationrequest-course-of-therapy"]
+    },
+    code: {
+      type: "string",
+      enum: [
+        "acute",
+        "continuous"
+      ]
+    },
+    display: {
+      type: "string",
+      enum: [
+        "Short course (acute) therapy",
+        "Continuous long term therapy"
+      ]
+    }
+  },
+  required: ["system", "code", "display"]
+} as const satisfies JSONSchema
+export type CourseOfTherapyTypeHl7Coding = FromSchema<typeof courseOfTherapyTypeHl7Coding>
+
+const courseOfTherapyTypeFhirCoding = {
+  type: "object",
+  properties: {
+    system: {
+      type: "string",
+      enum: ["https://fhir.nhs.uk/CodeSystem/medicationrequest-course-of-therapy"]
+    },
+    code: {
+      type: "string",
+      enum: ["continuous-repeat-dispensing"]
+    },
+    display: {
+      type: "string",
+      enum: ["Continuous long term (repeat dispensing)"]
+    }
+  },
+  required: ["system", "code", "display"]
+} as const satisfies JSONSchema
+export type CourseOfTherapyTypeFhirCoding = FromSchema<typeof courseOfTherapyTypeFhirCoding>
+
 const courseOfTherapyType = {
   type: "object",
   properties: {
     coding: {
       type: "array",
       items: {
-        type: "object",
-        properties: {
-          system: {
-            type: "string",
-            enum: ["http://terminology.hl7.org/CodeSystem/medicationrequest-course-of-therapy"]
-          },
-          code: {
-            type: "string",
-            enum: [
-              "acute",
-              "continuous",
-              "continuous-repeat-dispensing"
-            ]
-          },
-          display: {
-            type: "string",
-            enum: [
-              "Short course (acute) therapy",
-              "Continuous long term therapy",
-              "Continuous long term (repeat dispensing)"
-            ]
-          }
-        },
-        required: ["system", "code", "display"]
+        oneOf: [
+          courseOfTherapyTypeHl7Coding,
+          courseOfTherapyTypeFhirCoding
+        ]
       }
     }
   },
   required: ["coding"]
 } as const satisfies JSONSchema
-export type CourseOfTherapyTypeCoding = FromSchema<typeof courseOfTherapyType>["coding"][0]
+export type CourseOfTherapyTypeCoding = CourseOfTherapyTypeHl7Coding | CourseOfTherapyTypeFhirCoding
 
 export const medicationRequest = {
   type: "object",
