@@ -20,7 +20,7 @@ import {
   RequestGroupAction
 } from "fhir/r4"
 import {
-  COURSE_OF_THERAPY_TYPE_MAP,
+  HL7_COURSE_OF_THERAPY_TYPE_MAP,
   GENDER_MAP,
   LINE_ITEM_STATUS_MAP,
   CANCELLATION_REASON_MAP,
@@ -369,18 +369,24 @@ const generateMedicationRequests = (
           value: prescription.prescriptionId
         },
         medicationCodeableConcept: {
-          // Hard code the generic SNOWMED code
+          // Hard code the generic SNOMED code
           coding: [{
             system: "http://snomed.info/sct",
             code: "138875005"
           }],
           text: lineItem.itemName
         },
-        courseOfTherapyType: {
+        courseOfTherapyType: prescription.treatmentType === TreatmentType.ERD ? {
+          coding: [{
+            system: "https://fhir.nhs.uk/CodeSystem/medicationrequest-course-of-therapy",
+            code: "continuous-repeat-dispensing",
+            display: "Continuous long term (repeat dispensing)"
+          }]
+        } : {
           coding: [{
             system: "http://terminology.hl7.org/CodeSystem/medicationrequest-course-of-therapy",
-            code: COURSE_OF_THERAPY_TYPE_MAP[prescription.treatmentType].code,
-            display: COURSE_OF_THERAPY_TYPE_MAP[prescription.treatmentType].display
+            code: HL7_COURSE_OF_THERAPY_TYPE_MAP[prescription.treatmentType].code,
+            display: HL7_COURSE_OF_THERAPY_TYPE_MAP[prescription.treatmentType].display
           }]
         },
         dispenseRequest: {
@@ -530,7 +536,7 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
               reference: `urn:uuid:${medicationRequestResourceIds[lineItem.lineItemNo]}`
             }],
             medicationCodeableConcept: {
-              // Hard code the generic SNOWMED code
+              // Hard code the generic SNOMED code
               coding: [{
                 system: "http://snomed.info/sct",
                 code: "138875005"
