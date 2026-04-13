@@ -15,7 +15,7 @@ info:
     Use this API for real-time tracking of Electronic Prescription Service (EPS) prescriptions. It gives details about prescription status, dispensing progress and other essential prescription information. 
 
     ## Who can use this API
-    This API is only being used by the Prescription Tracker at the moment, which is being tested with pharmacies in a private beta
+    This API is only being used by the Prescription Tracker at the moment, which is being tested with pharmacies in a private beta.
     
     The Prescription Tracker API will be made available more widely in the future.
 
