@@ -1,0 +1,95 @@
+{
+  "resourceType": "Bundle",
+  "type": "searchset",
+  "total": 1,
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:4094c495-f35d-4b73-9db0-a71eeafca869",
+      "search": {
+        "mode": "include"
+      },
+      "resource": {
+        "resourceType": "Patient",
+        "identifier": [
+          {
+            "system": "https://fhir.nhs.uk/Id/nhs-number",
+            "value": "9734889001"
+          }
+        ],
+        "name": [
+          {
+            "prefix": [
+              "MISS"
+            ],
+            "given": [
+              "ETTA"
+            ],
+            "family": "CORY"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:4a06f52c-d5be-419b-9f57-0448c5f7bfaf",
+      "search": {
+        "mode": "match"
+      },
+      "resource": {
+        "resourceType": "RequestGroup",
+        "identifier": [
+          {
+            "system": "https://fhir.nhs.uk/Id/prescription-order-number",
+            "value": "52A873-A83008-A538E4"
+          }
+        ],
+        "subject": {
+          "reference": "urn:uuid:4094c495-f35d-4b73-9db0-a71eeafca869"
+        },
+        "status": "active",
+        "intent": "instance-order",
+        "authoredOn": "2026-02-27T12:29:55.000Z",
+        "extension": [
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+            "extension": [
+              {
+                "url": "status",
+                "valueCoding": {
+                  "system": "https://fhir.nhs.uk/CodeSystem/EPS-task-business-status",
+                  "code": "0001",
+                  "display": "To be Dispensed"
+                }
+              }
+            ]
+          },
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-RepeatInformation",
+            "extension": [
+              {
+                "url": "numberOfRepeatsIssued",
+                "valueInteger": 1
+              },
+              {
+                "url": "numberOfRepeatsAllowed",
+                "valueInteger": 1
+              }
+            ]
+          },
+          {
+            "url": "https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation",
+            "extension": [
+              {
+                "url": "prescriptionPendingCancellation",
+                "valueBoolean": false
+              },
+              {
+                "url": "lineItemPendingCancellation",
+                "valueBoolean": false
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

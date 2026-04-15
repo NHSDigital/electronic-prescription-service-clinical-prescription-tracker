@@ -20,7 +20,7 @@ import {
   RequestGroupAction
 } from "fhir/r4"
 import {
-  COURSE_OF_THERAPY_TYPE_MAP,
+  HL7_COURSE_OF_THERAPY_TYPE_MAP,
   GENDER_MAP,
   LINE_ITEM_STATUS_MAP,
   CANCELLATION_REASON_MAP,
@@ -52,6 +52,7 @@ interface MedicationDispenseResourceIds {
   [key: string]: Array<UUID>
 }
 interface ResourceIds {
+  requestGroup: UUID,
   medicationRequest: MedicationRequestResourceIds
   medicationDispense?: MedicationDispenseResourceIds
 
@@ -115,6 +116,7 @@ export const generateFhirResponse = (prescription: Prescription, logger: Logger)
   responseBundle.entry.push(prescriberPractitionerRole, ...medicationRequests)
 
   const resourceIds: ResourceIds = {
+    requestGroup: requestGroupResourceId,
     medicationRequest: medicationRequestResourceIds
   }
 
@@ -145,7 +147,7 @@ const generateRequestGroupExtensions = (prescription: Prescription): Array<Exten
 
   logger.info("Generating PrescriptionStatus extension...")
   const prescriptionStatusExtension: Extension & PrescriptionStatusExtensionType = {
-    url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+    url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
     extension: [{
       url: "status",
       valueCoding: {
@@ -198,7 +200,7 @@ const generateRequestGroupExtensions = (prescription: Prescription): Array<Exten
 
   if (prescription.cancellationReason){
     const cancellationReasonExtension: Extension & PrescriptionStatusExtensionType = {
-      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
       extension: [{
         url: "cancellationReason",
         valueCoding: {
@@ -367,17 +369,30 @@ const generateMedicationRequests = (
           value: prescription.prescriptionId
         },
         medicationCodeableConcept: {
+          // Hard code the generic SNOMED code
+          coding: [{
+            system: "http://snomed.info/sct",
+            code: "138875005"
+          }],
           text: lineItem.itemName
         },
-        courseOfTherapyType: {
+        courseOfTherapyType: prescription.treatmentType === TreatmentType.ERD ? {
+          coding: [{
+            system: "https://fhir.nhs.uk/CodeSystem/medicationrequest-course-of-therapy",
+            code: "continuous-repeat-dispensing",
+            display: "Continuous long term (repeat dispensing)"
+          }]
+        } : {
           coding: [{
             system: "http://terminology.hl7.org/CodeSystem/medicationrequest-course-of-therapy",
-            code: COURSE_OF_THERAPY_TYPE_MAP[prescription.treatmentType].code,
-            display: COURSE_OF_THERAPY_TYPE_MAP[prescription.treatmentType].display
+            code: HL7_COURSE_OF_THERAPY_TYPE_MAP[prescription.treatmentType].code,
+            display: HL7_COURSE_OF_THERAPY_TYPE_MAP[prescription.treatmentType].display
           }]
         },
         dispenseRequest: {
           quantity: {
+            system: "http://unitsofmeasure.org",
+            code: `${lineItem.quantity}`, // has to be a string
             value: lineItem.quantity,
             unit: lineItem.quantityForm
           },
@@ -521,9 +536,16 @@ const generateMedicationDispenses = (prescription: Prescription, patientResource
               reference: `urn:uuid:${medicationRequestResourceIds[lineItem.lineItemNo]}`
             }],
             medicationCodeableConcept: {
+              // Hard code the generic SNOMED code
+              coding: [{
+                system: "http://snomed.info/sct",
+                code: "138875005"
+              }],
               text: component.itemName ?? ""
             },
             quantity: {
+              system: "http://unitsofmeasure.org",
+              code: `${component.quantity ?? 0}`, // has to be a string
               value: component.quantity ?? 0,
               unit: component.quantityForm ?? ""
             },
@@ -632,7 +654,10 @@ const generateHistoryAction = (
           }
         }]
       }],
-      ...(referenceActions.length ? {action: referenceActions} : {})
+      ...(referenceActions.length ? {action: referenceActions} : {
+        resource: {
+          reference: `urn:uuid:${resourceIds.requestGroup}`
+        }})
     }
     historyAction.action?.push(eventAction)
   }

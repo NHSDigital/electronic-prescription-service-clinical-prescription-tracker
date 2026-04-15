@@ -88,7 +88,7 @@ export const generateFhirResponse = (prescriptions: Array<Prescription>, logger:
     logger.info("Generating the PrescriptionStatus extension...",
       {prescriptionId: prescription.prescriptionId})
     const prescriptionStatus: Extension & PrescriptionStatusExtensionType = {
-      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
       extension: [{
         url: "status",
         valueCoding : {

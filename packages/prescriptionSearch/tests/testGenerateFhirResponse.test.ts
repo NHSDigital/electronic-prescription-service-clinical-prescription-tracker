@@ -178,7 +178,7 @@ describe("Test generateFhirResponse", () => {
         intent: "order",
         authoredOn: "20250204000000",
         extension: [{
-          url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
           extension: [{
             url: "status",
             valueCoding : {
@@ -228,7 +228,7 @@ describe("Test generateFhirResponse", () => {
         intent: "order",
         authoredOn: "20250204000000",
         extension: [{
-          url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+          url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
           extension: [{
             url: "status",
             valueCoding : {
@@ -277,7 +277,7 @@ describe("Test generateFhirResponse", () => {
 
   it("includes a PrescriptionStatus extension on the RequestGroup when called with a prescription", async () => {
     const expected: Extension = {
-      url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory", // is this the right one?
+      url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
       extension: [{
         url: "status",
         valueCoding : {
@@ -529,7 +529,7 @@ describe("Test generateFhirResponse", () => {
             authoredOn: "20250204000000",
             extension: [
               {
-                url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+                url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
                 extension: [
                   {
                     url: "status",
@@ -578,7 +578,7 @@ describe("Test generateFhirResponse", () => {
             authoredOn: "20250212122302",
             extension: [
               {
-                url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+                url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
                 extension: [
                   {
                     url: "status",
@@ -640,7 +640,7 @@ describe("Test generateFhirResponse", () => {
             authoredOn: "20250205000000",
             extension: [
               {
-                url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+                url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory",
                 extension: [
                   {
                     url: "status",

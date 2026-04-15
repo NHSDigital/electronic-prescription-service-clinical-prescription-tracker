@@ -1,0 +1,1161 @@
+{
+  "resourceType": "OperationOutcome",
+  "issue": [
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 474
+        }
+      ],
+      "severity": "warning",
+      "code": "processing",
+      "diagnostics": "Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation)",
+      "location": [
+        "Patient",
+        "Line[1] Col[474]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 232
+        }
+      ],
+      "severity": "warning",
+      "code": "processing",
+      "diagnostics": "Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation)",
+      "location": [
+        "PractitionerRole",
+        "Line[1] Col[232]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 548
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "This_element_does_not_match_any_known_slice_"
+        }
+      ],
+      "severity": "information",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "This_element_does_not_match_any_known_slice_"
+          }
+        ]
+      },
+      "diagnostics": "This element does not match any known slice defined in the profile https://fhir.nhs.uk/StructureDefinition/NHSDigital-MedicationRequest|1.1.2 (this may not be a problem, but you should check that it's not intended to match a slice) - MedicationRequest.extension[1]: Does not match slice 'medicationRepeatInformation' (discriminator: ('https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-MedicationRepeatInformation' in url))",
+      "location": [
+        "MedicationRequest.extension[1]",
+        "Line[1] Col[548]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 548
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "This_element_does_not_match_any_known_slice_"
+        }
+      ],
+      "severity": "information",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "This_element_does_not_match_any_known_slice_"
+          }
+        ]
+      },
+      "diagnostics": "This element does not match any known slice defined in the profile https://fhir.nhs.uk/StructureDefinition/NHSDigital-MedicationRequest|1.1.2 (this may not be a problem, but you should check that it's not intended to match a slice) - MedicationRequest.extension[1]: Does not match slice 'responsiblePractitioner' (discriminator: ('https://fhir.nhs.uk/StructureDefinition/Extension-DM-ResponsiblePractitioner' in url))",
+      "location": [
+        "MedicationRequest.extension[1]",
+        "Line[1] Col[548]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 548
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "This_element_does_not_match_any_known_slice_"
+        }
+      ],
+      "severity": "information",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "This_element_does_not_match_any_known_slice_"
+          }
+        ]
+      },
+      "diagnostics": "This element does not match any known slice defined in the profile https://fhir.nhs.uk/StructureDefinition/NHSDigital-MedicationRequest|1.1.2 (this may not be a problem, but you should check that it's not intended to match a slice) - MedicationRequest.extension[1]: Does not match slice 'prescriptionEndorsement' (discriminator: ('https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionEndorsement' in url))",
+      "location": [
+        "MedicationRequest.extension[1]",
+        "Line[1] Col[548]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 548
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "This_element_does_not_match_any_known_slice_"
+        }
+      ],
+      "severity": "information",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "This_element_does_not_match_any_known_slice_"
+          }
+        ]
+      },
+      "diagnostics": "This element does not match any known slice defined in the profile https://fhir.nhs.uk/StructureDefinition/NHSDigital-MedicationRequest|1.1.2 (this may not be a problem, but you should check that it's not intended to match a slice) - MedicationRequest.extension[1]: Does not match slice 'NHSBSAprescriptionType' (discriminator: ('https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionType' in url))",
+      "location": [
+        "MedicationRequest.extension[1]",
+        "Line[1] Col[548]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 548
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "This_element_does_not_match_any_known_slice_"
+        }
+      ],
+      "severity": "information",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "This_element_does_not_match_any_known_slice_"
+          }
+        ]
+      },
+      "diagnostics": "This element does not match any known slice defined in the profile https://fhir.nhs.uk/StructureDefinition/NHSDigital-MedicationRequest|1.1.2 (this may not be a problem, but you should check that it's not intended to match a slice) - MedicationRequest.extension[1]: Does not match slice 'controlledDrug' (discriminator: ('https://fhir.nhs.uk/StructureDefinition/Extension-DM-ControlledDrug' in url))",
+      "location": [
+        "MedicationRequest.extension[1]",
+        "Line[1] Col[548]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 548
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "This_element_does_not_match_any_known_slice_"
+        }
+      ],
+      "severity": "information",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "This_element_does_not_match_any_known_slice_"
+          }
+        ]
+      },
+      "diagnostics": "This element does not match any known slice defined in the profile https://fhir.nhs.uk/StructureDefinition/NHSDigital-MedicationRequest|1.1.2 (this may not be a problem, but you should check that it's not intended to match a slice) - MedicationRequest.extension[1]: Does not match slice 'dispensingInformation' (discriminator: ('https://fhir.nhs.uk/StructureDefinition/Extension-EPS-DispensingInformation' in url))",
+      "location": [
+        "MedicationRequest.extension[1]",
+        "Line[1] Col[548]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 548
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "This_element_does_not_match_any_known_slice_"
+        }
+      ],
+      "severity": "information",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "This_element_does_not_match_any_known_slice_"
+          }
+        ]
+      },
+      "diagnostics": "This element does not match any known slice defined in the profile https://fhir.nhs.uk/StructureDefinition/NHSDigital-MedicationRequest|1.1.2 (this may not be a problem, but you should check that it's not intended to match a slice) - MedicationRequest.extension[1]: Does not match slice 'prescriptionStatusHistory' (discriminator: ('https://fhir.nhs.uk/StructureDefinition/Extension-DM-PrescriptionStatusHistory' in url))",
+      "location": [
+        "MedicationRequest.extension[1]",
+        "Line[1] Col[548]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 548
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_Simple_WRONG"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_Simple_WRONG"
+          }
+        ]
+      },
+      "diagnostics": "The Extension 'https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation' definition is for a simple extension, so it must contain a value, not extensions",
+      "location": [
+        "MedicationRequest.extension[1]",
+        "Line[1] Col[548]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 548
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Validation_VAL_Profile_Maximum"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Validation_VAL_Profile_Maximum"
+          }
+        ]
+      },
+      "diagnostics": "Extension.extension: max allowed = 0, but found 1 (from https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0)",
+      "location": [
+        "MedicationRequest.extension[1]",
+        "Line[1] Col[548]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 546
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_SubExtension_Invalid"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_SubExtension_Invalid"
+          }
+        ]
+      },
+      "diagnostics": "Sub-extension url 'lineItemPendingCancellation' is not defined by the Extension https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0",
+      "location": [
+        "MedicationRequest.extension[1].extension[0][url='lineItemPendingCancellation']",
+        "Line[1] Col[546]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 790
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Terminology_TX_Code_ValueSet_Ext"
+        }
+      ],
+      "severity": "warning",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Terminology_TX_Code_ValueSet_Ext"
+          }
+        ]
+      },
+      "diagnostics": "No code provided, and a code should be provided from the value set 'NHS Digital Medication Code' (https://fhir.nhs.uk/ValueSet/NHSDigital-MedicationCode|2.1.0)",
+      "location": [
+        "MedicationRequest.medication.ofType(CodeableConcept)",
+        "Line[1] Col[790]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 790
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Validation_VAL_Profile_Minimum"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Validation_VAL_Profile_Minimum"
+          }
+        ]
+      },
+      "diagnostics": "CodeableConcept.coding: minimum required = 1, but only found 0 (from https://fhir.nhs.uk/StructureDefinition/NHSDigital-MedicationRequest-CodeableConcept|1.0.1)",
+      "location": [
+        "MedicationRequest.medication.ofType(CodeableConcept)",
+        "Line[1] Col[790]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 1148
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Validation_VAL_Profile_Minimum"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Validation_VAL_Profile_Minimum"
+          }
+        ]
+      },
+      "diagnostics": "MedicationRequest.groupIdentifier.extension: minimum required = 1, but only found 0 (from https://fhir.nhs.uk/StructureDefinition/NHSDigital-MedicationRequest|1.1.2)",
+      "location": [
+        "MedicationRequest.groupIdentifier",
+        "Line[1] Col[1148]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 1148
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Validation_VAL_Profile_Minimum_SLICE"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Validation_VAL_Profile_Minimum_SLICE"
+          }
+        ]
+      },
+      "diagnostics": "Slice 'MedicationRequest.groupIdentifier.extension:PrescriptionOrderUUID': a matching slice is required, but not found (from https://fhir.nhs.uk/StructureDefinition/NHSDigital-MedicationRequest|1.1.2). Note that other slices are allowed in addition to this required slice",
+      "location": [
+        "MedicationRequest.groupIdentifier",
+        "Line[1] Col[1148]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 1361
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Terminology_PassThrough_TX_Message"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Terminology_PassThrough_TX_Message"
+          }
+        ]
+      },
+      "diagnostics": "Unknown code 'http://terminology.hl7.org/CodeSystem/medicationrequest-course-of-therapy#continuous-repeat-dispensing'",
+      "location": [
+        "MedicationRequest.courseOfTherapyType",
+        "Line[1] Col[1361]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 1361
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Terminology_TX_NoValid_1_CC"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Terminology_TX_NoValid_1_CC"
+          }
+        ]
+      },
+      "diagnostics": "None of the codings provided are in the value set 'Medication Request  Course of  Therapy  Codes' (https://fhir.nhs.uk/ValueSet/DM-medicationrequest-course-of-therapy|1.0.0), and a coding from this value set is required) (codes = http://terminology.hl7.org/CodeSystem/medicationrequest-course-of-therapy#continuous-repeat-dispensing)",
+      "location": [
+        "MedicationRequest.courseOfTherapyType",
+        "Line[1] Col[1361]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 1715
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Validation_VAL_Profile_Minimum"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Validation_VAL_Profile_Minimum"
+          }
+        ]
+      },
+      "diagnostics": "MedicationRequest.dispenseRequest.quantity.code: minimum required = 1, but only found 0 (from https://fhir.nhs.uk/StructureDefinition/NHSDigital-MedicationRequest|1.1.2)",
+      "location": [
+        "MedicationRequest.dispenseRequest.quantity",
+        "Line[1] Col[1715]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 1858
+        }
+      ],
+      "severity": "warning",
+      "code": "processing",
+      "diagnostics": "Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation)",
+      "location": [
+        "MedicationRequest",
+        "Line[1] Col[1858]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 1858
+        }
+      ],
+      "severity": "warning",
+      "code": "processing",
+      "diagnostics": "Constraint failed: eps-9: 'dispenseRequest.numberOfRepeatsAllowed should be populated for continuous-repeat-dispensing MedicationRequests.'",
+      "location": [
+        "MedicationRequest",
+        "Line[1] Col[1858]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 1858
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "https://fhir.nhs.uk/StructureDefinition/NHSDigital-MedicationRequest#eps-10"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "https://fhir.nhs.uk/StructureDefinition/NHSDigital-MedicationRequest#eps-10"
+          }
+        ]
+      },
+      "diagnostics": "Constraint failed: eps-10: 'For continuous-repeat-dispensing (intent=reflex-order) basedOn must be populated'",
+      "location": [
+        "MedicationRequest",
+        "Line[1] Col[1858]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 1858
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "https://fhir.nhs.uk/StructureDefinition/NHSDigital-MedicationRequest#eps-14"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "https://fhir.nhs.uk/StructureDefinition/NHSDigital-MedicationRequest#eps-14"
+          }
+        ]
+      },
+      "diagnostics": "Constraint failed: eps-14: 'Extension repeatInformation.numberOfPrescriptionsIssued should be present for continuous-repeat-dispensing that have intent=reflex-order'",
+      "location": [
+        "MedicationRequest",
+        "Line[1] Col[1858]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 231
+        }
+      ],
+      "severity": "warning",
+      "code": "processing",
+      "diagnostics": "Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation)",
+      "location": [
+        "PractitionerRole",
+        "Line[1] Col[231]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 565
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Terminology_TX_Code_ValueSet_Ext"
+        }
+      ],
+      "severity": "warning",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Terminology_TX_Code_ValueSet_Ext"
+          }
+        ]
+      },
+      "diagnostics": "No code provided, and a code should be provided from the value set 'NHS Digital Medication Code' (https://fhir.nhs.uk/ValueSet/NHSDigital-MedicationCode|2.1.0)",
+      "location": [
+        "MedicationDispense.medication.ofType(CodeableConcept)",
+        "Line[1] Col[565]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 565
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Validation_VAL_Profile_Minimum"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Validation_VAL_Profile_Minimum"
+          }
+        ]
+      },
+      "diagnostics": "CodeableConcept.coding: minimum required = 1, but only found 0 (from https://fhir.nhs.uk/StructureDefinition/NHSDigital-MedicationDispense-CodeableConcept)",
+      "location": [
+        "MedicationDispense.medication.ofType(CodeableConcept)",
+        "Line[1] Col[565]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 565
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Validation_VAL_Profile_Minimum_SLICE"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Validation_VAL_Profile_Minimum_SLICE"
+          }
+        ]
+      },
+      "diagnostics": "Slice 'CodeableConcept.coding:SNOMED': a matching slice is required, but not found (from https://fhir.nhs.uk/StructureDefinition/NHSDigital-MedicationDispense-CodeableConcept). Note that other slices are allowed in addition to this required slice",
+      "location": [
+        "MedicationDispense.medication.ofType(CodeableConcept)",
+        "Line[1] Col[565]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 988
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Validation_VAL_Profile_Minimum"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Validation_VAL_Profile_Minimum"
+          }
+        ]
+      },
+      "diagnostics": "MedicationDispense.quantity.system: minimum required = 1, but only found 0 (from https://fhir.nhs.uk/StructureDefinition/NHSDigital-MedicationDispense|1.1.0)",
+      "location": [
+        "MedicationDispense.quantity",
+        "Line[1] Col[988]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 988
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Validation_VAL_Profile_Minimum"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Validation_VAL_Profile_Minimum"
+          }
+        ]
+      },
+      "diagnostics": "MedicationDispense.quantity.code: minimum required = 1, but only found 0 (from https://fhir.nhs.uk/StructureDefinition/NHSDigital-MedicationDispense|1.1.0)",
+      "location": [
+        "MedicationDispense.quantity",
+        "Line[1] Col[988]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 1048
+        }
+      ],
+      "severity": "warning",
+      "code": "processing",
+      "diagnostics": "Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation)",
+      "location": [
+        "MedicationDispense",
+        "Line[1] Col[1048]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 284
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_Unknown"
+        }
+      ],
+      "severity": "information",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_Unknown"
+          }
+        ]
+      },
+      "diagnostics": "Unknown extension https://fhir.nhs.uk/StructureDefinition/Extension-EPS-PrescriptionStatusHistory",
+      "location": [
+        "RequestGroup.extension[0]",
+        "Line[1] Col[284]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 863
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_Simple_WRONG"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_Simple_WRONG"
+          }
+        ]
+      },
+      "diagnostics": "The Extension 'https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation' definition is for a simple extension, so it must contain a value, not extensions",
+      "location": [
+        "RequestGroup.extension[3]",
+        "Line[1] Col[863]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 863
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Validation_VAL_Profile_Maximum"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Validation_VAL_Profile_Maximum"
+          }
+        ]
+      },
+      "diagnostics": "Extension.extension: max allowed = 0, but found 1 (from https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0)",
+      "location": [
+        "RequestGroup.extension[3]",
+        "Line[1] Col[863]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 861
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Extension_EXT_SubExtension_Invalid"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Extension_EXT_SubExtension_Invalid"
+          }
+        ]
+      },
+      "diagnostics": "Sub-extension url 'prescriptionPendingCancellation' is not defined by the Extension https://fhir.nhs.uk/StructureDefinition/Extension-PendingCancellation|0.1.0",
+      "location": [
+        "RequestGroup.extension[3].extension[0][url='prescriptionPendingCancellation']",
+        "Line[1] Col[861]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 1971
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "http://hl7.org/fhir/StructureDefinition/RequestGroup#rqg-1"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "http://hl7.org/fhir/StructureDefinition/RequestGroup#rqg-1"
+          }
+        ]
+      },
+      "diagnostics": "Constraint failed: rqg-1: 'Must have resource or action but not both'",
+      "location": [
+        "RequestGroup.action[1].action[0]",
+        "Line[1] Col[1971]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 1969
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Reference_REF_NoDisplay"
+        }
+      ],
+      "severity": "warning",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Reference_REF_NoDisplay"
+          }
+        ]
+      },
+      "diagnostics": "A Reference without an actual reference or identifier should have a display",
+      "location": [
+        "RequestGroup.action[1].action[0].participant[0]",
+        "Line[1] Col[1969]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 2442
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "http://hl7.org/fhir/StructureDefinition/RequestGroup#rqg-1"
+        }
+      ],
+      "severity": "error",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "http://hl7.org/fhir/StructureDefinition/RequestGroup#rqg-1"
+          }
+        ]
+      },
+      "diagnostics": "Constraint failed: rqg-1: 'Must have resource or action but not both'",
+      "location": [
+        "RequestGroup.action[1].action[1]",
+        "Line[1] Col[2442]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 2440
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Reference_REF_NoDisplay"
+        }
+      ],
+      "severity": "warning",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Reference_REF_NoDisplay"
+          }
+        ]
+      },
+      "diagnostics": "A Reference without an actual reference or identifier should have a display",
+      "location": [
+        "RequestGroup.action[1].action[1].participant[0]",
+        "Line[1] Col[2440]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 3020
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-message-id",
+          "valueString": "Reference_REF_NoDisplay"
+        }
+      ],
+      "severity": "warning",
+      "code": "processing",
+      "details": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/java-core-messageId",
+            "code": "Reference_REF_NoDisplay"
+          }
+        ]
+      },
+      "diagnostics": "A Reference without an actual reference or identifier should have a display",
+      "location": [
+        "RequestGroup.action[1].action[2].participant[0]",
+        "Line[1] Col[3020]"
+      ]
+    },
+    {
+      "extension": [
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-line",
+          "valueInteger": 1
+        },
+        {
+          "url": "http://hl7.org/fhir/StructureDefinition/operationoutcome-issue-col",
+          "valueInteger": 3112
+        }
+      ],
+      "severity": "warning",
+      "code": "processing",
+      "diagnostics": "Constraint failed: dom-6: 'A resource should have narrative for robust management' (defined in http://hl7.org/fhir/StructureDefinition/DomainResource) (Best Practice Recommendation)",
+      "location": [
+        "RequestGroup",
+        "Line[1] Col[3112]"
+      ]
+    }
+  ]
+}

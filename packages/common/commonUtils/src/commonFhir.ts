@@ -30,7 +30,7 @@ const errorMap: ErrorMap = {
     status: "401 Unauthorized",
     code: "forbidden",
     detailsCode: "UNAUTHORIZED",
-    detailsDisplay: "401: The Server deemed you unauthorized to make this request"
+    detailsDisplay: "401: The Server deemed you unauthorized to make this request."
   },
   403: {
     status: "403 Forbidden",
