@@ -131,31 +131,3 @@ jobs:
       TARGET_SPINE_SERVER: ${{ secrets.DEV_TARGET_SPINE_SERVER }}
       REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
       APIM_STATUS_API_KEY: ${{ secrets.APIM_STATUS_API_KEY }}
-
-  release_qa:
-    needs: [get_issue_number, package_code, get_commit_id, get_config_values]
-    uses: ./.github/workflows/cdk_release_code.yml
-    permissions:
-      contents: write
-      id-token: write
-    with:
-      pinned_image: ${{ needs.get_config_values.outputs.pinned_image }}
-      BRANCH_NAME: main
-      STACK_NAME: cpt-api
-      AWS_ENVIRONMENT: qa
-      APIGEE_ENVIRONMENT: internal-qa
-      VERSION_NUMBER: PR-${{ needs.get_issue_number.outputs.issue_number }}
-      COMMIT_ID: ${{ needs.get_commit_id.outputs.commit_id }}
-      CDK_APP_NAME: CptsApiApp
-      LOG_RETENTION_IN_DAYS: 30
-      LOG_LEVEL: DEBUG
-      TRUSTSTORE_FILE: clinical-tracker-truststore.pem
-      RUN_REGRESSION_TESTS: true
-      IS_PULL_REQUEST: false
-      FORWARD_CSOC_LOGS: false
-    secrets:
-      CLOUD_FORMATION_DEPLOY_ROLE: ${{ secrets.QA_CLOUD_FORMATION_DEPLOY_ROLE }}
-      PROXYGEN_ROLE: ${{ secrets.PROXYGEN_PTL_ROLE }}
-      TARGET_SPINE_SERVER: ${{ secrets.QA_TARGET_SPINE_SERVER }}
-      REGRESSION_TESTS_PEM: ${{ secrets.REGRESSION_TESTS_PEM }}
-      APIM_STATUS_API_KEY: ${{ secrets.APIM_STATUS_API_KEY }}

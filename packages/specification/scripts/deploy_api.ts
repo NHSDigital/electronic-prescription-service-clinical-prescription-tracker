@@ -12,7 +12,7 @@ async function main() {
       {
         spec,
         apiName: "clinical-prescription-tracker",
-        version: getConfigFromEnvVar("VERSION_NUMBER").toLowerCase(),
+        version: getConfigFromEnvVar("VERSION_NUMBER").toLowerCase(), // Ensure consistency with DNS - lowercase only due to AWS custom domain name & DNS needing to match
         apigeeEnvironment,
         isPullRequest: getBooleanConfigFromEnvVar("IS_PULL_REQUEST"),
         awsEnvironment: getConfigFromEnvVar("AWS_ENVIRONMENT"),
