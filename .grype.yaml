@@ -1,3 +1,4 @@
 ignore:
   # fast-xml-parser
   - vulnerability: GHSA-8gc5-j5rx-235r
+  - vulnerability: GHSA-c2c7-rcm5-vvqj # ReDoS attack, not exposed.

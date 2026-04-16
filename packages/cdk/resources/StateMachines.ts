@@ -1,6 +1,5 @@
 import {Construct} from "constructs"
-import {ExpressStateMachine} from "../constructs/StateMachine"
-import {TypescriptLambdaFunction} from "@nhsdigital/eps-cdk-constructs"
+import {ExpressStateMachine, TypescriptLambdaFunction} from "@nhsdigital/eps-cdk-constructs"
 import {ClinicalView} from "./StateMachineDefinitions/ClinicalView"
 import {Function} from "aws-cdk-lib/aws-lambda"
 import {Fn} from "aws-cdk-lib"
@@ -15,7 +14,7 @@ export interface StateMachinesProps {
 export class StateMachines extends Construct {
   stateMachines: {[key: string]: ExpressStateMachine}
 
-  public constructor(scope: Construct, id: string, props: StateMachinesProps){
+  public constructor(scope: Construct, id: string, props: StateMachinesProps) {
     super(scope, id)
 
     // Imports
