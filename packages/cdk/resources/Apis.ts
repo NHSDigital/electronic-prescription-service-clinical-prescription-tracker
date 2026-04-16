@@ -1,14 +1,16 @@
 import {HttpMethod} from "aws-cdk-lib/aws-lambda"
 import {Construct} from "constructs"
-import {RestApiGateway} from "../constructs/RestApiGateway"
-import {LambdaEndpoint} from "../constructs/RestApiGateway/LambdaEndpoint"
-import {TypescriptLambdaFunction} from "@nhsdigital/eps-cdk-constructs"
-import {ExpressStateMachine} from "../constructs/StateMachine"
-import {StateMachineEndpoint} from "../constructs/RestApiGateway/StateMachineEndpoint"
+import {
+  ExpressStateMachine,
+  LambdaEndpoint,
+  RestApiGateway,
+  StateMachineEndpoint,
+  TypescriptLambdaFunction
+} from "@nhsdigital/eps-cdk-constructs"
 
 export interface ApisProps {
   readonly stackName: string
-  readonly stackUUID: string
+  readonly stackUUID?: string | undefined
   readonly logRetentionInDays: number
   readonly mutualTlsTrustStoreKey: string | undefined
   functions: {[key: string]: TypescriptLambdaFunction}
@@ -20,7 +22,7 @@ export interface ApisProps {
 export class Apis extends Construct {
   apis: {[key: string]: RestApiGateway}
 
-  public constructor(scope: Construct, id: string, props: ApisProps){
+  public constructor(scope: Construct, id: string, props: ApisProps) {
     super(scope, id)
 
     const apiGateway = new RestApiGateway(this, "ApiGateway", {

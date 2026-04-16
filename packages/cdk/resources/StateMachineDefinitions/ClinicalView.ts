@@ -9,7 +9,7 @@ import {
   Pass,
   TaskInput
 } from "aws-cdk-lib/aws-stepfunctions"
-import {CatchAllErrorPass} from "../../constructs/StateMachine/CatchAllErrorPass"
+import {CatchAllErrorPass} from "@nhsdigital/eps-cdk-constructs"
 import {
   extractPrescriptionIdExpression,
   extractDispenserOdsCodeExpression,
@@ -24,7 +24,7 @@ export interface DefinitionProps {
 export class ClinicalView extends Construct {
   public readonly definition: IChainable
 
-  public constructor(scope: Construct, id: string, props: DefinitionProps){
+  public constructor(scope: Construct, id: string, props: DefinitionProps) {
     super(scope, id)
 
     // States
@@ -76,7 +76,7 @@ export class ClinicalView extends Construct {
 
     const enrichResponse = new Pass(this, "Enrich Response", {
       outputs: {
-        Payload:{
+        Payload: {
           statusCode: 200,
           headers: "{% $responseHeaders %}",
           body: `{% ${enrichResponseExpression} %}`
