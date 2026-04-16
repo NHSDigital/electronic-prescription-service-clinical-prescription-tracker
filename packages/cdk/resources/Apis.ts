@@ -13,7 +13,7 @@ export interface ApisProps {
   readonly logRetentionInDays: number
   readonly mutualTlsTrustStoreKey: string | undefined
   readonly serviceName: string | undefined
-  readonly trustStoreUuid?: string | undefined
+  readonly trustStoreUuid: string | undefined
   functions: {[key: string]: TypescriptLambdaFunction}
   stateMachines: {[key: string]: ExpressStateMachine}
   readonly forwardCsocLogs: boolean
