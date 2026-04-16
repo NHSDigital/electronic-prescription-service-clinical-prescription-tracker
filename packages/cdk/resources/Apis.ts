@@ -10,9 +10,10 @@ import {
 
 export interface ApisProps {
   readonly stackName: string
-  readonly stackUUID?: string | undefined
   readonly logRetentionInDays: number
   readonly mutualTlsTrustStoreKey: string | undefined
+  readonly serviceName: string | undefined
+  readonly trustStoreUuid?: string | undefined
   functions: {[key: string]: TypescriptLambdaFunction}
   stateMachines: {[key: string]: ExpressStateMachine}
   readonly forwardCsocLogs: boolean
@@ -27,9 +28,10 @@ export class Apis extends Construct {
 
     const apiGateway = new RestApiGateway(this, "ApiGateway", {
       stackName: props.stackName,
-      stackUUID: props.stackUUID,
       logRetentionInDays: props.logRetentionInDays,
       mutualTlsTrustStoreKey: props.mutualTlsTrustStoreKey,
+      serviceName: props.serviceName,
+      trustStoreUuid: props.trustStoreUuid,
       forwardCsocLogs: props.forwardCsocLogs,
       csocApiGatewayDestination: props.csocApiGatewayDestination,
       executionPolicies: [

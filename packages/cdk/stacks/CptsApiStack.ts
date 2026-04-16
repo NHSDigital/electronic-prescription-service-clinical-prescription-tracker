@@ -11,6 +11,7 @@ export interface CptsApiStackProps extends StandardStackProps {
   readonly logLevel: string
   readonly targetSpineServer: string
   readonly mutualTlsTrustStoreKey: string | undefined
+  readonly serviceName: string | undefined
   readonly csocApiGatewayDestination: string
   readonly forwardCsocLogs: boolean
 }
@@ -35,13 +36,14 @@ export class CptsApiStack extends Stack {
       functions: functions.functions
     })
 
-    const stackUUID = Fn.select(2, Fn.split("/", this.stackId))
+    const trustStoreUuid = Fn.select(2, Fn.split("/", this.stackId))
 
     new Apis(this, "Apis", {
       stackName: props.stackName,
-      stackUUID: stackUUID,
       logRetentionInDays: props.logRetentionInDays,
       mutualTlsTrustStoreKey: props.mutualTlsTrustStoreKey,
+      serviceName: props.serviceName,
+      trustStoreUuid: trustStoreUuid,
       functions: functions.functions,
       stateMachines: stateMachines.stateMachines,
       csocApiGatewayDestination: props.csocApiGatewayDestination,
