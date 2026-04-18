@@ -36,7 +36,7 @@
     "jest": "^30.3.0",
     "jest-junit": "^16.0.0",
     "ts-jest": "^29.4.9",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.2"
   },
   "dependencies": {
     "esbuild": "^0.28.0"
