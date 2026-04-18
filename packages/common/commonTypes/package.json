@@ -15,7 +15,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-        "@types/fhir": "^0.0.41"
+        "@types/fhir": "^3.0.2"
   },
   "exports": {
     ".": {
