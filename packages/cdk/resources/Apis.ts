@@ -31,7 +31,7 @@ export class Apis extends Construct {
       logRetentionInDays: props.logRetentionInDays,
       mutualTlsTrustStoreKey: props.mutualTlsTrustStoreKey,
       serviceName: props.serviceName,
-      trustStoreUuid: props.trustStoreUuid,
+      trustStoreUuuid: props.trustStoreUuid,
       forwardCsocLogs: props.forwardCsocLogs,
       csocApiGatewayDestination: props.csocApiGatewayDestination,
       executionPolicies: [
