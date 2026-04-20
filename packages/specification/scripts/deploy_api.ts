@@ -12,11 +12,11 @@ async function main() {
       {
         spec,
         apiName: "clinical-prescription-tracker",
-        version: getConfigFromEnvVar("VERSION_NUMBER"),
+        version: getConfigFromEnvVar("VERSION_NUMBER").toLowerCase(), // Ensure consistency with DNS - lowercase only due to AWS custom domain name & DNS needing to match
         apigeeEnvironment,
         isPullRequest: getBooleanConfigFromEnvVar("IS_PULL_REQUEST"),
         awsEnvironment: getConfigFromEnvVar("AWS_ENVIRONMENT"),
-        stackName: getConfigFromEnvVar("STACK_NAME"),
+        stackName: getConfigFromEnvVar("STACK_NAME").toLowerCase(), // Ensure consistency with DNS - lowercase only due to AWS custom domain name & DNS needing to match
         mtlsSecretName: "clinical-tracker-mtls-1",
         clientCert,
         clientPrivateKey,

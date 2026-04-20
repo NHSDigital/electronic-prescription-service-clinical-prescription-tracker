@@ -22,6 +22,7 @@ async function main() {
     logLevel: getConfigFromEnvVar("logLevel"),
     targetSpineServer: getConfigFromEnvVar("targetSpineServer"),
     mutualTlsTrustStoreKey: props.isPullRequest ? undefined : getConfigFromEnvVar("trustStoreFile"),
+    serviceName: "cpt-api",
     csocApiGatewayDestination: "arn:aws:logs:eu-west-2:693466633220:destination:api_gateway_log_destination", // CSOC API GW log destination - do not change
     forwardCsocLogs: getBooleanConfigFromEnvVar("forwardCsocLogs")
   })
