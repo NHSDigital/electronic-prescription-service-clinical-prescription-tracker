@@ -12,6 +12,8 @@ export interface ApisProps {
   readonly stackName: string
   readonly logRetentionInDays: number
   readonly mutualTlsTrustStoreKey: string | undefined
+  readonly serviceName: string | undefined
+  readonly trustStoreUuid: string | undefined
   functions: {[key: string]: TypescriptLambdaFunction}
   stateMachines: {[key: string]: ExpressStateMachine}
   readonly forwardCsocLogs: boolean
@@ -28,6 +30,8 @@ export class Apis extends Construct {
       stackName: props.stackName,
       logRetentionInDays: props.logRetentionInDays,
       mutualTlsTrustStoreKey: props.mutualTlsTrustStoreKey,
+      serviceName: props.serviceName,
+      trustStoreUuuid: props.trustStoreUuid,
       forwardCsocLogs: props.forwardCsocLogs,
       csocApiGatewayDestination: props.csocApiGatewayDestination,
       executionPolicies: [
