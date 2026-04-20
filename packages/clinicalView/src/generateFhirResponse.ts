@@ -33,6 +33,7 @@ import {Prescription} from "./parseSpineResponse"
 import {HistoryAction, PrescriptionLineItemsAction, ReferenceAction} from "./schema/actions"
 import {
   DispensingInformationExtensionType,
+  ExtensionUkCoreMedicationRepeatInformationExtensionType,
   PrescriptionNonDispensingReasonExtensionType,
   PrescriptionTypeExtensionType,
   TaskBusinessStatusExtensionType
@@ -301,6 +302,9 @@ const generateMedicationRequests = (
   const medicationRequestResourceIds: MedicationRequestResourceIds = {}
   // Generate a medication request resource for each line item
   for (const lineItem of Object.values(prescription.lineItems)){
+    const extensions: Array<Extension & DispensingInformationExtensionType | PendingCancellationExtensionType
+    | ExtensionUkCoreMedicationRepeatInformationExtensionType> = []
+
     logger.debug("Generating DispensingInformation extension for line item...", {lineItemNo: lineItem.lineItemNo})
     const dispensingInformationExtension: Extension & DispensingInformationExtensionType = {
       url: "https://fhir.nhs.uk/StructureDefinition/Extension-EPS-DispensingInformation",
@@ -315,6 +319,7 @@ const generateMedicationRequests = (
         }
       ]
     }
+    extensions.push(dispensingInformationExtension)
 
     logger.debug("Generating PendingCancellation extension for line item...", {lineItemNo: lineItem.lineItemNo})
     const lineItemPendingCancellationExtension: Extension & PendingCancellationExtensionType = {
@@ -323,6 +328,20 @@ const generateMedicationRequests = (
         url: "lineItemPendingCancellation",
         valueBoolean: lineItem.pendingCancellation
       }]
+    }
+    extensions.push(lineItemPendingCancellationExtension)
+
+    if(prescription.treatmentType === TreatmentType.ERD){
+      logger.debug("Generating repeatInformation extension for line item...", {lineItemNo: lineItem.lineItemNo})
+      const repeatInformationExtension: Extension & ExtensionUkCoreMedicationRepeatInformationExtensionType = {
+        url: "https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-MedicationRepeatInformation",
+        extension: [{
+          url: "numberOfPrescriptionsIssued",
+          valueUnsignedInt: prescription.issueNumber < lineItem.maxRepeats! ?
+            prescription.issueNumber : lineItem.maxRepeats!
+        }]
+      }
+      extensions.push(repeatInformationExtension)
     }
 
     logger.info("Generating MedicationRequest for line item...", {lineItemNo: lineItem.lineItemNo})
@@ -417,10 +436,7 @@ const generateMedicationRequests = (
         substitution: {
           allowedBoolean: false
         },
-        extension: [
-          dispensingInformationExtension,
-          lineItemPendingCancellationExtension
-        ]
+        extension: extensions
       }
     }
     medicationRequests.push(medicationRequest)
