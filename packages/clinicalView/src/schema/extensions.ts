@@ -223,6 +223,35 @@ export const dispensingInformationExtension = {
 } as const satisfies JSONSchema
 export type DispensingInformationExtensionType = FromSchema<typeof dispensingInformationExtension>
 
+export const extensionUkCoreMedicationRepeatInformationExtension = {
+  type: "object",
+  properties: {
+    url: {
+      type: "string",
+      enum: ["https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-MedicationRepeatInformation"]
+    },
+    extension: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          url: {
+            type: "string",
+            enum: ["numberOfPrescriptionsIssued"]
+          },
+          valueUnsignedInt: {
+            type: "integer"
+          }
+        },
+        required: ["url", "valueUnsignedInt"]
+      }
+    }
+  },
+  required: ["url", "extension"]
+} as const satisfies JSONSchema
+export type ExtensionUkCoreMedicationRepeatInformationExtensionType = FromSchema<
+typeof extensionUkCoreMedicationRepeatInformationExtension>
+
 export const taskBusinessStatusNpptExtension = {
   type: "object",
   properties: {

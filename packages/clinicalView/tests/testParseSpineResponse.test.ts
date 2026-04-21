@@ -4216,7 +4216,8 @@ describe("Test parseSpineResponse: Other prescription types", () => {
           quantity: 30,
           quantityForm: "tablet",
           dosageInstruction: "3 times a day for 10 days",
-          pendingCancellation: false
+          pendingCancellation: false,
+          maxRepeats: 7
         }
       },
       dispenseNotifications: {},
