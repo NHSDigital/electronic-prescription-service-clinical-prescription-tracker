@@ -26,6 +26,7 @@ interface XmlLineItem {
   order: XmlStringValue
   ID: XmlStringValue
   status: XmlStringValue
+  lineItemMaxRepeats?: XmlStringValue
 }
 
 interface XmlDispenseNotification {
@@ -150,6 +151,7 @@ interface LineItemDetailsSummary {
 interface LineItemDetails extends LineItemDetailsSummary, ComponentDetails {
   cancellationReason?: CancellationReasonCoding["display"]
   pendingCancellation: boolean
+  maxRepeats?: number
 }
 
 interface DispenseNotificationLineItemDetails extends LineItemDetailsSummary {
@@ -293,7 +295,8 @@ export const parseSpineResponse = (spineResponse: string, logger: Logger): Parse
       quantityForm: xmlParentPrescription[`narrativeLineItem${lineItemNo}`],
       ...(xmlParentPrescription[`dosageLineItem${lineItemNo}`] ?
         {dosageInstruction: xmlParentPrescription[`dosageLineItem${lineItemNo}`]} : {}),
-      pendingCancellation: false //default to false but update when checking last history events line items
+      pendingCancellation: false, //default to false but update when checking last history events line items
+      ...(xmlLineItem.lineItemMaxRepeats ? {maxRepeats: Number(xmlLineItem.lineItemMaxRepeats["@_value"])} : {})
     }
     prescriptionDetails.lineItems[lineItemNo] = lineItem
   }

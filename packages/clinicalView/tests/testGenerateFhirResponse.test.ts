@@ -1720,6 +1720,13 @@ describe("Test generateFhirResponse: MedicationRequest resource structure", () =
                 valueBoolean: false
               }
             ]
+          },
+          {
+            url: "https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-MedicationRepeatInformation",
+            extension: [{
+              url: "numberOfPrescriptionsIssued",
+              valueUnsignedInt: 1
+            }]
           }
         ]
       }
@@ -1727,6 +1734,49 @@ describe("Test generateFhirResponse: MedicationRequest resource structure", () =
 
     const actual = generateFhirResponse(parsedErdCreated, logger)
     expect(actual.entry).toContainEqual(expectedMedicationRequest)
+  })
+
+  it("returns a Bundle containing a MedicationRequest Bundle Entry resource with a correct MedicationRepeatInformation extension when called with an erD prescription where the issueNumber is lower than the line item maxRepeats", () => {
+    const parsedErdCreated = parseExample(erdCreated)
+    mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
+
+    const expectedExtension = {
+      url: "https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-MedicationRepeatInformation",
+      extension: [{
+        url: "numberOfPrescriptionsIssued",
+        valueUnsignedInt: 1
+      }]
+    }
+
+    const actual = generateFhirResponse(parsedErdCreated, logger)
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "MedicationRequest",
+        extension: expect.arrayContaining([expect.objectContaining(expectedExtension)])
+      })
+    }))
+  })
+
+  it("returns a Bundle containing a MedicationRequest Bundle Entry resource with a correct MedicationRepeatInformation extension when called with an erD prescription where the issueNumber is greater than the line item maxRepeats", () => {
+    const parsedErdCreated = parseExample(erdCreated)
+    parsedErdCreated.issueNumber = 10
+    mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
+
+    const expectedExtension = {
+      url: "https://fhir.hl7.org.uk/StructureDefinition/Extension-UKCore-MedicationRepeatInformation",
+      extension: [{
+        url: "numberOfPrescriptionsIssued",
+        valueUnsignedInt: 7
+      }]
+    }
+
+    const actual = generateFhirResponse(parsedErdCreated, logger)
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        resourceType: "MedicationRequest",
+        extension: expect.arrayContaining([expect.objectContaining(expectedExtension)])
+      })
+    }))
   })
 })
 
