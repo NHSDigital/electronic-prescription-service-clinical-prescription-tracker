@@ -189,6 +189,9 @@ export const medicationRequest = {
           },
           required: ["identifier"]
         },
+        numberOfRepeatsAllowed: {
+          type: "integer"
+        },
         extension: {
           type: "array",
           items: performerSiteTypeExtension

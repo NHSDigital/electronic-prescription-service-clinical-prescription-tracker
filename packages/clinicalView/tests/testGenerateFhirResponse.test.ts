@@ -1681,6 +1681,7 @@ describe("Test generateFhirResponse: MedicationRequest resource structure", () =
               }
             ]
           },
+          numberOfRepeatsAllowed: 7,
           extension: [
             {
               url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PerformerSiteType",
@@ -1734,6 +1735,20 @@ describe("Test generateFhirResponse: MedicationRequest resource structure", () =
 
     const actual = generateFhirResponse(parsedErdCreated, logger)
     expect(actual.entry).toContainEqual(expectedMedicationRequest)
+  })
+
+  it("returns a Bundle containing a MedicationRequest Bundle Entry resource with a correct dispenseRequest.numberOfRepeatsAllowed when called with an eRD prescription", () => {
+    const parsedErdCreated = parseExample(erdCreated)
+    mockUUID.mockImplementationOnce(() => "MEDREQ-111-111-111")
+
+    const actual = generateFhirResponse(parsedErdCreated, logger)
+    expect(actual.entry).toContainEqual(expect.objectContaining({
+      resource: expect.objectContaining({
+        dispenseRequest: expect.objectContaining({
+          numberOfRepeatsAllowed: 7
+        })
+      })
+    }))
   })
 
   it("returns a Bundle containing a MedicationRequest Bundle Entry resource with a correct MedicationRepeatInformation extension when called with an erD prescription where the issueNumber is lower than the line item maxRepeats", () => {

@@ -421,6 +421,7 @@ const generateMedicationRequests = (
               value: prescription.nominatedDispenserOrg
             }]
           }} : {}),
+          ...(lineItem.maxRepeats ? {numberOfRepeatsAllowed: lineItem.maxRepeats} : {}),
           extension: [{
             url: "https://fhir.nhs.uk/StructureDefinition/Extension-DM-PerformerSiteType",
             valueCoding: {
