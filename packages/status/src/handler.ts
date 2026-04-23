@@ -5,6 +5,7 @@ import middy from "@middy/core"
 import inputOutputLogger from "@middy/input-output-logger"
 import errorHandler from "@nhs/fhir-middy-error-handler"
 import {createSpineClient} from "@nhsdigital/eps-spine-client"
+import {LogItemMessage} from "@aws-lambda-powertools/logger/lib/cjs/types/Logger"
 
 const logger = new Logger({serviceName: "status"})
 
@@ -49,8 +50,8 @@ export const handler = middy(lambdaHandler)
   .use(injectLambdaContext(logger, {clearState: true}))
   .use(
     inputOutputLogger({
-      logger: (request) => {
-        logger.info(request)
+      logger: (request: unknown) => {
+        logger.info(request as LogItemMessage)
       }
     })
   )

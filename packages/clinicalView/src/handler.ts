@@ -4,6 +4,7 @@ import {LogLevel} from "@aws-lambda-powertools/logger/types"
 import {OperationOutcomeType} from "@cpt-common/common-types/schema"
 import {ServiceError} from "@cpt-common/common-types/service"
 import {generateFhirErrorResponse} from "@cpt-common/common-utils"
+import {LogItemMessage} from "@aws-lambda-powertools/logger/types"
 import middy from "@middy/core"
 import httpHeaderNormalizer from "@middy/http-header-normalizer"
 import inputOutputLogger from "@middy/input-output-logger"
@@ -100,8 +101,8 @@ export const newHandler = (params: HandlerParams) => {
     .use(injectLambdaContext(logger, {clearState: true}))
     .use(httpHeaderNormalizer())
     .use(inputOutputLogger({
-      logger: (request) => {
-        logger.info(request)
+      logger: (request: unknown) => {
+        logger.info(request as LogItemMessage)
       }
     }))
     .use(errorHandler({logger}))
