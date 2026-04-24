@@ -7,7 +7,11 @@
     "sourceMap": true,
     "composite": true,
     "strict": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
+    "types": [
+      "jest",
+      "node"
+    ],
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
